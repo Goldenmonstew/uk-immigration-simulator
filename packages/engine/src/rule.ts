@@ -1,4 +1,5 @@
 import type {
+  Locale,
   Rule,
   RuleContext,
   RuleMeta,
@@ -8,6 +9,13 @@ import type {
 
 type Verdict = Omit<RuleResult, 'sources'> &
   Partial<Pick<RuleResult, 'sources'>>;
+
+/** Picks the text for the locale, written side by side: L('中文', 'English'). */
+export type Lang = (zh: string, en: string) => string;
+
+export function textFor({ locale }: { locale?: Locale }): Lang {
+  return (zh, en) => (locale === 'en' ? en : zh);
+}
 
 /** A rule whose results cite `meta.sources` unless the check says otherwise. */
 export function defineRule(
@@ -21,5 +29,9 @@ export function defineRule(
 }
 
 export function runRule(rule: Rule, ctx: RuleContext): RuleOutcome {
-  return { id: rule.meta.id, title: rule.meta.title, ...rule.evaluate(ctx) };
+  return {
+    id: rule.meta.id,
+    title: textFor(ctx)(rule.meta.title, rule.meta.titleEn!),
+    ...rule.evaluate(ctx),
+  };
 }

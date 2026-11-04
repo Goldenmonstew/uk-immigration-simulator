@@ -5,7 +5,7 @@
 ## 1. 数据流
 
 ```text
-SimulationRequest { timeline: PersonTimeline, simulationDate, ruleSetIds?, principal? }
+SimulationRequest { timeline: PersonTimeline, simulationDate, ruleSetIds?, principal?, locale? }
         │
         ▼  evaluate(request)          packages/engine
 SimulationResult {
@@ -24,7 +24,7 @@ SimulationResult {
 
 ## 2. 输出：六态与规则清单
 
-`SettlementAssessment`：`outcome`、`routeGroup?`（只有 Earned Settlement 有）、`pathwayYears?`、`earliestDate?`、`rules: RuleOutcome[]`（每条跑过的规则：`id`、`title`、`status: PASS | FAIL | UNKNOWN`、`explanation`、`sources`，按执行顺序；结果页的"为什么"就来自这里）、`assumptions`。满足 / 未满足 / 未知的规则 ID 从 `rules` 按 `status` 过滤即可，不单独存。`title`、`explanation`、`assumptions`、`shortCircuit.message` 都是面向用户的中文句子（法律术语保留英文），UI 直接显示；UI 自身的文案走 i18n。
+`SettlementAssessment`：`outcome`、`routeGroup?`（只有 Earned Settlement 有）、`pathwayYears?`、`earliestDate?`、`rules: RuleOutcome[]`（每条跑过的规则：`id`、`title`、`status: PASS | FAIL | UNKNOWN`、`explanation`、`sources`，按执行顺序；结果页的"为什么"就来自这里）、`assumptions`。满足 / 未满足 / 未知的规则 ID 从 `rules` 按 `status` 过滤即可，不单独存。`title`、`explanation`、`assumptions`、`shortCircuit.message` 都是面向用户的句子，语言由 `SimulationRequest.locale` 决定（缺省中文，见 §10），UI 直接显示；UI 自身的文案走 i18n。
 
 | `DecisionOutcome` | 含义 |
 |---|---|
@@ -220,3 +220,30 @@ dependent child（`CL-SW-CHILD`，SRC-018 Appendix Children）：当前 episode 
 Earned Settlement 栏新规则 `ES-TRANSITIONAL-HEALTH-EDUCATION`（SRC-001 p44，§2.2）加入 5 年候选的"以下任一"：当前 `SKILLED_WORKER` 且 `socCode` 在 `healthEducationTransitionalExamples`、该职业连续段起点 < `whitePaperPublished` → `PASS`；首段入境早于截止点但该职业段晚于截止点 → `UNKNOWN`（PD-039）；`socCode` 在 `nationalPayScaleBelowRqf6Occupations` 但不在示例 → `UNKNOWN`（PD-038）；其余 `FAIL`。强制要求照常适用（假设说明）。
 
 §2.3 前 2024-04 群体：不改年限，也不是规则；Earned Settlement 栏在当前 `SKILLED_WORKER` 段且连续 Skilled Worker 段起点 < `preApril2024CohortBefore` 时，在 `assumptions` 加一句"可按旧薪资条件续签至 2035（p44），本工具按标准路径计算定居年限"。
+
+## 10. 双语输出（Phase 2.9）
+
+只新增可选字段，已有字段与中文输出不变。
+
+字段：
+
+- `SimulationRequest.locale?: Locale`，`Locale = 'zh-CN' | 'en'`；缺省 = `'zh-CN'`。只影响文案，不影响任何判断、年限、日期或 `sources`。
+- `RuleContext.locale?: Locale`：`evaluate` 从请求带入；评估 dependant 时，主申请人的嵌套 `evaluate` 用同一 locale。缺省 = `'zh-CN'`（直接构造 `RuleContext` 的测试不必填）。
+- `RuleMeta.titleEn?: string`：英文标题。`title` 仍是中文、不改。类型上可选，但每条规则都填，由测试保证；UI 列规则（政策页）时按界面语言取 `title` 或 `titleEn`。
+- `PolicyChange.titleEn?` / `summaryEn?`（`policy-data`）：变更日志五条都填，`title` / `summary` 仍是中文。
+
+数据流：
+
+```text
+SimulationRequest.locale ──► RuleContext.locale ──► 规则 check：explanation、assumptions
+                                     │             runRule：RuleOutcome.title = locale === 'en' ? meta.titleEn : meta.title
+                                     │             aggregate：基础假设、投影说明、showProjected 附加句
+                                     └──────────► evaluate：shortCircuit.message（dependant 的"主申请人："前缀 → "Principal applicant: "）
+```
+
+约束：
+
+- 机制保持最直接：每次评估从 `ctx.locale` 得到一个选择函数，中英文并排写在同一处；不引入 i18n 库、消息目录或占位符模板。数字、日期、金额照常从参数插值。
+- 英文文案：法律术语保留原文（Skilled Worker、public funds、settlement、Life in the UK），引用用原文段号（SW 24.3、p29），金额 `£50,271`，日期 ISO（YYYY-MM-DD）。
+- `SettlementAssessment.assumptions` 的去重逻辑不变（按所选语言的字符串去重）。
+- `RuleOutcome.id`、`status`、`sources`、`pendingDetails` 与 locale 无关；fixtures 用默认 locale，结论不变。

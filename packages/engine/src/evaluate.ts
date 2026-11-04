@@ -4,6 +4,7 @@ import { assess } from './aggregate';
 import { adultIllegalEntry } from './rules/es-requirements';
 import { episodeOn } from './residence';
 import { esCurrentGroup } from './rules/es-residence';
+import { textFor } from './rule';
 import type {
   RuleContext,
   RuleSet,
@@ -28,37 +29,44 @@ export const RULE_SETS: Record<RuleSetId, RuleSet> = {
 
 type ShortCircuit = NonNullable<SimulationResult['shortCircuit']>;
 
-function shortCircuitOf({
-  timeline,
-  simulationDate,
-}: RuleContext): ShortCircuit | undefined {
+function shortCircuitOf(ctx: RuleContext): ShortCircuit | undefined {
+  const { timeline, simulationDate } = ctx;
+  const L = textFor(ctx);
   if (timeline.criminalRecord.length > 0) {
     return {
       reason: 'CRIMINALITY',
-      message:
+      message: L(
         '申报了犯罪记录。Earned Settlement 下成年人的任何犯罪记录都会导致拒绝定居，现行规则下也取决于 Part Suitability 的具体情形；本工具不作结论，请咨询受监管的移民顾问。',
+        'A criminal record has been declared. Under Earned Settlement any criminal record as an adult leads to refusal of settlement; under the current rules the outcome depends on the circumstances under Part Suitability. This tool does not reach a conclusion: please seek advice from a regulated immigration adviser.',
+      ),
     };
   }
   if (adultIllegalEntry(timeline)) {
     return {
       reason: 'IMMIGRATION_BREACH',
-      message:
+      message: L(
         '申报了成年后的非法入境。Earned Settlement 对非法入境的后果前后说法不一（20 年路径或额外加 10 年，PD-044），现行规则下也可能涉及拒绝理由；本工具不作结论，请咨询受监管的移民顾问。',
+        'Illegal entry as an adult has been declared. Earned Settlement is inconsistent about its consequences (the 20-year pathway, or an extra 10 years; PD-044), and under the current rules it may also be a ground for refusal. This tool does not reach a conclusion: please seek advice from a regulated immigration adviser.',
+      ),
     };
   }
   const group = esCurrentGroup(timeline, simulationDate);
   if (group === 'PROTECTION') {
     return {
       reason: 'PROTECTION',
-      message:
+      message: L(
         '当前是保护类路线（难民、Safe and Legal 等），Earned Settlement 对其另设路径（SRC-001 Chapter 7），本工具尚未建模，请咨询受监管的移民顾问。',
+        'The current route is a protection route (refugee, Safe and Legal routes and similar). Earned Settlement sets a separate pathway for these (SRC-001 Chapter 7), which this tool does not yet model: please seek advice from a regulated immigration adviser.',
+      ),
     };
   }
   if (group === 'OUTSIDE_FRAMEWORK') {
     return {
       reason: 'OUTSIDE_FRAMEWORK',
-      message:
+      message: L(
         '当前路线不在 Earned Settlement 框架内，继续按该群体现有的定居安排（SRC-001 p25–p26）；但强化的犯罪记录与 B2 英语要求仍适用，除非有现有豁免或保障。',
+        'The current route is outside the Earned Settlement framework and keeps the existing settlement arrangements for that group (SRC-001 p25–p26). The strengthened criminality and B2 English requirements still apply, unless an existing exemption or protection applies.',
+      ),
     };
   }
   return undefined;
@@ -66,10 +74,11 @@ function shortCircuitOf({
 
 export function evaluate(request: SimulationRequest): SimulationResult {
   const ids = request.ruleSetIds ?? (Object.keys(RULE_SETS) as RuleSetId[]);
-  const { timeline, simulationDate, principal } = request;
+  const { timeline, simulationDate, principal, locale } = request;
   const ctx: RuleContext = {
     timeline,
     simulationDate,
+    locale,
     // The principal is assessed as a main applicant: their own principal, if
     // any, is not followed.
     ...(principal &&
@@ -80,6 +89,7 @@ export function evaluate(request: SimulationRequest): SimulationResult {
             timeline: principal,
             simulationDate,
             ruleSetIds: ids,
+            locale,
           }),
         },
       }),
@@ -90,7 +100,10 @@ export function evaluate(request: SimulationRequest): SimulationResult {
     shortCircuitOf(ctx) ??
     (fromPrincipal && {
       ...fromPrincipal,
-      message: `主申请人：${fromPrincipal.message}`,
+      message: textFor(ctx)(
+        `主申请人：${fromPrincipal.message}`,
+        `Principal applicant: ${fromPrincipal.message}`,
+      ),
     });
   const byRuleSet: SimulationResult['byRuleSet'] = {};
   for (const id of ids) {
