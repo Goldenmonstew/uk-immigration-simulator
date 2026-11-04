@@ -182,3 +182,12 @@ astra 与 sol 的分配可互换；关键是 UI 与基础设施分开，且都�
 5. astra / sol 的分配是否按 §6 表（可互换）。
 6. 是否建远端仓库（当前仅本地 git）。
 7. 真人 IAA / OISC 顾问 review 的安排（上线前必需，可先不定）。
+
+### §9 决定状态（2026-11-04）
+
+用户确认开始 Phase 0：第 1、3、4、5 项按推荐执行；第 2 项暂按中文优先 + 从第一天用 i18n key；第 6 项暂无远端仓库；第 7 项后期安排。模型推理等级：Codex（astra / sol）用 `high`，Opus 会话用 `high`。
+
+## 10. 部署与客户端（2026-11-04 补充）
+
+- **部署目标：Cloudflare Pages（静态托管，免费额度，绑定用户已有的 Cloudflare 域名）。** 与 §5 第 11 条"MVP 无后端"完全一致：`apps/web` 保持 Next.js 静态导出，不使用 API routes、SSR、middleware 等服务端特性。第二阶段若需要服务端（保存情景、政策监控定时任务、通知），用 Cloudflare Workers + Cron Triggers + KV / D1，同样有免费额度；在那之前不引入。
+- **iOS 应用（后期；用户已有 Apple 开发者账号）。** 对架构的唯一要求：规则语义只存在于 `packages/engine` + `packages/policy-data`（纯 TypeScript），绝不复制到 Swift，否则会出现两套规则真相。届时二选一：Capacitor 包壳（复用全部 Web 代码，但 App Store 对"网页套壳"审核较严，需有原生价值）或 React Native / Expo 复用同一引擎包。Phase 3 之前不做决定。
