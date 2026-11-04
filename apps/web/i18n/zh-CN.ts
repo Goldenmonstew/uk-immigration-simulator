@@ -1,4 +1,17 @@
 export const zhCN = {
+  'result.print': '打印或保存为 PDF',
+  'scenarios.title': '本机保存的情景',
+  'scenarios.privacy':
+    '情景仅保存在此浏览器，不上传；共享设备上的其他使用者可能看到。结论按当前政策重新计算。',
+  'scenarios.defaultName': '情景',
+  'scenarios.name': '情景名称',
+  'scenarios.save': '保存此情景',
+  'scenarios.saved': '情景已保存在本机。',
+  'scenarios.empty': '还没有保存的情景。',
+  'scenarios.load': '载入',
+  'scenarios.delete': '删除',
+  'scenarios.confirmDelete': '删除情景“{name}”？',
+  'scenarios.unavailable': '无法读取或保存本机情景。请检查浏览器存储是否可用。',
   'step.principal': '主申请人',
   'principal.banner': '正在填写：主申请人',
   'principal.sharedDate': '共用模拟日期：',

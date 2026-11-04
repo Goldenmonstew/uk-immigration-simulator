@@ -115,3 +115,18 @@
   font-size: 1.5rem;
   font-weight: 700;
 }
+
+@media print {
+  .columns {
+    display: block;
+  }
+  .assessment {
+    margin-bottom: 24px;
+    padding: 16px;
+  }
+  .rule,
+  .facts > div,
+  .outcome {
+    break-inside: avoid;
+  }
+}

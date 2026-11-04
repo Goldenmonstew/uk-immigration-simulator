@@ -58,7 +58,9 @@ export function ResultView({
           </p>
           <AssessmentColumns result={result} />
           <Advice />
-          <p className={site.muted}>{t('home.disclaimer')}</p>
+          <p className={`${site.muted} ${site.noPrint}`}>
+            {t('home.disclaimer')}
+          </p>
         </>
       )}
     </>

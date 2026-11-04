@@ -1,6 +1,20 @@
 import type { zhCN } from './zh-CN';
 
 export const en: Record<keyof typeof zhCN, string> = {
+  'result.print': 'Print or save as PDF',
+  'scenarios.title': 'Saved scenarios on this device',
+  'scenarios.privacy':
+    'Scenarios stay in this browser and are not uploaded. Other people using this device may see them. Summaries are recalculated using the current policy.',
+  'scenarios.defaultName': 'Scenario',
+  'scenarios.name': 'Scenario name',
+  'scenarios.save': 'Save this scenario',
+  'scenarios.saved': 'Scenario saved on this device.',
+  'scenarios.empty': 'No saved scenarios yet.',
+  'scenarios.load': 'Load',
+  'scenarios.delete': 'Delete',
+  'scenarios.confirmDelete': 'Delete scenario “{name}”?',
+  'scenarios.unavailable':
+    'Unable to read or save scenarios. Check that browser storage is available.',
   'step.principal': 'Principal applicant',
   'principal.banner': 'Entering details for: principal applicant',
   'principal.sharedDate': 'Shared simulation date:',
