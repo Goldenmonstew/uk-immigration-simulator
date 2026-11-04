@@ -44,6 +44,15 @@ export interface PersonTimeline {
    * (SW 39.1(b)). Missing = not settled.
    */
   settled?: { date: IsoDate; route: Route };
+  /**
+   * Repayment of asylum support costs (SRC-001 p8 note 1, p39, p47).
+   * NOT_REQUIRED = never received asylum support, or not required to repay;
+   * REPAID = repaid in full; ON_PLAN = keeping up with an agreed repayment
+   * plan; OUTSTANDING = owed and neither repaid nor on a plan.
+   * Read for PROTECTION_WORK_AND_STUDY and CORE_PROTECTION only.
+   * Missing = not provided.
+   */
+  asylumSupportRepayment?: 'NOT_REQUIRED' | 'REPAID' | 'ON_PLAN' | 'OUTSTANDING';
 }
 
 export interface ImmigrationEpisode {
@@ -65,6 +74,18 @@ export interface ImmigrationEpisode {
    * Salary List (SW 24.3 rows B, D). Missing = no.
    */
   immigrationSalaryList?: boolean;
+  /**
+   * SAFE_AND_LEGAL only: the designated route the person was admitted on
+   * (SRC-001 p37, p47). UK_RESETTLEMENT_SCHEME arrivals before 2027-04-06 are
+   * Legacy Safe and Legal Routes, outside the framework (p26 note 13).
+   * Missing = not provided.
+   */
+  resettlementScheme?: 'UK_RESETTLEMENT_SCHEME' | 'OTHER_DESIGNATED';
+  /**
+   * PROTECTION_WORK_AND_STUDY only: the sustained activity the person moved
+   * into (SRC-001 p38, p47). Missing = not provided.
+   */
+  sustainedActivity?: 'WORK' | 'EDUCATION' | 'TRAINING';
 }
 
 export interface Absence {
@@ -108,6 +129,12 @@ export interface ImmigrationBreach {
     | 'FRUSTRATING_CONTROLS'
     | 'ILLEGAL_ENTRY';
   date: IsoDate;
+  /**
+   * ILLEGAL_ENTRY only: the person says Article 31 of the Refugee Convention
+   * protects them, so the extra 10 years would not apply (SRC-001 p39, p48).
+   * Missing = not claimed.
+   */
+  article31?: boolean;
 }
 
 export interface GovernmentDebt {
@@ -216,6 +243,10 @@ export interface SimulationResult {
   policyAsOf: IsoDate;
   byRuleSet: Partial<Record<RuleSetId, SettlementAssessment>>;
   shortCircuit?: {
+    /**
+     * PROTECTION: a dependant on a protection route (Chapter 7 does not
+     * cover them); protection main applicants are assessed (contracts §11).
+     */
     reason:
       'CRIMINALITY' | 'IMMIGRATION_BREACH' | 'PROTECTION' | 'OUTSIDE_FRAMEWORK';
     message: string;
