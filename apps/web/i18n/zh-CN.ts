@@ -1,4 +1,37 @@
 export const zhCN = {
+  'site.about': '方法说明 · About',
+  'about.title': '这个模拟器如何工作',
+  'about.intro':
+    '这是一个按已公布政策推算定居路径的参考与理解工具。你可以调整情景、比较结果，带一点游戏性地了解规则如何影响时间线。',
+  'about.limits':
+    '它不判定你的法律移民身份，不保证申请结果，也不替代受监管的移民建议。如需针对真实申请的建议，请向具备相应资格的专业人士咨询，并结合个人证据与适用规则评估。',
+  'about.link': '了解方法、范围与隐私',
+  'about.columnsTitle': '如何理解结果的两栏',
+  'about.currentLaw':
+    '现行法律栏依据已登记的 Immigration Rules 当前版本，评估模拟日期下可能适用的定居条件。',
+  'about.currentLawScope':
+    '目前只建模 Skilled Worker（含其 dependant）与 Long Residence。其他路线的独立定居条件尚未建模，可能显示“信息不足”；这不表示该路线没有定居路径。',
+  'about.reforms':
+    '已公布改革栏依据 Earned Settlement 政策，标记为“已公布、未生效”。计算假设该规则集在模拟日期适用，不代表改革已经实施或未来一定按此实施。',
+  'about.reformScope':
+    '改革栏覆盖核心许可、高技能人才、英国联系、家庭与私人生活及保护类路线，并建模家庭与过渡安排。访问、学生等不计入定居的路线按对应限制处理；Hong Kong BN(O) 等框架外路线及保护类 dependant 转为专业复核。',
+  'about.informationGaps':
+    '路线无法归类（如“其他”）或必要输入缺失时，仍可能显示“信息不足”。政策未定也可能让某条规则保持 UNKNOWN；请同时阅读结论、规则明细与假设，不要把未知当作满足或不满足。',
+  'about.sourcesTitle': '数据来源与政策核对日期',
+  'about.sources':
+    '政策数字、规则与来源定位来自本项目登记的政府文件及 Immigration Rules。核对日期表示这份模型采用的资料截至何时，不是对政府网站的实时同步。',
+  'about.policyLink': '查看规则集、参数与官方来源',
+  'about.pendingTitle': '待定事项（PD-xxx）是什么',
+  'about.pending':
+    'PD-xxx 是本项目为政府尚未明确的政策细节编的索引，不是政府文件编号。结果中的标记指出哪些判断仍依赖这些细节；政策依据页的规则清单列出相关编号与官方来源，不能用猜测填补。',
+  'about.pendingLink': '查看规则清单中的待定事项与来源',
+  'about.privacyTitle': '你的输入如何保存',
+  'about.localPrivacy':
+    '输入在浏览器内计算。问卷草稿与保存的情景仅存于本机浏览器的 localStorage，不会上传到本站服务器；使用共享设备的人可能看到这些内容。',
+  'about.sharePrivacy':
+    '分享链接包含你填写的全部输入，包括主申请人的信息。获得链接的人可以读取并载入这些输入，因此只发给你信任的人。',
+  'about.analyticsPrivacy':
+    '站点仅使用 Cloudflare Web Analytics 统计访问，不使用 cookie，也不发送问卷输入或模拟结果。',
   'result.print': '打印或保存为 PDF',
   'scenarios.title': '本机保存的情景',
   'scenarios.privacy':

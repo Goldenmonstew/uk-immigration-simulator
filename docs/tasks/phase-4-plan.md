@@ -9,14 +9,15 @@ Phase 3 之后，Earned Settlement 栏已覆盖全部计入路线、家庭、过
 | # | 任务 | 负责 | 改动范围 | 依赖 | 波次 |
 |---|---|---|---|---|---|
 | 4.1 | 登记现行法律新来源：Appendix Hong Kong British National (Overseas)、Appendix Global Talent、Appendix Settlement Family Life、Appendix Settlement Protection（各带 sha256 快照与 settlement 段落定位） | sol | `policy-sources/`、`docs/SOURCES.md`、`apps/web/lib/sources.ts`（来源 URL 表，仅加行） | 无 | 1 |
-| 4.2 | 现行法律栏扩展：HK BN(O) 5 年、Global Talent 3 / 5 年、家庭伴侣 5 年 / 10 年、难民 5 年；`CL-SCOPE` 放宽；契约先行 | Opus | `packages/engine`、`packages/policy-data/src/parameters/current-law-2026-11.ts`、`fixtures/**`、`docs/contracts.md` §12、`docs/pending-details.md` | 4.1 的来源与段号 | 1（契约）/ 2（规则） |
-| 4.3 | web 打磨：路线与分组名复用 policy-data 显示名、英文全角标点、/about 方法说明页、a11y 与 Lighthouse 修正、375px 与打印复查 | astra | `apps/web` | 无 | 1 |
-| 4.4 | 来源监控改进：check-sources 对 GOV.UK 页面比对归一化正文或 Content API `public_updated_at`；ISL `removalDate` 规范为 ISO；（待定）每周自动核对的 GitHub Actions | sol | `packages/policy-data/scripts/**`、`src/data/immigration-salary-list.ts`、`.github/workflows/`（如决定） | 无 | 1（与 4.1 串行，同为 sol） |
+| 4.2 | 现行法律栏扩展：HK BN(O) 5 年、Global Talent 3 / 5 年、家庭伴侣 5 年 / 10 年（用户决定：三条都做；难民留到下一波）；`CL-SCOPE` 放宽；契约先行 | Opus | `packages/engine`、`packages/policy-data/src/parameters/current-law-2026-11.ts`、`fixtures/**`、`docs/contracts.md` §12、`docs/pending-details.md` | 4.1 的来源与段号 | 1（契约）/ 2（规则） |
+| 4.3 | web 打磨：路线与分组名复用 policy-data 显示名、英文全角标点、/about 方法说明页、a11y 与 Lighthouse 修正、375px 与打印复查；反馈入口（用户要，渠道待定，作为 4.3 的补充任务单独派） | astra | `apps/web` | 无 | 1 |
+| 4.4 | 来源监控改进：check-sources 对 GOV.UK 页面比对归一化正文；ISL `removalDate` 规范为 ISO；每周自动核对的 GitHub Actions（用户决定：加，只输出日志） | sol | `packages/policy-data/scripts/**`、`src/data/immigration-salary-list.ts`、`.github/workflows/check-sources.yml` | 无 | 1（与 4.1 串行，同为 sol） |
 | 4.5 | 规则小项：ISL 移除日期与申请日比较；Legacy UKRS 短路文案；asylum support 偿还扩到全部路线（p8 注 1）；中文"且SOC"拼接空格 | Opus | `packages/engine`、`docs/pending-details.md` | 4.4 的 ISO 日期；4.2 合并后 | 2 |
 | 4.6 | 问卷与结果页跟进：asylum support 一问对全部路线显示（随 4.5）；现行法律栏新路线所需的输入（随 4.2 契约：如 Global Talent 的 endorsement 类型、伴侣是否英国公民 / 定居者已在 `relationships`） | astra | `apps/web` | 4.2 契约合到 main | 2 |
-| 4.7 | 规则集版本化流程：写明 Statement of Changes 落地后如何新增 `*-2027-xx` 规则集、参数文件与变更日志、旧规则集如何保留（只写文档，不预先实现） | Fable | `docs/versioning.md`、`docs/contracts.md` 引用 | 无 | 1 |
+| 4.7 | 规则集版本化流程文档（已写：`docs/versioning.md`） | Fable | `docs/versioning.md` | 无 | 1（完成） |
+| 4.8 | 版本化实现（用户决定：要做）：引擎规则集注册支持同一规则挂到多个规则集与"沿用"参数、`RuleSet.effectiveFrom`、web 两栏选择逻辑与"已立法未生效"徽章、/policy 列出全部规则集；用测试里的合成第三规则集验证，不新增真实规则 | Opus（引擎）+ astra（web） | `packages/engine`、`packages/policy-data/src/types.ts`、`apps/web/lib/policy.ts` 等 | 4.2 合并后（引擎）；4.3 合并后（web） | 2 |
 
-Wave 1 三个 writer 互不碰同一 package（sol 先做 4.1 再做 4.4；Opus 先交 4.2 契约；astra 做 4.3）。4.2 契约评审通过后单独合到 main，astra 的 4.6 按它做。
+Wave 1 三个 writer 互不碰同一 package（sol 先做 4.1 再做 4.4；Opus 先交 4.2 契约；astra 做 4.3）。4.2 契约评审通过后单独合到 main，astra 的 4.6 按它做。Wave 2 的 4.8 按 `docs/versioning.md` §4.3 与 §5 实现，契约先行。
 
 ## 2. 任务卡
 
@@ -66,9 +67,15 @@ Wave 1 三个 writer 互不碰同一 package（sol 先做 4.1 再做 4.4；Opus 
 - 按 4.2 契约加输入（Global Talent 背书类型等）；asylum support 一问按 4.5 口径对全部路线显示（或放到"债务"一问旁）。
 - 结果页现行法律栏对新路线的展示无需特殊处理（规则自带标题与解释），核对即可。
 
-### 4.7 规则集版本化流程（Fable，文档）
+### 4.7 规则集版本化流程（Fable，文档，已完成）
 
-- `docs/versioning.md`：Statement of Changes 落地（SRC-002 / 003：2026-12 起提交，2027-01 起生效）时的步骤——登记新 SRC、新增 `earned-settlement-2027-xx` / `current-law-2027-xx` 参数文件与规则集 ID、规则按生效日选用参数、变更日志条目、fixtures 的"政策核对日期"、UI 的 `policyAsOf`；旧规则集保留多久。只写流程，不预先实现任何版本切换代码。
+- `docs/versioning.md`：登记、新规则集命名与 `IN_FORCE_FUTURE_VERSION`、规则沿用、fixtures 与 PD、web 两栏选择、保留与退役、升级检查清单。
+
+### 4.8 版本化实现（Opus + astra，Wave 2）
+
+- 引擎（Opus，契约先行）：`RuleSet` 加 `effectiveFrom?`（已立法未生效时的生效日）；`defineRule` / 规则表允许同一 check 注册到多个规则集（参数按规则集取）；参数文件支持"沿用上一版本"的写法（值与来源来自旧文件、注释标明）；`RULE_SETS` 可含三个规则集。用测试内的合成第三规则集（不导出、不进 `RuleSetId` 的生产取值，或以测试专用 ID）验证 `evaluate` 对每个规则集独立出结果。不新增任何真实规则或参数。
+- web（astra）：`apps/web/lib/policy.ts` 的两栏选择（`CURRENT_LAW` + `IN_FORCE_FUTURE_VERSION` 优先于 `ANNOUNCED`）、徽章文案（中英，含生效日）、`policyAsOf` 取所显示两栏的较晚者、/policy 列出全部规则集并标状态；用测试 mock 一个三规则集的 `RULE_SETS` 验证选择逻辑。
+- 验收：gate；现有两规则集的输出与快照不变；合成规则集的测试覆盖"三个规则集时结果页只显示两栏"。
 
 ### 之外
 
@@ -80,9 +87,9 @@ Wave 1 三个 writer 互不碰同一 package（sol 先做 4.1 再做 4.4；Opus 
 
 同 Phase 3：gate 全过；新规则三组用例与 fixture；来源定位齐全；UI 改动 Fable 浏览器走查；一个逻辑改动一次 commit；合并后 push main 自动部署。
 
-## 4. 待用户决定
+## 4. 用户决定（2026-11-04）
 
-1. **4.2 的路线范围与顺序**：建议先 HK BN(O) 与 Global Talent（规则简单、用户多），再家庭伴侣与难民；也可只做其中两类。
-2. **是否加每周自动来源核对的 GitHub Actions**（4.4）：只写日志、不开 issue、不阻塞部署；不加则靠手动跑脚本。
-3. **/about 的反馈渠道**（4.3）：GitHub issue 需要仓库公开；mailto 会把邮箱写进页面；也可以暂不提供反馈入口。
-4. **版本化**：建议 4.7 只写文档，等 12 月 Statement of Changes 真正提交后再开任务实现。
+1. **4.2 的路线范围**：HK BN(O)、Global Talent、家庭伴侣三条都做；难民的现行法律栏留到下一波。
+2. **每周自动来源核对的 GitHub Actions**：加（4.4），只输出日志、不开 issue、不阻塞部署。
+3. **/about 的反馈渠道**：要；具体渠道（GitHub issue 需仓库公开 / mailto 需指定邮箱 / 表单）待用户指定后作为 4.3 的补充任务派给 astra。
+4. **版本化**：除文档（4.7）外还要实现（4.8，Wave 2）。

@@ -7,6 +7,7 @@ import { PrincipalAssessment, ResultView } from '../../components/result-view';
 import { ShareLink } from '../../components/share-link';
 import { SavedScenarios } from '../../components/saved-scenarios';
 import { useTranslation } from '../../i18n/locale';
+import { punct } from '../../i18n/punctuation';
 import { mockResults } from '../../lib/mock-results';
 import {
   type Draft,
@@ -24,6 +25,7 @@ import styles from '../site.module.css';
 
 export default function ResultPage() {
   const { t, locale } = useTranslation();
+  const p = punct(locale);
   const [result, setResult] = useState<SimulationResult>();
   const [draft, setDraft] = useState<Draft>();
   const [shared, setShared] = useState(false);
@@ -108,9 +110,12 @@ export default function ResultPage() {
       ) : result ? (
         <>
           <p className={styles.printOnly}>
-            {t('site.name')} · {t('whatif.date')}：
+            {t('site.name')} · {t('whatif.date')}
+            {p.colon}
             {draft?.simulationDate ?? t('result.undetermined')} ·{' '}
-            {t('policy.asOf')}：{result.policyAsOf}
+            {t('policy.asOf')}
+            {p.colon}
+            {result.policyAsOf}
           </p>
           {shared && (
             <p className={`${styles.notice} ${styles.noPrint}`} role="status">

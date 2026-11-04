@@ -1,4 +1,4 @@
-// URLs transcribed from docs/SOURCES.md, SRC-001 through SRC-019.
+// URLs transcribed from docs/SOURCES.md, SRC-001 through SRC-023.
 export const sourceUrls: Record<string, string> = {
   'SRC-001':
     'https://assets.publishing.service.gov.uk/media/6ae90b0e5b14ba0182a272a4/A_Fairer_Pathway_to_Settlement_-_Government_response_to_the_consultation.pdf',
@@ -35,4 +35,12 @@ export const sourceUrls: Record<string, string> = {
     'https://www.gov.uk/guidance/immigration-rules/immigration-rules-appendix-children',
   'SRC-019':
     'https://www.gov.uk/guidance/immigration-rules/immigration-rules-appendix-immigration-salary-list',
+  'SRC-020':
+    'https://www.gov.uk/guidance/immigration-rules/immigration-rules-appendix-hong-kong-british-national-overseas',
+  'SRC-021':
+    'https://www.gov.uk/guidance/immigration-rules/immigration-rules-appendix-global-talent',
+  'SRC-022':
+    'https://www.gov.uk/guidance/immigration-rules/immigration-rules-appendix-settlement-family-life',
+  'SRC-023':
+    'https://www.gov.uk/guidance/immigration-rules/immigration-rules-appendix-settlement-protection',
 };

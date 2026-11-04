@@ -1,6 +1,39 @@
 import type { zhCN } from './zh-CN';
 
 export const en: Record<keyof typeof zhCN, string> = {
+  'site.about': 'About',
+  'about.title': 'How this simulator works',
+  'about.intro':
+    'This is a reference and learning tool that models settlement pathways using published policy. Adjust scenarios and compare outcomes to explore how rules affect a timeline, with a light element of play.',
+  'about.limits':
+    'It does not determine your legal immigration status, guarantee an application outcome or replace regulated immigration advice. For advice on a real application, consult a suitably qualified professional who can consider your evidence and the applicable rules.',
+  'about.link': 'Read about the method, scope and privacy',
+  'about.columnsTitle': 'Understanding the two result columns',
+  'about.currentLaw':
+    'The current law column uses the current version of the Immigration Rules registered in this project to assess potentially relevant settlement conditions on the simulation date.',
+  'about.currentLawScope':
+    'It currently models only Skilled Worker (including dependants) and Long Residence. The separate settlement requirements of other routes are not yet modelled and may show insufficient information. This does not mean that those routes have no settlement pathway.',
+  'about.reforms':
+    'The announced reforms column uses Earned Settlement policy and is labelled “Announced, not in force”. It assumes that the rule set applies on the simulation date. This does not mean the reforms have taken effect or will necessarily take this form.',
+  'about.reformScope':
+    'The reforms column covers core permission, high talent, British connection, family and private life, and protection routes, including family and transitional provisions. Routes that do not count towards settlement, such as Visit and Student, are subject to the corresponding restrictions. Routes outside the framework, such as Hong Kong BN(O), and protection route dependants are referred for professional review.',
+  'about.informationGaps':
+    'Unclassified routes (such as Other) or missing required inputs may still produce insufficient information. Unresolved policy may also leave a rule UNKNOWN. Read the outcome, rule details and assumptions together; unknown does not mean met or not met.',
+  'about.sourcesTitle': 'Sources and policy check date',
+  'about.sources':
+    'Policy figures, rules and source references come from government documents and Immigration Rules registered in this project. The check date describes the material used by this model; it is not a live feed from government websites.',
+  'about.policyLink': 'View rule sets, parameters and official sources',
+  'about.pendingTitle': 'What pending details (PD-xxx) mean',
+  'about.pending':
+    'PD-xxx is a project reference for policy details that the government has not yet clarified, not a government document number. These markers identify assessments that depend on unresolved details. The rules list on the policy page includes the relevant references and official sources; gaps must not be filled with guesses.',
+  'about.pendingLink': 'View pending details and sources in the rules list',
+  'about.privacyTitle': 'How your inputs are stored',
+  'about.localPrivacy':
+    'Inputs are processed in your browser. Questionnaire drafts and saved scenarios are stored only in this browser’s localStorage and are not uploaded to this site’s server. Other people using a shared device may see them.',
+  'about.sharePrivacy':
+    'A share link contains all the inputs you entered, including principal applicant information. Anyone with the link can read and load those inputs, so share it only with people you trust.',
+  'about.analyticsPrivacy':
+    'The site uses only Cloudflare Web Analytics for visitor statistics, without cookies. Questionnaire inputs and simulation results are not sent.',
   'result.print': 'Print or save as PDF',
   'scenarios.title': 'Saved scenarios on this device',
   'scenarios.privacy':
