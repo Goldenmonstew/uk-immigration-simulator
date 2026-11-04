@@ -35,27 +35,13 @@
 | 29 | 派发 2.9（Opus 会话 bilingual-2-9，契约先行：locale 参数、RuleMeta.titleEn、变更日志双语；中文输出须逐字不变） | PROGRESS.md |
 | 30 | 合并 2.9 引擎双语解释（Opus，14 个 commit）：locale 参数、textFor 选择函数、25 条规则与聚合 / 短路的英文文案、titleEn、变更日志双语、50 个英文测试 + 中文输出快照（6320 行）；Fable 评审契约、独立复跑 gate（engine 264）、用 p31 A / p45 A / SW £55k 三个场景抽读英文（通顺准确，仅 "1 full years" 单复数小瑕疵）；main 上 gate 全过（policy-data 16 / engine 264 / web 69） | packages/engine/**, packages/policy-data/src/data/policy-changelog.ts, docs/contracts.md, docs/tasks/reports/2.9-engine-bilingual.md |
 | 31 | 派发 2.10（astra，`.worktrees/astra-locale-wrapup`，分支 `codex/astra-locale-wrapup-2.10`，xhigh） | PROGRESS.md |
+| 32 | 合并 2.10 web 收尾（astra，三个 commit）：locale 透传与按语言缓存、删手写英文映射改读引擎 titleEn / 变更日志双语、Skilled Worker 片段 ISL 三态与主申请人"已定居"输入、站点外壳渲染语言标题；Fable 复跑 gate（web 87）并用浏览器走查（English 整页刷新标题为英文、结果 / What-if / 政策页英文全部来自引擎与数据、主申请人子流程填已定居 2024-04-06 后伴侣现行法律栏按 SW 39.1(b) 判为可能符合、ISL 字段出现在 SW 主申请人片段、375px）；astra 首次启动遇模型容量满，重试成功；main 上 gate 全过（policy-data 16 / engine 264 / web 87）。Phase 2 完成 | apps/web/**, docs/tasks/reports/2.10-web-locale-wrapup.md, docs/tasks/phase-2-plan.md |
 
 ### 当前状态
 
-- **Phase 1 四个任务全部合并到 main**（1.1 规则引擎、1.2 问卷与结果页、1.3 fixtures 与机械检查、1.4 前端对接真实规则）。`pnpm lint && pnpm typecheck && pnpm test && pnpm build` 在 main 全过：engine 129 个测试、policy-data 2 个、web 23 个；10 个官方 fixture 全部真实断言通过。
-- 1.4 验收记录：债务 = 是 → 走完问卷，Earned Settlement 栏 ES-DEBT 未满足、不给年限；债务 = 否 → 两栏 5 年 / 2030-01-01，路线分组显示"核心许可 · Core Permission"；最近一段为 Hong Kong BN(O) → 页首 OUTSIDE_FRAMEWORK 提示且现行法律栏仍评估；Visit → 无提示、ES-ROUTE-GROUP 未满足；福利下拉两组（38 + 13 项）可选，Statutory Maternity Pay 判为不算 public funds；`?mock=1` 显示路线分组与"政府未定细节：PD-012、PD-013"；假设清单默认折叠、点击展开；375px 无横向溢出。
-- 已知小项（不阻塞）：`?mock=1` 现行法律栏 LIKELY_ELIGIBLE 未给 pathwayYears（手写示例）；"修改输入"回到问卷第 1 步而非最后一步（1.2 起如此）；犯罪 / 违规 / 庇护筛查仍是前端合成短路（契约缺无日期形式与庇护字段，Phase 2 再补）。
-- 1.1 报告列出的未建模项（Phase 2 候选）：SW 21.2 其他可计入路线合并、going rate（需登记 Appendix Skilled Occupations）、SW 24.3 rows B–E、dependant 随主申请人定居（PD-055）、RQF6 以下医疗 / 教育与 2024 前 Skilled Worker 两项过渡安排、难民路径、Highest Talent Group、强制要求 FAIL 时的"补足后"推算。
-- 已定口径（见上）：已公布规则集按"假设在模拟日适用"评估；居留不足 → ES-RESIDENCE FAIL + earliestDate；INSUFFICIENT_INFORMATION 不显示 pathwayYears；dependant 两栏 INSUFFICIENT_INFORMATION；CL-ENGLISH 按快照原文（SW 主申请人 2027-03-26 前无定居英语要求）；引擎短路 PROTECTION / OUTSIDE_FRAMEWORK 只停 Earned Settlement 栏。
-- 本地预览：`.claude/launch.json`（gitignored）`web-static-astra` 用 `scratchpad/serve/static.mjs` 托管 main 的 `apps/web/out`（先 `pnpm build`）。
-- 页码约定与 Codex 启动参数不变。
-- Phase 2 规划已写入 `docs/tasks/phase-2-plan.md`：Wave 1 = 2.1 What-if（astra）、2.2 dependant 与家庭建模（Opus，契约先行）、2.3 Cloudflare Pages 部署 + 政策变更日志数据（sol）；Wave 2 = 2.4 家庭问卷 + 政策页（astra）、2.5 现行法律补全与剩余过渡安排（Opus）；2.6 going rate、2.7 分享链接可选。
-- 待用户决定：是否建 GitHub 远端（目前无 remote）；IAA 复核安排在绑定正式域名前；可选项取舍。
-- Phase 2 进行中（2026-11-04）：2.1–2.9 全部合并。在跑：2.10 astra 在 `.worktrees/astra-locale-wrapup`（分支 `codex/astra-locale-wrapup-2.10`，日志 scratchpad `astra-2.10*`）；2.9 报告提示两条 titleEn 措辞与 web 映射不同（ES-BREACH、ES-TRANSITIONAL-HEALTH-EDUCATION），2.10 删除映射时顺带处理。
-- 文案小项：英文 "1 full years" 单复数；解释里直接出现枚举码（SKILLED_WORKER、CORE_PERMISSION 等），要可读名需另做显示名表（Phase 3 候选）。
-- 2.5 报告留下的后续：p31 主申请人 fixture 可补 SOC（否则其现行法律栏为信息不足）；登记 Appendix Immigration Salary List（care worker £25,000 走 row D 需要）；PD-040 可按 SW 4.2(b)(ii) 部分关闭；提取 SRC-017 Table 4 / 5（row D 的国家薪级）。均列 Phase 3 候选。
-- 2.9 brief 要点：引擎 `locale` 参数与双语文案；合并后删除 web 的 `i18n/policy.ts` 手写英文映射；顺手修整页刷新时英文标题回中文（Next 静态 metadata 覆盖 LocaleProvider）。
-- Phase 3 候选新增：提取 SRC-017 Table 4 / 5 国家薪级明细（2.5 的 Row D 目前为不带 PD 的 UNKNOWN）。
-- 已知小项：已选英文时整页刷新标题仍为中文（站内导航已修，2.4）。
-- 2.2 报告留下的后续：现行法律栏子女定居需登记 Appendix Children（新 SRC）；主申请人已定居（SW 39.1(b)）需新契约字段；后到伴侣最低收入的 7 年中 5 年窗口（PD-056）——都留 2.5 评审。
-- 待派发：2.4 家庭问卷 + 政策页（astra，等 2.2 与 2.7 合并）；2.5 现行法律补全（Opus，等 2.2、2.6 合并，含 CL-SW-GOING-RATE）；2.9 引擎双语解释（Opus，等 2.5，契约先行）。
-- 2.2 契约决定（已发给 Opus）：伴侣最低收入复用 ES-EARNINGS-10Y 口径 + PD；后到子女按主申请人时点；后到伴侣年限取主申请人实际路径；25 岁按家庭首次符合资格日算；dependantOf = PARENT 即视为保留 child-dependant 身份；主申请人短路复制到 dependant 结果并加"主申请人："前缀。
-- 部署：`docs/deploy.md` 是用户侧步骤；首次直传在合并后的 main 上执行；绑定正式域名前先做 IAA 措辞复核。
-- 用户问题待答（已在对话里回复）：仓库名建议 `uk-immigration-simulator`；IAA 复核 = 上线正式域名前由 IAA 注册顾问 review 结果页措辞；going rate / 分享链接 / en 文案均为可选项，默认不进 Phase 2。
-- 下一步：评审 2.2 契约 → 验收三个任务 → 合并 → 派发 Wave 2（2.4 家庭问卷 + 政策页、2.5 现行法律补全）。
+- **Phase 2 全部完成（2026-11-04）**：2.1–2.10 验收合并到 main，`pnpm lint && pnpm typecheck && pnpm test && pnpm build` 全过（policy-data 16、engine 264、web 87）；`.worktrees/` 为空，没有在跑的任务。完成状态与 Phase 3 候选见 `docs/tasks/phase-2-plan.md` §6。
+- 产品现状：25 条规则（15 条 Earned Settlement、10 条现行法律）、16 个 fixtures、家庭建模（主申请人子流程、SW 39.1(a)/(b)、子女）、going rate 查表、What-if 实验室、分享链接、中英文界面与引擎双语输出、/policy 政策依据页、Cloudflare Pages 部署脚本与文档。
+- 留给用户的三件事：建 GitHub 远端并配 `deploy.yml` 的 secrets；用自己的 token 做首次直传并在 `*.pages.dev` 验收；绑定正式域名前安排 IAA 措辞复核（`docs/deploy.md`）。
+- 文案小项：英文 "1 full years" 单复数；解释里的枚举码（SKILLED_WORKER、CORE_PERMISSION 等）要可读名需显示名表（Phase 3 候选）。
+- 已定口径、页码约定与 Codex 启动参数不变；验收时只看 gate 日志里的 `GATE EXIT` 行，不看后台任务的退出码。
+- 下一步：用户决定先部署试用还是规划 Phase 3。

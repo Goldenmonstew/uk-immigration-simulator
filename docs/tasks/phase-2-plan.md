@@ -93,3 +93,11 @@ Wave 1 三个任务互不碰同一 package，可同时开工；2.3 合并后 sol
 ## 5. 不在 Phase 2
 
 自动政策监控 pipeline（§5 第 14 条）、用户账号与保存情景、邮件通知、难民路径、游戏模块、iOS 包壳决策（Phase 3 之前不决定）。
+
+## 6. 完成状态（2026-11-04）
+
+2.1–2.10 全部验收合并到 main：What-if 实验室、家庭建模与家庭问卷、Cloudflare Pages 部署脚本与文档、政策变更日志与政策页、going rate 数据表与现行法律补全、分享链接、中英文界面与引擎双语输出、剩余过渡安排。每个任务的验收过程见 `PROGRESS.md` 第 15–31 行与 `docs/tasks/reports/2.*.md`。
+
+留给用户的三件事：建 GitHub 远端并配置 `deploy.yml` 的 secrets（`docs/deploy.md` §3）；用自己的 token 做首次直传并在 `*.pages.dev` 上验收（§2）；绑定正式域名前安排 IAA 措辞复核（§4 第 2 条）。
+
+Phase 3 候选（按价值排序）：登记 Appendix Immigration Salary List（care worker 走 SW 24.3 row D 需要）；提取 SRC-017 Table 4 / 5 国家薪级（row D 的 going rate）；解释文案中的枚举码改为可读名（路线、分组、违规类型）；p31 主申请人 fixture 已补 SOC，PD-040 可按 SW 4.2(b)(ii) 部分关闭；难民路径（Ch.7）；iOS 包壳决策；自动政策监控（有真实用户后）。
