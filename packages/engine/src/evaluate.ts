@@ -1,13 +1,11 @@
 import { earnedSettlement2026_11 } from '@uk-immigration/policy-data';
 import type { RuleSetId } from '@uk-immigration/policy-data';
-import { runRule } from './rule';
+import { assess } from './aggregate';
 import { adultIllegalEntry } from './rules/es-requirements';
 import { esCurrentGroup } from './rules/es-residence';
-import { RULES } from './rules';
 import type {
   RuleContext,
   RuleSet,
-  SettlementAssessment,
   SimulationRequest,
   SimulationResult,
 } from './types';
@@ -81,13 +79,12 @@ export function evaluate(request: SimulationRequest): SimulationResult {
       (id === 'earned-settlement-2026-11' ||
         shortCircuit.reason === 'CRIMINALITY' ||
         shortCircuit.reason === 'IMMIGRATION_BREACH');
-    const assessment: SettlementAssessment = {
-      outcome: stopped
-        ? 'REQUIRES_REGULATED_REVIEW'
-        : 'INSUFFICIENT_INFORMATION',
-      rules: RULES[id].map((rule) => runRule(rule, ctx)),
-      assumptions: [],
-    };
+    const assessment = assess(id, ctx);
+    if (stopped) {
+      delete assessment.pathwayYears;
+      delete assessment.earliestDate;
+      assessment.outcome = 'REQUIRES_REGULATED_REVIEW';
+    }
     byRuleSet[id] = assessment;
   }
   return {
