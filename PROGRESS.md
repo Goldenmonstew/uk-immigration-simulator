@@ -23,6 +23,8 @@
 | 17 | 用户决定纳入 going rate / 分享链接 / en 文案：计划加 2.6–2.9 与 IAA 定位说明；2.6 brief 派给 sol（`.worktrees/sol-going-rates`）；2.7+2.8 brief 写好待 astra | docs/tasks/phase-2-plan.md, docs/tasks/2.6-going-rates.md, docs/tasks/2.7-share-link-and-en.md |
 | 18 | 合并 2.1 What-if 情景实验室（astra）：/whatif 六类控件、两栏前后对比、规则翻转三组、纯函数 applyWhatIf / diffAssessment；Fable 复跑 gate（web 36）并用浏览器走查（public funds 翻转 20→5 年、£125,141 预设 + N=4 → 3 年 / 2028-01-01、B2 翻转、2030-01-15 两栏可能符合、重置回基线且草稿未改、375px 无溢出）；main 上 gate 全过；2.7+2.8 派给 astra（`.worktrees/astra-share-en`） | apps/web/app/whatif/**, apps/web/components/whatif-lab.tsx, apps/web/lib/whatif.ts, apps/web/app/result/page.tsx, apps/web/i18n/*, apps/web/test/whatif*.ts*, docs/tasks/reports/2.1-whatif-lab.md |
 | 19 | 合并 2.2 dependant 与家庭建模（Opus）：principal / dependantOf 契约、independentAge、ES-DEPENDANT-PATHWAY（同到 / 后到伴侣、子女、18–24、25 岁）、子女豁免、主申请人短路前缀、CL-SW-PARTNER-5Y、p31 A–E fixtures、PD-056–062；Fable 评审契约与四项决定、独立复跑 gate（engine 169）、通读规则；接受偏离"主申请人强制要求不满足 → dependant FAIL"；main 上 gate 全过（engine 169 / policy-data 2 / web 36） | packages/engine/**, packages/policy-data/fixtures/**, packages/policy-data/src/parameters/*, docs/contracts.md, docs/pending-details.md, docs/SOURCES.md, docs/tasks/reports/2.2-dependants.md |
+| 20 | 合并 2.6 going rate 数据表（sol）：SRC-017 Appendix Skilled Occupations（版本 2025-11-11）登记与快照、离线提取脚本、548 行 going rate + Table 3 职业 39 行、16 个 policy-data 测试；Fable 复跑 gate、核对 sha256、独立抽查 12 行一致、脚本重跑逐字节一致；接受 Table 3 保留地区行的例外；main 上 gate 全过 | policy-sources/2025-11-11-immigration-rules-appendix-skilled-occupations.html, docs/SOURCES.md, packages/policy-data/scripts/extract-skilled-occupations.mjs, packages/policy-data/src/data/skilled-occupations.ts, packages/policy-data/src/index.ts, packages/policy-data/test/skilled-occupations.test.ts, docs/tasks/reports/2.6-going-rates.md |
+| 21 | 2.5 brief：现行法律补全（SW 21.2 合并、SW 24.3 五行 + CL-SW-GOING-RATE、CL-SW-CHILD 与 SRC-018、SW 39.1(b)）与剩余过渡安排（§2.2 医疗 / 教育、§2.3 续签说明）；契约先行；待用户确认派发 | docs/tasks/2.5-current-law-completion.md |
 
 ### 当前状态
 
@@ -35,7 +37,7 @@
 - 页码约定与 Codex 启动参数不变。
 - Phase 2 规划已写入 `docs/tasks/phase-2-plan.md`：Wave 1 = 2.1 What-if（astra）、2.2 dependant 与家庭建模（Opus，契约先行）、2.3 Cloudflare Pages 部署 + 政策变更日志数据（sol）；Wave 2 = 2.4 家庭问卷 + 政策页（astra）、2.5 现行法律补全与剩余过渡安排（Opus）；2.6 going rate、2.7 分享链接可选。
 - 待用户决定：是否建 GitHub 远端（目前无 remote）；IAA 复核安排在绑定正式域名前；可选项取舍。
-- Phase 2 进行中（2026-11-04）：2.1、2.2、2.3 已合并（Wave 1 完成）；2.6 sol 在 `.worktrees/sol-going-rates`（分支 `codex/sol-going-rates-2.6`）；2.7+2.8 astra 在 `.worktrees/astra-share-en`（分支 `codex/astra-share-en-2.7`）。Codex 日志与最终消息在 scratchpad `sol-2.6*` / `astra-2.7*`。
+- Phase 2 进行中（2026-11-04）：2.1、2.2、2.3、2.6 已合并；2.7+2.8 astra 在 `.worktrees/astra-share-en`（分支 `codex/astra-share-en-2.7`，日志 scratchpad `astra-2.7*`）。2.5 brief 已写好等用户确认派发（Opus）；2.4 等 2.7 合并后派 astra；2.9 等 2.5 之后。
 - 2.2 报告留下的后续：现行法律栏子女定居需登记 Appendix Children（新 SRC）；主申请人已定居（SW 39.1(b)）需新契约字段；后到伴侣最低收入的 7 年中 5 年窗口（PD-056）——都留 2.5 评审。
 - 待派发：2.4 家庭问卷 + 政策页（astra，等 2.2 与 2.7 合并）；2.5 现行法律补全（Opus，等 2.2、2.6 合并，含 CL-SW-GOING-RATE）；2.9 引擎双语解释（Opus，等 2.5，契约先行）。
 - 2.2 契约决定（已发给 Opus）：伴侣最低收入复用 ES-EARNINGS-10Y 口径 + PD；后到子女按主申请人时点；后到伴侣年限取主申请人实际路径；25 岁按家庭首次符合资格日算；dependantOf = PARENT 即视为保留 child-dependant 身份；主申请人短路复制到 dependant 结果并加"主申请人："前缀。
