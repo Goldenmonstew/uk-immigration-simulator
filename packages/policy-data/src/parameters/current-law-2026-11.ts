@@ -17,6 +17,11 @@ export const currentLaw2026_11 = {
       sources: [{ srcId: 'SRC-008', locator: 'CR 3.1' }],
     },
 
+    skilledWorkerQualifyingYears: {
+      value: 5,
+      sources: [{ srcId: 'SRC-004', locator: 'SW 21.1' }],
+    },
+
     // GBP per year, general salary threshold for permission (SW 4.2 Option A)
     // and for settlement (SW 24.3 row A).
     skilledWorkerGeneralSalaryThreshold: {
