@@ -65,6 +65,20 @@ export function esRouteOn(
     : episode.route;
 }
 
+/**
+ * On Safe and Legal through the UK Resettlement Scheme (not legacy): A2
+ * English, Life in the UK test exempt for now (SRC-001 p21, p37, p39).
+ */
+export function ukrsRefugeeOn(
+  timeline: PersonTimeline,
+  date: IsoDate,
+): boolean {
+  return (
+    esRouteOn(timeline, date) === 'SAFE_AND_LEGAL' &&
+    episodeOn(timeline, date)?.resettlementScheme === 'UK_RESETTLEMENT_SCHEME'
+  );
+}
+
 /** The protection route the person is on, if any (SRC-001 Chapter 7). */
 export function esProtectionRouteOn(
   timeline: PersonTimeline,

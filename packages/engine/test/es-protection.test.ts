@@ -6,7 +6,7 @@ import {
   esProtectionContribution,
   esProtectionPathway,
 } from '../src/rules/es-protection';
-import { esBreach } from '../src/rules/es-requirements';
+import { esBreach, esEnglishB2 } from '../src/rules/es-requirements';
 import type {
   ImmigrationBreach,
   ImmigrationEpisode,
@@ -462,5 +462,46 @@ describe('ES-PROTECTION-CONTRIBUTION', () => {
     );
     expect(column.pathwayYears).toBe(20);
     expect(column.earliestDate).toBe('2048-03-01');
+  });
+});
+
+describe('ES-ENGLISH-B2 for refugees', () => {
+  const english = (
+    episodes: ImmigrationEpisode[],
+    cefrLevel: 'A1' | 'A2' | 'B1' | 'B2',
+    simulationDate = '2030-01-01',
+  ) =>
+    run(
+      esEnglishB2,
+      refugee({ episodes, english: { cefrLevel } }),
+      simulationDate,
+    );
+
+  test('UK Resettlement Scheme refugees need A2', () => {
+    const pass = english(ukrs(), 'A2');
+    expect(pass.status).toBe('PASS');
+    expect(pass.explanation).toContain('只需 A2');
+    expect(pass.sources.map((s) => s.locator)).toContain('p37');
+    expect(english(ukrs(), 'A1').status).toBe('FAIL');
+  });
+
+  test('other protection routes and other designated routes need B2', () => {
+    expect(english([core], 'A2').status).toBe('FAIL');
+    expect(
+      english([{ ...ukrs()[0], resettlementScheme: 'OTHER_DESIGNATED' }], 'B1')
+        .status,
+    ).toBe('FAIL');
+  });
+
+  test('a legacy UK Resettlement Scheme arrival is unknown (PD-045)', () => {
+    const result = english(ukrs('2025-01-01'), 'A2');
+    expect(result.status).toBe('UNKNOWN');
+    expect(result.pendingDetails).toEqual(['PD-045']);
+  });
+
+  test('the title is level-neutral', () => {
+    expect(english([core], 'B2').title).toBe(
+      '定居英语要求（B2；UKRS 难民 A2）',
+    );
   });
 });

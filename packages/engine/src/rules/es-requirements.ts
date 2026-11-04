@@ -5,7 +5,11 @@ import {
 import { fullYears } from '../dates';
 import { episodeOn } from '../residence';
 import { defineRule, nameIn, textFor } from '../rule';
-import { esProtectionRouteOn } from './es-residence';
+import {
+  esProtectionRouteOn,
+  legacyUkrsArrival,
+  ukrsRefugeeOn,
+} from './es-residence';
 import type { Lang } from '../rule';
 import type { CefrLevel } from '@uk-immigration/policy-data';
 import type { IsoDate, PersonTimeline } from '../types';
@@ -150,14 +154,34 @@ export const esEnglishB2 = defineRule(
   {
     id: 'ES-ENGLISH-B2',
     ruleSetId: RULE_SET,
-    title: '英语达到 B2',
-    titleEn: `English at ${es.values.settlementEnglishLevel.value}`,
+    title: `定居英语要求（${es.values.settlementEnglishLevel.value}；UKRS 难民 ${es.values.ukrsEnglishLevel.value}）`,
+    titleEn: `English for settlement (${es.values.settlementEnglishLevel.value}; ${es.values.ukrsEnglishLevel.value} for UK Resettlement Scheme refugees)`,
     sources: [{ srcId: 'SRC-001', locator: 'p21' }],
-    pendingDetails: ['PD-019'],
+    pendingDetails: ['PD-019', 'PD-045'],
   },
   ({ timeline, simulationDate, locale }) => {
     const L = textFor({ locale });
-    const required = es.values.settlementEnglishLevel.value;
+    const ukrs = ukrsRefugeeOn(timeline, simulationDate);
+    const required = ukrs
+      ? es.values.ukrsEnglishLevel.value
+      : es.values.settlementEnglishLevel.value;
+    // UK Resettlement Scheme refugees need A2 (p21 note 7, p37, p39, p47).
+    const ukrsSources = ukrs
+      ? {
+          sources: [
+            { srcId: 'SRC-001', locator: 'p21' },
+            { srcId: 'SRC-001', locator: 'p37' },
+            { srcId: 'SRC-001', locator: 'p39' },
+            { srcId: 'SRC-001', locator: 'p47' },
+          ],
+        }
+      : {};
+    const ukrsNote = ukrs
+      ? L(
+          `经 UK Resettlement Scheme 入境的难民只需 ${required}（p37、p39）。`,
+          ` Refugees admitted through the UK Resettlement Scheme need ${required} only (p37, p39).`,
+        )
+      : '';
     if (ageExemptOn(timeline, simulationDate)) {
       return {
         status: 'PASS',
@@ -167,14 +191,32 @@ export const esEnglishB2 = defineRule(
         ),
       };
     }
+    const arrival = legacyUkrsArrival(timeline, simulationDate);
+    if (arrival) {
+      return {
+        status: 'UNKNOWN',
+        explanation: L(
+          `${arrival} 经 UK Resettlement Scheme 抵达，属 Legacy Safe and Legal Routes。框架外群体一般须达 ${es.values.settlementEnglishLevel.value}，第 7 章又说 UK Resettlement Scheme 难民只需 ${es.values.ukrsEnglishLevel.value}，原文不一致。`,
+          `Arrived through the UK Resettlement Scheme on ${arrival}, so on the Legacy Safe and Legal Routes. Groups outside the framework generally need ${es.values.settlementEnglishLevel.value}, while Chapter 7 says UK Resettlement Scheme refugees need ${es.values.ukrsEnglishLevel.value} only; the response is inconsistent.`,
+        ),
+        sources: [
+          { srcId: 'SRC-001', locator: 'p25' },
+          { srcId: 'SRC-001', locator: 'p26' },
+          { srcId: 'SRC-001', locator: 'p37' },
+          { srcId: 'SRC-001', locator: 'p39' },
+        ],
+        pendingDetails: ['PD-045'],
+      };
+    }
     const english = timeline.english;
     if (!english) {
       return {
         status: 'UNKNOWN',
         explanation: L(
-          `未填写英语水平。Earned Settlement 要求 CEFR ${required}（现有豁免保留）。`,
-          `English level not provided. Earned Settlement requires CEFR ${required} (existing exemptions are retained).`,
+          `未填写英语水平。Earned Settlement 要求 CEFR ${required}（现有豁免保留）。${ukrsNote}`,
+          `English level not provided. Earned Settlement requires CEFR ${required} (existing exemptions are retained).${ukrsNote}`,
         ),
+        ...ukrsSources,
       };
     }
     if ('exempt' in english) {
@@ -196,16 +238,18 @@ export const esEnglishB2 = defineRule(
       ? {
           status: 'PASS',
           explanation: L(
-            `英语 ${english.cefrLevel}，达到 ${required}。`,
-            `English at ${english.cefrLevel}, which meets ${required}.`,
+            `英语 ${english.cefrLevel}，达到 ${required}。${ukrsNote}`,
+            `English at ${english.cefrLevel}, which meets ${required}.${ukrsNote}`,
           ),
+          ...ukrsSources,
         }
       : {
           status: 'FAIL',
           explanation: L(
-            `英语 ${english.cefrLevel}，低于 Earned Settlement 要求的 ${required}。这是强制要求，不能用收入或其他贡献抵消。`,
-            `English at ${english.cefrLevel}, below the ${required} required by Earned Settlement. This is a mandatory requirement and cannot be offset by earnings or other contributions.`,
+            `英语 ${english.cefrLevel}，低于 Earned Settlement 要求的 ${required}。这是强制要求，不能用收入或其他贡献抵消。${ukrsNote}`,
+            `English at ${english.cefrLevel}, below the ${required} required by Earned Settlement. This is a mandatory requirement and cannot be offset by earnings or other contributions.${ukrsNote}`,
           ),
+          ...ukrsSources,
         };
   },
 );
