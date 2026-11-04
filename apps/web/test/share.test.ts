@@ -87,3 +87,43 @@ test.each([
 ])('bad or unsupported share input is ignored: %s', (encoded) => {
   expect(decodeDraft(encoded)).toBeUndefined();
 });
+
+test.each([true, false, undefined])(
+  'sharing preserves optional applicant ISL = %s',
+  (immigrationSalaryList) => {
+    const draft = createDraft();
+    draft.timeline.episodes = [
+      {
+        route: 'SKILLED_WORKER',
+        role: 'MAIN',
+        validFrom: '2021-04-06',
+        validTo: '2027-04-05',
+        immigrationSalaryList,
+      },
+    ];
+    const restored = decodeDraft(encodeDraft(draft))!;
+    expect(restored.timeline.episodes[0].immigrationSalaryList).toBe(
+      immigrationSalaryList,
+    );
+    expect(runSimulation(restored, 'en')).toEqual(runSimulation(draft, 'en'));
+  },
+);
+
+test('share input rejects malformed ISL and settlement fields', () => {
+  const draft = createDraft();
+  const decode = (timeline: unknown) =>
+    decodeDraft(btoa(JSON.stringify({ ...draft, timeline })));
+  for (const settled of [
+    null,
+    [],
+    true,
+    {},
+    { date: 2024, route: 'SKILLED_WORKER' },
+    { date: '2024-04-06', route: null },
+  ])
+    expect(decode({ ...draft.timeline, settled })).toBeUndefined();
+  for (const immigrationSalaryList of ['yes', 1, null])
+    expect(
+      decode({ ...draft.timeline, episodes: [{ immigrationSalaryList }] }),
+    ).toBeUndefined();
+});

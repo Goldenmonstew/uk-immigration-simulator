@@ -66,7 +66,7 @@ function Field({
 }
 
 export default function SimulatePage() {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const router = useRouter();
   const [draft, dispatch] = useReducer(draftReducer, undefined, createDraft);
   const [ready, setReady] = useState(false);
@@ -117,9 +117,9 @@ export default function SimulatePage() {
   };
   const finish = (value: Draft) => {
     const completed = { ...value, completed: true };
-    const result = runSimulation(completed);
+    const result = runSimulation(completed, locale);
     setStorageAvailable(draftStorage(completed).available);
-    rememberResult(result);
+    rememberResult(result, locale);
     dispatch({ type: 'restore', draft: completed });
     router.push('/result');
   };
@@ -282,6 +282,68 @@ export default function SimulatePage() {
                       ))}
                     </datalist>
                   </Field>
+                  {editingPrincipal && (
+                    <>
+                      <Field
+                        id="principal-settled"
+                        label={t('principal.settled')}
+                      >
+                        <select
+                          id="principal-settled"
+                          value={timeline.settled ? 'yes' : 'no'}
+                          onChange={(event) =>
+                            update({
+                              settled:
+                                event.target.value === 'yes'
+                                  ? { date: '', route: 'SKILLED_WORKER' }
+                                  : undefined,
+                            })
+                          }
+                        >
+                          <option value="no">{t('form.no')}</option>
+                          <option value="yes">{t('form.yes')}</option>
+                        </select>
+                      </Field>
+                      {timeline.settled && (
+                        <>
+                          {dateField(
+                            'principal-settled-date',
+                            t('principal.settledDate'),
+                            timeline.settled.date,
+                            (date) =>
+                              update({
+                                settled: { ...timeline.settled!, date },
+                              }),
+                          )}
+                          <Field
+                            id="principal-settled-route"
+                            label={t('principal.settledRoute')}
+                          >
+                            <select
+                              id="principal-settled-route"
+                              value={timeline.settled.route}
+                              onChange={(event) =>
+                                update({
+                                  settled: {
+                                    ...timeline.settled!,
+                                    route: event.target.value as Route,
+                                  },
+                                })
+                              }
+                            >
+                              {Object.entries(routeNames).map(
+                                ([route, name]) => (
+                                  <option key={route} value={route}>
+                                    {name}
+                                  </option>
+                                ),
+                              )}
+                            </select>
+                          </Field>
+                        </>
+                      )}
+                    </>
+                  )}
                 </>
               )}
 
@@ -351,6 +413,7 @@ export default function SimulatePage() {
                                 route: event.target.value as Route,
                                 socCode: undefined,
                                 salary: undefined,
+                                immigrationSalaryList: undefined,
                               })
                             }
                           >
@@ -382,6 +445,7 @@ export default function SimulatePage() {
                                 role: event.target
                                   .value as ImmigrationEpisode['role'],
                                 dependantOf: undefined,
+                                immigrationSalaryList: undefined,
                               })
                             }
                           >
@@ -456,6 +520,36 @@ export default function SimulatePage() {
                                 }
                               />
                             </Field>
+                            {episode.role === 'MAIN' && (
+                              <Field
+                                id={`${prefix}-isl`}
+                                label={t('episodes.immigrationSalaryList')}
+                                hint={t('episodes.immigrationSalaryListHint')}
+                              >
+                                <select
+                                  {...fieldProps(`${prefix}-isl`, true)}
+                                  value={
+                                    episode.immigrationSalaryList === undefined
+                                      ? ''
+                                      : episode.immigrationSalaryList
+                                        ? 'yes'
+                                        : 'no'
+                                  }
+                                  onChange={(event) =>
+                                    updateEpisode(index, {
+                                      immigrationSalaryList:
+                                        event.target.value === ''
+                                          ? undefined
+                                          : event.target.value === 'yes',
+                                    })
+                                  }
+                                >
+                                  <option value="">{t('form.unknown')}</option>
+                                  <option value="yes">{t('form.yes')}</option>
+                                  <option value="no">{t('form.no')}</option>
+                                </select>
+                              </Field>
+                            )}
                           </>
                         )}
                         {remove(`${t('episodes.item')} ${index + 1}`, () =>

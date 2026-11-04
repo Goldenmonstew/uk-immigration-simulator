@@ -22,7 +22,7 @@ import {
 import styles from '../site.module.css';
 
 export default function ResultPage() {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const [result, setResult] = useState<SimulationResult>();
   const [draft, setDraft] = useState<Draft>();
   const [shared, setShared] = useState(false);
@@ -40,9 +40,9 @@ export default function ResultPage() {
         const incoming = decodeDraft(hash.get('s')!);
         try {
           if (incoming) {
-            const nextResult = runSimulation(incoming);
+            const nextResult = runSimulation(incoming, locale);
             draftStorage(incoming);
-            rememberResult(nextResult);
+            rememberResult(nextResult, locale);
             setDraft(incoming);
             setResult(nextResult);
             setShared(true);
@@ -57,7 +57,9 @@ export default function ResultPage() {
         const { draft } = draftStorage();
         if (draft?.completed) {
           setDraft(draft);
-          setResult(getRememberedResult() ?? runSimulation(draft));
+          setResult(
+            getRememberedResult(locale) ?? runSimulation(draft, locale),
+          );
         }
       }
       setReady(true);
@@ -65,10 +67,12 @@ export default function ResultPage() {
     load();
     window.addEventListener('hashchange', load);
     return () => window.removeEventListener('hashchange', load);
-  }, []);
+  }, [locale]);
 
   const principalResult =
-    draft && needsPrincipal(draft) ? runPrincipalSimulation(draft) : undefined;
+    draft && needsPrincipal(draft)
+      ? runPrincipalSimulation(draft, locale)
+      : undefined;
 
   return (
     <main id="main" className={styles.main}>

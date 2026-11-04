@@ -40,6 +40,7 @@ test('normal submission sends the entered timeline and selected income window to
   const evaluate = vi.spyOn(engine, 'evaluate');
   runSimulation(draft);
   expect(evaluate).toHaveBeenCalledExactlyOnceWith({
+    locale: 'zh-CN',
     simulationDate: '2026-11-04',
     timeline: {
       ...draft.timeline,
@@ -195,9 +196,9 @@ test('Visit retains the engine route failure without inventing an OUTSIDE_FRAMEW
   });
   const earned = result.byRuleSet['earned-settlement-2026-11'];
   expect(earned?.outcome).toBe('LIKELY_NOT_ELIGIBLE');
-  expect(earned?.rules.find((rule) => rule.id === 'ES-ROUTE-GROUP')?.status).toBe(
-    'FAIL',
-  );
+  expect(
+    earned?.rules.find((rule) => rule.id === 'ES-ROUTE-GROUP')?.status,
+  ).toBe('FAIL');
 });
 
 test('field validation rejects missing screening, reversed dates and invalid amounts', () => {
@@ -254,3 +255,42 @@ test('draft round trip retains inputs and unavailable storage retains in-memory 
   expect(draftStorage().draft?.timeline.nationality).toBe('IND');
   vi.unstubAllGlobals();
 });
+
+test.each([true, false, undefined])(
+  'the applicant Skilled Worker ISL = %s is preserved in the engine request',
+  (immigrationSalaryList) => {
+    const original = createDraft();
+    const draft = draftReducer(original, {
+      type: 'timeline',
+      patch: {
+        episodes: [
+          {
+            route: 'SKILLED_WORKER',
+            role: 'MAIN',
+            validFrom: '2021-04-06',
+            validTo: '2027-04-05',
+            immigrationSalaryList,
+          },
+        ],
+      },
+    });
+    const evaluate = vi.spyOn(engine, 'evaluate');
+    try {
+      runSimulation(draft, 'en');
+      expect(evaluate).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          locale: 'en',
+          timeline: expect.objectContaining({
+            episodes: draft.timeline.episodes,
+          }),
+        }),
+      );
+      expect(draft.timeline.episodes[0].immigrationSalaryList).toBe(
+        immigrationSalaryList,
+      );
+      expect(original.timeline.episodes).toEqual([]);
+    } finally {
+      evaluate.mockRestore();
+    }
+  },
+);

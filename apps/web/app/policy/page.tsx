@@ -8,7 +8,6 @@ import {
 } from '@uk-immigration/policy-data';
 import type { ParameterSet, SourceRef } from '@uk-immigration/policy-data';
 import { useTranslation } from '../../i18n/locale';
-import { englishPolicyChanges, englishRuleTitles } from '../../i18n/policy';
 import { ruleSets } from '../../lib/policy';
 import { sourceUrls } from '../../lib/sources';
 import site from '../site.module.css';
@@ -130,10 +129,7 @@ export default function PolicyPage() {
             <ul className={styles.entries}>
               {RULES[ruleSet.id].map(({ meta }) => (
                 <li key={meta.id} data-rule={meta.id}>
-                  <h4>
-                    {(locale === 'en' && englishRuleTitles[meta.id]) ||
-                      meta.title}
-                  </h4>
+                  <h4>{locale === 'en' ? meta.titleEn : meta.title}</h4>
                   <p>
                     <code>{meta.id}</code>
                   </p>
@@ -155,19 +151,14 @@ export default function PolicyPage() {
         <ol className={styles.entries}>
           {[...policyChangelog]
             .sort((a, b) => b.date.localeCompare(a.date))
-            .map((change) => {
-              const text =
-                (locale === 'en' && englishPolicyChanges[change.date]) ||
-                change;
-              return (
-                <li key={change.date} data-policy-change={change.date}>
-                  <time dateTime={change.date}>{change.date}</time>
-                  <h3>{text.title}</h3>
-                  <p>{text.summary}</p>
-                  <Sources sources={change.sources} />
-                </li>
-              );
-            })}
+            .map((change) => (
+              <li key={change.date} data-policy-change={change.date}>
+                <time dateTime={change.date}>{change.date}</time>
+                <h3>{locale === 'en' ? change.titleEn : change.title}</h3>
+                <p>{locale === 'en' ? change.summaryEn : change.summary}</p>
+                <Sources sources={change.sources} />
+              </li>
+            ))}
         </ol>
       </section>
       <section className={site.section} aria-labelledby="sources-heading">

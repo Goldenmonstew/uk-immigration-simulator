@@ -58,6 +58,7 @@ export function decodeDraft(encoded: string): Draft | undefined {
 function validTimeline(value: unknown): boolean {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
   const timeline = value as Record<string, unknown>;
+  const settled = timeline.settled as Record<string, unknown> | undefined;
   return !(
     typeof timeline.dateOfBirth !== 'string' ||
     typeof timeline.nationality !== 'string' ||
@@ -77,12 +78,19 @@ function validTimeline(value: unknown): boolean {
             row !== null && typeof row === 'object' && !Array.isArray(row),
         ),
     ) ||
-    !['english', 'lifeInTheUk'].every(
+    !(timeline.episodes as Record<string, unknown>[]).every(
+      (episode) =>
+        episode.immigrationSalaryList === undefined ||
+        typeof episode.immigrationSalaryList === 'boolean',
+    ) ||
+    !['english', 'lifeInTheUk', 'settled'].every(
       (key) =>
         timeline[key] === undefined ||
         (timeline[key] !== null &&
           typeof timeline[key] === 'object' &&
           !Array.isArray(timeline[key])),
-    )
+    ) ||
+    (settled !== undefined &&
+      (typeof settled.date !== 'string' || typeof settled.route !== 'string'))
   );
 }

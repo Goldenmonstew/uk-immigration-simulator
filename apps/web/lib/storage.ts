@@ -1,9 +1,9 @@
-import type { SimulationResult } from '@uk-immigration/engine';
+import type { Locale, SimulationResult } from '@uk-immigration/engine';
 import type { Draft } from './questionnaire';
 
 const draftKey = 'uk-immigration-draft-v1';
 let memoryDraft: Draft | undefined;
-let memoryResult: SimulationResult | undefined;
+let memoryResult: { result: SimulationResult; locale: Locale } | undefined;
 
 // A single storage boundary handles unavailable storage and invalid JSON.
 export function draftStorage(next?: Draft): {
@@ -25,9 +25,11 @@ export function draftStorage(next?: Draft): {
   }
 }
 
-export function rememberResult(result: SimulationResult): void {
-  memoryResult = result;
+export function rememberResult(result: SimulationResult, locale: Locale): void {
+  memoryResult = { result, locale };
 }
-export function getRememberedResult(): SimulationResult | undefined {
-  return memoryResult;
+export function getRememberedResult(
+  locale: Locale,
+): SimulationResult | undefined {
+  return memoryResult?.locale === locale ? memoryResult.result : undefined;
 }

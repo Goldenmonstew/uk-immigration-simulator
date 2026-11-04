@@ -11,7 +11,6 @@ import {
 import PolicyPage from '../app/policy/page';
 import { SiteShell } from '../components/site-shell';
 import { LocaleContext } from '../i18n/locale';
-import { englishPolicyChanges, englishRuleTitles } from '../i18n/policy';
 import { sourceUrls } from '../lib/sources';
 
 const parameterSets = [currentLaw2026_11, earnedSettlement2026_11];
@@ -68,15 +67,16 @@ test('policy page translates all metadata and UI in English, with readable param
   const html = render('en');
   expect(html).not.toMatch(/[\u3400-\u9fff]/);
   expect(html).toContain('href="/policy"');
-  expect(Object.keys(englishRuleTitles).sort()).toEqual(
-    Object.values(RULES)
-      .flat()
-      .map((rule) => rule.meta.id)
-      .sort(),
-  );
-  expect(Object.keys(englishPolicyChanges).sort()).toEqual(
-    policyChangelog.map((change) => change.date).sort(),
-  );
+  for (const { meta } of Object.values(RULES).flat()) {
+    expect(meta.titleEn, meta.id).toMatch(/\S/);
+    expect(html).toContain(renderToStaticMarkup(<h4>{meta.titleEn}</h4>));
+  }
+  for (const change of policyChangelog) {
+    expect(change.titleEn, change.date).toMatch(/\S/);
+    expect(change.summaryEn, change.date).toMatch(/\S/);
+    expect(html).toContain(renderToStaticMarkup(<h3>{change.titleEn}</h3>));
+    expect(html).toContain(renderToStaticMarkup(<p>{change.summaryEn}</p>));
+  }
   const es = earnedSettlement2026_11.values;
   const cl = currentLaw2026_11.values;
   expect(html).toContain(
