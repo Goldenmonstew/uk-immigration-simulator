@@ -5,7 +5,8 @@ import {
 import type { RuleSetId } from '@uk-immigration/policy-data';
 import { addYears } from './dates';
 import { continuousRun, episodeOn } from './residence';
-import { runRule } from './rule';
+import { runRule, textFor } from './rule';
+import type { Lang } from './rule';
 import { RULES } from './rules';
 import {
   longResidenceStart,
@@ -106,10 +107,13 @@ function decide(candidates: Candidate[], simulationDate: IsoDate): Decision {
     : { outcome: 'LIKELY_NOT_ELIGIBLE' };
 }
 
-function projection(projectedFrom: IsoDate | undefined): string[] {
+function projection(projectedFrom: IsoDate | undefined, L: Lang): string[] {
   return projectedFrom
     ? [
-        `最早可申请日期按"自 ${projectedFrom} 起持续居留、收入等状况不变、其余要求届时仍满足"推算，不是对未来的保证。`,
+        L(
+          `最早可申请日期按"自 ${projectedFrom} 起持续居留、收入等状况不变、其余要求届时仍满足"推算，不是对未来的保证。`,
+          `The earliest application date is projected on the basis that residence continues from ${projectedFrom}, earnings and other circumstances stay the same, and the other requirements are still met then; it is not a guarantee about the future.`,
+        ),
       ]
     : [];
 }
@@ -118,6 +122,7 @@ function toAssessment(
   { projectedFrom, ...decision }: Decision,
   rules: RuleOutcome[],
   assumptions: string[],
+  L: Lang,
 ): SettlementAssessment {
   return {
     ...decision,
@@ -126,14 +131,17 @@ function toAssessment(
       ...new Set([
         ...assumptions,
         ...rules.flatMap((r) => r.assumptions ?? []),
-        ...projection(projectedFrom),
+        ...projection(projectedFrom, L),
       ]),
     ],
   };
 }
 
-const ES_BASE_ASSUMPTION =
-  'Earned Settlement 已公布、尚未生效，按"假设在申请日适用"评估；规则依据为政府回应文件（SRC-001），不是已生效的 Immigration Rules（PD-001）。首批规则修改预计 2026 年 12 月起提交、2027 年 1 月生效，2027–2028 年继续修改（SRC-002 col 593；SRC-003 cols 1423–1424），具体生效日以届时的 Statement of Changes 为准（PD-003）。';
+const esBaseAssumption = (L: Lang) =>
+  L(
+    'Earned Settlement 已公布、尚未生效，按"假设在申请日适用"评估；规则依据为政府回应文件（SRC-001），不是已生效的 Immigration Rules（PD-001）。首批规则修改预计 2026 年 12 月起提交、2027 年 1 月生效，2027–2028 年继续修改（SRC-002 col 593；SRC-003 cols 1423–1424），具体生效日以届时的 Statement of Changes 为准（PD-003）。',
+    'Earned Settlement has been announced but is not yet in force; it is assessed as if it applied on the date of application. The rules are based on the government response (SRC-001), not on Immigration Rules in force (PD-001). The first rule changes are expected to be laid from December 2026 and take effect in January 2027, with further changes in 2027–2028 (SRC-002 col 593; SRC-003 cols 1423–1424); the actual dates will be set by the Statements of Changes (PD-003).',
+  );
 
 const ES_MANDATORY = [
   'ES-CRIMINALITY',
@@ -178,13 +186,15 @@ function assessDependant(
   ctx: RuleContext,
   rules: RuleOutcome[],
 ): SettlementAssessment {
-  const assumptions = [ES_BASE_ASSUMPTION];
+  const L = textFor(ctx);
+  const assumptions = [esBaseAssumption(L)];
   const current = episodeOn(ctx.timeline, ctx.simulationDate);
   if (!ctx.principal || !current?.dependantOf) {
     return toAssessment(
       { outcome: 'INSUFFICIENT_INFORMATION' },
       rules,
       assumptions,
+      L,
     );
   }
   const pathway = rules.filter((r) => ES_DEPENDANT_PATHWAY.includes(r.id));
@@ -201,6 +211,7 @@ function assessDependant(
       },
       rules,
       assumptions,
+      L,
     );
   }
   const decision = decide(
@@ -211,12 +222,15 @@ function assessDependant(
     rules,
     'ES-DEPENDANT-PATHWAY',
     decision,
-    `截至 ${ctx.simulationDate} 尚未满期。`,
+    L(
+      `截至 ${ctx.simulationDate} 尚未满期。`,
+      ` Not yet completed by ${ctx.simulationDate}.`,
+    ),
   );
   const routeGroupPassed =
     rules.find((r) => r.id === 'ES-ROUTE-GROUP')?.status === 'PASS';
   return {
-    ...toAssessment(decision, shown, assumptions),
+    ...toAssessment(decision, shown, assumptions, L),
     ...(routeGroupPassed &&
       settlement.routeGroup && { routeGroup: settlement.routeGroup }),
   };
@@ -276,7 +290,8 @@ function assessEarnedSettlement(ctx: RuleContext): SettlementAssessment {
     },
   ].map((c) => ({ ...c, start }));
 
-  const assumptions = [ES_BASE_ASSUMPTION];
+  const L = textFor(ctx);
+  const assumptions = [esBaseAssumption(L)];
   if (
     pick(
       'ES-TRANSITIONAL-CARE-WORKER',
@@ -284,7 +299,10 @@ function assessEarnedSettlement(ctx: RuleContext): SettlementAssessment {
     ).some((r) => r.status === 'PASS')
   ) {
     assumptions.push(
-      '原文未规定同时符合过渡安排与标准路径时如何取舍；本结果取满足条件的最短路径，申请人可能可以选择更有利的安排，需咨询受监管顾问。',
+      L(
+        '原文未规定同时符合过渡安排与标准路径时如何取舍；本结果取满足条件的最短路径，申请人可能可以选择更有利的安排，需咨询受监管顾问。',
+        'The response does not say how to choose when someone qualifies for both a transitional arrangement and a standard pathway; this result takes the shortest pathway whose conditions are met. The applicant may be able to choose a more favourable arrangement and should seek regulated advice.',
+      ),
     );
   }
   // Pre April 2024 cohort (p44): no change to the pathway, only a note.
@@ -298,7 +316,10 @@ function assessEarnedSettlement(ctx: RuleContext): SettlementAssessment {
     skilledWorkerFrom < v.preApril2024CohortBefore.value
   ) {
     assumptions.push(
-      `自 ${skilledWorkerFrom} 起连续持 Skilled Worker 许可，早于 ${v.preApril2024CohortBefore.value}，属"2024 年 4 月前群体"：可按现有薪资条件续签至 2035 年（p44，具体日期未定，PD-040）；本工具按标准路径计算定居年限。`,
+      L(
+        `自 ${skilledWorkerFrom} 起连续持 Skilled Worker 许可，早于 ${v.preApril2024CohortBefore.value}，属"2024 年 4 月前群体"：可按现有薪资条件续签至 2035 年（p44，具体日期未定，PD-040）；本工具按标准路径计算定居年限。`,
+        `Continuous Skilled Worker permission since ${skilledWorkerFrom}, before ${v.preApril2024CohortBefore.value}, so in the “pre-April 2024 cohort”: permission can be extended under the existing salary requirements until 2035 (p44; exact dates not set, PD-040). This tool calculates the settlement pathway under the standard pathways.`,
+      ),
     );
   }
   const decision = decide(candidates, ctx.simulationDate);
@@ -308,27 +329,35 @@ function assessEarnedSettlement(ctx: RuleContext): SettlementAssessment {
     rules,
     'ES-RESIDENCE',
     decision,
-    `${decision.pathwayYears} 年路径的居留还不够，${decision.earliestDate} 满 ${decision.pathwayYears} 年。`,
+    L(
+      `${decision.pathwayYears} 年路径的居留还不够，${decision.earliestDate} 满 ${decision.pathwayYears} 年。`,
+      ` Not enough residence yet for the ${decision.pathwayYears}-year pathway; ${decision.pathwayYears} years are completed on ${decision.earliestDate}.`,
+    ),
   );
   return {
-    ...toAssessment(decision, shown, assumptions),
+    ...toAssessment(decision, shown, assumptions, L),
     ...(pick('ES-ROUTE-GROUP')[0].status === 'PASS' && {
       routeGroup: groups[0],
     }),
   };
 }
 
-const CL_BASE_ASSUMPTION =
-  '现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）与 Long Residence（Appendix Long Residence）；Part Suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。';
+const clBaseAssumption = (L: Lang) =>
+  L(
+    '现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）与 Long Residence（Appendix Long Residence）；Part Suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。',
+    'The current rules are modelled only for Skilled Worker main applicants and their dependent partners / children (Appendix Skilled Worker, Appendix Children) and for Long Residence (Appendix Long Residence); other requirements, such as Part Suitability and the sponsor still being approved (SW 24.1–24.2), are not modelled.',
+  );
 
 function assessCurrentLaw(ctx: RuleContext): SettlementAssessment {
+  const L = textFor(ctx);
   const [scopeRule, ...others] = RULES['current-law-2026-11'];
   const scope = runRule(scopeRule, ctx);
   if (scope.status !== 'PASS') {
     return toAssessment(
       { outcome: 'INSUFFICIENT_INFORMATION' },
       [scope],
-      [CL_BASE_ASSUMPTION],
+      [clBaseAssumption(L)],
+      L,
     );
   }
   const sw = onSkilledWorker(ctx.timeline, ctx.simulationDate);
@@ -400,10 +429,13 @@ function assessCurrentLaw(ctx: RuleContext): SettlementAssessment {
           rules,
           partner ? 'CL-SW-PARTNER-5Y' : 'CL-SW-CHILD',
           decision,
-          `截至 ${ctx.simulationDate} 尚未满期。`,
+          L(
+            `截至 ${ctx.simulationDate} 尚未满期。`,
+            ` Not yet completed by ${ctx.simulationDate}.`,
+          ),
         )
       : rules;
-  const assumptions = [CL_BASE_ASSUMPTION];
+  const assumptions = [clBaseAssumption(L)];
   // Projected past the B2 date while assessed under the earlier requirement.
   const b2 = cl.values.skilledWorkerSettlementEnglish.value;
   if (
@@ -412,10 +444,13 @@ function assessCurrentLaw(ctx: RuleContext): SettlementAssessment {
     decision.earliestDate >= b2.applicationsFrom
   ) {
     assumptions.push(
-      `预计日期在 ${b2.applicationsFrom} 之后，届时定居须达到英语 ${b2.cefrLevel}（SW 22A.1、LR 13.1(b)）。`,
+      L(
+        `预计日期在 ${b2.applicationsFrom} 之后，届时定居须达到英语 ${b2.cefrLevel}（SW 22A.1、LR 13.1(b)）。`,
+        `The projected date is on or after ${b2.applicationsFrom}, when settlement requires English at ${b2.cefrLevel} (SW 22A.1, LR 13.1(b)).`,
+      ),
     );
   }
-  return toAssessment(decision, shown, assumptions);
+  return toAssessment(decision, shown, assumptions, L);
 }
 
 export function assess(id: RuleSetId, ctx: RuleContext): SettlementAssessment {
