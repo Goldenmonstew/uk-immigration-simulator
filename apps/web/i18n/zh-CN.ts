@@ -118,6 +118,16 @@ export const zhCN = {
   'policy.hypothesis':
     '改革栏假设该规则集在模拟日期适用；标签“已公布、未生效”不代表已经实施。',
   'result.title': '你的路径模拟',
+  'gap.title': '还差什么',
+  'gap.met': '已满足全部已建模要求',
+  'gap.earliest': '按当前情况最早 {date}',
+  'gap.wait':
+    '，距模拟日还有约 {years} 年 {months} 个月（不足一个月按一个月计）',
+  'gap.pending': '待政府明确',
+  'gap.input': '补填信息',
+  'gap.more': '更多',
+  'gap.less': '收起',
+  'gap.try': '去 What-if 试试',
   'result.intro': '以下展示可能相关的规则与信息缺口，请连同来源和假设阅读。',
   'result.protectionNotice':
     '保护类路线的结论只反映已公布的政策框架；Article 31 保障、路线推出前已有时间是否计入、偿还与 public funds 细则等尚未公布，请连同待定事项阅读。',

@@ -42,6 +42,24 @@
 .facts {
   margin: 0 0 32px;
 }
+.gap {
+  margin-bottom: 32px;
+  overflow-wrap: anywhere;
+}
+.gapList {
+  padding-left: 24px;
+}
+.gapList li {
+  margin-bottom: 16px;
+}
+.gapCollapsed {
+  display: none;
+}
+.gapAction {
+  display: block;
+  width: fit-content;
+  padding: 10px 0;
+}
 .facts div {
   border-bottom: 1px solid #b1b4b6;
   padding: 12px 0;
@@ -117,6 +135,12 @@
 }
 
 @media print {
+  .gapCollapsed {
+    display: list-item;
+  }
+  .gapList li {
+    break-inside: avoid;
+  }
   .columns {
     display: block;
   }

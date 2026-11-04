@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type {
   SettlementAssessment,
   SimulationResult,
@@ -23,7 +23,10 @@ import {
   applyWhatIf,
   diffAssessment,
   initialWhatIf,
+  focusControls,
+  focusForRule,
   type WhatIf,
+  type WhatIfTarget,
 } from '../lib/whatif';
 import { PolicyStatus, RuleSetStatus } from './policy-status';
 import { ShareLink } from './share-link';
@@ -144,13 +147,40 @@ function Comparison({
 function WhatIfLab({
   draft,
   before,
+  target,
 }: {
   draft: Draft;
   before: SimulationResult;
+  target?: WhatIfTarget;
 }) {
   const { t, locale } = useTranslation();
   const p = punct(locale);
-  const [whatIf, setWhatIf] = useState(() => initialWhatIf(draft));
+  const [whatIf, setWhatIf] = useState(() => {
+    // A directly opened focus URL has no clicked-row context: use the first matching gap.
+    const assessment =
+      target && !target.assessment
+        ? Object.values(before.byRuleSet).find((item) =>
+            item.rules.some(
+              (rule) =>
+                rule.status !== 'PASS' &&
+                focusForRule(rule.id) === target.focus,
+            ),
+          )
+        : target?.assessment;
+    const ruleId =
+      target?.ruleId ??
+      assessment?.rules.find(
+        (rule) =>
+          rule.status !== 'PASS' && focusForRule(rule.id) === target?.focus,
+      )?.id;
+    return initialWhatIf(draft, target && { ...target, assessment, ruleId });
+  });
+  useEffect(() => {
+    if (!target) return;
+    const control = document.getElementById(focusControls[target.focus]);
+    control?.scrollIntoView({ block: 'center' });
+    control?.focus({ preventScroll: true });
+  }, [target]);
   const update = (patch: Partial<WhatIf>) =>
     setWhatIf((current) => ({ ...current, ...patch }));
   const afterDraft = applyWhatIf(draft, whatIf);
@@ -351,6 +381,7 @@ function WhatIfLab({
             <input
               type="checkbox"
               checked={whatIf.noPublicFunds}
+              id="whatif-public-funds"
               onChange={(event) =>
                 update({ noPublicFunds: event.target.checked })
               }
@@ -413,7 +444,13 @@ function WhatIfLab({
   );
 }
 
-export function WhatIfView({ draft }: { draft?: Draft }) {
+export function WhatIfView({
+  draft,
+  target,
+}: {
+  draft?: Draft;
+  target?: WhatIfTarget;
+}) {
   const { t, locale } = useTranslation();
   if (!draft?.completed)
     return (
@@ -440,7 +477,7 @@ export function WhatIfView({ draft }: { draft?: Draft }) {
           </Link>
         </div>
       ) : (
-        <WhatIfLab draft={draft} before={before} />
+        <WhatIfLab draft={draft} before={before} target={target} />
       )}
     </>
   );

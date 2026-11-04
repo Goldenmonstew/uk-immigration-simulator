@@ -125,6 +125,16 @@ export const en: Record<keyof typeof zhCN, string> = {
   'policy.hypothesis':
     'The reforms column assumes that the rule set applies on the simulation date. Announced rules are not yet in force.',
   'result.title': 'Your pathway simulation',
+  'gap.title': 'What is missing',
+  'gap.met': 'All modelled requirements are met.',
+  'gap.earliest': 'Based on the current situation, the earliest date is {date}',
+  'gap.wait':
+    ', approximately {years} years and {months} months after the simulation date (rounded up to the next month).',
+  'gap.pending': 'Pending government clarification',
+  'gap.input': 'Provide missing information',
+  'gap.more': 'More',
+  'gap.less': 'Show less',
+  'gap.try': 'Try in What-if',
   'result.intro':
     'Read the potentially relevant rules and information gaps together with their sources and assumptions.',
   'result.loading': 'Reading the scenario on this device…',
