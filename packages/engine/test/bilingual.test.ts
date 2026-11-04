@@ -7,6 +7,8 @@ import { evaluate } from '../src/evaluate';
 test.each(fixtures.map((f) => [f.id, f]))(
   '%s default-locale output is unchanged',
   (_, fixture) => {
-    expect(JSON.stringify(evaluate(fixture.request), null, 2)).toMatchSnapshot();
+    expect(
+      JSON.stringify(evaluate(fixture.request), null, 2),
+    ).toMatchSnapshot();
   },
 );
