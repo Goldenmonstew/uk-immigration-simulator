@@ -19,6 +19,7 @@
 | 13 | 1.4 brief；合并 1.4 前端对接真实规则（astra）：web 显式依赖 policy-data、福利下拉用数据表两组、政府债务交 ES-DEBT、引擎短路保留两栏、路线分组 / 政府未定细节标签 / 假设折叠、真实引擎回归测试；Fable 独立复跑 gate 并用内置浏览器走查六条路径（债务、SW £55k、HK BN(O) 短路、Visit、mock=1、375px）；brief 验收示例 Visit 改为 HK BN(O)（Visit 属 NOT_COUNTING） | docs/tasks/1.4-web-integration.md, apps/web/**, pnpm-lock.yaml, docs/tasks/reports/1.4-web-integration.md, PROGRESS.md |
 | 14 | Phase 2 规划：docs/tasks/phase-2-plan.md（六张任务卡、两波次、验收总则、待用户决定三项）；方案 §6 加 Phase 2 指针 | docs/tasks/phase-2-plan.md, docs/00-project-analysis-and-plan.md, PROGRESS.md |
 | 15 | Phase 2 Wave 1 派发：三份 brief（2.1 What-if / 2.2 家庭建模 / 2.3 部署与变更日志）；astra、sol 各在 `.worktrees/` 以 xhigh 启动，Opus 会话 dependants-2-2 以 high 启动（契约先行，Fable 评审后再写规则） | docs/tasks/2.1-whatif-lab.md, docs/tasks/2.2-dependants.md, docs/tasks/2.3-deploy-changelog.md, PROGRESS.md |
+| 16 | 合并 2.3 Cloudflare Pages 部署与政策变更日志（sol）：deploy:pages 脚本（wrangler 固定版本、项目名缺失明确报错）、deploy.yml、docs/deploy.md、policyChangelog 五条；Fable 复跑 gate、核对 Cloudflare serving-pages 文档、微调一处措辞；main 上 gate 全过 | package.json, .github/workflows/deploy.yml, docs/deploy.md, packages/policy-data/src/data/policy-changelog.ts, packages/policy-data/src/index.ts, docs/tasks/reports/2.3-deploy-changelog.md |
 
 ### 当前状态
 
@@ -31,6 +32,8 @@
 - 页码约定与 Codex 启动参数不变。
 - Phase 2 规划已写入 `docs/tasks/phase-2-plan.md`：Wave 1 = 2.1 What-if（astra）、2.2 dependant 与家庭建模（Opus，契约先行）、2.3 Cloudflare Pages 部署 + 政策变更日志数据（sol）；Wave 2 = 2.4 家庭问卷 + 政策页（astra）、2.5 现行法律补全与剩余过渡安排（Opus）；2.6 going rate、2.7 分享链接可选。
 - 待用户决定：是否建 GitHub 远端（目前无 remote）；IAA 复核安排在绑定正式域名前；可选项取舍。
-- Wave 1 进行中（2026-11-04 派发）：2.1 astra 在 `.worktrees/astra-whatif`（分支 `codex/astra-whatif-2.1`）；2.3 sol 在 `.worktrees/sol-deploy`（分支 `codex/sol-deploy-2.3`）；2.2 Opus 会话 dependants-2-2（自己的 worktree，第一个 commit 只做契约，等 Fable 评审）。Codex 日志与最终消息在 scratchpad `astra-2.1*` / `sol-2.3*`。
+- Wave 1 进行中（2026-11-04 派发）：2.3 已合并（6a84d7c）；2.1 astra 在 `.worktrees/astra-whatif`（分支 `codex/astra-whatif-2.1`）；2.2 Opus 会话 dependants-2-2（分支 `claude/dependants-2-2-979a62`，契约 079c73d 已评审通过，正在写规则）。Codex 日志与最终消息在 scratchpad `astra-2.1*`。
+- 2.2 契约决定（已发给 Opus）：伴侣最低收入复用 ES-EARNINGS-10Y 口径 + PD；后到子女按主申请人时点；后到伴侣年限取主申请人实际路径；25 岁按家庭首次符合资格日算；dependantOf = PARENT 即视为保留 child-dependant 身份；主申请人短路复制到 dependant 结果并加"主申请人："前缀。
+- 部署：`docs/deploy.md` 是用户侧步骤；首次直传在合并后的 main 上执行；绑定正式域名前先做 IAA 措辞复核。
 - 用户问题待答（已在对话里回复）：仓库名建议 `uk-immigration-simulator`；IAA 复核 = 上线正式域名前由 IAA 注册顾问 review 结果页措辞；going rate / 分享链接 / en 文案均为可选项，默认不进 Phase 2。
 - 下一步：评审 2.2 契约 → 验收三个任务 → 合并 → 派发 Wave 2（2.4 家庭问卷 + 政策页、2.5 现行法律补全）。
