@@ -346,7 +346,7 @@ PD-064（PWS → Core Protection 回切）、PD-065（保护类路线上的其�
 | `ImmigrationEpisode.globalTalentCriteria?` | `'EXCEPTIONAL_TALENT'` \| `'EXCEPTIONAL_PROMISE'` | Arts Council England / Tech Nation 背书所依据的标准（GT 11.1(b)、GT 11.2） | 同上，且 `globalTalentEndorsement` 为 `ARTS_COUNCIL_ENGLAND` 或 `TECH_NATION` |
 
 - 缺省 = 用户没提供：`CL-GT-RESIDENCE` 输出不带 PD 的 `UNKNOWN`。背书机构不是 GT 11 点名的六个机构之一时，用户留空（同样 `UNKNOWN`，解释列出 GT 11 点名的机构）。
-- HK BN(O) 不加字段：Status Holder、Adult Child 与 household member 的定居条款是同一组（HK 55–HK 64），合格期都是 HK 62.1。
+- HK BN(O) 不加字段：BN(O) Status Holder、BN(O) Adult Child 与 BN(O) Household Child（HK 15.1–15.3）等的定居条款是同一组（HK 55.1–HK 64.2），合格期都是 HK 62.1(b)；本任务只建模 `MAIN`。
 
 ### 12.2 参数（`currentLaw2026_11.values`，规则 commit 时加）
 
@@ -402,7 +402,7 @@ HK BN(O) 的英语只有一个等级（HK 60.1 没有按申请日分段），所
 
 ### 12.8 家庭伴侣主申请人（范围变更后追加）
 
-**来源结构**（与任务书的假定不同，需先定来源）：Appendix Settlement Family Life（SRC-022，gov.uk 现行版 2026-08-03）**只有 10 年路线**（SETF 1–SETF 17），且没有财务要求。**5 年路线在 Appendix FM**：合格期 E-ILRP.1.3（"5 years (60 months)"）、伴侣身份 E-LTRP.1.2、财务 E-LTRP.3.1–3.8（经 E-ILRP.1.3(1A) 适用于定居）、英语与 KOL 经 E-ILRP.1.6 引 **Appendix KoLL**（KoLL 2.2 的 B1 / B2 按 2027-03-26 分段，HC 1691 EM 5.60 列有 Appendix KoLL）。Appendix FM 与 Appendix KoLL 目前都没有登记（SRC-015 是 Appendix KOL UK，不是 KoLL）。下表这两项写"待登记"；它们登记前，5 年路线的规则不写，或只写 10 年路线。
+**来源结构**（与任务书的假定不同，需先定来源）：Appendix Settlement Family Life（SRC-022，gov.uk 现行版 2026-08-03）**只有 10 年路线**（SETF 1–SETF 17），且没有财务要求。**5 年路线在 Appendix FM**：合格期 E-ILRP.1.3（"5 years (60 months)"）、伴侣身份 E-LTRP.1.2、财务 E-LTRP.3.1–3.8（经 E-ILRP.1.3(1A) 适用于定居）、英语与 KOL 经 E-ILRP.1.6 引 **Appendix KoLL**（KoLL 2.2 的 B1 / B2 按 2027-03-26 分段，HC 1691 EM 5.60 列有 Appendix KoLL）。Appendix FM 将在 4.4 登记为 SRC-024，表里写 `{ srcId: 'SRC-024', locator: '待 4.4' }`；Appendix KoLL 尚无登记计划（SRC-015 是 Appendix KOL UK，不是 KoLL），写"KoLL 待登记"。**分两步**：10 年路线（SRC-022）随 HK BN(O) 与 Global Talent 一起写；5 年路线与 `CL-FAMILY-FINANCIAL` 等 SRC-024（及 KoLL）合并后再写，此前 `PARTNER_FIVE_YEAR` 的 `CL-FAMILY-RESIDENCE` 输出 `UNKNOWN`（不带 PD，解释"5 年路线尚未建模"），结论"信息不足"。
 
 #### 字段
 
@@ -418,15 +418,15 @@ HK BN(O) 的英语只有一个等级（HK 60.1 没有按申请日分段），所
 
 | 名称 | 值 | 来源（预期段号） |
 |---|---|---|
-| `familyPartnerQualifyingYearsFive` | 5 | Appendix FM E-ILRP.1.3（待登记） |
+| `familyPartnerQualifyingYearsFive` | 5 | SRC-024 E-ILRP.1.3（待 4.4） |
 | `familyPartnerQualifyingYearsTen` | 10 | SRC-022 SETF 3.1 |
-| `familyPartnerMinimumIncome` | 29,000 | Appendix FM E-LTRP.3.1(a)、E-LTRP.3.8（待登记） |
-| `familyPartnerTransitionalBefore` | `'2024-04-11'` | Appendix FM E-LTRP.3.5 |
-| `familyPartnerTransitionalIncome` | 18,600 | Appendix FM E-LTRP.3.7(a)(i) |
-| `familyPartnerTransitionalFirstChild` | 3,800 | Appendix FM E-LTRP.3.7(a)(ii) |
-| `familyPartnerTransitionalAdditionalChild` | 2,400 | Appendix FM E-LTRP.3.7(a)(iii) |
-| `familyPartnerSettlementEnglishBefore` | `'B1'` | SRC-022 SETF 5.1(a)；Appendix KoLL 2.2（待登记） |
-| `familyPartnerSettlementEnglish` | `{ cefrLevel: 'B2', applicationsFrom: '2027-03-26' }` | SRC-022 SETF 5.1(b)；Appendix KoLL 2.2；SRC-007 EM 5.60 |
+| `familyPartnerMinimumIncome` | 29,000 | SRC-024 E-LTRP.3.1(a)、E-LTRP.3.8（待 4.4） |
+| `familyPartnerTransitionalBefore` | `'2024-04-11'` | SRC-024 E-LTRP.3.5（待 4.4） |
+| `familyPartnerTransitionalIncome` | 18,600 | SRC-024 E-LTRP.3.7(a)(i)（待 4.4） |
+| `familyPartnerTransitionalFirstChild` | 3,800 | SRC-024 E-LTRP.3.7(a)(ii)（待 4.4） |
+| `familyPartnerTransitionalAdditionalChild` | 2,400 | SRC-024 E-LTRP.3.7(a)(iii)（待 4.4） |
+| `familyPartnerSettlementEnglishBefore` | `'B1'` | SRC-022 SETF 5.1(a)；Appendix KoLL 2.2（KoLL 待登记） |
+| `familyPartnerSettlementEnglish` | `{ cefrLevel: 'B2', applicationsFrom: '2027-03-26' }` | SRC-022 SETF 5.1(b)；Appendix KoLL 2.2（KoLL 待登记）；SRC-007 EM 5.60 |
 
 #### 规则
 
@@ -453,5 +453,5 @@ HK BN(O) 的英语只有一个等级（HK 60.1 没有按申请日分段），所
 
 #### fixture 与给 4.6
 
-- `cl-family-partner-five-years.ts`：`PARTNER_FIVE_YEAR`，伴侣 `BRITISH_CITIZEN`，2021-03-01 起，申请日 2026-03-01（5 年到期当天）；连续段起点早于 2024-04-11 → 过渡门槛 £18,600（无子女），上一 tax year 合并收入达标；英语 B1、KOL 已过 → `LIKELY_ELIGIBLE`、5 年。Earned Settlement 栏照常。
+- `cl-family-partner-five-years.ts`：`PARTNER_FIVE_YEAR`，伴侣 `BRITISH_CITIZEN`，2021-03-01 起，申请日 2026-03-01（5 年到期当天）；连续段起点早于 2024-04-11 → 过渡门槛 £18,600（无子女），上一 tax year 合并收入达标；英语 B1、KOL 已过 → `LIKELY_ELIGIBLE`、5 年。Earned Settlement 栏照常。随第二步（SRC-024 合并后）加入；第一步用单测覆盖 10 年路线。
 - 问卷：当前片段为 `FAMILY_PARTNER_OR_PARENT` + `MAIN` 时问 `familyPermission`；伴侣路线时提示填写伴侣身份（`relationships`）与上一 tax year 的本人及伴侣收入。
