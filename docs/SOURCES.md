@@ -30,6 +30,7 @@
 | SRC-014 | LAW | Immigration Rules: Appendix English Language（版本 2026-03-26，HC 1691；settlement 英语豁免 EL 1.1） | https://www.gov.uk/guidance/immigration-rules/immigration-rules-appendix-english-language | 2026-03-26 | 2026-11-04 | `policy-sources/2026-03-26-immigration-rules-appendix-english-language.html`（sha256 `a1d9f8bf81841a7481439f4ea8d0db77cabaccd5c888d3fc1f49d1dd62fa795f`） | archived |
 | SRC-015 | LAW | Immigration Rules: Appendix KOL UK（版本 2025-04-09，HC 733；Life in the UK 豁免 KOL 1.1，满足方式 KOL 2.1） | https://www.gov.uk/guidance/immigration-rules/immigration-rules-appendix-kol-uk | 2025-04-09 | 2026-11-04 | `policy-sources/2025-04-09-immigration-rules-appendix-kol-uk.html`（sha256 `11cf0a7ac3b7077a3d9dadff97f2b36c71d96f6c57f1a27d84b9473bb9add1d6`） | archived |
 | SRC-016 | GUIDANCE | About us - Immigration Advice Authority（IAA 的调查、执法与起诉权） | https://www.gov.uk/government/organisations/immigration-advice-authority/about | 2025-01-16 | 2026-11-04 | `policy-sources/2025-01-16-iaa-about-us.html`（sha256 `4f8fa4114e9b593c7d197574d7144eed1f72adc1130d55f03ade9fb21f827212`） | archived |
+| SRC-017 | LAW | Immigration Rules: Appendix Skilled Occupations（版本 2025-11-11，HC 1333；SOC 2020 职业及 going rates） | https://www.gov.uk/guidance/immigration-rules/immigration-rules-appendix-skilled-occupations | 2025-11-11 | 2026-11-04 | `policy-sources/2025-11-11-immigration-rules-appendix-skilled-occupations.html`（sha256 `80e31318ea53831fff90635abc64a4d8ca5eaef574bef66421045410b12818c7`） | archived |
 
 ## 登记备注（按 SRC）
 
@@ -153,3 +154,16 @@
 | turn218854search10 | 377, 608 | legislation.gov.uk 提供新立法 Atom feeds，目标与出版同步 | SRC-011 `/new` 页（"simultaneously, or at least within 24 hours"；Legislation feeds） | 一致 |
 | turn648176search6 | 409 | immigration advice 指针对具体个人的意见；在经营过程中提供即受监管，不论是否营利 | SRC-009 §1.1、§1.3 | 论点一致。报告把原文 "in the course of business" 误译为"在 business course 中" |
 | turn648176search7 | 409 | IAA 有调查、执法、起诉权 | SRC-016（About us） | 一致 |
+
+## SRC-017 常用定位
+
+- 版本：该 Appendix 的 [GOV.UK Content API 变更记录](https://www.gov.uk/api/content/guidance/immigration-rules/immigration-rules-appendix-skilled-occupations) 最近一条为 2025-11-11，说明为 “Updated to reflect Statement of Changes HC 1333”；此前为 2025-07-22（HC 997）。快照的 `govuk:public-updated-at` 同为 `2025-11-11T12:41:03+00:00`。页面头部 “Updated: 29 October 2026” 是整本手册的更新日，不作为此 Appendix 版本日。
+- 各表锚点均从 `#table-<编号>-` 开始；数据行按表编号 + SOC 2020 代码定位，不使用 Equivalent SOC 2010 列。
+- **Table 1**：基于 ASHE 中位数的 eligible SOC 2020 职业与 going rate；**Table 1a**：2025-07-22 前按旧规则获批、此后持续持有 Skilled Worker 许可者的附加职业（适用例外见该表引言）。两表取 `Going rate (SW – options A and D)` 列。
+- **Table 2**：基于 ASHE 第 25 百分位的职业与 going rate；**Table 2aa**：2025-07-22 前获批者的附加职业（资格限制见引言）。两表取 `Going rate (SW – options F and I, GBM and SCU)` 列。
+- **Table 2a**：2024-04-04 前获批的 Skilled Worker 附加职业，限制见该表引言；取 `Going rate (SW – option F)` 列。**Table 2b**：2024-04-04 前获批的 Global Business Mobility 附加职业，限制见该表引言；取 `Going rate (GBM – minimum rate)` 列。这些数据不表示所有职业都能用于 Skilled Worker。
+- **Tables 1 / 1a / 2 / 2aa / 2a / 2b**：金额均为英镑年薪，基于每周 37.5 小时；首个金额为年薪，括号内是时薪。提取完整 going rate，不提取 70% / 80% / 90% 折扣列；Table 1 / 2 引言明确 settlement 仅适用完整 going rate 列。职业名称不包含同单元格内的后续 eligibility / Note 说明，限制仍以原表为准。
+- **Table 3**：按国家薪级确定 going rate 的医疗 / 教育职业；本次仅提取 SOC 2020 代码与职业名。`Going rate (annual)` 中既有医生、牙医等按地区 / 职级列出的金额，也有指向 Table 4 / 5 的行，不能一律当作单一年薪。**Table 3a** 是国家薪级职业的附加清单（含 2025-07-22 前获批者及其他例外），本次未提取。
+- **Table 4**：医疗职业按地区与 band 的国家薪级明细；**Table 5**：教育职业按地区与角色的国家薪级明细。本次不解析两表金额。
+- **Table 6**：不合资格职业清单；附加清单职业的例外仍须查看各表引言。本次不提取 Table 6。
+- **Table 3 行数口径**：保留原表全部 39 行与地区名称；其中 2211、2253、2312 各按 England / Scotland / Wales / Northern Ireland 列四行，因此共有 30 个唯一 SOC。该表按「SOC + 职业名」唯一；六张金额表则各自按 SOC 唯一，不能为满足去重而丢掉国家薪级职业的地区行。
