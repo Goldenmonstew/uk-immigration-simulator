@@ -9,6 +9,9 @@ import type {
 /** YYYY-MM-DD */
 export type IsoDate = string;
 
+/** Language of the engine's user-facing texts. */
+export type Locale = 'zh-CN' | 'en';
+
 // ---------- Input ----------
 
 export interface PersonTimeline {
@@ -123,6 +126,8 @@ export interface SimulationRequest {
   principal?: PersonTimeline;
   /** Defaults to every rule set. */
   ruleSetIds?: RuleSetId[];
+  /** Language of titles, explanations, assumptions and messages. Defaults to 'zh-CN'. */
+  locale?: Locale;
 }
 
 // ---------- Rules ----------
@@ -143,7 +148,10 @@ export type RuleId = string;
 export interface RuleMeta {
   id: RuleId;
   ruleSetId: RuleSetId;
+  /** Chinese. */
   title: string;
+  /** English; every rule has one (checked by tests). */
+  titleEn?: string;
   /** At least one. */
   sources: SourceRef[];
   /** PD-xxx ids from docs/pending-details.md. */
@@ -155,6 +163,8 @@ export interface RuleContext {
   simulationDate: IsoDate;
   /** Dependants only: the principal's timeline and result on the same date. */
   principal?: { timeline: PersonTimeline; result: SimulationResult };
+  /** From SimulationRequest.locale. Missing = 'zh-CN'. */
+  locale?: Locale;
 }
 
 export interface RuleResult {

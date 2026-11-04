@@ -6,6 +6,10 @@ export interface PolicyChange {
   title: string;
   /** One or two sentences in Chinese, retaining English legal terms. */
   summary: string;
+  /** English translation of `title`; every entry has one. */
+  titleEn?: string;
+  /** English translation of `summary`; every entry has one. */
+  summaryEn?: string;
   sources: SourceRef[];
 }
 
