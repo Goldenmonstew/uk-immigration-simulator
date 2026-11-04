@@ -64,6 +64,13 @@
 - 现行规则下 Student / Graduate 时间可计入 10 年：LR 11.1(a) 只排除 Appendix Ukraine Scheme、Visitor、Short-term Student (English language)、Seasonal Worker 的许可（permission to stay 阶段同理见 LR 3.1）。不计入的期间见 LR 11.2。
 - LR 13.1：2027-03-26 之前申请为 B1，之后为 B2（HC 1691 APP LR1）。
 
+### SRC-006 Public funds
+
+- 版本：gov.uk `public_updated_at` 2025-04-09（该 HTML publication 无变更记录列表）。页面无段落编号，按小节锚点引用：
+  - `#benefits-open-to-new-claims`：属于 immigration public funds 的福利（含 Universal Credit、State Pension Credit、Personal Independence Payment、Carer's Allowance、Housing Benefit 等）。
+  - `#contributory-benefits-and-statutory-payments`：**不**属于 public funds 的缴费型福利和法定支付（New Style JSA、New Style ESA、Maternity Allowance、Statutory Sick Pay、Statutory Maternity Pay 等法定育儿支付）。
+- Earned Settlement 的"specified public funds"范围尚未确定：SRC-001 p18 说先沿用此定义，纳入范围与豁免在实施前另行公布。
+
 ### SRC-007 HC 1691
 
 - 结论：**属实**。二手来源的说法与原文一致，但需要两点精确化：(1) 相关条款本身 2026-03-26 已写入 Rules，只是条文按"申请日是否在 2027-03-26 及以后"区分 B1 / B2，所以对引擎而言生效日是 **申请日 ≥ 2027-03-26**；(2) 适用于多条路线，不只 Skilled Worker。
@@ -76,18 +83,6 @@
 
 - 版本：2025-11-11（HC 1333）；此前 2025-07-29（HC 836）。
 - 计算起点 CR 1.1；不算合法在场的期间 CR 2.1；任意 12 个月不超过 180 天 CR 3.1（2018-01-11 前许可的旧口径 CR 3.2，Long Residence 专用口径 CR 3.3，可豁免的缺席原因 CR 3.4）；连续居住中断 CR 4.1–4.4；随行家属缺席 CR 5.1。
-
-### SRC-014 / SRC-015
-
-- Appendix English Language 版本 2026-03-26（HC 1691），settlement 英语豁免 EL 1.1（65 岁及以上、未满 18、残障；EL 1.1(d)(iii)/(iv) 以 2027-03-26 为界）。
-- Appendix KOL UK 版本 2025-04-09（HC 733），豁免 KOL 1.1，满足方式 KOL 2.1。注意 HC 1691 修改的 "Appendix KoLL" 是另一个 Appendix（Knowledge of Language and Life），不是 KOL UK。
-
-### SRC-006 Public funds
-
-- 版本：gov.uk `public_updated_at` 2025-04-09（该 HTML publication 无变更记录列表）。页面无段落编号，按小节锚点引用：
-  - `#benefits-open-to-new-claims`：属于 immigration public funds 的福利（含 Universal Credit、State Pension Credit、Personal Independence Payment、Carer's Allowance、Housing Benefit 等）。
-  - `#contributory-benefits-and-statutory-payments`：**不**属于 public funds 的缴费型福利和法定支付（New Style JSA、New Style ESA、Maternity Allowance、Statutory Sick Pay、Statutory Maternity Pay 等法定育儿支付）。
-- Earned Settlement 的"specified public funds"范围尚未确定：SRC-001 p18 说先沿用此定义，纳入范围与豁免在实施前另行公布。
 
 ### SRC-009 / SRC-016 IAA
 
@@ -104,7 +99,12 @@
 ### SRC-012 / SRC-013 政策文件
 
 - SRC-012 White Paper PDF（web-optimised 版）80 页，物理页 = 页脚印刷页 + 3。¶257（物理 p71）：settlement 英语要求在多数路线从 B1 升至 B2；¶264（物理 p72）：settlement 标准合格期升至 10 年；¶265：British citizen 的非英籍家属保留 5 年；¶266–267：将就缩短合格期的积分方案另行咨询（即 SRC-013）。gov.uk 出版页另有 print-ready PDF（82 页）、可访问 HTML 版和 2026-01-20 追加的威尔士语版，未入库。
-- SRC-013 咨询文件 PDF 60 页，物理页 = 页脚印刷页 + 4。物理 p10：咨询的选项包括基准合格期 10 年、Skilled Worker 中 RQF 6 以下岗位 15 年等；物理 p8：care worker 群体 15 年基准的说法。gov.uk 咨询页的 `closing_date` 为 2026-02-13，2026-11-02 在同一页面追加了政府回应（SRC-001）。
+- SRC-013 咨询文件 PDF 60 页，物理页 = 页脚印刷页 + 4。物理 p10：咨询的选项包括基准合格期 10 年、Skilled Worker 中 RQF 6 以下岗位 15 年等；物理 p8：对经 Health and Care 签证入境的低技能、低薪群体另设 15 年基准的方案。gov.uk 咨询页的 `closing_date` 为 2026-02-13，2026-11-02 在同一页面追加了政府回应（SRC-001）。
+
+### SRC-014 / SRC-015
+
+- Appendix English Language 版本 2026-03-26（HC 1691），settlement 英语豁免 EL 1.1（65 岁及以上、未满 18、残障；EL 1.1(d)(iii)/(iv) 以 2027-03-26 为界）。
+- Appendix KOL UK 版本 2025-04-09（HC 733），豁免 KOL 1.1，满足方式 KOL 2.1。注意 HC 1691 修改的 "Appendix KoLL" 是另一个 Appendix（Knowledge of Language and Life），不是 KOL UK。
 
 ## 二手来源（仅交叉验证，2026-11-04 用于核对 SRC-001 要点与时间表）
 
@@ -117,22 +117,39 @@
 | Paragon Law: A Fairer Pathway to Settlement explained | https://www.paragonlaw.co.uk/resources/earned-settlement-uk-fairer-pathway-to-ilr |
 | DavidsonMorris: Skilled Worker minimum salary 2026 | https://www.davidsonmorris.com/skilled-worker-visa-minimum-salary |
 
-## 研究报告引用标记 → 来源映射（待 Opus 在任务 0.3 中逐条确认）
+## 研究报告引用标记 → 来源映射（任务 0.3 已逐条核对，2026-11-04）
 
-报告 `docs/research/2026-11-03-deep-research-report.md` 中的 30 个引用 ID 没有 URL。下面是按上下文推断的映射，确认后把每个 ID 换成 `SRC-xxx p<N>`：
+报告 `docs/research/2026-11-03-deep-research-report.md` 的 57 处引用共用 30 个研究工具内部 ID，报告里没有给出任何 URL，工具当时实际打开的页面已无法还原。因此本表的方法是：**逐条找出引用该 ID 的句子，把句子里的论点与本表登记的快照原文核对，填入能支撑该论点的确定位置**。"报告行"指该文件的行号。SRC-001 的 `p<N>` 是 PDF 物理页（见上方定位约定）。
 
-| 报告引用 ID | 推断来源 | 置信 |
-|---|---|---|
-| turn380943view0 | SRC-001 总述 / Foreword | 高 |
-| turn377160view0–3 | SRC-001 Ch.4 Residence（p21–25）、Ch.2 Contribution（p13–17）、Ch.3 Integration（p19–20） | 高 |
-| turn991133view0–4 | SRC-001 Table 1（p45）、Ch.2、案例 Individual A–D（p18） | 高 |
-| turn997970view0–3 | SRC-001 Ch.5 Dependants（p27–28）、Ch.8 Transitional（p40–44）、Public Funds（p17） | 高 |
-| turn444181view0 | SRC-001 Ch.1 Character（p10–12） | 高 |
-| turn868569view0/2 | SRC-001 Earnings / Long Residence 段落 | 中 |
-| turn218854search0/1 | SRC-002 / SRC-003（Hansard 下议院 / 上议院） | 中 |
-| turn218854search7/9 | SRC-010（GOV.UK Content API） | 高 |
-| turn218854search10 | SRC-011（legislation.gov.uk feeds） | 高 |
-| turn648176search3 | SRC-004（Appendix Skilled Worker）及 Immigration Rules 更新日期 2026-10-29 | 高 |
-| turn648176search4/5 | SRC-006（Public funds guidance） | 高 |
-| turn648176search6/7 | SRC-009（IAA） | 高 |
-| turn673303search0–3, 15 | SRC-008 各 Appendix（Scale-up、Global Talent、Innovator Founder、Long Residence、Skilled Worker settlement 段） | 中 |
+| 报告引用 ID | 报告行 | 被引用的论点（概括） | 确定来源与位置 | 核对说明 |
+|---|---|---|---|---|
+| turn380943view0 | 7, 17, 584, 614 | 2026-11-02 发布政府回应；默认 10 年、3/5/10/20 年路径；实施前另发技术指引与完整影响评估 | SRC-001 p1、p3（2026-11 / CP 1707）；p8–p9（最低要求、10 年起点、四原则）；p10（实施前发布技术与操作指引）；p46 Table 1；p54（完整影响评估随实施准备） | 一致。发布日 2026-11-02 另见 gov.uk 咨询页变更记录（SRC-013 页面） |
+| turn218854search0 | 7 | 下议院同日陈述：首批修改 2026-12 起提交、2027 年内实施 | SRC-002 HC Deb vol 792 col 593，`#contribution-912FA19F-4360-4FC7-A496-1DA8CA1436FE` | 内容一致；但出处是内政大臣回答 Home Affairs Committee 主席的问答，不在开场陈述中 |
+| turn218854search1 | 7 | 上议院陈述：首批规则预计 2027-01 生效，2027–2028 继续修改 | SRC-003 HL Deb vol 860 cols 1423–1424，`#contribution-0681E679-F8C2-48A1-9C1E-54A4705E8C2E` | 内容一致；出处是 Lord Collins 回答 Baroness Lister，不在复述的陈述文本中 |
+| turn377160view0 | 19, 95, 132, 535 | Long Residence 关闭；临时路线时间不再计入；core / high talent 路线归类；以个人时间线建模 | SRC-001 p23（Long Residence 关闭、可计入路线、注 9 core permission、注 10 high talent permission）、p24（不计入路线清单） | 一致 |
+| turn377160view1 | 61, 76, 126, 227, 516, 531, 614 | "best years" 是为照顾产假、照护、疾病；收入要求豁免；门槛随税档变化；settlement 收入判断与签证薪资判断不同 | SRC-001 p15（门槛与所得税档联动、儿童 / 65 岁及以上 / 身心状况豁免、收入波动的理由）、p16（best years 三种计法） | 一致 |
+| turn377160view2 | 126 | B2 英语一般规则也有年龄、健康豁免 | SRC-001 p21 | 一致（儿童、65 岁及以上、身心状况） |
+| turn377160view3 | 95 | 路线归类（core permission、high talent、排除路线） | SRC-001 p23 注 9、注 10；p24 | 一致 |
+| turn444181view0 | 31, 128 | 四个维度与不可被收入抵消的最低要求；成年人在英犯罪记录即拒绝，含判刑、罚款、社区刑、部分庭外处置；海外定罪 | SRC-001 p8–p9（最低要求、四原则）；p11–p12（Ch.1 Character，"no criminality" 在 p12） | 一致 |
+| turn991133view0 | 42 | 3/5/10/20 年路径的收入数字与"best years"（"总结表和正文"） | SRC-001 p46 Table 1；p15–p16 | 一致。注意 p15 写 £12,571 "至少三年"，p16 与 Table 1 写"7 年中 5 年"，原文自相矛盾，已在分析文档 §3.2 记录 |
+| turn991133view1 | 42 | 同上 | SRC-001 p15–p16；p46 Table 1 | 同上 |
+| turn868569view0 | 42 | 门槛与税档挂钩，应作动态参数 | SRC-001 p15 | 一致 |
+| turn868569view2 | 19 | Long Residence 关闭，Student / Graduate 不再自动累积 | SRC-001 p23–p24 | 一致 |
+| turn648176search3 | 65, 76, 531, 584 | Skilled Worker 现行一般门槛 £41,700 且须达 going rate，部分类别数字不同；签证与 settlement 用不同薪资判断；Immigration Rules 2026-10-29 有更新 | SRC-004 SW 4.2 Option A 与 SW 8.1（£41,700 + going rate），SW 4.2 Options B–K（其他数字）；页面头部 "Updated: 29 October 2026" | 门槛与段落一致。2026-10-29 是整个 Rules 手册的更新日；Appendix Skilled Worker 本身最近一次修改是 2026-10-08（HC 584） |
+| turn673303search15 | 65 | 现行 Skilled Worker 是 settlement 路线，通常要求 5 年连续合资格居留 | SRC-004 SW 21.1–SW 21.2（settlement 薪资 SW 24.3） | 一致 |
+| turn673303search0 | 95 | 路线归类"来自现行各 Appendix" | 无法确认 | 原指向可能是 Scale-up / Global Talent / Innovator Founder 等 Appendix，这些不属 MVP-0，未登记快照，无法核对其中段落。该句论点本身由 SRC-001 p23 注 9–10、p24 支撑 |
+| turn673303search1 | 95 | 同上 | 无法确认 | 同上 |
+| turn673303search3 | 95 | 同上 | 无法确认 | 同上 |
+| turn673303search2 | 535 | 现行 Long Residence 下多数合法 Student / Graduate 时间可计入 10 年 | SRC-005 LR 11.1(a)（settlement；permission to stay 阶段为 LR 3.1）；SRC-001 p23 对现行规则的描述 | 一致：LR 11.1(a) 只排除 Ukraine Scheme、Visitor、Short-term Student (English language)、Seasonal Worker |
+| turn648176search4 | 99, 549 | 属于 / 不属于 immigration public funds 的福利清单 | SRC-006 `#benefits-open-to-new-claims`、`#contributory-benefits-and-statutory-payments` | 一致（原文为 State Pension Credit） |
+| turn648176search5 | 99 | 同上 | SRC-006 同上两个小节 | 一致 |
+| turn991133view2 | 120, 516, 549 | 3/5/10 年路径要求申请前 5 年未用 specified public funds，否则 20 年；纳入范围与豁免实施前另定 | SRC-001 p18（另见 p46 Table 1） | 一致 |
+| turn997970view3 | 120, 516 | 同上（实施前进一步规定） | SRC-001 p18 | 一致。旧版映射写成 Ch.8 / p40–44，有误 |
+| turn997970view0 | 124, 466 | 家庭合并收入 £25,142，只能一方依赖另一方；官方示例中的合并收入家庭 | SRC-001 p17；p19 Individual C | 一致 |
+| turn997970view2 | 124, 132, 466, 614 | 伴侣同时入境可同时 settlement，后到者须自己完成合格期；官方示例中的后到伴侣 | SRC-001 p29；p31（Dependants: In Practice，Individual A、B） | 一致 |
+| turn991133view4 | 466 | 官方示例：social worker、British citizen 配偶、公共资金使用者、care worker 过渡案例 | SRC-001 p19（Contribution: In Practice，Individual A–D）；p45（Transitional Arrangements: In Practice，Individual A–C） | 一致 |
+| turn218854search7 | 363, 608 | Content API 无需认证、返回 JSON、有 `public_updated_at` / `content_id`、可用于保持同步；只覆盖 www.gov.uk、不含附件和搜索结果；beta；10 req/s | SRC-010 首页 `#what-you-can-do-with-this-api`、`#what-you-can-39-t-do-with-this-api`、`#beta-software`、`#authentication`、`#rate-limiting`；reference.html content item schema | 一致 |
+| turn218854search9 | 363 | 同上 | SRC-010 同上 | 一致 |
+| turn218854search10 | 377, 608 | legislation.gov.uk 提供新立法 Atom feeds，目标与出版同步 | SRC-011 `/new` 页（"simultaneously, or at least within 24 hours"；Legislation feeds） | 一致 |
+| turn648176search6 | 409 | immigration advice 指针对具体个人的意见；在经营过程中提供即受监管，不论是否营利 | SRC-009 §1.1、§1.3 | 论点一致。报告把原文 "in the course of business" 误译为"在 business course 中" |
+| turn648176search7 | 409 | IAA 有调查、执法、起诉权 | SRC-016（About us） | 一致 |
