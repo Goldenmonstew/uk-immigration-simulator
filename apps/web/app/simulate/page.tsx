@@ -4,9 +4,17 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useReducer, useRef, useState } from 'react';
 import type { FormEvent, ReactNode } from 'react';
-import { publicFundsBenefits } from '@uk-immigration/policy-data';
+import {
+  asylumSupportRepaymentNames,
+  breachTypeNames,
+  publicFundsBenefits,
+  resettlementSchemeNames,
+  ROUTE_GROUPS,
+  sustainedActivityNames,
+} from '@uk-immigration/policy-data';
 import type {
   CefrLevel,
+  ImmigrationBreach,
   ImmigrationEpisode,
   PersonTimeline,
   Relationship,
@@ -122,7 +130,7 @@ export default function SimulatePage() {
     router.push('/result');
   };
   const screen = (key: ScreeningKey, answer: 'yes' | 'no') => {
-    if (answer === 'yes' && key !== 'debt') {
+    if (answer === 'yes' && key === 'criminality') {
       finish(draftReducer(draft, { type: 'screening', key, answer }));
     } else dispatch({ type: 'screening', key, answer });
   };
@@ -156,16 +164,24 @@ export default function SimulatePage() {
         i === index ? { ...episode, ...patch } : episode,
       ),
     });
+  const updateBreach = (index: number, patch: Partial<ImmigrationBreach>) =>
+    update({
+      immigrationBreaches: timeline.immigrationBreaches.map((breach, i) =>
+        i === index ? { ...breach, ...patch } : breach,
+      ),
+    });
   const dateField = (
     id: string,
     label: string,
     value: string,
     onChange: (value: string) => void,
+    required = false,
   ) => (
     <Field id={id} label={label} error={errors[id]}>
       <input
         {...fieldProps(id)}
         type="date"
+        required={required}
         value={value}
         onChange={(event) => onChange(event.target.value)}
       />
@@ -383,6 +399,106 @@ export default function SimulatePage() {
                       </div>
                     </fieldset>
                   ))}
+                  {active.screening.breach === 'yes' && (
+                    <section aria-labelledby="breaches-heading">
+                      <h2 id="breaches-heading">{t('breaches.title')}</h2>
+                      {timeline.immigrationBreaches.map((breach, index) => (
+                        <fieldset key={index} className={styles.entry}>
+                          <legend>
+                            {t('breaches.item')} {index + 1}
+                          </legend>
+                          <Field
+                            id={`breach-${index}-type`}
+                            label={t('breaches.type')}
+                          >
+                            <select
+                              id={`breach-${index}-type`}
+                              value={breach.type}
+                              onChange={(event) =>
+                                updateBreach(index, {
+                                  type: event.target
+                                    .value as ImmigrationBreach['type'],
+                                  article31: undefined,
+                                })
+                              }
+                            >
+                              {Object.entries(breachTypeNames).map(
+                                ([type, name]) => (
+                                  <option key={type} value={type}>
+                                    {name[locale]}
+                                  </option>
+                                ),
+                              )}
+                            </select>
+                          </Field>
+                          {dateField(
+                            `breach-${index}-date`,
+                            t('breaches.date'),
+                            breach.date,
+                            (date) => updateBreach(index, { date }),
+                            true,
+                          )}
+                          {breach.type === 'ILLEGAL_ENTRY' && (
+                            <Field
+                              id={`breach-${index}-article31`}
+                              label={t('breaches.article31')}
+                            >
+                              <select
+                                id={`breach-${index}-article31`}
+                                value={
+                                  breach.article31 === undefined
+                                    ? ''
+                                    : breach.article31
+                                      ? 'yes'
+                                      : 'no'
+                                }
+                                onChange={(event) =>
+                                  updateBreach(index, {
+                                    article31:
+                                      event.target.value === ''
+                                        ? undefined
+                                        : event.target.value === 'yes',
+                                  })
+                                }
+                              >
+                                <option value="">{t('form.unknown')}</option>
+                                <option value="yes">{t('form.yes')}</option>
+                                <option value="no">{t('form.no')}</option>
+                              </select>
+                            </Field>
+                          )}
+                          {remove(`${t('breaches.item')} ${index + 1}`, () =>
+                            update({
+                              immigrationBreaches:
+                                timeline.immigrationBreaches.filter(
+                                  (_, i) => i !== index,
+                                ),
+                            }),
+                          )}
+                        </fieldset>
+                      ))}
+                      {errors.breaches && (
+                        <p id="breaches-error" className={styles.error}>
+                          {t(errors.breaches)}
+                        </p>
+                      )}
+                      <button
+                        {...fieldProps('breaches')}
+                        type="button"
+                        className={site.secondary}
+                        onClick={() =>
+                          update({
+                            immigrationBreaches: [
+                              ...timeline.immigrationBreaches,
+                              { type: 'OVERSTAYING', date: '' },
+                            ],
+                          })
+                        }
+                      >
+                        {t('breaches.add')}
+                      </button>
+                    </section>
+                  )}
                 </>
               )}
 
@@ -412,6 +528,8 @@ export default function SimulatePage() {
                                 socCode: undefined,
                                 salary: undefined,
                                 immigrationSalaryList: undefined,
+                                resettlementScheme: undefined,
+                                sustainedActivity: undefined,
                               })
                             }
                           >
@@ -477,6 +595,58 @@ export default function SimulatePage() {
                               <option value="PARENT">
                                 {t('episodes.childDependant')}
                               </option>
+                            </select>
+                          </Field>
+                        )}
+                        {episode.route === 'SAFE_AND_LEGAL' && (
+                          <Field
+                            id={`${prefix}-resettlement`}
+                            label={t('episodes.resettlementScheme')}
+                          >
+                            <select
+                              id={`${prefix}-resettlement`}
+                              value={episode.resettlementScheme ?? ''}
+                              onChange={(event) =>
+                                updateEpisode(index, {
+                                  resettlementScheme: (event.target.value ||
+                                    undefined) as ImmigrationEpisode['resettlementScheme'],
+                                })
+                              }
+                            >
+                              <option value="">{t('form.unknown')}</option>
+                              {Object.entries(resettlementSchemeNames).map(
+                                ([value, name]) => (
+                                  <option key={value} value={value}>
+                                    {name[locale]}
+                                  </option>
+                                ),
+                              )}
+                            </select>
+                          </Field>
+                        )}
+                        {episode.route === 'PROTECTION_WORK_AND_STUDY' && (
+                          <Field
+                            id={`${prefix}-activity`}
+                            label={t('episodes.sustainedActivity')}
+                          >
+                            <select
+                              id={`${prefix}-activity`}
+                              value={episode.sustainedActivity ?? ''}
+                              onChange={(event) =>
+                                updateEpisode(index, {
+                                  sustainedActivity: (event.target.value ||
+                                    undefined) as ImmigrationEpisode['sustainedActivity'],
+                                })
+                              }
+                            >
+                              <option value="">{t('form.unknown')}</option>
+                              {Object.entries(sustainedActivityNames).map(
+                                ([value, name]) => (
+                                  <option key={value} value={value}>
+                                    {name[locale]}
+                                  </option>
+                                ),
+                              )}
                             </select>
                           </Field>
                         )}
@@ -820,6 +990,38 @@ export default function SimulatePage() {
                   >
                     {t('benefits.add')}
                   </button>
+                  {timeline.episodes.some((episode) =>
+                    ROUTE_GROUPS[episode.route].some(
+                      (group) => group === 'PROTECTION',
+                    ),
+                  ) && (
+                    <div className={styles.followUp}>
+                      <Field
+                        id="asylum-support"
+                        label={t('benefits.asylumSupportRepayment')}
+                      >
+                        <select
+                          id="asylum-support"
+                          value={timeline.asylumSupportRepayment ?? ''}
+                          onChange={(event) =>
+                            update({
+                              asylumSupportRepayment: (event.target.value ||
+                                undefined) as PersonTimeline['asylumSupportRepayment'],
+                            })
+                          }
+                        >
+                          <option value="">{t('form.unknown')}</option>
+                          {Object.entries(asylumSupportRepaymentNames).map(
+                            ([value, name]) => (
+                              <option key={value} value={value}>
+                                {name[locale]}
+                              </option>
+                            ),
+                          )}
+                        </select>
+                      </Field>
+                    </div>
+                  )}
                 </>
               )}
 

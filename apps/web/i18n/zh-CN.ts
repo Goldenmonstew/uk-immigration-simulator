@@ -77,6 +77,8 @@ export const zhCN = {
     '改革栏假设该规则集在模拟日期适用；标签“已公布、未生效”不代表已经实施。',
   'result.title': '你的路径模拟',
   'result.intro': '以下展示可能相关的规则与信息缺口，请连同来源和假设阅读。',
+  'result.protectionNotice':
+    '保护类路线的结论只反映已公布的政策框架；Article 31 保障、路线推出前已有时间是否计入、偿还与 public funds 细则等尚未公布，请连同待定事项阅读。',
   'result.loading': '正在读取本机情景…',
   'result.empty': '还没有可显示的模拟结果。请先填写问卷。',
   'result.edit': '修改输入',
@@ -192,15 +194,24 @@ export const zhCN = {
   'basic.nationalityHint':
     '输入三位英文字母国家代码（ISO 3166-1 alpha-3），例如 CHN。',
   'screening.hint':
-    '只需回答是或否，无需提供事件细节。前三项（犯罪记录、移民违规、庇护或人权经历）任一回答为“是”时，将直接显示专业建议提示。政府债务回答为“是”时仍继续问卷，由规则引擎评估。',
+    '只有犯罪记录回答为“是”会停止问卷并显示受监管建议提示。移民违规请填写记录，由规则引擎结合路线评估；政府债务也交由引擎评估。',
   'screening.criminality': '是否有英国或海外犯罪记录？',
   'screening.breach': '是否有移民违规经历？',
   'screening.breachHint':
-    '包括逾期停留、违反签证条件、欺骗、妨碍移民管制或非法入境。',
+    '包括逾期停留、违反签证条件、欺骗、妨碍移民管制或非法入境。非保护类路线上的成年后非法入境仍会由引擎给出“需要受监管建议”。',
   'screening.debt': '是否有未清偿的政府债务？',
-  'screening.protection': '是否曾寻求庇护或走人权类路线？',
   'screening.message':
-    '你提供的情况涉及需要专业评估的事项。本模拟器在此停止自动判断，不再收集后续信息。',
+    '你申报了犯罪记录，需要受监管的专业评估。本模拟器在此停止自动判断，不再收集后续信息。',
+  'breaches.title': '违规记录',
+  'breaches.item': '违规记录',
+  'breaches.add': '添加违规记录',
+  'breaches.type': '违规类型',
+  'breaches.date': '发生日期（必填）',
+  'breaches.article31': '是否认为自己受 Refugee Convention Article 31 保护？',
+  'breaches.required': '请添加至少一条违规记录，或将移民违规经历改为“否”。',
+  'episodes.resettlementScheme': '安置 / 担保路线',
+  'episodes.sustainedActivity': '在该路线上的持续活动',
+  'benefits.asylumSupportRepayment': '是否需要偿还 asylum support 费用？',
   'episodes.hint': '逐段填写获批的签证有效期。列表为空表示没有签证历史。',
   'episodes.item': '签证片段',
   'episodes.add': '添加签证片段',

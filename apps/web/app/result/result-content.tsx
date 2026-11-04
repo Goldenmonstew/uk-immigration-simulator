@@ -118,7 +118,7 @@ export default function ResultPage() {
             </p>
           )}
           {draft && <ShareLink draft={draft} />}
-          <ResultView result={result} mock={mock} />
+          <ResultView result={result} mock={mock} draft={draft} />
           {principalResult && <PrincipalAssessment result={principalResult} />}
           <div className={`${styles.actions} ${styles.noPrint}`}>
             <button

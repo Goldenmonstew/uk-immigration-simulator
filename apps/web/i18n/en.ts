@@ -178,7 +178,7 @@ export const en: Record<keyof typeof zhCN, string> = {
   'outcome.REQUIRES_REGULATED_REVIEW.description':
     'A regulated professional needs to review this scenario and its evidence.',
   'screening.hint':
-    'Answer yes or no; no event details are needed. A yes to any of the first three questions (criminal records, immigration breaches, or asylum or human-rights history) takes you directly to regulated advice. A yes to government debt continues the questionnaire for assessment by the rules engine.',
+    'Only a yes to criminal records stops the questionnaire and directs you to regulated advice. Enter immigration breach records for the rules engine to assess alongside your route. Government debt is also assessed by the engine.',
   'benefits.publicFunds': 'Public funds',
   'benefits.notPublicFunds': 'Not public funds',
   'site.language': 'Language',
@@ -226,12 +226,25 @@ export const en: Record<keyof typeof zhCN, string> = {
     'Do you have a criminal record in the UK or overseas?',
   'screening.breach': 'Have you breached immigration rules?',
   'screening.breachHint':
-    'This includes overstaying, breaching visa conditions, deception, obstructing immigration control or illegal entry.',
+    'This includes overstaying, breaching visa conditions, deception, obstructing immigration control or illegal entry. Illegal entry as an adult on a non-protection route still leads to regulated review by the engine.',
   'screening.debt': 'Do you have any outstanding government debt?',
-  'screening.protection':
-    'Have you sought asylum or used a human rights route?',
   'screening.message':
-    'Your circumstances need professional assessment. This simulator stops the automated assessment here and does not collect further information.',
+    'You have reported a criminal record, which needs regulated professional assessment. This simulator stops the automated assessment here and does not collect further information.',
+  'breaches.title': 'Immigration breach records',
+  'breaches.item': 'Breach record',
+  'breaches.add': 'Add a breach record',
+  'breaches.type': 'Breach type',
+  'breaches.date': 'Date of the breach (required)',
+  'breaches.article31':
+    'Do you consider yourself protected by Refugee Convention Article 31?',
+  'breaches.required':
+    'Add at least one breach record, or answer no to immigration breaches.',
+  'episodes.resettlementScheme': 'Resettlement or sponsorship route',
+  'episodes.sustainedActivity': 'Sustained activity on this route',
+  'benefits.asylumSupportRepayment':
+    'Do you need to repay asylum support costs?',
+  'result.protectionNotice':
+    'Protection route conclusions reflect only the published policy framework. Article 31 safeguards, whether time before the routes launch will count, and repayment and public funds details have not yet been published. Read these conclusions alongside the pending details.',
   'episodes.hint':
     'Enter the validity dates for each visa granted to you. Leave the list empty if you have no visa history.',
   'episodes.item': 'Visa period',

@@ -1,3 +1,8 @@
+import {
+  asylumSupportRepaymentNames,
+  resettlementSchemeNames,
+  sustainedActivityNames,
+} from '@uk-immigration/policy-data';
 import { type Draft, screeningKeys, steps } from './questionnaire';
 
 export function encodeDraft(draft: Draft): string {
@@ -80,9 +85,25 @@ function validTimeline(value: unknown): boolean {
     ) ||
     !(timeline.episodes as Record<string, unknown>[]).every(
       (episode) =>
-        episode.immigrationSalaryList === undefined ||
-        typeof episode.immigrationSalaryList === 'boolean',
+        (episode.immigrationSalaryList === undefined ||
+          typeof episode.immigrationSalaryList === 'boolean') &&
+        (episode.resettlementScheme === undefined ||
+          Object.keys(resettlementSchemeNames).includes(
+            episode.resettlementScheme as string,
+          )) &&
+        (episode.sustainedActivity === undefined ||
+          Object.keys(sustainedActivityNames).includes(
+            episode.sustainedActivity as string,
+          )),
     ) ||
+    !(timeline.immigrationBreaches as Record<string, unknown>[]).every(
+      (breach) =>
+        breach.article31 === undefined || typeof breach.article31 === 'boolean',
+    ) ||
+    (timeline.asylumSupportRepayment !== undefined &&
+      !Object.keys(asylumSupportRepaymentNames).includes(
+        timeline.asylumSupportRepayment as string,
+      )) ||
     !['english', 'lifeInTheUk', 'settled'].every(
       (key) =>
         timeline[key] === undefined ||
