@@ -1,16 +1,14 @@
-import type {
-  PersonTimeline,
-  RuleOutcome,
-  SettlementAssessment,
+import {
+  familyFiveYearStart,
+  familyIncomeThreshold,
+  type PersonTimeline,
+  type RuleOutcome,
+  type SettlementAssessment,
 } from '@uk-immigration/engine';
 import {
   type CefrLevel,
   earnedSettlement2026_11,
 } from '@uk-immigration/policy-data';
-import {
-  familyFiveYearStart,
-  familyIncomeThreshold,
-} from '../../../packages/engine/src/rules/current-law';
 import { type Draft, draftReducer, visibleIncomeYears } from './questionnaire';
 
 export const focusControls = {

@@ -48,7 +48,7 @@ vi.mock('@uk-immigration/policy-data', async (importOriginal) => {
 vi.mock('@uk-immigration/engine', async (importOriginal) => {
   const actual =
     await importOriginal<typeof import('@uk-immigration/engine')>();
-  const { withRuleSet } = await import('../../../packages/engine/src/rule');
+  const { withRuleSet } = await import('@uk-immigration/engine');
   const ruleSets = {
     ...actual.RULE_SETS,
     [FUTURE]: {

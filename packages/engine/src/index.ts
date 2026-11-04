@@ -14,3 +14,8 @@ export type {
 } from '@uk-immigration/policy-data';
 export { evaluate, RULE_SETS } from './evaluate';
 export { RULES } from './rules';
+export { withRuleSet } from './rule';
+export {
+  familyFiveYearStart,
+  familyIncomeThreshold,
+} from './rules/current-law';
