@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'vitest';
 import {
   clEnglish,
+  clKol,
   clScope,
   clSwResidence5Y,
   clSwSalary,
@@ -132,5 +133,19 @@ describe('CL-ENGLISH', () => {
     expect(
       run(clEnglish, { ...b1, dateOfBirth: '1962-03-27' }, '2027-03-26').status,
     ).toBe('FAIL');
+  });
+});
+
+describe('CL-KOL', () => {
+  test('passed or exempt passes; missing is unknown; 65 is exempt, 64 is not', () => {
+    expect(run(clKol).status).toBe('PASS');
+    expect(run(clKol, { lifeInTheUk: { exempt: true } }).status).toBe('PASS');
+    expect(run(clKol, { lifeInTheUk: undefined }).status).toBe('UNKNOWN');
+    expect(
+      run(clKol, { lifeInTheUk: undefined, dateOfBirth: '1961-11-04' }).status,
+    ).toBe('PASS');
+    expect(
+      run(clKol, { lifeInTheUk: undefined, dateOfBirth: '1961-11-05' }).status,
+    ).toBe('UNKNOWN');
   });
 });
