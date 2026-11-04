@@ -160,6 +160,8 @@ const esBaseAssumption = (L: Lang) =>
     'Earned Settlement has been announced but is not yet in force; it is assessed as if it applied on the date of application. The rules are based on the government response (SRC-001), not on Immigration Rules in force (PD-001). The first rule changes are expected to be laid from December 2026 and take effect in January 2027, with further changes in 2027–2028 (SRC-002 col 593; SRC-003 cols 1423–1424); the actual dates will be set by the Statements of Changes (PD-003).',
   );
 
+// Table 1 (p46), plus asylum support repayment, a minimum requirement for
+// every applicant (p8 note 1).
 const ES_MANDATORY = [
   'ES-CRIMINALITY',
   'ES-DEBT',
@@ -167,6 +169,7 @@ const ES_MANDATORY = [
   'ES-KOL',
   'ES-ROUTE-GROUP',
   'ES-RESIDENCE',
+  'ES-ASYLUM-SUPPORT',
 ];
 
 // A dependant's one pathway: the mandatory requirements (with the exemptions
@@ -187,24 +190,30 @@ const ES_DEPENDANT_RULES = [
 const ES_PROTECTION_ONLY = [
   'ES-PROTECTION-PATHWAY',
   'ES-PROTECTION-CONTRIBUTION',
-  'ES-ASYLUM-SUPPORT',
 ];
 
 /**
+ * Table 2 lists asylum support repayment for Protection Work and Study and
+ * Core Protection only, not for Safe and Legal (PD-068).
+ */
+const protectionMandatory = (route: Route) =>
+  route === 'SAFE_AND_LEGAL'
+    ? ES_MANDATORY.filter((id) => id !== 'ES-ASYLUM-SUPPORT')
+    : ES_MANDATORY;
+
+/**
  * What a protection route runs: no earnings, British connection, public
- * service or transitional rules (Table 2). Table 2 lists asylum support
- * repayment for Protection Work and Study and Core Protection only.
+ * service or transitional rules (Table 2).
  */
 function protectionRuleIds(route: Route): string[] {
   return [
-    ...ES_MANDATORY,
+    ...protectionMandatory(route),
     'ES-BREACH',
     'ES-PUBLIC-FUNDS',
     'ES-PROTECTION-PATHWAY',
     ...(route === 'PROTECTION_WORK_AND_STUDY'
       ? ['ES-PROTECTION-CONTRIBUTION']
       : []),
-    ...(route === 'SAFE_AND_LEGAL' ? [] : ['ES-ASYLUM-SUPPORT']),
   ];
 }
 
@@ -219,9 +228,8 @@ function protectionCandidates(
   ctx: RuleContext,
 ): Candidate[] {
   const mandatory = [
-    ...pick(...ES_MANDATORY),
+    ...pick(...protectionMandatory(route)),
     ...pick('ES-PROTECTION-PATHWAY'),
-    ...(route === 'SAFE_AND_LEGAL' ? [] : pick('ES-ASYLUM-SUPPORT')),
   ];
   const extra = illegalEntryExtraYears(ctx.timeline);
   const base = protectionBaseYears(route) + extra;

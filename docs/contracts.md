@@ -100,7 +100,7 @@ What-if、前向推算的结构化假设，都等用到时再加字段，不提�
 
 规则只回答"这一条是否满足"，聚合把它们组合成结论。每个规则集先列出**候选路径**：一组必须全部 `PASS` 的规则 + 年限 + 居留起点。
 
-- Earned Settlement（SRC-001 p46 Table 1）：强制要求 = `ES-CRIMINALITY`、`ES-DEBT`、`ES-ENGLISH-B2`、`ES-KOL`、`ES-ROUTE-GROUP`、`ES-RESIDENCE`。
+- Earned Settlement（SRC-001 p46 Table 1）：强制要求 = `ES-CRIMINALITY`、`ES-DEBT`、`ES-ENGLISH-B2`、`ES-KOL`、`ES-ROUTE-GROUP`、`ES-RESIDENCE`，以及 `ES-ASYLUM-SUPPORT`（p8 注 1 列为所有申请人的最低要求；4.5 起非保护类路线与 dependant 也运行，保护类路线按 §11.4）。
   - 3 年：强制 + `ES-BREACH` + `ES-PUBLIC-FUNDS` + `ES-EARNINGS-3Y`
   - 5 年：强制 + `ES-BREACH` + `ES-PUBLIC-FUNDS` + 以下任一：`ES-EARNINGS-5Y`、`ES-BRITISH-CONNECTION`、`ES-PUBLIC-SERVICE`、`ES-TRANSITIONAL-CARE-WORKER`、`ES-TRANSITIONAL-HEALTH-EDUCATION`（2.5）
   - 10 年：强制 + `ES-BREACH` + `ES-PUBLIC-FUNDS` + `ES-EARNINGS-10Y`
@@ -259,7 +259,7 @@ SimulationRequest.locale ──► RuleContext.locale ──► 规则 check：e
 | `ImmigrationEpisode.resettlementScheme?` | `'UK_RESETTLEMENT_SCHEME'` \| `'OTHER_DESIGNATED'` | 经哪条 designated Safe and Legal Route 入境（p37、p47）。`OTHER_DESIGNATED` = 原文"specified resettlement and sponsorship routes"，清单未公布（PD-033），按用户申报处理 | 申请日当天的 `SAFE_AND_LEGAL` 片段 |
 | `ImmigrationEpisode.sustainedActivity?` | `'WORK'` \| `'EDUCATION'` \| `'TRAINING'` | 转入 Protection Work and Study 所依据的持续活动（p38、p47） | 申请日当天的 `PROTECTION_WORK_AND_STUDY` 片段 |
 | `ImmigrationBreach.article31?` | `boolean` | 只对 `ILLEGAL_ENTRY` 有意义：用户声称受 Refugee Convention Article 31 保护（p39、p48）。缺省 = 未声称 | 保护类路线上的成年后非法入境 |
-| `PersonTimeline.asylumSupportRepayment?` | `'NOT_REQUIRED'` \| `'REPAID'` \| `'ON_PLAN'` \| `'OUTSTANDING'` | asylum support 偿还（p8 注 1、p39、p47）。`NOT_REQUIRED` = 未领取或无需偿还；`REPAID` = 已全额偿还；`ON_PLAN` = 按约定还款计划履行中；`OUTSTANDING` = 欠款且未还、未按计划 | 当前为 `PROTECTION_WORK_AND_STUDY` 或 `CORE_PROTECTION` |
+| `PersonTimeline.asylumSupportRepayment?` | `'NOT_REQUIRED'` \| `'REPAID'` \| `'ON_PLAN'` \| `'OUTSTANDING'` | asylum support 偿还（p8 注 1、p39、p47）。`NOT_REQUIRED` = 未领取或无需偿还；`REPAID` = 已全额偿还；`ON_PLAN` = 按约定还款计划履行中；`OUTSTANDING` = 欠款且未还、未按计划 | 当前为 `PROTECTION_WORK_AND_STUDY` 或 `CORE_PROTECTION`；4.5 起有值时任何路线都读取（Safe and Legal 除外，§11.3） |
 
 - 缺省一律 = 用户没提供：读取它的规则输出不带 PD 的 `UNKNOWN`（结论多为 `INSUFFICIENT_INFORMATION`），`article31` 除外（缺省 = 未声称，按加 10 年处理）。
 - 显示名（`policy-data` 导出）：`resettlementSchemeNames`、`sustainedActivityNames`、`asylumSupportRepaymentNames`，形状同 `breachTypeNames`。
@@ -282,13 +282,13 @@ SimulationRequest.locale ──► RuleContext.locale ──► 规则 check：e
 
 ### 11.3 规则
 
-保护类路线的 Earned Settlement 栏只运行：强制要求（`ES-CRIMINALITY`、`ES-DEBT`、`ES-ENGLISH-B2`、`ES-KOL`、`ES-ROUTE-GROUP`、`ES-RESIDENCE`）+ `ES-BREACH` + `ES-PUBLIC-FUNDS` + 下面三条新规则（按路线取用）；`ES-EARNINGS-*`、`ES-BRITISH-CONNECTION`、`ES-PUBLIC-SERVICE`、过渡安排规则不运行、不出现在 `rules[]`。非保护类路线不运行三条新规则，`rules[]` 不变。
+保护类路线的 Earned Settlement 栏只运行：强制要求（`ES-CRIMINALITY`、`ES-DEBT`、`ES-ENGLISH-B2`、`ES-KOL`、`ES-ROUTE-GROUP`、`ES-RESIDENCE`）+ `ES-BREACH` + `ES-PUBLIC-FUNDS` + 下面三条新规则（按路线取用）；`ES-EARNINGS-*`、`ES-BRITISH-CONNECTION`、`ES-PUBLIC-SERVICE`、过渡安排规则不运行、不出现在 `rules[]`。非保护类路线不运行 `ES-PROTECTION-PATHWAY` 与 `ES-PROTECTION-CONTRIBUTION`；`ES-ASYLUM-SUPPORT` 自 4.5 起作为强制要求运行（§7）。
 
 | 规则 | 适用 | 判断 |
 |---|---|---|
 | `ES-PROTECTION-PATHWAY`（新） | 三条保护类路线 | 给出基础年限：Safe and Legal 5、PWS 10、Core Protection 20。成年后 `ILLEGAL_ENTRY`（`article31 !== true`）→ 年限 +10，解释点名 Table 2 对应行（p48）。全部成年后非法入境都 `article31: true` → `UNKNOWN`（PD-032），解释同时给出不适用 Article 31 时的年限与日期。Safe and Legal：`resettlementScheme` 缺省 → `UNKNOWN`；`OTHER_DESIGNATED` → `PASS` + 假设"指定路线清单未公布，按你的申报处理；若为 Community Sponsorship、Mandate Resettlement Scheme 或其前身则属 Legacy Safe and Legal Routes（框架外）"（PD-033）。PWS / Core Protection：`PASS` + 假设"两条路线尚未推出，按所填片段日期计算；推出前已有时间是否及如何计入未定"（PD-029、PD-034、PD-043）。 |
 | `ES-PROTECTION-CONTRIBUTION`（新） | 仅 PWS | `sustainedActivity = 'WORK'`：数 PWS 合格期（`ES-RESIDENCE` 的起点）内**完整的** tax year——起点在合格期起点当天或之后、且在申请日所在 tax year 之前结束；起点所在的那个 tax year 不算（除非合格期恰从 4 月 6 日开始），因为年收入无法拆出转入前的部分。年收入 ≥ £12,571 的年数 ≥ 3 → `PASS`；不足但合格期尚未满 10 年（+10）→ `UNKNOWN`（PD-030，解释写"已有 n 年达标，需 3 年"）；已满仍不足 → `FAIL`。观察窗口原文未定义，按"合格期内任意 3 年"建模并在假设里声明（PD-030）。`EDUCATION` / `TRAINING` → `UNKNOWN`（PD-030）；缺省 → `UNKNOWN`（不带 PD）。 |
-| `ES-ASYLUM-SUPPORT`（新） | PWS、Core Protection | `NOT_REQUIRED` / `REPAID` / `ON_PLAN` → `PASS`；`OUTSTANDING` → `FAIL`；缺省 → `UNKNOWN`（不带 PD）。Safe and Legal 不运行（Table 2 未列，新 PD）。 |
+| `ES-ASYLUM-SUPPORT`（新） | PWS、Core Protection；4.5 起也用于非保护类路线 | `NOT_REQUIRED` / `REPAID` / `ON_PLAN` → `PASS`；`OUTSTANDING` → `FAIL`（任何路线）；缺省 → PWS / Core Protection 为 `UNKNOWN`（不带 PD），其他路线 `PASS`，解释"未申报，按未领取 asylum support 处理"（p8 注 1）。Safe and Legal 不运行（Table 2 未列，PD-068）。 |
 | `ES-ENGLISH-B2`（改） | — | `resettlementScheme = 'UK_RESETTLEMENT_SCHEME'` 的 Safe and Legal → A2（`ukrsEnglishLevel`）；其他一律 B2。推导出的 Legacy UKRS → `UNKNOWN`（PD-045）。解释写明适用等级。规则 ID 不变，标题改为等级中性（"定居英语要求（B2；UKRS 难民 A2）"）。 |
 | `ES-KOL`（改） | — | UKRS 的 Safe and Legal → `PASS`（当前免考），假设"A2 版考试推出后可能改变"（PD-021）；其他不变。 |
 | `ES-PUBLIC-FUNDS`（改） | — | Safe and Legal → `PASS`（豁免，p37、p47）；Core Protection → `PASS`（20 年路径本身不要求，p39）；PWS → 照常评估，用过则只剩 20 年兜底（p39）。弱势群体保障与可不计入的福利未定 → 假设里提 PD-031。 |
