@@ -38,14 +38,16 @@
 | 32 | 合并 2.10 web 收尾（astra，三个 commit）：locale 透传与按语言缓存、删手写英文映射改读引擎 titleEn / 变更日志双语、Skilled Worker 片段 ISL 三态与主申请人"已定居"输入、站点外壳渲染语言标题；Fable 复跑 gate（web 87）并用浏览器走查（English 整页刷新标题为英文、结果 / What-if / 政策页英文全部来自引擎与数据、主申请人子流程填已定居 2024-04-06 后伴侣现行法律栏按 SW 39.1(b) 判为可能符合、ISL 字段出现在 SW 主申请人片段、375px）；astra 首次启动遇模型容量满，重试成功；main 上 gate 全过（policy-data 16 / engine 264 / web 87）。Phase 2 完成 | apps/web/**, docs/tasks/reports/2.10-web-locale-wrapup.md, docs/tasks/phase-2-plan.md |
 | 33 | 首次部署：用户授权 wrangler OAuth（Fable 代点 Authorize），`pages project create --force` 建 uk-immigration-simulator，直传 49 个文件到 https://uk-immigration-simulator.pages.dev（浏览器核对首页、/simulate、/policy/ 归一、404、/whatif），在后台绑定自定义域名 wanruncong.uk（CNAME @ 自动添加，几分钟后状态 Active / SSL enabled；check-host.net 从 40 余个节点访问 https://wanruncong.uk/ 全部 200）；本机当前网络（Tailscale / 10.239 DNS）对该域名 DNS 负缓存且 TLS 被重置，不能作为验收依据；deploy.md 补 `--force` 说明与项目名 | docs/deploy.md, PROGRESS.md |
 | 34 | 建 GitHub 远端：私有仓库 https://github.com/Goldenmonstew/uk-immigration-simulator（gh，SSH），main 已推送；仓库变量 CF_PAGES_PROJECT 已设；首个 CI run 触发，Deploy run 因尚无 Cloudflare secrets 先取消 | PROGRESS.md |
+| 35 | 自动部署打通：仓库 secrets CLOUDFLARE_ACCOUNT_ID（Fable 设）与 CLOUDFLARE_API_TOKEN（用户创建 Pages: Edit、一年期 token 并自行粘贴），重跑 Deploy 工作流成功（59 秒，上传并发布到生产）；用户曾把 token 贴进对话，建议用后撤销重建 | PROGRESS.md |
 
 ### 当前状态
 
 - **Phase 2 全部完成（2026-11-04）**：2.1–2.10 验收合并到 main，`pnpm lint && pnpm typecheck && pnpm test && pnpm build` 全过（policy-data 16、engine 264、web 87）；`.worktrees/` 为空，没有在跑的任务。完成状态与 Phase 3 候选见 `docs/tasks/phase-2-plan.md` §6。
 - 产品现状：25 条规则（15 条 Earned Settlement、10 条现行法律）、16 个 fixtures、家庭建模（主申请人子流程、SW 39.1(a)/(b)、子女）、going rate 查表、What-if 实验室、分享链接、中英文界面与引擎双语输出、/policy 政策依据页、Cloudflare Pages 部署脚本与文档。
 - 部署（2026-11-04）：Pages 项目 `uk-immigration-simulator` 已建并完成首次直传（https://uk-immigration-simulator.pages.dev），自定义域名 wanruncong.uk 已绑定并对外可访问（外部多节点 200；用户决定不等 IAA 复核先绑）；本机 wrangler 已 OAuth 登录（可在 Cloudflare My Profile → Connected Applications 撤销）。之后每次改动合并到 main 后跑 `pnpm deploy:pages`（需 `CF_PAGES_PROJECT=uk-immigration-simulator`）。
-- GitHub：远端 `origin` = https://github.com/Goldenmonstew/uk-immigration-simulator（私有）。自动部署还差两个 secrets：`CLOUDFLARE_API_TOKEN`（Cloudflare 创建，Pages 编辑权限）与 `CLOUDFLARE_ACCOUNT_ID`（2c219ebc580f20579d3978ceaba4a413），用户在仓库 Settings → Secrets 添加后，push main 即自动部署；变量 `CF_PAGES_PROJECT` 已设。
-- 仍留给用户：添加上述两个 secrets；安排 IAA 措辞复核。
+- GitHub：远端 `origin` = https://github.com/Goldenmonstew/uk-immigration-simulator（私有）；secrets `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ACCOUNT_ID` 与变量 `CF_PAGES_PROJECT` 均已设。
+- 自动部署已生效（2026-11-04 18:29）：push main → CI + Deploy 工作流 → Cloudflare Pages 生产部署 → wanruncong.uk。token 名 github-pages-deploy，2027-11-04 到期，到期前需在 Cloudflare 重建并更新 secret。
+- 仍留给用户：撤销并重建曾贴进对话的 API token（可选但建议）；安排 IAA 措辞复核。
 - 文案小项：英文 "1 full years" 单复数；解释里的枚举码（SKILLED_WORKER、CORE_PERMISSION 等）要可读名需显示名表（Phase 3 候选）。
 - 已定口径、页码约定与 Codex 启动参数不变；验收时只看 gate 日志里的 `GATE EXIT` 行，不看后台任务的退出码。
 - 用户授权（2026-11-04）：每次验收合并到 main 后自动 `git push origin main`，不再逐次确认；push 后 GitHub Actions 自动跑 CI 与部署（secrets 就绪后）。
