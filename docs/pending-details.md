@@ -155,3 +155,9 @@ dependant 随主申请人定居（SRC-001 Ch.5）时，原文未规定、引擎�
 | ID | 事项 | 原文怎么说 | 出处 | 对引擎的影响 | 预计何时明确 |
 |---|---|---|---|---|---|
 | PD-063 | 主申请人已定居后其 dependant 如何定居 | Ch.5 只讲 dependant 与主申请人同时定居、后到伴侣须完成同样的合格期、18 岁以下子女随父母定居；没有说主申请人已经定居（或入籍）后，其伴侣 / 子女按什么路径与年限定居。现行规则对此有 SW 39.1(b)。 | p29–p31 | 主申请人时间线带 `settled`（且不晚于申请日）时，`ES-DEPENDANT-PATHWAY` 输出 `UNKNOWN`（PD-063），不给年限与日期；没有其他 `FAIL` 或用户漏填时结论为 `POTENTIALLY_ELIGIBLE`。现行法律栏按 SW 39.1(b) 照常判断。 | 原文未提及 |
+
+## 六、难民路径建模（任务 3.4 新增）
+
+| ID | 事项 | 原文怎么说 | 出处 | 对引擎的影响 | 预计何时明确 |
+|---|---|---|---|---|---|
+| PD-064 | 从 Protection Work and Study 回到 Core Protection | 原文只说从 Core Protection 转入 Protection Work and Study 时 10 年自转入起算、Core Protection 时间不计入；没有说失去工作等原因回到 Core Protection 后，此前的保护类时间如何计入 20 年。 | p38；p40 | 当前为 Core Protection 且紧接其前是 Protection Work and Study 时，`ES-RESIDENCE` 输出 `UNKNOWN`（PD-064）；年限仍按自回切起算的 20 年投影。 | 原文未提及 |

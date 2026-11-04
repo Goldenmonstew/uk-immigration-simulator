@@ -62,7 +62,9 @@ export const earnedSettlement2026_11 = {
       value: 12571,
       sources: [
         { srcId: 'SRC-001', locator: 'p15' },
+        { srcId: 'SRC-001', locator: 'p38' },
         { srcId: 'SRC-001', locator: 'p46' },
+        { srcId: 'SRC-001', locator: 'p47' },
       ],
     },
     // Couples combining earnings; meets the minimum only (p17).
@@ -165,8 +167,69 @@ export const earnedSettlement2026_11 = {
       sources: [
         { srcId: 'SRC-001', locator: 'p13' },
         { srcId: 'SRC-001', locator: 'p18' },
+        { srcId: 'SRC-001', locator: 'p39' },
         { srcId: 'SRC-001', locator: 'p46' },
       ],
+    },
+
+    // Refugee pathways (Chapter 7, p36–p40; Table 2, p47–p48).
+    protectionPathwayYearsSafeAndLegal: {
+      value: 5,
+      sources: [
+        { srcId: 'SRC-001', locator: 'p37' },
+        { srcId: 'SRC-001', locator: 'p40' },
+        { srcId: 'SRC-001', locator: 'p47' },
+      ],
+    },
+    protectionPathwayYearsWorkAndStudy: {
+      value: 10,
+      sources: [
+        { srcId: 'SRC-001', locator: 'p38' },
+        { srcId: 'SRC-001', locator: 'p40' },
+        { srcId: 'SRC-001', locator: 'p47' },
+      ],
+    },
+    protectionPathwayYearsCore: {
+      value: 20,
+      sources: [
+        { srcId: 'SRC-001', locator: 'p38' },
+        { srcId: 'SRC-001', locator: 'p40' },
+        { srcId: 'SRC-001', locator: 'p47' },
+      ],
+    },
+    // Added for illegal entry as an adult, whatever the route (p38, p13),
+    // unless Article 31 of the Refugee Convention applies (p39, p48).
+    illegalEntryAdditionalYears: {
+      value: 10,
+      sources: [
+        { srcId: 'SRC-001', locator: 'p38' },
+        { srcId: 'SRC-001', locator: 'p39' },
+        { srcId: 'SRC-001', locator: 'p48' },
+      ],
+    },
+    // Years earning at least earningsThresholdMinimum on Protection Work and
+    // Study, for those contributing through work (p38, p47).
+    protectionWorkQualifyingYears: {
+      value: 3,
+      sources: [
+        { srcId: 'SRC-001', locator: 'p38' },
+        { srcId: 'SRC-001', locator: 'p47' },
+      ],
+    },
+    ukrsEnglishLevel: {
+      value: 'A2',
+      sources: [
+        { srcId: 'SRC-001', locator: 'p21' },
+        { srcId: 'SRC-001', locator: 'p37' },
+        { srcId: 'SRC-001', locator: 'p39' },
+        { srcId: 'SRC-001', locator: 'p47' },
+      ],
+    },
+    // UK Resettlement Scheme arrivals before this date are Legacy Safe and
+    // Legal Routes, outside the framework (p26 note 13).
+    legacySafeAndLegalArrivalsBefore: {
+      value: '2027-04-06',
+      sources: [{ srcId: 'SRC-001', locator: 'p26' }],
     },
   },
 } satisfies ParameterSet;
