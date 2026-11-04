@@ -70,6 +70,7 @@ export const esIndividualD: Fixture = {
       ],
       relationships: [],
       english: { cefrLevel: 'B2' },
+      lifeInTheUk: { passed: true },
       criminalRecord: [],
       immigrationBreaches: [],
       governmentDebt: { outstanding: false },
