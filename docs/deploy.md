@@ -13,7 +13,7 @@
 
 ## 2. 创建 Direct Upload 项目并首次部署
 
-建议项目名为 `uk-immigration-simulator`。下面用 Wrangler 创建空的 **Direct Upload** 项目，并将 production branch 设为 `main`。项目名若不可用，替换为自己的名称；项目已创建时跳过 `pages project create` 那一行。
+项目名为 `uk-immigration-simulator`（2026-11-04 已创建，首次部署 `https://uk-immigration-simulator.pages.dev`，自定义域名 `wanruncong.uk` 已绑定）。下面用 Wrangler 创建空的 **Direct Upload** 项目，并将 production branch 设为 `main`。项目名若不可用，替换为自己的名称；项目已创建时跳过 `pages project create` 那一行。
 
 在已合并交付内容的本地仓库 `main` 分支执行以下命令。Wrangler 会自动读取当前 Git 分支；从任务分支上传会生成该分支的预览部署，因此首次检查 `https://<项目名>.pages.dev` 时应使用 `main`。
 
@@ -31,11 +31,13 @@ read -rsp 'Cloudflare API token: ' CLOUDFLARE_API_TOKEN
 printf '\n'
 export CLOUDFLARE_API_TOKEN
 
-pnpm dlx wrangler@4.157.0 pages project create "$CF_PAGES_PROJECT" --production-branch main
+pnpm dlx wrangler@4.157.0 pages project create "$CF_PAGES_PROJECT" --production-branch main --force
 pnpm deploy:pages
 
 unset CLOUDFLARE_API_TOKEN CLOUDFLARE_ACCOUNT_ID
 ```
+
+`pages project create` 必须带 `--force`：wrangler 4.157 默认把新项目委托给"新版 Pages（Workers 静态资源）"，在 monorepo 根目录会报 "application detection logic has been run in the root of a workspace" 并且什么都不创建；`--force` 直接创建经典的 Direct Upload Pages 项目，之后的 `pages deploy` 不再需要它（2026-11-04 实测）。
 
 `deploy:pages` 会先运行 `pnpm build`，再用固定版本 `wrangler@4.157.0` 上传 `apps/web/out`。此版本由 2026-11-04 的 `npm view wrangler version` 查询确定，不添加项目依赖。Wrangler 自行读取 `CLOUDFLARE_ACCOUNT_ID` 与 `CLOUDFLARE_API_TOKEN`；项目名未设置或为空时，构建后会明确报错 `CF_PAGES_PROJECT: set CF_PAGES_PROJECT` 并退出。
 

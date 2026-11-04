@@ -36,12 +36,14 @@
 | 30 | 合并 2.9 引擎双语解释（Opus，14 个 commit）：locale 参数、textFor 选择函数、25 条规则与聚合 / 短路的英文文案、titleEn、变更日志双语、50 个英文测试 + 中文输出快照（6320 行）；Fable 评审契约、独立复跑 gate（engine 264）、用 p31 A / p45 A / SW £55k 三个场景抽读英文（通顺准确，仅 "1 full years" 单复数小瑕疵）；main 上 gate 全过（policy-data 16 / engine 264 / web 69） | packages/engine/**, packages/policy-data/src/data/policy-changelog.ts, docs/contracts.md, docs/tasks/reports/2.9-engine-bilingual.md |
 | 31 | 派发 2.10（astra，`.worktrees/astra-locale-wrapup`，分支 `codex/astra-locale-wrapup-2.10`，xhigh） | PROGRESS.md |
 | 32 | 合并 2.10 web 收尾（astra，三个 commit）：locale 透传与按语言缓存、删手写英文映射改读引擎 titleEn / 变更日志双语、Skilled Worker 片段 ISL 三态与主申请人"已定居"输入、站点外壳渲染语言标题；Fable 复跑 gate（web 87）并用浏览器走查（English 整页刷新标题为英文、结果 / What-if / 政策页英文全部来自引擎与数据、主申请人子流程填已定居 2024-04-06 后伴侣现行法律栏按 SW 39.1(b) 判为可能符合、ISL 字段出现在 SW 主申请人片段、375px）；astra 首次启动遇模型容量满，重试成功；main 上 gate 全过（policy-data 16 / engine 264 / web 87）。Phase 2 完成 | apps/web/**, docs/tasks/reports/2.10-web-locale-wrapup.md, docs/tasks/phase-2-plan.md |
+| 33 | 首次部署：用户授权 wrangler OAuth（Fable 代点 Authorize），`pages project create --force` 建 uk-immigration-simulator，直传 49 个文件到 https://uk-immigration-simulator.pages.dev（浏览器核对首页、/simulate、/policy/ 归一、404、/whatif），在后台绑定自定义域名 wanruncong.uk（CNAME @，状态 Initializing）；deploy.md 补 `--force` 说明与项目名 | docs/deploy.md, PROGRESS.md |
 
 ### 当前状态
 
 - **Phase 2 全部完成（2026-11-04）**：2.1–2.10 验收合并到 main，`pnpm lint && pnpm typecheck && pnpm test && pnpm build` 全过（policy-data 16、engine 264、web 87）；`.worktrees/` 为空，没有在跑的任务。完成状态与 Phase 3 候选见 `docs/tasks/phase-2-plan.md` §6。
 - 产品现状：25 条规则（15 条 Earned Settlement、10 条现行法律）、16 个 fixtures、家庭建模（主申请人子流程、SW 39.1(a)/(b)、子女）、going rate 查表、What-if 实验室、分享链接、中英文界面与引擎双语输出、/policy 政策依据页、Cloudflare Pages 部署脚本与文档。
-- 留给用户的三件事：建 GitHub 远端并配 `deploy.yml` 的 secrets；用自己的 token 做首次直传并在 `*.pages.dev` 验收；绑定正式域名前安排 IAA 措辞复核（`docs/deploy.md`）。
+- 部署（2026-11-04）：Pages 项目 `uk-immigration-simulator` 已建并完成首次直传（https://uk-immigration-simulator.pages.dev），自定义域名 wanruncong.uk 已绑定（用户决定不等 IAA 复核先绑）；本机 wrangler 已 OAuth 登录（可在 Cloudflare My Profile → Connected Applications 撤销）。之后每次改动合并到 main 后跑 `pnpm deploy:pages`（需 `CF_PAGES_PROJECT=uk-immigration-simulator`）。
+- 仍留给用户：建 GitHub 远端并配 `deploy.yml` 的 secrets（自动部署）；安排 IAA 措辞复核。
 - 文案小项：英文 "1 full years" 单复数；解释里的枚举码（SKILLED_WORKER、CORE_PERMISSION 等）要可读名需显示名表（Phase 3 候选）。
 - 已定口径、页码约定与 Codex 启动参数不变；验收时只看 gate 日志里的 `GATE EXIT` 行，不看后台任务的退出码。
 - 下一步：用户决定先部署试用还是规划 Phase 3。
