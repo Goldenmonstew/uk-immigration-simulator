@@ -42,6 +42,9 @@
 | SRC-023 | LAW | Immigration Rules: Appendix Settlement Protection（版本 2026-04-08，HC 1691；主申请人 settlement 见 STP 1.1–STP 5.3） | https://www.gov.uk/guidance/immigration-rules/immigration-rules-appendix-settlement-protection | 2026-04-08 | 2026-11-04 | `policy-sources/2026-04-08-immigration-rules-appendix-settlement-protection.html`（sha256 `3ce467778ba7539b5fc59bb1e4e9aabeb5b7505db5a194ceabd74cb6bd965482`） | archived |
 | SRC-024 | LAW | Immigration Rules: Appendix FM: family members（版本 2026-10-08，HC 584；伴侣 5 年 settlement 见 E-ILRP.1.1–E-ILRP.1.6，财务要求见其引用的 E-LTRP.3.1–E-LTRP.3.9） | https://www.gov.uk/guidance/immigration-rules/immigration-rules-appendix-fm-family-members | 2026-10-08 | 2026-11-04 | `policy-sources/2026-10-08-immigration-rules-appendix-fm-family-members.html`（sha256 `14adc4b2b406b28b4eb5a46e111db870e2edd85101c4c79cccc417f655d576eb`） | archived |
 | SRC-025 | LAW | Immigration Rules: Appendix KoLL（版本 2026-03-26，HC 1691；E-ILRP.1.6 引用的英语与 Life in the UK 要求，见 KoLL 2.1–KoLL 2.3，豁免见 Part 3；不同于 SRC-015 Appendix KOL UK） | https://www.gov.uk/guidance/immigration-rules/immigration-rules-appendix-koll | 2026-03-26 | 2026-11-04 | `policy-sources/2026-03-26-immigration-rules-appendix-koll.html`（sha256 `d3003c6b5b99eacc50e4ac094e8b15c4128d4c11a60400bb5a1b111ed382de38`） | archived |
+| SRC-026 | LAW | Immigration Rules: Appendix UK Ancestry（版本 2026-08-03，HC 259；主申请人 settlement 见 UKA 10.1–UKA 17.2） | https://www.gov.uk/guidance/immigration-rules/immigration-rules-appendix-uk-ancestry | 2026-08-03 | 2026-11-04 | `policy-sources/2026-08-03-immigration-rules-appendix-uk-ancestry.html`（sha256 `82ead664bd3a11260db4bb5e8b1656c9b01cb73a1b1ba3f3ff147feb130d780b`） | archived |
+| SRC-027 | LAW | Immigration Rules: Appendix Innovator Founder（版本 2026-08-03，HC 259；主申请人 settlement 见 INNF 15.1–INNF 21.6，业务条件见 INNF 17.1–INNF 17.5） | https://www.gov.uk/guidance/immigration-rules/immigration-rules-appendix-innovator-founder | 2026-08-03 | 2026-11-04 | `policy-sources/2026-08-03-immigration-rules-appendix-innovator-founder.html`（sha256 `1853949fb4447bd0a0c8d76c79678aaf50947d02336e33f0c0867dbf55894418`） | archived |
+| SRC-028 | LAW | Immigration Rules: Appendix Private Life（版本 2026-10-08，HC 584；主申请人 settlement 见 PL 11.1–PL 18.5，合格期分流见 PL 13.1–PL 14.4） | https://www.gov.uk/guidance/immigration-rules/immigration-rules-appendix-private-life | 2026-10-08 | 2026-11-04 | `policy-sources/2026-10-08-immigration-rules-appendix-private-life.html`（sha256 `43a13c41406b8d7131d7f1e98addcd4afb597b04ea8dded55897ca3d4003e3ad`） | archived |
 
 ## 登记备注（按 SRC）
 
@@ -269,3 +272,42 @@
 - **一般豁免**：KoLL 3.1(a)–(c)（申请日未满 18 岁、至少 65 岁，或因身心状况由决策者认定不宜要求满足其中一项或两项）。
 - **长期居留特定例外**：KoLL 3.2(a)(xi)–(xii)、(b)–(d)（包括 Appendix FM partner / parent 连续至少 15 年者，须同时满足 A2 等英语证明、努力学习仍未达 B1 / B2 的教师证明及国籍等限定，不是自动豁免）。
 - **后续满足要求**：KoLL 3.3(i)–(iii)（paragraph 39C(c) 适用时，按所欠英语 / Life in the UK 项补足，英语等级亦以 2027-03-26 分 B1 / B2）。
+
+## SRC-026 常用定位
+
+- 版本：[GOV.UK Content API 变更记录](https://www.gov.uk/api/content/guidance/immigration-rules/immigration-rules-appendix-uk-ancestry) 最近一条为 2026-08-03（Statement of Changes HC 259），与[手册变更记录](https://www.gov.uk/guidance/immigration-rules/updates)中该 Appendix 的最近一条一致；`public_updated_at` 与快照的 `govuk:public-updated-at` 同为 `2026-08-03T09:50:43+01:00`，不取手册头部的 2026-10-29。
+- **当前 / 最近一次许可**：UKA 10.1（申请 settlement 的人为 UK Ancestry route 上的人）；UKA 10.3（申请日须为 Commonwealth citizen）。本 Appendix 主申请人 settlement 部分未另列 “have, or have last been granted” 的最近一次许可段，不从 dependant 条款补造。
+- **Suitability**：UKA 11.1–UKA 11.2（Part Suitability、移民法违规与 immigration bail 及其例外）。
+- **仍须满足的资格条件**：UKA 12.1（继续满足 UKA 4.1 至 UKA 6.1）；UKA 4.1（祖父母或外祖父母之一出生于 UK 或 Islands）、UKA 5.1–UKA 5.3（本人及 dependants 的 adequate maintenance and accommodation、不得依赖 public funds、Appendix Finance 证据及可信第三方资助）、UKA 6.1（有能力工作且打算在英国寻找并从事工作）。
+- **5 年合格期 / 可计入许可**：UKA 13.1（在英国持 UK Ancestry route 的主申请人许可满 5 年）；本段未列其他路线可组合计入，也未另列月数。
+- **连续居留**：UKA 14.1（UKA 13.1 的期间须符合 Appendix Continuous Residence）。
+- **英语**：UKA 15.1(a)–(b)（除非豁免，申请日早于 2027-03-26 为口语与听力至少 CEFR B1，自该日起为 B2）；UKA 15.2（引用 Appendix English Language）。
+- **KOL**：UKA 16.1（引用 Appendix KOL UK）。
+
+## SRC-027 常用定位
+
+- 版本：[GOV.UK Content API 变更记录](https://www.gov.uk/api/content/guidance/immigration-rules/immigration-rules-appendix-innovator-founder) 最近一条为 2026-08-03（Statement of Changes HC 259），与[手册变更记录](https://www.gov.uk/guidance/immigration-rules/updates)中该 Appendix 的最近一条一致；`public_updated_at` 与快照的 `govuk:public-updated-at` 同为 `2026-08-03T10:23:50+01:00`，不取手册头部的 2026-10-29。
+- **最近一次许可 / 背书有效性**：INNF 15.3（持有或最近获批 Innovator Founder 许可）；INNF 15.2(e)（Endorsing Body 或 Legacy Endorsing Body 的背书信须在申请日前不超过 3 个月签发且未撤回）；INNF 17.5（Legacy Endorsing Body 须与支持最近一次许可的机构相同）。
+- **Suitability**：INNF 16.1–INNF 16.2（Part Suitability、移民法违规与 immigration bail 及其例外）。
+- **3 年合格期 / 可计入许可**：INNF 18.1（在英国持 Innovator Founder 许可至少 3 年）；本段未列其他路线可组合计入，也未另列月数。
+- **连续居留**：INNF 19.1（INNF 18.1 的期间须符合 Appendix Continuous Residence）。
+- **业务持续性与申请人参与**：INNF 17.1(a)–(e)（对照此前背书的 business plan 有显著成果、Companies House 注册且申请人列为 director 或 member、active and trading、按资产 / 预期收入与支出判断未来至少 12 个月可持续、申请人在日常管理与发展中发挥 active key role）。
+- **业务 / 投资条件，至少满足两项**：INNF 17.1(f)(i)（至少 £50,000 已投资并实际用于推进业务）；(ii)（最近 3 年客户数至少翻倍且高于提供可比主要产品或服务的其他英国企业平均客户数）；(iii)（显著研发活动且已申请英国知识产权保护）；(iv)（最近完整会计年度年毛收入至少 £1 million）；(v)（同一年度年毛收入至少 £500,000，其中海外出口至少 £100,000）；(vi)（为 settled workers 创造相当于至少 10 个全职岗位）；(vii)（相当于至少 5 个全职岗位，每个岗位平均年薪至少 £25,000，毛薪且不含 allowances）。
+- **条件不可重复 / 团队与岗位限制**：INNF 17.2（同一 criterion 不能重复计为两项）；INNF 17.3（同时申请或已获 settlement 的团队成员不能共用同一达标成果）；INNF 17.4(a)–(c)（岗位至少存在 12 个月且合规、平均每周至少 30 小时有薪工作，符合条件的不同员工兼职可合并、settled worker 按入职时定义并持续任职整个所申报的 12 个月）。
+- **英语定位边界**：主申请人 settlement 部分 INNF 15.1–INNF 21.6 未另列英语要求或 2027-03-26 分段；入境 / 续签的 INNF 5.1 积分表及 INNF 11.1–INNF 11.2 列的是四项能力均至少 CEFR B2（除非豁免，并引用 Appendix English Language）。本 Appendix 中按申请日早于 / 自 2027-03-26 分 B1 / B2 的 INNF 39.1–INNF 39.2 属 partner / child settlement，不是主申请人条款。
+- **KOL**：INNF 20.1（引用 Appendix KOL UK）。
+
+## SRC-028 常用定位
+
+- 版本：[GOV.UK Content API 变更记录](https://www.gov.uk/api/content/guidance/immigration-rules/immigration-rules-appendix-private-life) 最近一条为 2026-10-08（Statement of Changes HC 584），与[手册变更记录](https://www.gov.uk/guidance/immigration-rules/updates)中该 Appendix 的最近一条一致；`public_updated_at` 与快照的 `govuk:public-updated-at` 同为 `2026-10-08T07:41:18+01:00`，不取手册头部的 2026-10-29。
+- **最近一次许可**：PL 11.3（持有或最近获批 Private Life 许可）；(a)（在英国出生的 child 例外）；(b)（2022-06-20 前获 Appendix FM 或规则外 dependent child 许可，且当时本可满足 PL 3.1(a) 的连续居留要求）；(c)（超过 18 岁、满足或曾满足 half-life test，且在 2022-06-20 前持有或最近获批 Appendix FM 或规则外 family / private life 许可）。
+- **Suitability**：PL 12.1、PL 12.3–PL 12.7（Part Suitability；特定事由触发连续 10 年指定许可及刑期结束 / 事由被发现后首次许可起 5 年要求；非法入境的 10 年要求及 child / young adult 例外；可计入许可见 PL 12.6；移民法违规与 immigration bail 及其例外）。PL 12.2 已 DELETED。
+- **未满 18 岁 7 年 / 18–24 岁 half-life 的许可入口**：PL 3.1(a)–(b)（申请日未满 18 岁、连续居留至少 7 年且不宜要求离境）；PL 4.1（申请日已满 18 岁且未满 25 岁、18 岁前抵英、在英国连续居留至少半生）。两段属于 permission to stay 的资格要求，不是通用的 settlement 合格期；PL 10.1–PL 10.3 的 30 / 60 个月是授予许可长度，不是 settlement 合格期。
+- **英国出生 child 的直接 settlement**：PL 13.1–PL 13.3（英国出生并提供完整出生证明、自出生起连续在英国至少 7 年、不宜要求离境）；未另设先持许可 5 年的要求。
+- **5 年合格期**：PL 14.1（持有或最近持有 child 或符合 PL 4.1 half-life test 的 young adult Private Life 许可，连续 5 年持 PL 14.3 或 PL 14.4 指定许可）。
+- **其他 5 年过渡情形**：PL 14.1A(a)–(b)、PL 14.1B（2022-06-20 前持有或最近持有 Appendix FM / 规则外 dependent child 许可且当时本可满足 Private Life 规则的 child，申请时或此前申请时满足 PL 3.1(a)，另须连续 5 年持 PL 14.3 许可，两个期间不得重叠）；PL 14.2(b)、PL 14.2A(a)–(c)（2022-06-20 前的指定 family / private life 许可，连续 5 年持 PL 14.3 许可，并须满足或曾满足 half-life test，或最初获批为 child、此后已满 25 岁且在英国连续居留至少半生）。不能简化为所有其他申请人均可走 5 年路线。
+- **10 年合格期**：PL 14.2(a)（申请日已满 18 岁且不满足 PL 14.1 者，连续 10 年持 PL 14.3 或 PL 14.4 指定许可；另见上述 PL 14.2(b) / PL 14.2A 的过渡分支）。合格期段以年数表述，未另列 60 / 120 个月。
+- **可组合计入路线**：PL 14.3(a)–(e)（Appendix FM partner / parent，排除 fiancé(e) / proposed civil partner；grant letter 称为 family permission 的 partner / parent；2022-06-20 前 paragraph 276ADE / 276BE(2) 或 Appendix Private Life；Appendix FM partner / parent 的 child；依据 Article 8 在规则外授予的 partner / parent / child / private life 许可，及这些许可的组合）；PL 14.4(a)–(b)（PL 14.1 / PL 14.2 可另计其他可定居路线，须未非法入境，Private Life child / young adult 例外，且申请日已有至少 1 年指定 Private Life 许可；该段未列 PL 14.2A）。
+- **连续居留**：PL 15.1（settlement 合格期引用 Appendix Continuous Residence，但在英国出生的 child 除外）；英国出生 child 的 PL 13.2 期间按 PL 15A.1–PL 15A.3（可含有 / 无许可期间、监禁 / 特定拘留不计、单次缺席超过 6 个月或累计至少 550 天等中断事由）。不要把许可入口 PL 7.1–PL 7.3 与 settlement 合格期的计算依据混为一谈。
+- **英语 / KOL**：PL 16.1(a)–(b)（除非豁免，申请日早于 2027-03-26 为口语与听力至少 CEFR B1，自该日起为 B2）；PL 16.2（引用 Appendix English Language）；PL 17.1（除非豁免，例如未满 18 岁，引用 Appendix KOL UK；快照原文段号写作 `PL17.1`）。
+- **与 Appendix Settlement Family Life 的衔接**：本 Appendix 快照未直接引用 Appendix Settlement Family Life；交叉定位 SRC-022 的 SETF 1.3（最近许可为 Appendix FM partner / parent）、SETF 3.1(c)（其 10 年组合可计 Private Life 许可）及 SETF 3.2（计入其他可定居路线的条件）。反向计入 Appendix FM family 许可的依据为本页 PL 14.3(a)–(b)、(d)–(e)，不能把两套 settlement 的最近许可入口互换。
