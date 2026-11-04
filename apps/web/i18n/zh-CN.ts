@@ -11,7 +11,7 @@ export const zhCN = {
   'about.currentLaw':
     '现行法律栏依据已登记的 Immigration Rules 当前版本，评估模拟日期下可能适用的定居条件。',
   'about.currentLawScope':
-    '现行法律栏建模 Skilled Worker（含其 dependant）、Hong Kong BN(O) 与 Global Talent 的主申请人、Appendix FM 伴侣主申请人（5 年 / 10 年路线），以及 Long Residence。其他路线，以及 Hong Kong BN(O)、Global Talent 与 Appendix FM 路线的 dependant，其独立定居条件仍显示“信息不足”；这不表示该路线没有定居路径。',
+    '现行法律栏建模 Skilled Worker（含其 dependant），Hong Kong BN(O)、Global Talent、Appendix FM 伴侣（5 年 / 10 年路线）、难民（Appendix Settlement Protection）、UK Ancestry、Innovator Founder 与 Private Life 的主申请人，以及 Long Residence。其余路线，以及上述路线中除 Skilled Worker 外的 dependant，其独立定居条件仍显示“信息不足”；这不表示该路线没有定居路径。',
   'about.reforms':
     '已公布改革栏依据 Earned Settlement 政策，标记为“已公布、未生效”。计算假设该规则集在模拟日期适用，不代表改革已经实施或未来一定按此实施。',
   'about.reformScope':
@@ -96,7 +96,7 @@ export const zhCN = {
   'home.title': '了解可能适用的移民路径',
   'home.intro': '从你的时间线出发，查看可能适用的路径、关键条件与未定事项。',
   'home.scope':
-    '比较现行 settlement 路径与已公布的 Earned Settlement 改革。现行法律栏建模 Skilled Worker（含其 dependant）、Hong Kong BN(O) 与 Global Talent 的主申请人、Appendix FM 伴侣主申请人（5 年 / 10 年路线），以及 Long Residence。其他路线，以及 Hong Kong BN(O)、Global Talent 与 Appendix FM 路线的 dependant，其独立定居条件仍显示“信息不足”。',
+    '比较现行 settlement 路径与已公布的 Earned Settlement 改革。现行法律栏建模 Skilled Worker（含其 dependant），Hong Kong BN(O)、Global Talent、Appendix FM 伴侣（5 年 / 10 年路线）、难民（Appendix Settlement Protection）、UK Ancestry、Innovator Founder 与 Private Life 的主申请人，以及 Long Residence。其余路线，以及上述路线中除 Skilled Worker 外的 dependant，其独立定居条件仍显示“信息不足”。',
   'home.start': '开始模拟',
   'home.before': '开始前',
   'home.prepare':
@@ -281,6 +281,34 @@ export const zhCN = {
   'episodes.familyPermission.PARENT': '父母（parent of a child）',
   'episodes.familyPermissionHint':
     '请在“家庭关系”步骤填写伴侣身份，并在“收入”步骤填写上一 tax year 的本人与伴侣收入（用于 5 年路线的财务要求）。',
+  'episodes.innovatorSettlementCriteria':
+    '业务已满足的定居背书条件（INNF 17.1(f)）',
+  'episodes.innovatorCriteriaHint':
+    '勾选已满足的条件；全不勾选表示“以上都没有”。',
+  'episodes.innovatorCriteriaNone': '以上都没有',
+  'episodes.innovatorCriteria.INVESTMENT':
+    '至少 £50,000 投入业务并已用于推进业务（INNF 17.1(f)(i)）',
+  'episodes.innovatorCriteria.CUSTOMERS':
+    '最近 3 年客户数至少翻倍，且高于同类英国企业的平均客户数（INNF 17.1(f)(ii)）',
+  'episodes.innovatorCriteria.RESEARCH_AND_IP':
+    '有显著研发活动并已在英国申请知识产权保护（INNF 17.1(f)(iii)）',
+  'episodes.innovatorCriteria.REVENUE':
+    '最近一个完整会计年度年总营收至少 £1,000,000（INNF 17.1(f)(iv)）',
+  'episodes.innovatorCriteria.EXPORT_REVENUE':
+    '最近一个完整会计年度年总营收至少 £500,000，其中至少 £100,000 来自出口（INNF 17.1(f)(v)）',
+  'episodes.innovatorCriteria.JOBS':
+    '为 settled workers 创造至少 10 个全职等效岗位（INNF 17.1(f)(vi)）',
+  'episodes.innovatorCriteria.JOBS_WITH_SALARY':
+    '为 settled workers 创造至少 5 个全职等效岗位，平均年薪至少 £25,000（INNF 17.1(f)(vii)）',
+  'episodes.privateLifeRoute': 'Appendix Private Life 许可依据',
+  'episodes.privateLifeRoute.CHILD':
+    '作为儿童获批（未满 18 岁、连续居住 7 年；PL 3.1 / 10.1）',
+  'episodes.privateLifeRoute.YOUNG_ADULT':
+    '18–24 岁、未满 18 岁入境且半生在英国（PL 4.1）',
+  'episodes.privateLifeRoute.ADULT':
+    '其他（连续居住超过 20 年或融入有重大障碍；PL 5.1）',
+  'benefits.protectionStatusRevoked':
+    '我的保护身份已被撤销或我已放弃（STP 4.1）',
   'benefits.asylumSupportRepayment': '是否需要偿还 asylum support 费用？',
   'episodes.hint': '逐段填写获批的签证有效期。列表为空表示没有签证历史。',
   'episodes.item': '签证片段',

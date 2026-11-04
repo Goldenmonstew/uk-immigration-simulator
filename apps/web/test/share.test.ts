@@ -293,3 +293,90 @@ test('sharing rejects invalid current law values on either timeline', () => {
     }
   }
 });
+
+test('sharing preserves all extension two values, including empty criteria and omitted inputs, on both timelines', () => {
+  const draft = createDraft();
+  const criteria: ImmigrationEpisode['innovatorSettlementCriteria'][] = [
+    undefined,
+    [],
+    ['INVESTMENT'],
+    ['CUSTOMERS'],
+    ['RESEARCH_AND_IP'],
+    ['REVENUE'],
+    ['EXPORT_REVENUE'],
+    ['JOBS'],
+    ['JOBS_WITH_SALARY'],
+    ['INVESTMENT', 'JOBS'],
+  ];
+  for (const innovatorSettlementCriteria of criteria) {
+    for (const privateLifeRoute of [
+      undefined,
+      'CHILD',
+      'YOUNG_ADULT',
+      'ADULT',
+    ] as const) {
+      for (const protectionStatusRevoked of [undefined, true, false]) {
+        draft.timeline.episodes = [
+          {
+            route: 'INNOVATOR_FOUNDER',
+            role: 'MAIN',
+            validFrom: '2023-11-04',
+            validTo: '2026-11-04',
+            innovatorSettlementCriteria,
+          },
+          {
+            route: 'FAMILY_AND_PRIVATE_LIFE',
+            role: 'MAIN',
+            validFrom: '2026-11-05',
+            validTo: '2036-11-04',
+            privateLifeRoute,
+          },
+        ];
+        draft.timeline.protectionStatusRevoked = protectionStatusRevoked;
+        draft.principal = structuredClone(draft.timeline);
+        const restored = decodeDraft(encodeDraft(draft))!;
+        expect(restored).toEqual(JSON.parse(JSON.stringify(draft)));
+        expect(
+          restored.timeline.episodes[0].innovatorSettlementCriteria,
+        ).toEqual(innovatorSettlementCriteria);
+      }
+    }
+  }
+});
+
+test('sharing rejects malformed extension two fields on either timeline', () => {
+  const draft = createDraft();
+  const invalid = ['', 'UNKNOWN', 1, true, null, {}];
+  const patches = [
+    ...[
+      ...invalid,
+      ['UNKNOWN'],
+      ['INVESTMENT', 'UNKNOWN'],
+      [null],
+      [[]],
+      [1],
+    ].map((innovatorSettlementCriteria) => ({
+      episodes: [{ innovatorSettlementCriteria }],
+    })),
+    ...[...invalid, [], ['CHILD']].map((privateLifeRoute) => ({
+      episodes: [{ privateLifeRoute }],
+    })),
+    ...['true', 0, 1, null, [], {}].map((protectionStatusRevoked) => ({
+      protectionStatusRevoked,
+    })),
+  ];
+  for (const patch of patches) {
+    for (const key of ['timeline', 'principal']) {
+      expect(
+        decodeDraft(
+          btoa(
+            JSON.stringify({
+              ...draft,
+              [key]: { ...draft.timeline, ...patch },
+            }),
+          ),
+        ),
+      ).toBeUndefined();
+    }
+  }
+});
