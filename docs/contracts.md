@@ -689,6 +689,7 @@ export const currentLaw2027_01 = {
 | 以上都有 | Long Residence 10 年候选照常并列 | 10 | 不变 |
 
 - 起点不成立（缺 `principal`、主申请人时点不成立）时候选不给起点，结论按新规则的状态落到"信息不足"或"不符合"，同 `CL-SW-CHILD`。
+- 本人 5 年（HK `PARTNER` / 已满 18 岁的 `PARENT` / `RELATIVE`）的起点与缺席重算来自 `CL-HKBNO-RESIDENCE-5Y`（`hongKongBnoStart`）；该规则与主申请人的同名规则一样只用于展示、不进候选（§12.4）：未满期的 `FAIL` 若进候选，会让候选失败、无法投影到期日。
 - 新规则的 `FAIL` / `UNKNOWN` 都进候选；`PASS` 时年限与起点由上表给出。
 - 投影日期在 2027-03-26 之后、届时须 B2 的假设：GT dependant 写 GT 32.1(b)，家庭子女写 SETF 15.1(b)；HK BN(O) 的 dependant 不加。
 - 年龄按申请日分支（同 `CL-SW-CHILD`）。HK 未满 18 岁子女的投影日期若已满 18 岁，届时应改按本人 5 年（HK 62.1(b)），只写进假设，不另算。

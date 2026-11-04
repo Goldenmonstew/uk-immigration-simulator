@@ -2,7 +2,7 @@
 
 由 `pnpm --filter @uk-immigration/engine export:wording` 生成（`packages/engine/test/export-wording.test.ts`），请勿手改。
 
-收集范围：`test/helpers.ts` 的 17 个样例上下文（每条规则单独跑一遍 + 整体评估）与 25 个 fixtures，各按 zh-CN 与 en 运行一次；按规则 ID 分节，句子去重，按首次出现排序。样例跑不到的分支不在其中。
+收集范围：`test/helpers.ts` 的 17 个样例上下文（每条规则单独跑一遍 + 整体评估）与 28 个 fixtures，各按 zh-CN 与 en 运行一次；按规则 ID 分节，句子去重，按首次出现排序。样例跑不到的分支不在其中。
 
 ## earned-settlement-2026-11
 
@@ -183,6 +183,10 @@
   - EN: Continuous residence counting towards settlement since 2023-05-01: 3 full years by 2026-05-01.
 - 中：计入定居的连续居留自 2021-07-01 起，截至 2026-07-01 满 5 年。
   - EN: Continuous residence counting towards settlement since 2021-07-01: 5 full years by 2026-07-01.
+- 中：计入定居的连续居留自 2021-06-01 起，截至 2026-06-01 满 5 年。
+  - EN: Continuous residence counting towards settlement since 2021-06-01: 5 full years by 2026-06-01.
+- 中：计入定居的连续居留自 2019-03-01 起，截至 2026-03-01 满 7 年。
+  - EN: Continuous residence counting towards settlement since 2019-03-01: 7 full years by 2026-03-01.
 
 ### ES-EARNINGS-3Y：3 年路径收入：4 年中 3 年达到 £125,141 / 3-year pathway earnings: £125,141 in 3 of 4 years
 
@@ -484,6 +488,12 @@
   - EN: Aged 30 when the family becomes eligible for settlement on 2031-04-06 (25 or over), so cannot settle with the family as a dependant; they must independently meet every mandatory and qualifying requirement of a settlement pathway, or switch to an immigration route of their own.
 - 中："家庭符合定居资格时"的年龄按主申请人首次满期之日（2031-04-06）计算，不按实际申请日（PD-060）。
   - EN: Age “when the family becomes eligible for settlement” is taken on the date the principal applicant first completes their pathway (2031-04-06), not the actual application date (PD-060).
+- 中：主申请人的情况需由受监管顾问判断，dependant 能否随其定居也无法判断。
+  - EN: The principal applicant’s circumstances need a regulated adviser’s assessment, so whether the dependant can settle with them cannot be determined either.
+- 中：主申请人已于 2024-06-01 定居。Earned Settlement 只讲了 dependant 与主申请人同时定居、或后到伴侣补足同样的合格期（p29–p31），没有说主申请人已定居后其 dependant 如何定居。
+  - EN: The principal applicant settled on 2024-06-01. Earned Settlement only covers dependants settling at the same time as the principal applicant, or a partner who joined later completing the same qualifying period (p29–p31); it does not say how a dependant settles after the principal applicant has settled.
+- 中：主申请人目前不满足 Earned Settlement 的强制要求，dependant 不能随其定居；主申请人补足后再评估。
+  - EN: The principal applicant does not currently meet the Earned Settlement requirements, so the dependant cannot settle with them; reassess once the principal applicant meets them.
 
 ### 聚合假设 / Assessment assumptions（earned-settlement-2026-11）
 
@@ -522,9 +532,9 @@
 
 ### CL-SCOPE：在现行规则的建模范围内 / Within the scope of the modelled current rules
 
-来源：SRC-004 SW 21.1；SRC-004 SW 39.1；SRC-004 SW 41A.1；SRC-005 LR 11.1；SRC-020 HK 62.1；SRC-021 GT 11.1；SRC-022 SETF 1.3；SRC-023 STP 1.3；SRC-026 UKA 13.1；SRC-027 INNF 18.1；SRC-028 PL 14.1
+来源：SRC-004 SW 21.1；SRC-004 SW 39.1；SRC-004 SW 41A.1；SRC-005 LR 11.1；SRC-020 HK 62.1；SRC-021 GT 11.1；SRC-022 SETF 1.3；SRC-023 STP 1.3；SRC-026 UKA 13.1；SRC-027 INNF 18.1；SRC-028 PL 14.1；SRC-020 HK 57.1；SRC-021 GT 27.1；SRC-022 SETF 12.1；SRC-024 D-LTRC.1.1
 
-待定细节：无
+待定细节：PD-074
 
 - 中：当前持 Skilled Worker 主申请人许可，按 Appendix Skilled Worker 与 Appendix Long Residence 评估。
   - EN: Currently holds Skilled Worker permission as the main applicant; assessed under Appendix Skilled Worker and Appendix Long Residence.
@@ -538,8 +548,8 @@
   - EN: Currently holds Global Talent permission as the main applicant; assessed under Appendix Global Talent and Appendix Long Residence.
 - 中：当前持 Appendix FM 的伴侣许可，按伴侣的定居要求与 Appendix Long Residence 评估。
   - EN: Currently holds permission as a partner under Appendix FM; assessed under the partner settlement requirements and Appendix Long Residence.
-- 中：现行规则只建模了 Skilled Worker（主申请人及其 dependent partner / child）、Hong Kong BN(O) 与 Global Talent 主申请人、Appendix FM 伴侣、持 refugee status 或 humanitarian protection 的主申请人、UK Ancestry、Innovator Founder 与 Private Life 主申请人、Long Residence；当前路线不在其中，也不满足 Long Residence 的 10 年，无法判断其他路线的定居条件。
-  - EN: The current rules are modelled only for Skilled Worker (main applicants and their dependent partners / children), Hong Kong BN(O) and Global Talent main applicants, Appendix FM partners, main applicants with refugee status or humanitarian protection, UK Ancestry, Innovator Founder and Private Life main applicants, and Long Residence; the current route is none of these, and the 10 years for Long Residence are not met, so the settlement requirements of other routes cannot be assessed.
+- 中：现行规则只建模了 Skilled Worker（主申请人及其 dependent partner / child）、Hong Kong BN(O) 与 Global Talent 主申请人及其 dependant、Appendix FM 伴侣及 10 年路线伴侣的子女、持 refugee status 或 humanitarian protection 的主申请人、UK Ancestry、Innovator Founder 与 Private Life 主申请人、Long Residence；当前路线不在其中，也不满足 Long Residence 的 10 年，无法判断其他路线的定居条件。
+  - EN: The current rules are modelled only for Skilled Worker (main applicants and their dependent partners / children), Hong Kong BN(O) and Global Talent main applicants and their dependants, Appendix FM partners and the children of 10-year route partners, main applicants with refugee status or humanitarian protection, UK Ancestry, Innovator Founder and Private Life main applicants, and Long Residence; the current route is none of these, and the 10 years for Long Residence are not met, so the settlement requirements of other routes cannot be assessed.
 - 中：当前持 Appendix Private Life 主申请人许可，按 Appendix Private Life 与 Appendix Long Residence 评估。
   - EN: Currently holds Appendix Private Life permission as the main applicant; assessed under Appendix Private Life and Appendix Long Residence.
 - 中：当前持 Skilled Worker 的 dependent partner 许可，按 Appendix Skilled Worker 的伴侣定居要求（SW 38–SW 46）与 Appendix Long Residence 评估。
@@ -550,6 +560,12 @@
   - EN: Currently holds UK Ancestry permission as the main applicant; assessed under Appendix UK Ancestry and Appendix Long Residence.
 - 中：当前持 Innovator Founder 主申请人许可，按 Appendix Innovator Founder 与 Appendix Long Residence 评估。
   - EN: Currently holds Innovator Founder permission as the main applicant; assessed under Appendix Innovator Founder and Appendix Long Residence.
+- 中：当前持 Hong Kong BN(O) 的 dependant 许可（未满 18 岁的子女，HK 57），按 Appendix Hong Kong BN(O) 与 Appendix Long Residence 评估。
+  - EN: Currently holds Hong Kong BN(O) permission as a dependant (child under 18, HK 57); assessed under Appendix Hong Kong BN(O) and Appendix Long Residence.
+- 中：当前持 Global Talent 的 dependent partner 许可，按 Appendix Global Talent 的 dependant 定居要求（GT 25–GT 34）与 Appendix Long Residence 评估。
+  - EN: Currently holds Global Talent permission as a dependent partner; assessed under the dependant settlement requirements of Appendix Global Talent (GT 25–GT 34) and Appendix Long Residence.
+- 中：当前持 Appendix FM 伴侣或父母的 dependent child 许可，按 Appendix Settlement Family Life 的子女定居要求（SETF 10–SETF 17）与 Appendix Long Residence 评估。
+  - EN: Currently holds permission as the dependent child of an Appendix FM partner or parent; assessed under the child settlement requirements of Appendix Settlement Family Life (SETF 10–SETF 17) and Appendix Long Residence.
 
 ### CL-SW-RESIDENCE-5Y：Skilled Worker 连续 5 年 / 5 continuous years as a Skilled Worker
 
@@ -680,14 +696,29 @@
 
 待定细节：PD-069
 
-- 中：当前不是 Hong Kong BN(O) 主申请人许可。
-  - EN: Current permission is not as a Hong Kong BN(O) main applicant.
+- 中：当前不是须满 5 年的 Hong Kong BN(O) 许可（主申请人、伴侣、已满 18 岁的子女或 adult dependant relative）。
+  - EN: Current permission is not Hong Kong BN(O) permission that needs the 5 years (main applicant, partner, child aged 18 or over, or adult dependant relative).
 - 中：自 2023-01-01 起连续持 Hong Kong BN(O) 许可，截至 2026-11-04 满 3 年；2028-01-01 满 5 年（HK 62.1(b)）。
   - EN: Continuous Hong Kong BN(O) permission since 2023-01-01: 3 full years by 2026-11-04; 5 years are completed on 2028-01-01 (HK 62.1(b)).
 - 中：HK 62.1(b) 也计入其他可定居路线（a route under which a person can settle）的许可；本工具只计 Hong Kong BN(O) 段，紧接其前的技术工作者许可未计入，若该路线可定居，实际日期可能更早（PD-069）。
   - EN: HK 62.1(b) also counts permission on any other route under which a person can settle; this tool counts only the Hong Kong BN(O) period, so the Skilled Worker permission just before it is not counted, and the actual date may be earlier if that route can lead to settlement (PD-069).
 - 中：自 2021-02-01 起连续持 Hong Kong BN(O) 许可，已满 5 年（HK 62.1(b)）。
   - EN: Continuous Hong Kong BN(O) permission since 2021-02-01: 5 years completed (HK 62.1(b)).
+
+### CL-HKBNO-DEPENDANT：Hong Kong BN(O) 子女或 adult dependant relative 随主申请人定居 / Hong Kong BN(O) child or adult dependant relative settling with the principal applicant
+
+来源：SRC-020 HK 57.1；SRC-020 HK 57.2；SRC-020 HK 57.3；SRC-020 HK 57.4；SRC-020 HK 58.1；SRC-020 HK 59.1；SRC-020 HK 62.1
+
+待定细节：无
+
+- 中：当前不是 Hong Kong BN(O) 未满 18 岁子女或 adult dependant relative 的 dependant 许可。
+  - EN: Current permission is not as a Hong Kong BN(O) dependent child under 18 or adult dependant relative.
+- 中：未满 18 岁（HK 57.1）；随主申请人定居：主申请人 2026-02-01 满 5 年，届时可一同申请（HK 57.3(a)）；子女本人没有居留年限要求（HK 62.1(b)）。
+  - EN: Under 18 (HK 57.1); settling with the principal applicant, who reaches 5 years on 2026-02-01, when they can apply together (HK 57.3(a)); the child has no residence requirement of their own (HK 62.1(b)).
+- 中：另一位父母须同时获批定居、已定居或为英国公民，除非主申请人是唯一在世的父母或负唯一抚养责任等（HK 57.4）；照护安排（HK 58.1、CHI 2.1）按满足处理。按申请日年龄判断：若到预计日期时已满 18 岁，届时须本人满 5 年（HK 62.1(b)）。
+  - EN: The other parent must be granted settlement at the same time, already be settled or be a British citizen, unless the principal applicant is the sole surviving parent, has sole responsibility or similar (HK 57.4); the care arrangements (HK 58.1, CHI 2.1) are assumed to be met. Age is taken on the date of application: if the child is 18 or over by the projected date, they will need 5 years of their own then (HK 62.1(b)).
+- 中：主申请人尚未定居时，只判断与主申请人同时获批；若其已定居，须在主申请人信息里填写定居日期与路线。
+  - EN: While the principal applicant has not settled, only being granted at the same time as them is assessed; if they have already settled, enter their settlement date and route in the principal applicant’s details.
 
 ### CL-GT-RESIDENCE：Global Talent 连续 3 年或 5 年 / Global Talent: 3 or 5 continuous years
 
@@ -705,6 +736,19 @@
   - EN: The endorsement is taken as not withdrawn (GT 10.1) and the applicant as having earned money in the field of their endorsement or prize during their last permission (GT 10.2); this tool does not check these.
 - 中：按 GT 11.1(b) 合格期 3 年；自 2023-11-04 起连续持可计入的许可（GT 11.3），已满 3 年。
   - EN: 3-year qualifying period under GT 11.1(b); continuous qualifying permission (GT 11.3) since 2023-11-04: 3 years completed.
+
+### CL-GT-DEPENDANT：Global Talent dependent partner / child 随主申请人定居 / Global Talent dependent partner or child settling with the principal applicant
+
+来源：SRC-021 GT 27.1；SRC-021 GT 27.2；SRC-021 GT 27.3；SRC-021 GT 27.4；SRC-021 GT 29A.1；SRC-021 GT 30.1；SRC-021 GT 31.1；SRC-018 CHI 1.1；SRC-018 CHI 1A.1；SRC-018 CHI 2.1；SRC-008 CR 3.1
+
+待定细节：无
+
+- 中：当前不是 Global Talent 的 dependent partner 或 dependent child 许可。
+  - EN: Current permission is not as a Global Talent dependent partner or dependent child.
+- 中：主申请人已于 2024-06-01 以 Global Talent 定居，当时本人持其 dependent partner 许可（GT 27.1(b)）；本人须连续满 5 年（GT 30.1），2026-06-01 起可申请。
+  - EN: The principal applicant settled as a Global Talent on 2024-06-01, when this person held their dependent partner permission (GT 27.1(b)); they need 5 continuous years of their own (GT 30.1), so they can apply from 2026-06-01.
+- 中：只计连续的 Global Talent dependant 许可，假设整段都是同一主申请人的 dependent partner；Appendix Relationship with Partner（GT 27.4）未核对。
+  - EN: Only continuous Global Talent dependant permission is counted, assuming all of it was as the same principal applicant’s dependent partner; Appendix Relationship with Partner (GT 27.4) is not checked.
 
 ### CL-FAMILY-RESIDENCE：家庭伴侣路线的连续居留 / Continuous residence on the family partner route
 
@@ -760,6 +804,21 @@
   - EN: Whether the transitional requirement applies is judged by whether the continuous partner permission started before 2024-04-11 (E-LTRP.3.5 looks at the date of the first application, so an application made before that date and granted after it also qualifies); children are those listed under relationships with another status. Savings (E-LTRP.3.1(b)), the partner receiving specified benefits (E-LTRP.3.3) and the evidence rules in Appendix FM-SE are not modelled.
 - 中：2024-25 纳税年度本人与伴侣收入合计 £22,000，达到过渡门槛（E-LTRP.3.5、E-LTRP.3.7(a)，0 名子女，最高 £29,000）的 £18,600。
   - EN: Combined earnings of the applicant and partner in the 2024-25 tax year are £22,000, which meets the £18,600 of the transitional requirement (E-LTRP.3.5, E-LTRP.3.7(a); 0 children, capped at £29,000).
+
+### CL-FAMILY-CHILD：Appendix FM 伴侣的子女随主申请人定居 / Child of an Appendix FM partner settling with the principal applicant
+
+来源：SRC-022 SETF 10.3；SRC-022 SETF 12.1；SRC-022 SETF 12.2；SRC-022 SETF 13.1；SRC-022 SETF 13.2；SRC-022 SETF 14.1；SRC-024 D-LTRC.1.1
+
+待定细节：PD-074
+
+- 中：当前不是 Appendix FM 伴侣或父母的 dependent child 许可。
+  - EN: Current permission is not as the dependent child of an Appendix FM partner or parent.
+- 中：申请日未满 18 岁（SETF 13.1）；随主申请人定居：主申请人 2026-03-01 满 10 年，届时可一同申请（SETF 12.1(a)）；子女本人没有居留年限要求。
+  - EN: Under 18 on the date of application (SETF 13.1); settling with the principal applicant, who reaches 10 years on 2026-03-01, when they can apply together (SETF 12.1(a)); the child has no residence requirement of their own.
+- 中：另一位父母须同时获批定居、已定居或为英国公民，除非主申请人是唯一在世的父母或负唯一抚养责任等（SETF 12.2）；16 岁以上不独立生活（SETF 13.2）、照护安排（SETF 14.1）按满足处理；在英国出生的子女（SETF 10.3）与 SETF 11.3–11.6 的 10 年例外未建模。
+  - EN: The other parent must be granted settlement at the same time, already be settled or be a British citizen, unless the principal applicant is the sole surviving parent, has sole responsibility or similar (SETF 12.2); not leading an independent life at 16 or over (SETF 13.2) and the care arrangements (SETF 14.1) are assumed to be met; children born in the UK (SETF 10.3) and the 10-year exceptions in SETF 11.3–11.6 are not modelled.
+- 中：主申请人尚未定居时，只判断与主申请人同时获批；若其已定居，须在主申请人信息里填写定居日期与路线。
+  - EN: While the principal applicant has not settled, only being granted at the same time as them is assessed; if they have already settled, enter their settlement date and route in the principal applicant’s details.
 
 ### CL-PROTECTION-RESIDENCE-5Y：连续 5 年持 refugee status 或 humanitarian protection / 5 continuous years with refugee status or humanitarian protection
 
@@ -853,7 +912,7 @@
 
 ### CL-ENGLISH：定居英语要求 / Settlement English requirement
 
-来源：SRC-004 SW 22A.1；SRC-004 SW 44.1；SRC-007 p24；SRC-005 LR 13.1；SRC-020 HK 60.1；SRC-021 GT 13.1；SRC-022 SETF 5.1；SRC-024 E-ILRP.1.6；SRC-025 KoLL 2.2；SRC-026 UKA 15.1；SRC-028 PL 16.1；SRC-007 EM 5.60；SRC-014 EL 1.1
+来源：SRC-004 SW 22A.1；SRC-004 SW 44.1；SRC-007 p24；SRC-005 LR 13.1；SRC-020 HK 60.1；SRC-021 GT 13.1；SRC-021 GT 32.1；SRC-022 SETF 5.1；SRC-022 SETF 15.1；SRC-024 E-ILRP.1.6；SRC-025 KoLL 2.2；SRC-026 UKA 15.1；SRC-028 PL 16.1；SRC-007 EM 5.60；SRC-014 EL 1.1
 
 待定细节：PD-072
 
@@ -895,10 +954,12 @@
   - EN: English level not provided; settlement requires CEFR B1 (Appendix Innovator Founder sets no English requirement for a main applicant’s settlement, INNF 15.1–21.6; this level applies only to the 10-year Long Residence pathway).
 - 中：英语 B1，达到定居要求的 B1（Appendix Private Life PL 16.1(a)，2027-03-26 前的申请）。
   - EN: English at B1, which meets the B1 required for settlement (Appendix Private Life PL 16.1(a), applications before 2027-03-26).
+- 中：英语 B1，达到定居要求的 B1（Appendix Global Talent GT 32.1(a)，2027-03-26 前的申请）。
+  - EN: English at B1, which meets the B1 required for settlement (Appendix Global Talent GT 32.1(a), applications before 2027-03-26).
 
 ### CL-KOL：通过 Life in the UK 考试 / Pass the Life in the UK test
 
-来源：SRC-004 SW 23.1；SRC-004 SW 45.1；SRC-005 LR 14.1；SRC-020 HK 61.1；SRC-021 GT 14.1；SRC-022 SETF 6.1；SRC-025 KoLL 2.3；SRC-026 UKA 16.1；SRC-027 INNF 20.1；SRC-028 PL 17.1；SRC-015 KOL 1.1；SRC-015 KOL 2.1
+来源：SRC-004 SW 23.1；SRC-004 SW 45.1；SRC-005 LR 14.1；SRC-020 HK 61.1；SRC-021 GT 14.1；SRC-021 GT 33.1；SRC-022 SETF 6.1；SRC-022 SETF 16.1；SRC-025 KoLL 2.3；SRC-026 UKA 16.1；SRC-027 INNF 20.1；SRC-028 PL 17.1；SRC-015 KOL 1.1；SRC-015 KOL 2.1
 
 待定细节：PD-072
 
@@ -926,6 +987,8 @@
   - EN: Passed the Life in the UK test (UKA 16.1).
 - 中：已通过 Life in the UK 考试（INNF 20.1）。
   - EN: Passed the Life in the UK test (INNF 20.1).
+- 中：已通过 Life in the UK 考试（GT 33.1）。
+  - EN: Passed the Life in the UK test (GT 33.1).
 
 ### CL-LR-RESIDENCE-10Y：Long Residence 连续合法居留 10 年 / Long Residence: 10 years of continuous lawful residence
 
@@ -987,11 +1050,15 @@
   - EN: Continuous lawful residence since 2023-05-01: 3 full years by 2026-05-01; 10 years are completed on 2033-05-01.
 - 中：自 2021-07-01 起连续合法居留，截至 2026-07-01 满 5 年；2031-07-01 满 10 年。
   - EN: Continuous lawful residence since 2021-07-01: 5 full years by 2026-07-01; 10 years are completed on 2031-07-01.
+- 中：自 2021-06-01 起连续合法居留，截至 2026-06-01 满 5 年；2031-06-01 满 10 年。
+  - EN: Continuous lawful residence since 2021-06-01: 5 full years by 2026-06-01; 10 years are completed on 2031-06-01.
+- 中：自 2019-03-01 起连续合法居留，截至 2026-03-01 满 7 年；2029-03-01 满 10 年。
+  - EN: Continuous lawful residence since 2019-03-01: 7 full years by 2026-03-01; 10 years are completed on 2029-03-01.
 
 ### 聚合假设 / Assessment assumptions（current-law-2026-11）
 
-- 中：现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）、Appendix FM 伴侣（10 年路线按 Appendix Settlement Family Life，5 年路线按 Appendix FM）、持 refugee status 或 humanitarian protection 的主申请人（Appendix Settlement Protection）、UK Ancestry 主申请人（Appendix UK Ancestry）、Innovator Founder 主申请人（Appendix Innovator Founder）、Private Life 主申请人（Appendix Private Life）与 Long Residence（Appendix Long Residence）；Part Suitability、STP 2.1 的 suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。
-  - EN: The current rules are modelled only for Skilled Worker main applicants and their dependent partners / children (Appendix Skilled Worker, Appendix Children), Hong Kong BN(O) main applicants (Appendix Hong Kong British National (Overseas)), Global Talent main applicants (Appendix Global Talent), Appendix FM partners (the 10-year route under Appendix Settlement Family Life, the 5-year route under Appendix FM), main applicants with refugee status or humanitarian protection (Appendix Settlement Protection), UK Ancestry main applicants (Appendix UK Ancestry), Innovator Founder main applicants (Appendix Innovator Founder), Private Life main applicants (Appendix Private Life) and Long Residence (Appendix Long Residence); other requirements, such as Part Suitability, suitability under STP 2.1 and the sponsor still being approved (SW 24.1–24.2), are not modelled.
+- 中：现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人及其 dependant（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人及其 dependent partner / child（Appendix Global Talent）、Appendix FM 伴侣（10 年路线按 Appendix Settlement Family Life，5 年路线按 Appendix FM）及 10 年路线伴侣的子女（Appendix Settlement Family Life）、持 refugee status 或 humanitarian protection 的主申请人（Appendix Settlement Protection）、UK Ancestry 主申请人（Appendix UK Ancestry）、Innovator Founder 主申请人（Appendix Innovator Founder）、Private Life 主申请人（Appendix Private Life）与 Long Residence（Appendix Long Residence）；Part Suitability、STP 2.1 的 suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。
+  - EN: The current rules are modelled only for Skilled Worker main applicants and their dependent partners / children (Appendix Skilled Worker, Appendix Children), Hong Kong BN(O) main applicants and their dependants (Appendix Hong Kong British National (Overseas)), Global Talent main applicants and their dependent partners / children (Appendix Global Talent), Appendix FM partners (the 10-year route under Appendix Settlement Family Life, the 5-year route under Appendix FM) and the children of 10-year route partners (Appendix Settlement Family Life), main applicants with refugee status or humanitarian protection (Appendix Settlement Protection), UK Ancestry main applicants (Appendix UK Ancestry), Innovator Founder main applicants (Appendix Innovator Founder), Private Life main applicants (Appendix Private Life) and Long Residence (Appendix Long Residence); other requirements, such as Part Suitability, suitability under STP 2.1 and the sponsor still being approved (SW 24.1–24.2), are not modelled.
 - 中：Long Residence 10 年路径须英语 B1（LR 13.1(a)），未填写英语水平；"定居英语要求"一条按当前路线的等级核对。
   - EN: The 10-year Long Residence pathway requires English at B1 (LR 13.1(a)), and no English level has been provided; the settlement English requirement shown applies the current route’s level.
 - 中：最早可申请日期按"自 2022-01-01 起持续居留、收入等状况不变、其余要求届时仍满足"推算，不是对未来的保证。

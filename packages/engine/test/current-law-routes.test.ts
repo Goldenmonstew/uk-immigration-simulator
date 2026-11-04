@@ -42,11 +42,14 @@ describe('Hong Kong BN(O) (SRC-020)', () => {
     english: { cefrLevel: 'B1' as const },
   });
 
-  test('CL-SCOPE: a main applicant is in scope, a dependant is not', () => {
+  test('CL-SCOPE: a main applicant is in scope, a dependant without dependantOf is not', () => {
     expect(run(clScope, bno('2021-02-01')).status).toBe('PASS');
+    // A dependant without dependantOf (contracts §15).
     const dependant = run(clScope, bno('2021-02-01', { role: 'DEPENDANT' }));
     expect(dependant.status).toBe('UNKNOWN');
-    expect(dependant.explanation).toContain('只建模该路线的主申请人');
+    expect(dependant.explanation).toContain(
+      '未填写是作为主申请人的伴侣、子女还是亲属',
+    );
     expect(
       currentLaw(bno('2021-02-01', { role: 'DEPENDANT' }), '2026-02-01')
         .outcome,

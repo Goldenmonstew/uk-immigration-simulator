@@ -10,9 +10,13 @@ import type { Lang } from './rule';
 import { meetsCefr } from './rules/es-requirements';
 import {
   ageExempt,
+  familyChildPathway,
   familyFiveYearStart,
   familyTenYearStart,
+  globalTalentDependantPathway,
   globalTalentQualifying,
+  hongKongBnoDependant,
+  hongKongBnoDependantPathway,
   hongKongBnoStart,
   innovatorFounderStart,
   longResidenceStart,
@@ -483,8 +487,8 @@ function finishEarnedSettlement(
 
 const clBaseAssumption = (L: Lang) =>
   L(
-    '现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）、Appendix FM 伴侣（10 年路线按 Appendix Settlement Family Life，5 年路线按 Appendix FM）、持 refugee status 或 humanitarian protection 的主申请人（Appendix Settlement Protection）、UK Ancestry 主申请人（Appendix UK Ancestry）、Innovator Founder 主申请人（Appendix Innovator Founder）、Private Life 主申请人（Appendix Private Life）与 Long Residence（Appendix Long Residence）；Part Suitability、STP 2.1 的 suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。',
-    'The current rules are modelled only for Skilled Worker main applicants and their dependent partners / children (Appendix Skilled Worker, Appendix Children), Hong Kong BN(O) main applicants (Appendix Hong Kong British National (Overseas)), Global Talent main applicants (Appendix Global Talent), Appendix FM partners (the 10-year route under Appendix Settlement Family Life, the 5-year route under Appendix FM), main applicants with refugee status or humanitarian protection (Appendix Settlement Protection), UK Ancestry main applicants (Appendix UK Ancestry), Innovator Founder main applicants (Appendix Innovator Founder), Private Life main applicants (Appendix Private Life) and Long Residence (Appendix Long Residence); other requirements, such as Part Suitability, suitability under STP 2.1 and the sponsor still being approved (SW 24.1–24.2), are not modelled.',
+    '现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人及其 dependant（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人及其 dependent partner / child（Appendix Global Talent）、Appendix FM 伴侣（10 年路线按 Appendix Settlement Family Life，5 年路线按 Appendix FM）及 10 年路线伴侣的子女（Appendix Settlement Family Life）、持 refugee status 或 humanitarian protection 的主申请人（Appendix Settlement Protection）、UK Ancestry 主申请人（Appendix UK Ancestry）、Innovator Founder 主申请人（Appendix Innovator Founder）、Private Life 主申请人（Appendix Private Life）与 Long Residence（Appendix Long Residence）；Part Suitability、STP 2.1 的 suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。',
+    'The current rules are modelled only for Skilled Worker main applicants and their dependent partners / children (Appendix Skilled Worker, Appendix Children), Hong Kong BN(O) main applicants and their dependants (Appendix Hong Kong British National (Overseas)), Global Talent main applicants and their dependent partners / children (Appendix Global Talent), Appendix FM partners (the 10-year route under Appendix Settlement Family Life, the 5-year route under Appendix FM) and the children of 10-year route partners (Appendix Settlement Family Life), main applicants with refugee status or humanitarian protection (Appendix Settlement Protection), UK Ancestry main applicants (Appendix UK Ancestry), Innovator Founder main applicants (Appendix Innovator Founder), Private Life main applicants (Appendix Private Life) and Long Residence (Appendix Long Residence); other requirements, such as Part Suitability, suitability under STP 2.1 and the sponsor still being approved (SW 24.1–24.2), are not modelled.',
   );
 
 function assessCurrentLaw(
@@ -512,6 +516,12 @@ function assessCurrentLaw(
   const ancestry = onUkAncestry(ctx.timeline, ctx.simulationDate);
   const innovator = onInnovatorFounder(ctx.timeline, ctx.simulationDate);
   const privateLife = privateLifeQualifying(ctx);
+  // Dependants (contracts §15).
+  const hkOwn = hongKongBnoStart(ctx);
+  const hkKind = hongKongBnoDependant(ctx.timeline, ctx.simulationDate);
+  const hkDependant = hongKongBnoDependantPathway(ctx);
+  const gtDependant = globalTalentDependantPathway(ctx);
+  const familyChild = familyChildPathway(ctx);
   // In scope as a partner or child only with the principal (CL-SCOPE).
   const partner =
     ctx.principal !== undefined &&
@@ -526,25 +536,31 @@ function assessCurrentLaw(
         ? child
         : id.startsWith('CL-SW-')
           ? sw
-          : id.startsWith('CL-HKBNO-')
-            ? hk
-            : id.startsWith('CL-GT-')
-              ? gt !== undefined
-              : id === 'CL-FAMILY-RESIDENCE'
-                ? family
-                : id === 'CL-FAMILY-RELATIONSHIP'
-                  ? familyTen !== undefined || familyFive !== undefined
-                  : id === 'CL-FAMILY-FINANCIAL'
-                    ? familyFive !== undefined
-                    : id.startsWith('CL-PROTECTION-')
-                      ? protection
-                      : id.startsWith('CL-ANCESTRY-')
-                        ? ancestry
-                        : id.startsWith('CL-INNOVATOR-')
-                          ? innovator
-                          : id === 'CL-PRIVATE-LIFE-RESIDENCE'
-                            ? privateLife !== undefined
-                            : true;
+          : id === 'CL-HKBNO-RESIDENCE-5Y'
+            ? hkOwn !== undefined
+            : id === 'CL-HKBNO-DEPENDANT'
+              ? hkDependant !== undefined
+              : id === 'CL-GT-DEPENDANT'
+                ? gtDependant !== undefined
+                : id === 'CL-FAMILY-CHILD'
+                  ? familyChild !== undefined
+                  : id.startsWith('CL-GT-')
+                    ? gt !== undefined
+                    : id === 'CL-FAMILY-RESIDENCE'
+                      ? family
+                      : id === 'CL-FAMILY-RELATIONSHIP'
+                        ? familyTen !== undefined || familyFive !== undefined
+                        : id === 'CL-FAMILY-FINANCIAL'
+                          ? familyFive !== undefined
+                          : id.startsWith('CL-PROTECTION-')
+                            ? protection
+                            : id.startsWith('CL-ANCESTRY-')
+                              ? ancestry
+                              : id.startsWith('CL-INNOVATOR-')
+                                ? innovator
+                                : id === 'CL-PRIVATE-LIFE-RESIDENCE'
+                                  ? privateLife !== undefined
+                                  : true;
   const rules = [
     scope,
     ...others
@@ -591,15 +607,33 @@ function assessCurrentLaw(
           },
         ]
       : []),
-    ...(hk
+    // A main applicant, partner or adult child on their own 5 years (HK 62.1).
+    ...(hk || hkKind === 'OWN'
       ? [
           {
             years: cl.values.hongKongBnoQualifyingYears.value,
-            start: hongKongBnoStart(ctx)?.start,
+            start: hkOwn?.start,
             rules: pick('CL-ENGLISH', 'CL-KOL'),
           },
         ]
       : []),
+    ...(
+      [
+        ['CL-HKBNO-DEPENDANT', hkDependant],
+        ['CL-GT-DEPENDANT', gtDependant],
+        ['CL-FAMILY-CHILD', familyChild],
+      ] as const
+    ).flatMap(([id, pathway]) =>
+      pathway
+        ? [
+            {
+              years: pathway.years,
+              start: pathway.start,
+              rules: pick(id, 'CL-ENGLISH', 'CL-KOL'),
+            },
+          ]
+        : [],
+    ),
     ...(gt
       ? [
           {
@@ -752,7 +786,7 @@ function assessCurrentLaw(
   // Hong Kong BN(O) stays at B1 (HK 60.1); protection (PD-072) and an
   // Innovator Founder (INNF 15–21) have no English requirement.
   const noB2Pathway =
-    (hk &&
+    ((hk || hkKind !== undefined) &&
       decision.pathwayYears === cl.values.hongKongBnoQualifyingYears.value) ||
     (protection &&
       decision.pathwayYears === cl.values.protectionQualifyingYears.value) ||
@@ -767,8 +801,8 @@ function assessCurrentLaw(
   ) {
     assumptions.push(
       L(
-        `预计日期在 ${b2.applicationsFrom} 之后，届时定居须达到英语 ${b2.cefrLevel}（${gt ? 'GT 13.1(b)' : ancestry ? 'UKA 15.1(b)' : privateLife ? 'PL 16.1(b)' : familyTen ? 'SETF 5.1(b)' : familyFive ? 'KoLL 2.2' : 'SW 22A.1'}、LR 13.1(b)）。`,
-        `The projected date is on or after ${b2.applicationsFrom}, when settlement requires English at ${b2.cefrLevel} (${gt ? 'GT 13.1(b)' : ancestry ? 'UKA 15.1(b)' : privateLife ? 'PL 16.1(b)' : familyTen ? 'SETF 5.1(b)' : familyFive ? 'KoLL 2.2' : 'SW 22A.1'}, LR 13.1(b)).`,
+        `预计日期在 ${b2.applicationsFrom} 之后，届时定居须达到英语 ${b2.cefrLevel}（${gt ? 'GT 13.1(b)' : gtDependant ? 'GT 32.1(b)' : familyChild ? 'SETF 15.1(b)' : ancestry ? 'UKA 15.1(b)' : privateLife ? 'PL 16.1(b)' : familyTen ? 'SETF 5.1(b)' : familyFive ? 'KoLL 2.2' : 'SW 22A.1'}、LR 13.1(b)）。`,
+        `The projected date is on or after ${b2.applicationsFrom}, when settlement requires English at ${b2.cefrLevel} (${gt ? 'GT 13.1(b)' : gtDependant ? 'GT 32.1(b)' : familyChild ? 'SETF 15.1(b)' : ancestry ? 'UKA 15.1(b)' : privateLife ? 'PL 16.1(b)' : familyTen ? 'SETF 5.1(b)' : familyFive ? 'KoLL 2.2' : 'SW 22A.1'}, LR 13.1(b)).`,
       ),
     );
   }

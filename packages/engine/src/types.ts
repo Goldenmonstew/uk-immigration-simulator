@@ -73,9 +73,11 @@ export interface ImmigrationEpisode {
   salary?: number;
   /**
    * DEPENDANT only: the principal is this person's partner, or their parent
-   * (this person is a child dependant). Missing = not provided.
+   * (this person is a child dependant). RELATIVE = Hong Kong BN(O) adult
+   * dependant relative: the principal is this person's child, grandchild,
+   * brother, sister or parent (HK 59.1). Missing = not provided.
    */
-  dependantOf?: 'PARTNER' | 'PARENT';
+  dependantOf?: 'PARTNER' | 'PARENT' | 'RELATIVE';
   /**
    * SKILLED_WORKER MAIN only: the sponsored job is on Appendix Immigration
    * Salary List (SW 24.3 rows B, D). Missing = no.

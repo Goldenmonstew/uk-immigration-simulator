@@ -1,6 +1,9 @@
 import type { Fixture } from '../../engine/src/types';
+import { clFamilyChildTenYear } from './cl-family-child-ten-year';
 import { clFamilyPartnerFiveYears } from './cl-family-partner-five-years';
+import { clGlobalTalentPartnerFiveYears } from './cl-global-talent-partner-five-years';
 import { clGlobalTalentThreeYears } from './cl-global-talent-three-years';
+import { clHkbnoChildWithParent } from './cl-hkbno-child-with-parent';
 import { clHkbnoFiveYears } from './cl-hkbno-five-years';
 import { clInnovatorFounderThreeYears } from './cl-innovator-founder-three-years';
 import { clPrivateLifeYoungAdultFiveYears } from './cl-private-life-young-adult-five-years';
@@ -51,4 +54,7 @@ export const fixtures: Fixture[] = [
   clUkAncestryFiveYears,
   clInnovatorFounderThreeYears,
   clPrivateLifeYoungAdultFiveYears,
+  clHkbnoChildWithParent,
+  clGlobalTalentPartnerFiveYears,
+  clFamilyChildTenYear,
 ];
