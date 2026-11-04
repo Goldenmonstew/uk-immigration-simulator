@@ -200,3 +200,6 @@ dependant 随主申请人定居（SRC-001 Ch.5）时，原文未规定、引擎�
 - STP 2.1 的 suitability：与 Part Suitability 一样未建模，写进现行法律栏的建模范围说明。
 - STP 4.1 持续保护身份按用户申报（`protectionStatusRevoked`，缺省按仍持有）；STP 4.2 的 safe return review 结果无法预判；STP 5.2 不满足定居时再获至少 30 个月保护许可：都写进 `CL-PROTECTION-STATUS` 的假设。
 - 现行法律下不区分 Earned Settlement 的三条保护类路线：`CORE_PROTECTION`、`PROTECTION_WORK_AND_STUDY`、`SAFE_AND_LEGAL`、`LEGACY_SAFE_AND_LEGAL` 的主申请人片段连续计入 STP 3.1；作为 dependant 的时间不计。
+- UK Ancestry（SRC-026）：UKA 10.3（申请日为 Commonwealth citizen）与 UKA 12.1（仍满足 UKA 4.1–6.1）按满足处理，写进 `CL-ANCESTRY-RESIDENCE-5Y` 的假设；dependant（UKA 18–UKA 36）由 `CL-SCOPE` 输出 `UNKNOWN`。
+- Innovator Founder（SRC-027）：INNF 17.1(f) 各项由用户自报（`innovatorSettlementCriteria`），金额与岗位数不由引擎判断；INNF 17.1(a)–(e)、INNF 15.2(e)、INNF 17.3、INNF 17.4 写进 `CL-INNOVATOR-ENDORSEMENT` 的假设。主申请人定居没有英语要求是原文写明的（INNF 15.1–21.6；EM 5.60 涉及的是 dependant 的 INNF 39.1），不是待定事项。dependant 由 `CL-SCOPE` 输出 `UNKNOWN`。
+- Private Life（SRC-028）：PL 13（英国出生的儿童）、PL 14.1A / PL 14.2(b) / PL 14.2A（2022-06-20 前的过渡安排）、PL 12.3–12.5（suitability 事由要求 10 年）未建模，PL 14.3(e) 的 Article 8 Leave Outside the Rules 不计入，都写进 `CL-PRIVATE-LIFE-RESIDENCE` 的假设；PL 14.4 的其他可定居路线归入 PD-069。dependant（PL 19–PL 33）由 `CL-SCOPE` 输出 `UNKNOWN`。

@@ -7,6 +7,7 @@ import {
   clInnovatorEndorsement,
   clInnovatorResidence3Y,
   clKol,
+  clPrivateLifeResidence,
   clProtectionResidence5Y,
   clProtectionStatus,
   clScope,
@@ -395,5 +396,136 @@ describe('Innovator Founder (SRC-027)', () => {
     );
     expect(result.status).toBe('FAIL');
     expect(result.explanation).toContain('2027-07-01');
+  });
+});
+
+describe('Private Life (SRC-028)', () => {
+  const privateLife = (
+    validFrom: string,
+    privateLifeRoute: ImmigrationEpisode['privateLifeRoute'],
+    extra: Partial<PersonTimeline> = {},
+  ): Partial<PersonTimeline> => ({
+    episodes: [on('FAMILY_AND_PRIVATE_LIFE', validFrom, { privateLifeRoute })],
+    english: { cefrLevel: 'B1' },
+    ...extra,
+  });
+
+  test('CL-SCOPE: a main applicant is in scope (also without the basis), a dependant is not', () => {
+    expect(
+      run(clScope, privateLife('2021-07-01', undefined)).explanation,
+    ).toContain('Appendix Private Life');
+    expect(
+      run(clScope, {
+        episodes: [
+          on('FAMILY_AND_PRIVATE_LIFE', '2021-07-01', { role: 'DEPENDANT' }),
+        ],
+      }).status,
+    ).toBe('UNKNOWN');
+  });
+
+  test('child or young adult: 5 years to the day (PL 14.1)', () => {
+    for (const route of ['CHILD', 'YOUNG_ADULT'] as const) {
+      const result = run(
+        clPrivateLifeResidence,
+        privateLife('2021-07-01', route),
+        '2026-07-01',
+      );
+      expect(result.status).toBe('PASS');
+      expect(result.explanation).toContain('PL 14.1');
+      expect(
+        currentLaw(privateLife('2021-07-01', route), '2026-07-01'),
+      ).toMatchObject({
+        outcome: 'LIKELY_ELIGIBLE',
+        pathwayYears: 5,
+        earliestDate: '2026-07-01',
+      });
+    }
+  });
+
+  test('a day short: projects the date 5 years on', () => {
+    expect(
+      currentLaw(privateLife('2021-07-02', 'YOUNG_ADULT'), '2026-07-01'),
+    ).toMatchObject({
+      outcome: 'LIKELY_NOT_ELIGIBLE',
+      pathwayYears: 5,
+      earliestDate: '2026-07-02',
+    });
+  });
+
+  test('adult: 10 years (PL 14.2(a)), a day short projects the date', () => {
+    expect(
+      currentLaw(privateLife('2016-07-01', 'ADULT'), '2026-07-01'),
+    ).toMatchObject({ outcome: 'LIKELY_ELIGIBLE', pathwayYears: 10 });
+    const short = run(
+      clPrivateLifeResidence,
+      privateLife('2016-07-02', 'ADULT'),
+      '2026-07-01',
+    );
+    expect(short.status).toBe('FAIL');
+    expect(short.explanation).toContain('PL 14.2(a)');
+    expect(
+      currentLaw(privateLife('2016-07-02', 'ADULT'), '2026-07-01'),
+    ).toMatchObject({
+      outcome: 'LIKELY_NOT_ELIGIBLE',
+      pathwayYears: 10,
+      earliestDate: '2026-07-02',
+    });
+  });
+
+  test('missing basis is unknown: insufficient information', () => {
+    expect(
+      run(clPrivateLifeResidence, privateLife('2021-07-01', undefined)).status,
+    ).toBe('UNKNOWN');
+    expect(
+      currentLaw(privateLife('2021-07-01', undefined), '2026-07-01').outcome,
+    ).toBe('INSUFFICIENT_INFORMATION');
+  });
+
+  test('PL 14.3: Appendix FM time combines; other routes are named (PD-069)', () => {
+    const fm = [
+      on('FAMILY_PARTNER_OR_PARENT', '2021-01-01', {
+        role: 'DEPENDANT',
+        dependantOf: 'PARENT',
+        validTo: '2022-12-31',
+      }),
+      on('FAMILY_AND_PRIVATE_LIFE', '2023-01-01', {
+        privateLifeRoute: 'CHILD',
+      }),
+    ];
+    expect(
+      run(clPrivateLifeResidence, { episodes: fm }, '2026-01-01').status,
+    ).toBe('PASS');
+    const afterStudent = [
+      on('STUDENT', '2019-01-01', { validTo: '2022-12-31' }),
+      on('FAMILY_AND_PRIVATE_LIFE', '2023-01-01', {
+        privateLifeRoute: 'ADULT',
+      }),
+    ];
+    const result = run(
+      clPrivateLifeResidence,
+      { episodes: afterStudent },
+      '2026-01-01',
+    );
+    expect(result.explanation).toContain('自 2023-01-01 起');
+    expect(result.assumptions?.join()).toContain('PD-069');
+  });
+
+  test('English B1 / B2 by 2027-03-26 (PL 16.1); under 18 exempt; KOL PL 17.1', () => {
+    const tl = privateLife('2021-07-01', 'CHILD');
+    expect(run(clEnglish, tl, '2027-03-25').explanation).toContain(
+      'PL 16.1(a)',
+    );
+    expect(run(clEnglish, tl, '2027-03-26').status).toBe('FAIL');
+    expect(
+      run(clEnglish, { ...tl, dateOfBirth: '2012-01-01', english: undefined })
+        .status,
+    ).toBe('PASS');
+    expect(run(clKol, tl).explanation).toContain('PL 17.1');
+    expect(
+      currentLaw(
+        privateLife('2023-01-01', 'YOUNG_ADULT'),
+        '2026-11-04',
+      ).assumptions.join(),
+    ).toContain('PL 16.1(b)');
   });
 });

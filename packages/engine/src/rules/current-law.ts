@@ -31,7 +31,8 @@ import type {
 // (SRC-020) and Global Talent (SRC-021), Appendix FM partners on the
 // 10-year (SRC-022) and 5-year (SRC-024, SRC-025) routes, people with
 // refugee status or humanitarian protection (SRC-023), and UK Ancestry
-// (SRC-026) and Innovator Founder (SRC-027) main applicants.
+// (SRC-026), Innovator Founder (SRC-027) and Private Life (SRC-028) main
+// applicants.
 
 const RULE_SET = 'current-law-2026-11';
 
@@ -63,6 +64,9 @@ export const onUkAncestry = (timeline: PersonTimeline, date: IsoDate) =>
 
 export const onInnovatorFounder = (timeline: PersonTimeline, date: IsoDate) =>
   onMain(timeline, date, 'INNOVATOR_FOUNDER');
+
+export const onPrivateLife = (timeline: PersonTimeline, date: IsoDate) =>
+  onMain(timeline, date, 'FAMILY_AND_PRIVATE_LIFE');
 
 /** Appendix FM partner on the date (any kind but PARENT, contracts §12.8). */
 export function onFamilyPartner(timeline: PersonTimeline, date: IsoDate) {
@@ -114,6 +118,7 @@ const MAIN_ONLY_ROUTES: Route[] = [
   ...PROTECTION_ROUTES,
   'UK_ANCESTRY',
   'INNOVATOR_FOUNDER',
+  'FAMILY_AND_PRIVATE_LIFE',
 ];
 
 // A Skilled Worker's dependant: the run of such permissions counts towards
@@ -162,6 +167,7 @@ export const clScope = defineRule(
       { srcId: 'SRC-023', locator: 'STP 1.3' },
       { srcId: 'SRC-026', locator: 'UKA 13.1' },
       { srcId: 'SRC-027', locator: 'INNF 18.1' },
+      { srcId: 'SRC-028', locator: 'PL 14.1' },
     ],
     pendingDetails: [],
   },
@@ -211,6 +217,15 @@ export const clScope = defineRule(
         explanation: L(
           '当前持 Innovator Founder 主申请人许可，按 Appendix Innovator Founder 与 Appendix Long Residence 评估。',
           'Currently holds Innovator Founder permission as the main applicant; assessed under Appendix Innovator Founder and Appendix Long Residence.',
+        ),
+      };
+    }
+    if (onPrivateLife(timeline, simulationDate)) {
+      return {
+        status: 'PASS',
+        explanation: L(
+          '当前持 Appendix Private Life 主申请人许可，按 Appendix Private Life 与 Appendix Long Residence 评估。',
+          'Currently holds Appendix Private Life permission as the main applicant; assessed under Appendix Private Life and Appendix Long Residence.',
         ),
       };
     }
@@ -298,8 +313,8 @@ export const clScope = defineRule(
               'Currently holds Skilled Worker permission as a dependant; not provided whether this is as the principal applicant’s partner or child.',
             )
         : L(
-            '现行规则只建模了 Skilled Worker（主申请人及其 dependent partner / child）、Hong Kong BN(O) 与 Global Talent 主申请人、Appendix FM 伴侣、持 refugee status 或 humanitarian protection 的主申请人、UK Ancestry 与 Innovator Founder 主申请人、Long Residence；当前路线不在其中，也不满足 Long Residence 的 10 年，无法判断其他路线的定居条件。',
-            'The current rules are modelled only for Skilled Worker (main applicants and their dependent partners / children), Hong Kong BN(O) and Global Talent main applicants, Appendix FM partners, main applicants with refugee status or humanitarian protection, UK Ancestry and Innovator Founder main applicants, and Long Residence; the current route is none of these, and the 10 years for Long Residence are not met, so the settlement requirements of other routes cannot be assessed.',
+            '现行规则只建模了 Skilled Worker（主申请人及其 dependent partner / child）、Hong Kong BN(O) 与 Global Talent 主申请人、Appendix FM 伴侣、持 refugee status 或 humanitarian protection 的主申请人、UK Ancestry、Innovator Founder 与 Private Life 主申请人、Long Residence；当前路线不在其中，也不满足 Long Residence 的 10 年，无法判断其他路线的定居条件。',
+            'The current rules are modelled only for Skilled Worker (main applicants and their dependent partners / children), Hong Kong BN(O) and Global Talent main applicants, Appendix FM partners, main applicants with refugee status or humanitarian protection, UK Ancestry, Innovator Founder and Private Life main applicants, and Long Residence; the current route is none of these, and the 10 years for Long Residence are not met, so the settlement requirements of other routes cannot be assessed.',
           );
     return { status: 'UNKNOWN', explanation };
   },
@@ -1358,6 +1373,138 @@ export const clInnovatorEndorsement = defineRule(
   },
 );
 
+/** PL 14.1 / PL 14.2(a): the qualifying period and the paragraph that sets it. */
+function privateLifePeriod(
+  e: ImmigrationEpisode,
+): { years: number; basis: string } | undefined {
+  switch (e.privateLifeRoute) {
+    case 'CHILD':
+    case 'YOUNG_ADULT':
+      return {
+        years: cl.values.privateLifeQualifyingYearsFive.value,
+        basis: 'PL 14.1',
+      };
+    case 'ADULT':
+      return {
+        years: cl.values.privateLifeQualifyingYearsTen.value,
+        basis: 'PL 14.2(a)',
+      };
+    default:
+      return undefined;
+  }
+}
+
+/**
+ * The Private Life qualifying period, while a main applicant on that route:
+ * years from the basis of the permission (undefined if not provided), and the
+ * start of the continuous PL 14.3 period (the same list as SETF 3.1) ending on
+ * the simulation date (PL 15.1, CR 3.1). `before` is the adjoining earlier
+ * permission that does not count, if any (PL 14.4, PD-069).
+ */
+export function privateLifeQualifying({
+  timeline,
+  simulationDate,
+}: RuleContext):
+  | {
+      start: IsoDate;
+      before?: ImmigrationEpisode;
+      period?: { years: number; basis: string };
+    }
+  | undefined {
+  if (!onPrivateLife(timeline, simulationDate)) return undefined;
+  const { episodes, stoppedAt } = continuousRun(
+    timeline,
+    simulationDate,
+    countsForFamilyTenYear,
+  );
+  return {
+    start: restartAfterAbsences(
+      episodes[0].validFrom,
+      simulationDate,
+      timeline.absences,
+      CR_3_1,
+    ),
+    before: stoppedAt,
+    period: privateLifePeriod(episodeOn(timeline, simulationDate)!),
+  };
+}
+
+export const clPrivateLifeResidence = defineRule(
+  {
+    id: 'CL-PRIVATE-LIFE-RESIDENCE',
+    ruleSetId: RULE_SET,
+    title: 'Private Life 连续 5 年或 10 年',
+    titleEn: `Private Life: ${cl.values.privateLifeQualifyingYearsFive.value} or ${cl.values.privateLifeQualifyingYearsTen.value} continuous years`,
+    sources: [
+      { srcId: 'SRC-028', locator: 'PL 14.1' },
+      { srcId: 'SRC-028', locator: 'PL 14.2' },
+      { srcId: 'SRC-028', locator: 'PL 14.3' },
+      { srcId: 'SRC-028', locator: 'PL 14.4' },
+      { srcId: 'SRC-028', locator: 'PL 15.1' },
+      { srcId: 'SRC-008', locator: 'CR 3.1' },
+    ],
+    pendingDetails: ['PD-069'],
+  },
+  (ctx) => {
+    const L = textFor(ctx);
+    const q = privateLifeQualifying(ctx);
+    if (!q) {
+      return {
+        status: 'FAIL',
+        explanation: L(
+          '当前不是 Appendix Private Life 主申请人许可。',
+          'Current permission is not as an Appendix Private Life main applicant.',
+        ),
+      };
+    }
+    const { start, before, period } = q;
+    const assumptions = [
+      L(
+        '连续期合并 PL 14.3 列出的 Appendix FM 伴侣、父母及其子女许可与 Private Life 许可；PL 14.3(e) 基于 Article 8 的 Leave Outside the Rules 无法与其他 Leave Outside the Rules 区分，不计入。PL 13（英国出生、连续居住 7 年的儿童可直接定居）、PL 14.1A / PL 14.2(b) / PL 14.2A（2022-06-20 前 Appendix FM 或 Leave Outside the Rules 许可的过渡安排）与 PL 12.3–12.5（suitability 事由要求走 10 年）未建模。',
+        'The continuous period combines the permissions listed in PL 14.3: Appendix FM partner, parent and child permission, and Private Life permission. Leave Outside the Rules on Article 8 grounds (PL 14.3(e)) cannot be told apart from other such leave and is not counted. PL 13 (immediate settlement for a child born in the UK after 7 years of continuous residence), PL 14.1A / PL 14.2(b) / PL 14.2A (transitional cases with Appendix FM or Leave Outside the Rules permission before 2022-06-20) and PL 12.3–12.5 (suitability grounds that require 10 years) are not modelled.',
+      ),
+      ...(before
+        ? [
+            L(
+              `PL 14.4 也计入其他可定居路线的许可（须未非法入境、且已持 Private Life 许可满 1 年）；本工具只计 PL 14.3 所列许可，紧接其前的${nameIn(L, routeNames[before.route])}许可未计入，若该路线可定居，实际日期可能更早（PD-069）。`,
+              `PL 14.4 also counts permission on other routes that lead to settlement (if the applicant did not enter illegally and has held Private Life permission for at least a year); this tool counts only the permissions in PL 14.3, so the ${nameIn(L, routeNames[before.route])} permission just before them is not counted, and the actual date may be earlier if that route can lead to settlement (PD-069).`,
+            ),
+          ]
+        : []),
+      ...(ctx.timeline.absences.length > 0 ? [absenceAssumption(L)] : []),
+    ];
+    if (!period) {
+      return {
+        status: 'UNKNOWN',
+        explanation: L(
+          `未填写 Private Life 许可的依据：作为儿童（PL 3.1）或满足 half-life test 的 young adult（PL 4.1）获批的，合格期 ${cl.values.privateLifeQualifyingYearsFive.value} 年（PL 14.1）；其余 ${cl.values.privateLifeQualifyingYearsTen.value} 年（PL 14.2(a)）。`,
+          `Not provided what the Private Life permission was granted on: ${cl.values.privateLifeQualifyingYearsFive.value} years for permission as a child (PL 3.1) or as a young adult who met the half-life test (PL 4.1) (PL 14.1); ${cl.values.privateLifeQualifyingYearsTen.value} years otherwise (PL 14.2(a)).`,
+        ),
+        assumptions,
+      };
+    }
+    const { years, basis } = period;
+    const due = addYears(start, years);
+    return due <= ctx.simulationDate
+      ? {
+          status: 'PASS',
+          explanation: L(
+            `按 ${basis} 合格期 ${years} 年；自 ${start} 起连续持可计入的许可（PL 14.3），已满 ${years} 年。`,
+            `${years}-year qualifying period under ${basis}; continuous qualifying permission (PL 14.3) since ${start}: ${years} years completed.`,
+          ),
+          assumptions,
+        }
+      : {
+          status: 'FAIL',
+          explanation: L(
+            `按 ${basis} 合格期 ${years} 年；自 ${start} 起连续持可计入的许可（PL 14.3），截至 ${ctx.simulationDate} 满 ${fullYears(start, ctx.simulationDate)} 年；${due} 满 ${years} 年。`,
+            `${years}-year qualifying period under ${basis}; continuous qualifying permission (PL 14.3) since ${start}: ${fullYearsEn(start, ctx.simulationDate)} by ${ctx.simulationDate}; ${years} years are completed on ${due}.`,
+          ),
+          assumptions,
+        };
+  },
+);
+
 const inTable = (rows: { socCode: string }[], soc: string | undefined) =>
   soc !== undefined && rows.some((r) => r.socCode === soc);
 
@@ -2090,6 +2237,7 @@ export const clEnglish = defineRule(
       { srcId: 'SRC-024', locator: 'E-ILRP.1.6' },
       { srcId: 'SRC-025', locator: 'KoLL 2.2' },
       { srcId: 'SRC-026', locator: 'UKA 15.1' },
+      { srcId: 'SRC-028', locator: 'PL 16.1' },
       { srcId: 'SRC-007', locator: 'EM 5.60' },
       { srcId: 'SRC-014', locator: 'EL 1.1' },
     ],
@@ -2114,6 +2262,7 @@ export const clEnglish = defineRule(
     const protection = onProtection(timeline, simulationDate);
     const ancestry = onUkAncestry(timeline, simulationDate);
     const innovator = onInnovatorFounder(timeline, simulationDate);
+    const privateLife = onPrivateLife(timeline, simulationDate);
     const sw = onSkilledWorker(timeline, simulationDate);
     // SW 44.1 covers a dependent partner and a dependent child.
     const partner =
@@ -2123,11 +2272,13 @@ export const clEnglish = defineRule(
       ? cl.values.globalTalentSettlementEnglish.value
       : ancestry
         ? cl.values.ukAncestrySettlementEnglish.value
-        : family
-          ? cl.values.familyPartnerSettlementEnglish.value
-          : sw || partner
-            ? cl.values.skilledWorkerSettlementEnglish.value
-            : cl.values.longResidenceSettlementEnglish.value;
+        : privateLife
+          ? cl.values.privateLifeSettlementEnglish.value
+          : family
+            ? cl.values.familyPartnerSettlementEnglish.value
+            : sw || partner
+              ? cl.values.skilledWorkerSettlementEnglish.value
+              : cl.values.longResidenceSettlementEnglish.value;
     const fromB2 = simulationDate >= b2.applicationsFrom;
     const required = hk
       ? cl.values.hongKongBnoSettlementEnglish.value
@@ -2139,12 +2290,14 @@ export const clEnglish = defineRule(
             ? cl.values.globalTalentSettlementEnglishBefore.value
             : ancestry
               ? cl.values.ukAncestrySettlementEnglishBefore.value
-              : family
-                ? cl.values.familyPartnerSettlementEnglishBefore.value
-                : partner
-                  ? cl.values.skilledWorkerDependantSettlementEnglishBefore
-                      .value
-                  : cl.values.longResidenceSettlementEnglishBefore.value;
+              : privateLife
+                ? cl.values.privateLifeSettlementEnglishBefore.value
+                : family
+                  ? cl.values.familyPartnerSettlementEnglishBefore.value
+                  : partner
+                    ? cl.values.skilledWorkerDependantSettlementEnglishBefore
+                        .value
+                    : cl.values.longResidenceSettlementEnglishBefore.value;
     // Which paragraph sets the level, for the new routes' explanations.
     const basis = hk
       ? L(
@@ -2156,32 +2309,37 @@ export const clEnglish = defineRule(
             `（Appendix Global Talent GT 13.1(${fromB2 ? 'b' : 'a'})，${b2.applicationsFrom} ${fromB2 ? '起' : '前'}的申请）`,
             ` (Appendix Global Talent GT 13.1(${fromB2 ? 'b' : 'a'}), applications ${fromB2 ? 'from' : 'before'} ${b2.applicationsFrom})`,
           )
-        : ancestry
+        : privateLife
           ? L(
-              `（Appendix UK Ancestry UKA 15.1(${fromB2 ? 'b' : 'a'})，${b2.applicationsFrom} ${fromB2 ? '起' : '前'}的申请）`,
-              ` (Appendix UK Ancestry UKA 15.1(${fromB2 ? 'b' : 'a'}), applications ${fromB2 ? 'from' : 'before'} ${b2.applicationsFrom})`,
+              `（Appendix Private Life PL 16.1(${fromB2 ? 'b' : 'a'})，${b2.applicationsFrom} ${fromB2 ? '起' : '前'}的申请）`,
+              ` (Appendix Private Life PL 16.1(${fromB2 ? 'b' : 'a'}), applications ${fromB2 ? 'from' : 'before'} ${b2.applicationsFrom})`,
             )
-          : familyTen
+          : ancestry
             ? L(
-                `（Appendix Settlement Family Life SETF 5.1(${fromB2 ? 'b' : 'a'})，${b2.applicationsFrom} ${fromB2 ? '起' : '前'}的申请）`,
-                ` (Appendix Settlement Family Life SETF 5.1(${fromB2 ? 'b' : 'a'}), applications ${fromB2 ? 'from' : 'before'} ${b2.applicationsFrom})`,
+                `（Appendix UK Ancestry UKA 15.1(${fromB2 ? 'b' : 'a'})，${b2.applicationsFrom} ${fromB2 ? '起' : '前'}的申请）`,
+                ` (Appendix UK Ancestry UKA 15.1(${fromB2 ? 'b' : 'a'}), applications ${fromB2 ? 'from' : 'before'} ${b2.applicationsFrom})`,
               )
-            : familyFive
+            : familyTen
               ? L(
-                  `（Appendix KoLL 2.2，经 E-ILRP.1.6；${b2.applicationsFrom} ${fromB2 ? '起' : '前'}的申请）`,
-                  ` (Appendix KoLL 2.2, through E-ILRP.1.6; applications ${fromB2 ? 'from' : 'before'} ${b2.applicationsFrom})`,
+                  `（Appendix Settlement Family Life SETF 5.1(${fromB2 ? 'b' : 'a'})，${b2.applicationsFrom} ${fromB2 ? '起' : '前'}的申请）`,
+                  ` (Appendix Settlement Family Life SETF 5.1(${fromB2 ? 'b' : 'a'}), applications ${fromB2 ? 'from' : 'before'} ${b2.applicationsFrom})`,
                 )
-              : protection
+              : familyFive
                 ? L(
-                    '（Appendix Settlement Protection 未对定居设英语要求，此等级只适用于 Long Residence 10 年路径，PD-072）',
-                    ' (Appendix Settlement Protection sets no English requirement for settlement; this level applies only to the 10-year Long Residence pathway, PD-072)',
+                    `（Appendix KoLL 2.2，经 E-ILRP.1.6；${b2.applicationsFrom} ${fromB2 ? '起' : '前'}的申请）`,
+                    ` (Appendix KoLL 2.2, through E-ILRP.1.6; applications ${fromB2 ? 'from' : 'before'} ${b2.applicationsFrom})`,
                   )
-                : innovator
+                : protection
                   ? L(
-                      '（Appendix Innovator Founder 未对主申请人定居设英语要求，INNF 15.1–21.6；此等级只适用于 Long Residence 10 年路径）',
-                      ' (Appendix Innovator Founder sets no English requirement for a main applicant’s settlement, INNF 15.1–21.6; this level applies only to the 10-year Long Residence pathway)',
+                      '（Appendix Settlement Protection 未对定居设英语要求，此等级只适用于 Long Residence 10 年路径，PD-072）',
+                      ' (Appendix Settlement Protection sets no English requirement for settlement; this level applies only to the 10-year Long Residence pathway, PD-072)',
                     )
-                  : '';
+                  : innovator
+                    ? L(
+                        '（Appendix Innovator Founder 未对主申请人定居设英语要求，INNF 15.1–21.6；此等级只适用于 Long Residence 10 年路径）',
+                        ' (Appendix Innovator Founder sets no English requirement for a main applicant’s settlement, INNF 15.1–21.6; this level applies only to the 10-year Long Residence pathway)',
+                      )
+                    : '';
     if (!required) {
       return {
         status: 'PASS',
@@ -2250,6 +2408,7 @@ export const clKol = defineRule(
       { srcId: 'SRC-025', locator: 'KoLL 2.3' },
       { srcId: 'SRC-026', locator: 'UKA 16.1' },
       { srcId: 'SRC-027', locator: 'INNF 20.1' },
+      { srcId: 'SRC-028', locator: 'PL 17.1' },
       { srcId: 'SRC-015', locator: 'KOL 1.1' },
       { srcId: 'SRC-015', locator: 'KOL 2.1' },
     ],
@@ -2274,19 +2433,21 @@ export const clKol = defineRule(
           ? L('（UKA 16.1）', ' (UKA 16.1)')
           : onInnovatorFounder(timeline, simulationDate)
             ? L('（INNF 20.1）', ' (INNF 20.1)')
-            : onFamilyPartnerTenYear(timeline, simulationDate)
-              ? L('（SETF 6.1）', ' (SETF 6.1)')
-              : onFamilyPartnerFiveYear(timeline, simulationDate)
-                ? L(
-                    '（Appendix KoLL 2.3，经 E-ILRP.1.6）',
-                    ' (Appendix KoLL 2.3, through E-ILRP.1.6)',
-                  )
-                : onProtection(timeline, simulationDate)
+            : onPrivateLife(timeline, simulationDate)
+              ? L('（PL 17.1）', ' (PL 17.1)')
+              : onFamilyPartnerTenYear(timeline, simulationDate)
+                ? L('（SETF 6.1）', ' (SETF 6.1)')
+                : onFamilyPartnerFiveYear(timeline, simulationDate)
                   ? L(
-                      '（Appendix Settlement Protection 未设 Life in the UK 要求，此项只适用于 Long Residence 10 年路径，PD-072）',
-                      ' (Appendix Settlement Protection sets no Life in the UK requirement; this applies only to the 10-year Long Residence pathway, PD-072)',
+                      '（Appendix KoLL 2.3，经 E-ILRP.1.6）',
+                      ' (Appendix KoLL 2.3, through E-ILRP.1.6)',
                     )
-                  : '';
+                  : onProtection(timeline, simulationDate)
+                    ? L(
+                        '（Appendix Settlement Protection 未设 Life in the UK 要求，此项只适用于 Long Residence 10 年路径，PD-072）',
+                        ' (Appendix Settlement Protection sets no Life in the UK requirement; this applies only to the 10-year Long Residence pathway, PD-072)',
+                      )
+                    : '';
     const kol = timeline.lifeInTheUk;
     if (!kol) {
       return {

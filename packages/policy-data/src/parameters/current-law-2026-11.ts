@@ -273,5 +273,27 @@ export const currentLaw2026_11 = {
       value: 2,
       sources: [{ srcId: 'SRC-027', locator: 'INNF 17.1(f)' }],
     },
+
+    // Appendix Private Life, version 2026-10-08. Five years after permission
+    // as a child or a young adult who met the half-life test, ten otherwise.
+    privateLifeQualifyingYearsFive: {
+      value: 5,
+      sources: [{ srcId: 'SRC-028', locator: 'PL 14.1' }],
+    },
+    privateLifeQualifyingYearsTen: {
+      value: 10,
+      sources: [{ srcId: 'SRC-028', locator: 'PL 14.2(a)' }],
+    },
+    privateLifeSettlementEnglishBefore: {
+      value: 'B1',
+      sources: [{ srcId: 'SRC-028', locator: 'PL 16.1(a)' }],
+    },
+    privateLifeSettlementEnglish: {
+      value: { cefrLevel: 'B2', applicationsFrom: '2027-03-26' },
+      sources: [
+        { srcId: 'SRC-028', locator: 'PL 16.1(b)' },
+        { srcId: 'SRC-007', locator: 'EM 5.60' },
+      ],
+    },
   },
 } satisfies ParameterSet;
