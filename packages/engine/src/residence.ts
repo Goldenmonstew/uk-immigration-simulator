@@ -55,33 +55,62 @@ export function continuousRun(
 export interface AbsenceLimit {
   maxDays: number;
   windowMonths: number;
+  /**
+   * Long Residence only (SRC-008 CR 3.3): absences that started before
+   * `before` are limited to `maxSingleDays` each and `maxTotalDays` in all
+   * instead of the rolling window.
+   */
+  legacy?: { before: IsoDate; maxSingleDays: number; maxTotalDays: number };
 }
 
 /**
  * `start`, moved to the day after each absence that breaks continuous
  * residence: more than `maxDays` outside the UK in any `windowMonths`
- * (SRC-008 CR 3.1). Absences count both the departure and the return day.
+ * (SRC-008 CR 3.1), or the CR 3.3 limits for legacy absences. Absences count
+ * both the departure and the return day.
  */
 export function restartAfterAbsences(
   start: IsoDate,
   date: IsoDate,
   absences: Absence[],
-  limit: AbsenceLimit,
+  { maxDays, windowMonths, legacy }: AbsenceLimit,
 ): IsoDate {
   const relevant = absences
     .filter((a) => a.to >= start && a.from <= date)
     .sort((a, b) => (a.from < b.from ? -1 : 1));
+  const isLegacy = (a: Absence) =>
+    legacy !== undefined && a.from < legacy.before;
   let from = start;
+  let legacyTotal = 0;
   for (const absence of relevant) {
     if (absence.to < from) continue;
     const end = absence.to < date ? absence.to : date;
-    const windowStart = addDays(addMonths(end, -limit.windowMonths), 1);
-    const windowFrom = windowStart > from ? windowStart : from;
-    const days = relevant.reduce(
-      (sum, a) => sum + overlapDays(a.from, a.to, windowFrom, end),
-      0,
-    );
-    if (days > limit.maxDays) from = addDays(absence.to, 1);
+    let broken: boolean;
+    if (legacy && isLegacy(absence)) {
+      legacyTotal += overlapDays(
+        absence.from,
+        addDays(legacy.before, -1),
+        from,
+        end,
+      );
+      broken =
+        daysBetween(absence.from, absence.to) + 1 > legacy.maxSingleDays ||
+        legacyTotal > legacy.maxTotalDays;
+    } else {
+      const windowStart = addDays(addMonths(end, -windowMonths), 1);
+      const windowFrom = windowStart > from ? windowStart : from;
+      broken =
+        relevant
+          .filter((a) => !isLegacy(a))
+          .reduce(
+            (sum, a) => sum + overlapDays(a.from, a.to, windowFrom, end),
+            0,
+          ) > maxDays;
+    }
+    if (broken) {
+      from = addDays(absence.to, 1);
+      legacyTotal = 0;
+    }
   }
   return from;
 }

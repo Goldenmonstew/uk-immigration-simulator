@@ -2,6 +2,7 @@ import { describe, expect, test } from 'vitest';
 import {
   clEnglish,
   clKol,
+  clLrResidence10Y,
   clScope,
   clSwResidence5Y,
   clSwSalary,
@@ -146,6 +147,79 @@ describe('CL-KOL', () => {
     ).toBe('PASS');
     expect(
       run(clKol, { lifeInTheUk: undefined, dateOfBirth: '1961-11-05' }).status,
+    ).toBe('UNKNOWN');
+  });
+});
+
+describe('CL-LR-RESIDENCE-10Y', () => {
+  const student = (validFrom: string, validTo: string) =>
+    episode({ route: 'STUDENT', validFrom, validTo, salary: undefined });
+
+  test('Student → Graduate → Skilled Worker counts for 10 years', () => {
+    const result = run(clLrResidence10Y, {
+      episodes: [
+        student('2016-09-01', '2020-01-31'),
+        episode({
+          route: 'GRADUATE',
+          validFrom: '2020-02-01',
+          validTo: '2022-01-31',
+        }),
+        episode({ validFrom: '2022-02-01' }),
+      ],
+    });
+    expect(result.status).toBe('PASS');
+    expect(result.explanation).toContain('自 2016-09-01 起');
+  });
+
+  test('a Visitor period breaks the run', () => {
+    const result = run(clLrResidence10Y, {
+      episodes: [
+        student('2014-09-01', '2018-08-31'),
+        episode({
+          route: 'VISIT',
+          validFrom: '2018-09-01',
+          validTo: '2018-12-31',
+        }),
+        student('2019-01-01', '2027-01-31'),
+      ],
+    });
+    expect(result.status).toBe('FAIL');
+    expect(result.explanation).toContain('2029-01-01');
+  });
+
+  test('legacy absences: a single 184-day absence before 2024-04-11 is fine, 185 breaks', () => {
+    const lr = { episodes: [student('2014-09-01', '2027-01-31')] };
+    // 2020-01-01 to 2020-07-02 is 184 days; 181 days in 12 months would break CR 3.1.
+    expect(
+      run(clLrResidence10Y, {
+        ...lr,
+        absences: [{ from: '2020-01-01', to: '2020-07-02' }],
+      }).status,
+    ).toBe('PASS');
+    expect(
+      run(clLrResidence10Y, {
+        ...lr,
+        absences: [{ from: '2020-01-01', to: '2020-07-03' }],
+      }).status,
+    ).toBe('FAIL');
+  });
+
+  test('absences after 2024-04-11 use CR 3.1', () => {
+    const lr = { episodes: [student('2014-09-01', '2027-01-31')] };
+    expect(
+      run(clLrResidence10Y, {
+        ...lr,
+        absences: [{ from: '2025-01-01', to: '2025-06-30' }],
+      }).status,
+    ).toBe('FAIL');
+  });
+
+  test('CL-SCOPE: a non-Skilled-Worker route is in scope once Long Residence is met', () => {
+    expect(
+      run(clScope, { episodes: [student('2014-09-01', '2027-01-31')] }).status,
+    ).toBe('PASS');
+    expect(
+      run(clScope, { episodes: [student('2020-09-01', '2027-01-31')] }).status,
     ).toBe('UNKNOWN');
   });
 });

@@ -3,6 +3,7 @@ import type { Rule } from '../types';
 import {
   clEnglish,
   clKol,
+  clLrResidence10Y,
   clScope,
   clSwResidence5Y,
   clSwSalary,
@@ -49,5 +50,6 @@ export const RULES: Record<RuleSetId, Rule[]> = {
     clSwSalary,
     clEnglish,
     clKol,
+    clLrResidence10Y,
   ],
 };

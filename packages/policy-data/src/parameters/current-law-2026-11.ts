@@ -43,6 +43,25 @@ export const currentLaw2026_11 = {
       sources: [{ srcId: 'SRC-005', locator: 'LR 13.1(b)' }],
     },
 
+    // Long Residence absences that started before this date: no more than 548
+    // days in all and 184 days at a time instead of CR 3.1 (CR 3.3).
+    longResidenceLegacyAbsenceBefore: {
+      value: '2024-04-11',
+      sources: [{ srcId: 'SRC-008', locator: 'CR 3.3' }],
+    },
+    longResidenceLegacyMaxTotalAbsenceDays: {
+      value: 548,
+      sources: [{ srcId: 'SRC-008', locator: 'CR 3.3(a)' }],
+    },
+    longResidenceLegacyMaxSingleAbsenceDays: {
+      value: 184,
+      sources: [{ srcId: 'SRC-008', locator: 'CR 3.3(b)' }],
+    },
+    longResidenceQualifyingYears: {
+      value: 10,
+      sources: [{ srcId: 'SRC-005', locator: 'LR 11.1' }],
+    },
+
     skilledWorkerQualifyingYears: {
       value: 5,
       sources: [{ srcId: 'SRC-004', locator: 'SW 21.1' }],
