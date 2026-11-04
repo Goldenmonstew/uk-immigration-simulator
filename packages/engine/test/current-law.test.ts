@@ -231,6 +231,7 @@ describe('CL-SW-SALARY', () => {
       const d = at(25000, { socCode: '6135' }, '2028-04-01');
       expect(d.status).toBe('PASS');
       expect(d.explanation).toContain('row D');
+      expect(d.explanation).toContain('上，且 SOC 6135 属');
     });
 
     test('an entry removed before the date of application no longer counts', () => {

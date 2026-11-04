@@ -1076,7 +1076,8 @@ export function settlementSalaryRow({
       row: 'D',
       threshold: v.skilledWorkerSettlementSalaryRowD.value,
       reason: L(
-        `岗位在 Immigration Salary List 上，且${b42Reason}`,
+        // A space where Chinese meets Latin text (the ASHE reason starts with "SOC").
+        `岗位在 Immigration Salary List 上，且${/^[A-Za-z]/.test(b42Reason) ? ' ' : ''}${b42Reason}`,
         `the job is on the Immigration Salary List, and ${b42Reason}`,
       ),
     };
