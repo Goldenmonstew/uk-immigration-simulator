@@ -1,0 +1,140 @@
+.progress {
+  color: #505a5f;
+  margin-bottom: 8px;
+}
+.saved {
+  font-size: 0.95rem;
+  color: #505a5f;
+  margin-bottom: 32px;
+}
+.field {
+  margin: 0 0 28px;
+  min-width: 0;
+}
+.field label,
+.legend {
+  display: block;
+  font-weight: 700;
+  font-size: 1.2rem;
+  margin-bottom: 8px;
+}
+.field input,
+.field select {
+  display: block;
+  width: 100%;
+  max-width: 480px;
+  min-height: 48px;
+  border: 2px solid #0b0c0c;
+  border-radius: 0;
+  background: #fff;
+  padding: 8px;
+  color: #0b0c0c;
+}
+.field input[type='date'] {
+  width: 240px;
+}
+.field input[type='number'] {
+  width: 240px;
+}
+.field input[aria-invalid='true'],
+.field select[aria-invalid='true'] {
+  border-color: #d4351c;
+}
+.hint {
+  color: #505a5f;
+  font-size: 1rem;
+  margin-bottom: 8px;
+}
+.error {
+  color: #d4351c;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.errorSummary {
+  border: 4px solid #d4351c;
+  padding: 16px;
+  margin-bottom: 28px;
+}
+.errorSummary p {
+  margin: 0;
+}
+.invalid {
+  border-left: 4px solid #d4351c;
+  padding-left: 16px;
+}
+.fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0 0 28px;
+  min-width: 0;
+}
+.radios {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.radios label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  min-width: 88px;
+  cursor: pointer;
+}
+.radios input {
+  width: 28px;
+  height: 28px;
+  margin: 0;
+  accent-color: #0b0c0c;
+}
+.entry {
+  border: 1px solid #b1b4b6;
+  border-top: 4px solid #b1b4b6;
+  padding: 24px;
+  margin: 24px 0;
+  min-width: 0;
+}
+.entry legend {
+  padding: 0 8px;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+.entry .field:last-of-type {
+  margin-bottom: 20px;
+}
+.remove {
+  padding: 8px 0;
+  min-height: 44px;
+  color: #a0220c;
+  border: 0;
+  background: transparent;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  cursor: pointer;
+}
+.incomeRow {
+  border: 0;
+  border-top: 1px solid #b1b4b6;
+  padding: 20px 0 0;
+  margin: 24px 0;
+  min-width: 0;
+}
+.incomeRow legend {
+  font-size: 1.2rem;
+  font-weight: 700;
+  padding-right: 12px;
+}
+.incomeFields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+@media (max-width: 600px) {
+  .entry {
+    padding: 16px;
+  }
+  .incomeFields {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+}

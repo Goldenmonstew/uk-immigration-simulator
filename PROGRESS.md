@@ -13,15 +13,21 @@
 | 7 | 合并 0.3 来源登记（Opus）：SRC-001–016 登记并归档，18 个快照 sha256 由 Fable 复核一致，30 个引用 ID 映射（27 确定 / 3 无法确认） | docs/SOURCES.md, policy-sources/*, docs/tasks/reports/0.3-sources-register.md |
 | 8 | 合并 0.4 未定事项与过渡安排（Opus）：PD-001–052、过渡安排与框架外群体登记、引擎判断顺序建议；Fable 抽查 13 处页码 12 处命中 | docs/pending-details.md, docs/transitional-arrangements.md, docs/tasks/reports/0.4-pending-details.md |
 | 9 | 合并 0.2 引擎契约（Opus）：engine 类型与 evaluate stub、policy-data 路线分类（35 条路线 / 7 组）、参数集（ES 2026-11 与现行法律）、官方案例 Individual C / D fixture、contracts.md；验收命令由 Fable 在临时 worktree 独立复跑通过，源文件逐一审过 | packages/engine/**, packages/policy-data/**, docs/contracts.md, docs/tasks/reports/0.2-engine-contracts.md |
+| 10 | 契约补齐（rules[] 携带解释与来源；lifeInTheUk、earningsExemptHealth）；Phase 1 三份 brief；合并 1.3（sol）：8 个官方案例 fixtures（共 10 个）、来源一致性测试、engine/src 禁裸数字与隐式时钟 lint；Fable 独立复跑验收并用探针验证 lint；C / D 补 lifeInTheUk | packages/engine/src/types.ts, docs/contracts.md, docs/tasks/1.*.md, packages/policy-data/fixtures/**, packages/policy-data/test/sources.test.ts, eslint.config.mjs, docs/tasks/reports/1.3-fixtures-tooling.md |
+| 11 | 合并 1.2 问卷流与结果页（astra）：首页、九步问卷（高风险前置短路、本机草稿）、双栏结果页、mock 预览、自写 i18n、CSS Modules；Fable 独立复跑验收命令并用内置浏览器走完五条路径（短路、完整 SW、mock 1/2、刷新保留、375px 无溢出），网络面板无用户数据请求 | apps/web/**, docs/tasks/reports/1.2-web-mvp0.md |
 
 ### 当前状态
 
-- **Phase 0 全部完成并合并到 main**：0.1 脚手架、0.2 引擎契约、0.3 来源登记、0.4 未定事项与过渡安排。
+- Phase 0 全部完成。Phase 1：1.2 与 1.3 已合并；1.1 规则与前向推算（Opus 会话 rules-mvp0）运行中。
+- 1.2 验收通过但留给 1.1 合并后的小修（拟作任务 1.4，astra）：
+  - `apps/web/lib/policy.ts` 与 `mock-results.ts` 用相对路径引 `packages/policy-data/src`（为不改锁文件）；应改为 engine 导出 `policyAsOf` 或 web 显式依赖 policy-data。
+  - 高风险筛查在前端合成 `shortCircuit`，政府债务借用了 `OUTSIDE_FRAMEWORK` 原因；1.1 合并后改为：债务 → `governmentDebt.outstanding = true` 交给 ES-DEBT 规则；犯罪 / 违规 → 契约补 `CriminalEvent` / `ImmigrationBreach` 的无日期形式或 `DEBT` 短路原因（Opus 定）。
+  - 福利下拉用本地占位常量，1.1 合并后换成 `policy-data` 的 `publicFundsBenefits` 导出。
 - 已定口径（Phase 1 规则按此执行）：
-  - 已公布未生效的规则集（`ANNOUNCED_NOT_IN_FORCE`）按"假设在 `simulationDate` 适用"评估，"未生效"由 `RuleSet.status` 表达；`POLICY_NOT_YET_IN_FORCE` 只在规则集有已知 `effectiveFrom` 且晚于模拟日、或结论取决于未定生效日的过渡情形时使用。
-  - 多重命中（同时符合框架外 / 过渡 / 标准路径）：主结论 + 参考结论并列，声明"原文未规定取舍"（0.4 §4.3）。
-  - 10 年路径收入口径按 Table 1（7 年中 5 年），声明假设并引用 PD-041。
-- Phase 1 的输入备忘（交 Opus 顺手处理）：`pending-details.md` 的 PD-003 / PD-019 / PD-035 可用 SRC-002/003/007/012 的核实结果更新；0.3 建议补登 Appendix Skilled Occupations（going rate 表）；`RULE_SETS['current-law-2026-11'].sources` 的 locator 还只到 Appendix 级别；fixture 用相对路径 `import type` 引 engine 类型（避免包依赖成环），暂时接受；`RuleResult.explanation` 与 UI i18n key 的对接待定。
-- 页码约定：SRC-001 的 `p<N>` 一律指 PDF 物理页序（封面 p1），用 `pdftotext -f N -l N` 定位，页数用 `pdfinfo`；不要用整份文本的换页符计数（空白页会被漏掉）。
-- Codex（astra / sol）启动参数（已验证）：`codex exec --skip-git-repo-check -C <worktree> -s workspace-write -c 'sandbox_workspace_write.network_access=true' -c 'approval_policy="never"' -c 'shell_environment_policy.inherit="all"' --add-dir ~/Library/pnpm --add-dir ~/.npm --add-dir ~/.cache -m <model> -c 'model_reasoning_effort="xhigh"' --color never -o <last.md> "$(cat brief.md)" < /dev/null`。沙箱拒绝写 `.git`，所以 Codex 不 commit，按 commit 分组写报告，Fable 审后替它提交。
-- 下一步（待用户确认开始 Phase 1）：Opus 写 MVP-0 规则与求解器；astra 写问卷流与结果页（先用契约 mock）；sol 写 fixtures 工具链、CI 跑 fixtures、禁裸数字门槛 lint、路线 / Annex C 数据表、i18n 脚手架。
+  - 已公布未生效的规则集按"假设在 `simulationDate` 适用"评估，"未生效"由 `RuleSet.status` 表达；`POLICY_NOT_YET_IN_FORCE` 只在规则集有已知 `effectiveFrom` 且晚于模拟日、或结论取决于未定生效日的过渡情形时使用。
+  - 居留年限不足但无其他 FAIL：`ES-RESIDENCE` 对该路径 FAIL → `LIKELY_NOT_ELIGIBLE`（截至模拟日），同时给 `earliestDate`。
+  - 多重命中：主结论 + 参考结论并列（0.4 §4.3）；10 年路径收入口径按 Table 1（PD-041）。
+- 1.3 报告提出、留给 1.1 / 契约的点：p31 伴侣案例缺主申请人关联字段（只做主申请人视角）；care worker 缺担保 / 真实雇佣证据字段（由 socCode + salary 近似）。
+- 本地预览：`.claude/launch.json`（gitignored）里 `web-static-astra` 用脚本 `scratchpad/serve/static.mjs` 以 Cloudflare Pages 式 clean URL 托管 `apps/web/out`；路径需按需改到 main 的 `apps/web/out`。
+- 页码约定与 Codex 启动参数不变（见上一节）。
+- 下一步：验收 1.1 并合并 → 1.4 前端对接真实规则与上述小修 → Phase 2 规划（What-if、政策版本库、Cloudflare Pages 部署）。

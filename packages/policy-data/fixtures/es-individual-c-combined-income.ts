@@ -67,6 +67,7 @@ export const esIndividualC: Fixture = {
       benefits: [],
       relationships: [{ type: 'PARTNER', otherPartyStatus: 'SETTLED' }],
       english: { cefrLevel: 'B2' },
+      lifeInTheUk: { passed: true },
       criminalRecord: [],
       immigrationBreaches: [],
       governmentDebt: { outstanding: false },
