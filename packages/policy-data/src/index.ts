@@ -19,3 +19,8 @@ export { annexCOccupations, careWorkerOccupations } from './data/occupations';
 export type { Occupation } from './data/occupations';
 export { policyChangelog } from './data/policy-changelog';
 export type { PolicyChange } from './data/policy-changelog';
+export {
+  goingRates,
+  nationalPayScaleOccupations,
+} from './data/skilled-occupations';
+export type { GoingRate } from './data/skilled-occupations';
