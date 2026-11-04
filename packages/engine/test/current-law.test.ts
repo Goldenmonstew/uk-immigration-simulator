@@ -639,3 +639,84 @@ describe('Skilled Worker dependent child (SW 39.1, SW 41A.1)', () => {
     );
   });
 });
+
+describe('principal already settled (SW 39.1(b))', () => {
+  // The principal settled on 2025-06-01 after Skilled Worker since 2019-11-01.
+  const settled = (
+    route: PersonTimeline['episodes'][number]['route'] = 'SKILLED_WORKER',
+    date = '2025-06-01',
+  ): Partial<PersonTimeline> => ({
+    episodes: [episode({ validTo: '2025-05-31', socCode: '2136' })],
+    settled: { date, route },
+  });
+  const dependantFrom = (
+    validFrom: string,
+    dependantOf: 'PARTNER' | 'PARENT',
+  ): ImmigrationEpisode[] => [
+    {
+      route: 'SKILLED_WORKER',
+      role: 'DEPENDANT',
+      validFrom,
+      validTo: '2027-10-31',
+      dependantOf,
+    },
+  ];
+  const cl = (
+    dependant: Partial<PersonTimeline>,
+    principal: Partial<PersonTimeline>,
+  ) =>
+    evaluate({
+      timeline: timeline(dependant),
+      simulationDate: SIMULATION_DATE,
+      principal: timeline(principal),
+    }).byRuleSet['current-law-2026-11']!;
+  const ruleOf = (a: SettlementAssessment, id: string) =>
+    a.rules.find((r) => r.id === id)!;
+
+  test('partner: 5 years of their own dependant permission, to the day and a day short', () => {
+    const met = cl(
+      { episodes: dependantFrom('2021-11-04', 'PARTNER') },
+      settled(),
+    );
+    expect(met).toMatchObject({ outcome: 'LIKELY_ELIGIBLE', pathwayYears: 5 });
+    expect(ruleOf(met, 'CL-SW-PARTNER-5Y').explanation).toContain('SW 39.1(b)');
+    expect(
+      cl({ episodes: dependantFrom('2021-11-05', 'PARTNER') }, settled()),
+    ).toMatchObject({
+      outcome: 'LIKELY_NOT_ELIGIBLE',
+      earliestDate: '2026-11-05',
+    });
+  });
+
+  test('child: can apply now, with the age and care requirements', () => {
+    const a = cl(
+      {
+        dateOfBirth: '2012-05-01',
+        episodes: dependantFrom('2021-11-05', 'PARENT'),
+        english: undefined,
+        lifeInTheUk: undefined,
+      },
+      settled(),
+    );
+    expect(a).toMatchObject({
+      outcome: 'LIKELY_ELIGIBLE',
+      pathwayYears: 5,
+      earliestDate: SIMULATION_DATE,
+    });
+    expect(ruleOf(a, 'CL-SW-CHILD').explanation).toContain('SW 39.1(b)');
+  });
+
+  test('settled from another route, or joined after P settled, fails', () => {
+    const other = cl(
+      { episodes: dependantFrom('2021-11-04', 'PARTNER') },
+      settled('GLOBAL_TALENT'),
+    );
+    expect(ruleOf(other, 'CL-SW-PARTNER-5Y').status).toBe('FAIL');
+    const joined = cl(
+      { episodes: dependantFrom('2025-06-02', 'PARENT') },
+      settled(),
+    );
+    expect(ruleOf(joined, 'CL-SW-CHILD').status).toBe('FAIL');
+    expect(ruleOf(joined, 'CL-SW-CHILD').explanation).toContain('未持有');
+  });
+});

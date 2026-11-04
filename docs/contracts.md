@@ -214,7 +214,8 @@ dependent child（`CL-SW-CHILD`，SRC-018 Appendix Children）：当前 episode 
 - 伴侣：起点 = 伴侣自己的连续 dependant 起点（不再受主申请人起点约束），满 5 年（SW 42.1）。
 - 子女：无居留年限要求，申请日即可（仍须满足 `CL-SW-CHILD`）。
 - `settled.route` 不是 `SKILLED_WORKER`，或 dependant 当时没有相应许可 → `FAIL`（不能按 SW 39.1(b)）。
-- Earned Settlement 栏：原文没写已定居主申请人的 dependant 如何定居 → `ES-DEPENDANT-PATHWAY` 为 `UNKNOWN`，带新 PD。
+- Earned Settlement 栏：原文没写已定居主申请人的 dependant 如何定居 → `ES-DEPENDANT-PATHWAY` 为 `UNKNOWN`（PD-063），不给年限与日期；dependant 没有其他 `FAIL`、也没有不带 PD 的 `UNKNOWN` 时结论为 `POTENTIALLY_ELIGIBLE`。
+- `settled.date` 晚于申请日时视为尚未定居（按 SW 39.1(a) 判断）。SW 39.1(b)(ii)（在英出生、主申请人定居前出生的子女）不建模。
 
 Earned Settlement 栏新规则 `ES-TRANSITIONAL-HEALTH-EDUCATION`（SRC-001 p44，§2.2）加入 5 年候选的"以下任一"：当前 `SKILLED_WORKER` 且 `socCode` 在 `healthEducationTransitionalExamples`、该职业连续段起点 < `whitePaperPublished` → `PASS`；首段入境早于截止点但该职业段晚于截止点 → `UNKNOWN`（PD-039）；`socCode` 在 `nationalPayScaleBelowRqf6Occupations` 但不在示例 → `UNKNOWN`（PD-038）；其余 `FAIL`。强制要求照常适用（假设说明）。
 

@@ -5,7 +5,12 @@ import {
   nationalPayScaleOccupations,
 } from '@uk-immigration/policy-data';
 import { addYears, fullYears } from '../dates';
-import { continuousRun, episodeOn, restartAfterAbsences } from '../residence';
+import {
+  continuousRun,
+  episodeOn,
+  restartAfterAbsences,
+  settledBy,
+} from '../residence';
 import { defineRule } from '../rule';
 import { gbp } from './es-contribution';
 import { meetsCefr } from './es-requirements';
@@ -487,6 +492,45 @@ function principalSkilledWorkerStart({
     : undefined;
 }
 
+/**
+ * SW 39.1(b): P has settled. Met when P settled from Skilled Worker
+ * permission and the dependant then held permission as P's partner or child
+ * (SW 39.1(b)(ii), born in the UK before P settled, is not modelled).
+ */
+function settledPrincipal(
+  ctx: RuleContext,
+): { met: boolean; date: IsoDate; explanation: string } | undefined {
+  const settled =
+    ctx.principal && settledBy(ctx.principal.timeline, ctx.simulationDate);
+  if (!settled) return undefined;
+  const now = episodeOn(ctx.timeline, ctx.simulationDate)!;
+  const who = now.dependantOf === 'PARTNER' ? 'partner' : 'child';
+  if (settled.route !== 'SKILLED_WORKER') {
+    return {
+      met: false,
+      date: settled.date,
+      explanation: `主申请人 ${settled.date} 定居时持有的不是 Skilled Worker 许可，不能按 SW 39.1(b) 作为其 Skilled Worker dependant 定居。`,
+    };
+  }
+  const then = episodeOn(ctx.timeline, settled.date);
+  return then &&
+    isSkilledWorkerDependant(then) &&
+    then.dependantOf === now.dependantOf
+    ? {
+        met: true,
+        date: settled.date,
+        explanation: `主申请人已于 ${settled.date} 作为 Skilled Worker 定居，当时本人持有其 dependent ${who} 许可（SW 39.1(b)）`,
+      }
+    : {
+        met: false,
+        date: settled.date,
+        explanation: `主申请人 ${settled.date} 作为 Skilled Worker 定居时，本人未持有其 Skilled Worker dependent ${who} 许可，不能按 SW 39.1(b) 定居。`,
+      };
+}
+
+const SETTLED_PRINCIPAL_ASSUMPTION =
+  '主申请人尚未定居时，只判断与主申请人同时获批（SW 39.1(a)）；若其已定居，须在主申请人信息里填写定居日期与路线（SW 39.1(b)）。';
+
 /** Why a dependant cannot settle with P under SW 39.1(a). */
 function withoutPrincipalPathway(
   { simulationDate, principal }: RuleContext,
@@ -501,7 +545,7 @@ function withoutPrincipalPathway(
     return {
       status: 'UNKNOWN',
       explanation:
-        '主申请人当前不是 Skilled Worker 主申请人许可；若其已作为 Skilled Worker 定居（SW 39.1(b)），本工具未建模。',
+        '主申请人当前不是 Skilled Worker 主申请人许可；若其已作为 Skilled Worker 定居，请填写主申请人的定居日期与路线（SW 39.1(b)）。',
       assumptions,
     };
   }
@@ -529,10 +573,13 @@ export function skilledWorkerPartnerStart(
   ctx: RuleContext,
 ): IsoDate | undefined {
   const { timeline, simulationDate } = ctx;
-  const principalStart = principalSkilledWorkerStart(ctx);
-  if (!principalStart || !onSkilledWorkerPartner(timeline, simulationDate)) {
+  if (!ctx.principal || !onSkilledWorkerPartner(timeline, simulationDate)) {
     return undefined;
   }
+  const settled = settledPrincipal(ctx);
+  // P already settled: only the partner's own 5 years remain (SW 42.1).
+  const principalStart = settled ? undefined : principalSkilledWorkerStart(ctx);
+  if (settled ? !settled.met : !principalStart) return undefined;
   const { episodes } = continuousRun(
     timeline,
     simulationDate,
@@ -544,7 +591,7 @@ export function skilledWorkerPartnerStart(
     timeline.absences,
     CR_3_1,
   );
-  return own > principalStart ? own : principalStart;
+  return principalStart && principalStart > own ? principalStart : own;
 }
 
 export const clSwPartner5Y = defineRule(
@@ -575,12 +622,22 @@ export const clSwPartner5Y = defineRule(
         explanation: '填写主申请人信息后可判断。',
       };
     }
+    const settled = settledPrincipal(ctx);
     const assumptions = [
       `只计连续的 Skilled Worker dependant 许可，假设整段都是同一主申请人的 dependent partner；Appendix Relationship with Partner（SW 39.3）未核对。`,
-      '主申请人已经定居的情形（SW 39.1(b)）未建模，只判断与主申请人同时获批（SW 39.1(a)）。',
+      ...(settled ? [] : [SETTLED_PRINCIPAL_ASSUMPTION]),
       ...(timeline.absences.length > 0 ? [ABSENCE_ASSUMPTION] : []),
     ];
     const start = skilledWorkerPartnerStart(ctx);
+    if (settled) {
+      return settled.met
+        ? {
+            status: 'PASS',
+            explanation: `${settled.explanation}；本人的 dependent partner 许可满 ${years} 年后，${addYears(start!, years)} 起可申请（SW 42.1）。`,
+            assumptions,
+          }
+        : { status: 'FAIL', explanation: settled.explanation, assumptions };
+    }
     if (!start) {
       return withoutPrincipalPathway(ctx, 'dependent partner', assumptions);
     }
@@ -594,8 +651,18 @@ export const clSwPartner5Y = defineRule(
 
 /** The start P's 5 years run from; the child settles with P (SW 39.1(a)). */
 export function skilledWorkerChildStart(ctx: RuleContext): IsoDate | undefined {
-  return onSkilledWorkerChild(ctx.timeline, ctx.simulationDate)
-    ? principalSkilledWorkerStart(ctx)
+  if (
+    !ctx.principal ||
+    !onSkilledWorkerChild(ctx.timeline, ctx.simulationDate)
+  ) {
+    return undefined;
+  }
+  const settled = settledPrincipal(ctx);
+  if (!settled) return principalSkilledWorkerStart(ctx);
+  // P already settled: the child can apply now, so the start is put a full
+  // period before P's settlement date.
+  return settled.met
+    ? addYears(settled.date, -cl.values.skilledWorkerQualifyingYears.value)
     : undefined;
 }
 
@@ -628,6 +695,7 @@ export const clSwChild = defineRule(
         explanation: '填写主申请人信息后可判断。',
       };
     }
+    const settled = settledPrincipal(ctx);
     const minor =
       fullYears(timeline.dateOfBirth, simulationDate) <
       cl.values.settlementMinorAge.value;
@@ -635,15 +703,26 @@ export const clSwChild = defineRule(
       '假设子女未 leading an independent life（CHI 1A.1）。',
       ...(minor ? ['假设子女有符合英国法律的照护与住宿安排（CHI 2.1）。'] : []),
       '只看申请日当天的 Skilled Worker dependent child 许可，假设是同一主申请人的子女；另一位家长须同时获批定居、已定居或为英国公民，除非主申请人负唯一抚养责任等（CHI 4.3，经 SW 39.4），本工具未核对。',
-      '主申请人已经定居的情形（SW 39.1(b)）未建模，只判断与主申请人同时获批（SW 39.1(a)）。',
+      settled
+        ? '在英国出生、主申请人定居前出生的子女（SW 39.1(b)(ii)）未建模。'
+        : SETTLED_PRINCIPAL_ASSUMPTION,
     ];
+    const age = minor
+      ? `申请日未满 ${cl.values.settlementMinorAge.value} 岁（CHI 1.1）`
+      : `申请日已满 ${cl.values.settlementMinorAge.value} 岁，但当前持有的是 dependent child 许可（CHI 1.2(a)）`;
+    if (settled) {
+      return settled.met
+        ? {
+            status: 'PASS',
+            explanation: `${age}；${settled.explanation}，可申请定居。`,
+            assumptions,
+          }
+        : { status: 'FAIL', explanation: settled.explanation, assumptions };
+    }
     const start = skilledWorkerChildStart(ctx);
     if (!start) {
       return withoutPrincipalPathway(ctx, 'dependent child', assumptions);
     }
-    const age = minor
-      ? `申请日未满 ${cl.values.settlementMinorAge.value} 岁（CHI 1.1）`
-      : `申请日已满 ${cl.values.settlementMinorAge.value} 岁，但当前持有的是 dependent child 许可（CHI 1.2(a)）`;
     return {
       status: 'PASS',
       explanation: `${age}；随主申请人定居：主申请人的 Skilled Worker 期 ${addYears(start, cl.values.skilledWorkerQualifyingYears.value)} 满 ${cl.values.skilledWorkerQualifyingYears.value} 年，届时可一同申请（SW 39.1(a)、SW 41A.1）；子女本人没有居留年限要求。`,

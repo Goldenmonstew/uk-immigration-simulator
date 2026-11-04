@@ -1,7 +1,7 @@
 import { earnedSettlement2026_11 as es } from '@uk-immigration/policy-data';
 import type { RouteGroup } from '@uk-immigration/policy-data';
 import { addYears, fullYears } from '../dates';
-import { episodeOn } from '../residence';
+import { episodeOn, settledBy } from '../residence';
 import { defineRule } from '../rule';
 import type { IsoDate, RuleContext, SettlementAssessment } from '../types';
 import { esPublicFunds, gbp } from './es-contribution';
@@ -52,7 +52,12 @@ export function esDependantSettlement(
 ): DependantSettlement | undefined {
   const { timeline, simulationDate, principal } = ctx;
   const episode = episodeOn(timeline, simulationDate);
-  if (episode?.role !== 'DEPENDANT' || !episode.dependantOf || !principal) {
+  if (
+    episode?.role !== 'DEPENDANT' ||
+    !episode.dependantOf ||
+    !principal ||
+    settledBy(principal.timeline, simulationDate)
+  ) {
     return undefined;
   }
   const assessment = principal.result.byRuleSet[RULE_SET];
@@ -100,6 +105,7 @@ export const esDependantPathway = defineRule(
       'PD-060',
       'PD-061',
       'PD-062',
+      'PD-063',
     ],
   },
   (ctx) => {
@@ -123,6 +129,14 @@ export const esDependantPathway = defineRule(
       return {
         status: 'UNKNOWN',
         explanation: '未填写是作为主申请人的伴侣还是子女随行。',
+      };
+    }
+    const settled = settledBy(principal.timeline, simulationDate);
+    if (settled) {
+      return {
+        status: 'UNKNOWN',
+        explanation: `主申请人已于 ${settled.date} 定居。Earned Settlement 只讲了 dependant 与主申请人同时定居、或后到伴侣补足同样的合格期（p29–p31），没有说主申请人已定居后其 dependant 如何定居。`,
+        pendingDetails: ['PD-063'],
       };
     }
     const settlement = esDependantSettlement(ctx);

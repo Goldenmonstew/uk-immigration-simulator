@@ -16,6 +16,15 @@ export function episodeOn(
     .sort((a, b) => (a.validFrom < b.validFrom ? 1 : -1))[0];
 }
 
+/** The person's settlement, if granted on or before `date`. */
+export function settledBy(
+  timeline: PersonTimeline,
+  date: IsoDate,
+): PersonTimeline['settled'] {
+  const { settled } = timeline;
+  return settled && settled.date <= date ? settled : undefined;
+}
+
 // Consecutive permissions with at most this many uncovered days between them
 // count as continuous (engine assumption, PD-053).
 const MAX_GAP_DAYS = 1;

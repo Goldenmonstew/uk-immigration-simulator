@@ -190,11 +190,14 @@ function assessDependant(
   const pathway = rules.filter((r) => ES_DEPENDANT_PATHWAY.includes(r.id));
   const settlement = esDependantSettlement(ctx);
   if (!settlement) {
+    const unknown = pathway.filter((r) => r.status === 'UNKNOWN');
     return toAssessment(
       {
         outcome: pathway.some((r) => r.status === 'FAIL')
           ? 'LIKELY_NOT_ELIGIBLE'
-          : 'INSUFFICIENT_INFORMATION',
+          : unknown.every((r) => r.pendingDetails?.length)
+            ? 'POTENTIALLY_ELIGIBLE'
+            : 'INSUFFICIENT_INFORMATION',
       },
       rules,
       assumptions,
