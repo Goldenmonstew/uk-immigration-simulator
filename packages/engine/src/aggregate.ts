@@ -10,6 +10,7 @@ import type { Lang } from './rule';
 import { RULES } from './rules';
 import { meetsCefr } from './rules/es-requirements';
 import {
+  familyFiveYearStart,
   familyTenYearStart,
   globalTalentQualifying,
   hongKongBnoStart,
@@ -462,8 +463,8 @@ function finishEarnedSettlement(
 
 const clBaseAssumption = (L: Lang) =>
   L(
-    '现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）、Appendix FM 伴侣的 10 年路线（Appendix Settlement Family Life）与 Long Residence（Appendix Long Residence）；Part Suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。',
-    'The current rules are modelled only for Skilled Worker main applicants and their dependent partners / children (Appendix Skilled Worker, Appendix Children), Hong Kong BN(O) main applicants (Appendix Hong Kong British National (Overseas)), Global Talent main applicants (Appendix Global Talent), Appendix FM partners on the 10-year route (Appendix Settlement Family Life) and Long Residence (Appendix Long Residence); other requirements, such as Part Suitability and the sponsor still being approved (SW 24.1–24.2), are not modelled.',
+    '现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）、Appendix FM 伴侣（10 年路线按 Appendix Settlement Family Life，5 年路线按 Appendix FM）与 Long Residence（Appendix Long Residence）；Part Suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。',
+    'The current rules are modelled only for Skilled Worker main applicants and their dependent partners / children (Appendix Skilled Worker, Appendix Children), Hong Kong BN(O) main applicants (Appendix Hong Kong British National (Overseas)), Global Talent main applicants (Appendix Global Talent), Appendix FM partners (the 10-year route under Appendix Settlement Family Life, the 5-year route under Appendix FM) and Long Residence (Appendix Long Residence); other requirements, such as Part Suitability and the sponsor still being approved (SW 24.1–24.2), are not modelled.',
   );
 
 function assessCurrentLaw(ctx: RuleContext): SettlementAssessment {
@@ -483,6 +484,7 @@ function assessCurrentLaw(ctx: RuleContext): SettlementAssessment {
   const gt = globalTalentQualifying(ctx);
   const family = onFamilyPartner(ctx.timeline, ctx.simulationDate);
   const familyTen = familyTenYearStart(ctx);
+  const familyFive = familyFiveYearStart(ctx);
   // In scope as a partner or child only with the principal (CL-SCOPE).
   const partner =
     ctx.principal !== undefined &&
@@ -504,8 +506,10 @@ function assessCurrentLaw(ctx: RuleContext): SettlementAssessment {
               : id === 'CL-FAMILY-RESIDENCE'
                 ? family
                 : id === 'CL-FAMILY-RELATIONSHIP'
-                  ? familyTen !== undefined
-                  : true;
+                  ? familyTen !== undefined || familyFive !== undefined
+                  : id === 'CL-FAMILY-FINANCIAL'
+                    ? familyFive !== undefined
+                    : true;
   const rules = [
     scope,
     ...others
@@ -569,9 +573,22 @@ function assessCurrentLaw(ctx: RuleContext): SettlementAssessment {
           },
         ]
       : []),
-    // The 10-year family partner route; otherwise (5-year route not yet
-    // modelled, or not provided) the UNKNOWN CL-FAMILY-RESIDENCE, like
-    // CL-GT-RESIDENCE.
+    // The 5-year or 10-year family partner route; otherwise (not provided)
+    // the UNKNOWN CL-FAMILY-RESIDENCE, like CL-GT-RESIDENCE.
+    ...(familyFive
+      ? [
+          {
+            years: cl.values.familyPartnerQualifyingYearsFive.value,
+            start: familyFive,
+            rules: pick(
+              'CL-FAMILY-RELATIONSHIP',
+              'CL-FAMILY-FINANCIAL',
+              'CL-ENGLISH',
+              'CL-KOL',
+            ),
+          },
+        ]
+      : []),
     ...(familyTen
       ? [
           {
@@ -580,7 +597,7 @@ function assessCurrentLaw(ctx: RuleContext): SettlementAssessment {
             rules: pick('CL-FAMILY-RELATIONSHIP', 'CL-ENGLISH', 'CL-KOL'),
           },
         ]
-      : family
+      : family && !familyFive
         ? [
             {
               years: cl.values.familyPartnerQualifyingYearsTen.value,
@@ -648,8 +665,8 @@ function assessCurrentLaw(ctx: RuleContext): SettlementAssessment {
   ) {
     assumptions.push(
       L(
-        `预计日期在 ${b2.applicationsFrom} 之后，届时定居须达到英语 ${b2.cefrLevel}（${gt ? 'GT 13.1(b)' : familyTen ? 'SETF 5.1(b)' : 'SW 22A.1'}、LR 13.1(b)）。`,
-        `The projected date is on or after ${b2.applicationsFrom}, when settlement requires English at ${b2.cefrLevel} (${gt ? 'GT 13.1(b)' : familyTen ? 'SETF 5.1(b)' : 'SW 22A.1'}, LR 13.1(b)).`,
+        `预计日期在 ${b2.applicationsFrom} 之后，届时定居须达到英语 ${b2.cefrLevel}（${gt ? 'GT 13.1(b)' : familyTen ? 'SETF 5.1(b)' : familyFive ? 'KoLL 2.2' : 'SW 22A.1'}、LR 13.1(b)）。`,
+        `The projected date is on or after ${b2.applicationsFrom}, when settlement requires English at ${b2.cefrLevel} (${gt ? 'GT 13.1(b)' : familyTen ? 'SETF 5.1(b)' : familyFive ? 'KoLL 2.2' : 'SW 22A.1'}, LR 13.1(b)).`,
       ),
     );
   }

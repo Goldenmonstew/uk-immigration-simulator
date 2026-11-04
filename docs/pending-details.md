@@ -173,6 +173,7 @@ dependant 随主申请人定居（SRC-001 Ch.5）时，原文未规定、引擎�
 | ID | 事项 | 原文怎么说 | 出处 | 对引擎的影响 | 预计何时明确 |
 |---|---|---|---|---|---|
 | PD-069 | 合并"可定居路线"的时间 | HK 62.1(b) 要求连续 5 年持"可定居路线"（a route under which a person can settle）的许可；SETF 3.2 允许 10 年路线在满足条件时补计"任何含定居规则的其他路线"的时间。两处都没有列出哪些路线属于此类。 | SRC-020 HK 62.1(b)；SRC-022 SETF 3.2 | 只计本路线（BN(O) 段；家庭伴侣 10 年路线为 SETF 3.1 列出的许可）；紧接之前有其他路线的许可时，居留规则在假设里说明"若该路线可定居，实际日期可能更早"。结论按只计本路线的年限给出，可能偏晚。 | 原文未提及（需逐条路线核对其 Appendix 是否为 route to settlement） |
+| PD-070 | 5 年伴侣路线的"连续居住"如何因缺席中断 | E-ILRP.1.3 要求在英国连续居住至少 5 年（60 个月）；Appendix FM 没有引用 Appendix Continuous Residence，也没有规定多长的缺席会中断连续居住（E-ILRP.1.5 只对 FM-SE 26A 的期间免除"在英国"）。 | SRC-024 E-ILRP.1.3、E-ILRP.1.5 | `CL-FAMILY-RESIDENCE` 的 5 年路线不因缺席重新起算；填了缺席时在假设里说明（PD-070）。 | 原文未提及 |
 
 本任务另有以下未建模的点。它们是引擎范围的取舍，不是政府未定的细节，所以不设 PD 编号；结果页通过规则的解释或假设说明。
 
@@ -180,5 +181,5 @@ dependant 随主申请人定居（SRC-001 Ch.5）时，原文未规定、引擎�
 - Global Talent 的 GT 10.1（背书未被撤回）与 GT 10.2（上一段许可期间在背书或奖项领域有收入）：按满足处理，写进 `CL-GT-RESIDENCE` 的假设。
 - GT 11.3(f)(h) 的 Tier 1 与 Representative of an Overseas Business：`Route` 中没有，不计入，写进假设。
 - 家庭伴侣 10 年路线的 SETF 3.1(e)（基于 Article 8 的 Leave Outside the Rules）：无法与其他 Leave Outside the Rules 区分，不计入；SETF 7.2–7.3（关系真实持续、以当前关系持许可满 1 年）按满足处理。
-- 家庭伴侣 5 年路线（Appendix FM E-ILRP、财务 E-LTRP.3.1–3.8、英语与 KOL 经 Appendix KoLL）：待 4.4 登记 SRC-024 / SRC-025 后再建模；此前 `PARTNER_FIVE_YEAR` 的 `CL-FAMILY-RESIDENCE` 输出 `UNKNOWN`。
+- 家庭伴侣 5 年路线的财务要求只按申请日前最近一个完整纳税年度的本人加伴侣收入判断：储蓄（E-LTRP.3.1(b)）、E-LTRP.3.3（伴侣领取特定福利）、Appendix FM-SE 证据规则与住宿要求（E-LTRP.3.4）未建模；过渡门槛按连续伴侣许可的起点近似"首次申请日"；同一伴侣（E-ILRP.1.4、E-LTRP.3.6）与关系真实持续（E-LTRP.1.7–1.10）按满足处理。
 - HC 1691 不覆盖 Appendix Hong Kong BN(O)：已由 SRC-007 EM 5.60 确认（列出升 B2 的 Appendix 中没有它），HK 60.1 一律 B1，不是待定事项。

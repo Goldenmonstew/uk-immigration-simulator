@@ -3,6 +3,7 @@ import { describe, expect, test } from 'vitest';
 import { evaluate } from '../src/evaluate';
 import {
   clEnglish,
+  clFamilyFinancial,
   clFamilyRelationship,
   clFamilyResidence,
   clGtResidence,
@@ -321,20 +322,14 @@ describe('family partner, 10-year route (SRC-022)', () => {
     expect(sw.assumptions?.join()).toContain('PD-069');
   });
 
-  test('missing route, or the 5-year route (not yet modelled), is unknown: insufficient information', () => {
-    for (const extra of [
-      {},
-      { familyPermission: 'PARTNER_FIVE_YEAR' as const },
-    ]) {
-      expect(
-        run(clFamilyResidence, partner('2018-11-04', extra), '2026-11-04')
-          .status,
-      ).toBe('UNKNOWN');
-      // Long Residence is not met either.
-      const a = currentLaw(partner('2018-11-04', extra), '2026-11-04');
-      expect(a.outcome).toBe('INSUFFICIENT_INFORMATION');
-      expect(a.pathwayYears).toBeUndefined();
-    }
+  test('missing route is unknown: insufficient information', () => {
+    expect(
+      run(clFamilyResidence, partner('2018-11-04', {}), '2026-11-04').status,
+    ).toBe('UNKNOWN');
+    // Long Residence is not met either.
+    const a = currentLaw(partner('2018-11-04', {}), '2026-11-04');
+    expect(a.outcome).toBe('INSUFFICIENT_INFORMATION');
+    expect(a.pathwayYears).toBeUndefined();
   });
 
   test('the parent route and dependants are out of scope', () => {
@@ -403,5 +398,139 @@ describe('fixtures: the Earned Settlement column is unchanged', () => {
         (x) => x.id === 'ES-ROUTE-GROUP',
       )?.status,
     ).toBe('PASS');
+  });
+});
+
+describe('family partner, 5-year route (SRC-024, SRC-025)', () => {
+  const five = (
+    validFrom: string,
+    extra: Partial<PersonTimeline> = {},
+  ): Partial<PersonTimeline> => ({
+    episodes: [
+      on('FAMILY_PARTNER_OR_PARENT', validFrom, {
+        familyPermission: 'PARTNER_FIVE_YEAR',
+      }),
+    ],
+    relationships: [{ type: 'PARTNER', otherPartyStatus: 'BRITISH_CITIZEN' }],
+    // 2025-26 is the last complete tax year before 2026-11-04.
+    incomeYears: [
+      { taxYear: '2025-26', earnings: 20000, partnerEarnings: 10000 },
+    ],
+    english: { cefrLevel: 'B1' },
+    ...extra,
+  });
+
+  test('5 years to the day is likely eligible; a day short projects the date', () => {
+    expect(currentLaw(five('2021-11-04'), '2026-11-04')).toMatchObject({
+      outcome: 'LIKELY_ELIGIBLE',
+      pathwayYears: 5,
+      earliestDate: '2026-11-04',
+    });
+    const short = run(clFamilyResidence, five('2021-11-05'), '2026-11-04');
+    expect(short.status).toBe('FAIL');
+    expect(short.explanation).toContain('E-ILRP.1.3');
+    expect(currentLaw(five('2021-11-05'), '2026-11-04')).toMatchObject({
+      outcome: 'LIKELY_NOT_ELIGIBLE',
+      pathwayYears: 5,
+      earliestDate: '2026-11-05',
+    });
+  });
+
+  test('absences do not restart the period; an assumption cites PD-070', () => {
+    const away = run(
+      clFamilyResidence,
+      five('2021-11-04', {
+        absences: [{ from: '2023-01-01', to: '2023-12-31' }],
+      }),
+      '2026-11-04',
+    );
+    expect(away.status).toBe('PASS');
+    expect(away.assumptions?.join()).toContain('PD-070');
+  });
+
+  test('£29,000 from 2024-04-11; the transitional £18,600 plus children before, capped at £29,000', () => {
+    const income = (earnings: number, extra: Partial<PersonTimeline> = {}) => ({
+      incomeYears: [{ taxYear: '2025-26', earnings }],
+      ...extra,
+    });
+    const at = (validFrom: string, extra: Partial<PersonTimeline>) =>
+      run(clFamilyFinancial, five(validFrom, extra), '2026-11-04');
+    // New rules: £29,000.
+    expect(at('2024-04-11', income(29000)).status).toBe('PASS');
+    expect(at('2024-04-11', income(28999)).status).toBe('FAIL');
+    // Transitional: £18,600.
+    expect(at('2024-04-10', income(18600)).status).toBe('PASS');
+    expect(at('2024-04-10', income(18599)).explanation).toContain(
+      'E-LTRP.3.7(a)',
+    );
+    const child = {
+      type: 'CHILD' as const,
+      otherPartyStatus: 'OTHER' as const,
+    };
+    const partnerRel = {
+      type: 'PARTNER' as const,
+      otherPartyStatus: 'BRITISH_CITIZEN' as const,
+    };
+    // Two children: 18,600 + 3,800 + 2,400 = 24,800; a British child does not count.
+    const two = [
+      partnerRel,
+      child,
+      child,
+      { ...child, otherPartyStatus: 'BRITISH_CITIZEN' as const },
+    ];
+    expect(at('2022-01-01', income(24800, { relationships: two })).status).toBe(
+      'PASS',
+    );
+    expect(at('2022-01-01', income(24799, { relationships: two })).status).toBe(
+      'FAIL',
+    );
+    // Six children would be 33,200: capped at 29,000 (E-LTRP.3.8).
+    const six = [partnerRel, ...Array(6).fill(child)];
+    expect(at('2022-01-01', income(29000, { relationships: six })).status).toBe(
+      'PASS',
+    );
+  });
+
+  test('combined income below the threshold fails the pathway; missing income is unknown', () => {
+    const low = five('2021-11-04', {
+      incomeYears: [
+        { taxYear: '2025-26', earnings: 12000, partnerEarnings: 5000 },
+      ],
+    });
+    expect(run(clFamilyFinancial, low, '2026-11-04').status).toBe('FAIL');
+    expect(currentLaw(low, '2026-11-04')).toMatchObject({
+      outcome: 'LIKELY_NOT_ELIGIBLE',
+    });
+    const missing = five('2021-11-04', { incomeYears: [] });
+    expect(run(clFamilyFinancial, missing, '2026-11-04').status).toBe(
+      'UNKNOWN',
+    );
+    expect(currentLaw(missing, '2026-11-04').outcome).toBe(
+      'INSUFFICIENT_INFORMATION',
+    );
+  });
+
+  test('E-LTRP.1.2: British citizen or settled partner passes; OTHER is unknown', () => {
+    expect(run(clFamilyRelationship, five('2021-11-04')).explanation).toContain(
+      'E-LTRP.1.2(a)',
+    );
+    expect(
+      run(
+        clFamilyRelationship,
+        five('2021-11-04', {
+          relationships: [{ type: 'PARTNER', otherPartyStatus: 'OTHER' }],
+        }),
+      ).status,
+    ).toBe('UNKNOWN');
+  });
+
+  test('English through Appendix KoLL: B1 before 2027-03-26, B2 from then; Life in the UK KoLL 2.3', () => {
+    const before = run(clEnglish, five('2021-11-04'), '2027-03-25');
+    expect(before.status).toBe('PASS');
+    expect(before.explanation).toContain('KoLL 2.2');
+    expect(run(clEnglish, five('2021-11-04'), '2027-03-26').status).toBe(
+      'FAIL',
+    );
+    expect(run(clKol, five('2021-11-04')).explanation).toContain('KoLL 2.3');
   });
 });

@@ -402,7 +402,7 @@ HK BN(O) 的英语只有一个等级（HK 60.1 没有按申请日分段），所
 
 ### 12.8 家庭伴侣主申请人（范围变更后追加）
 
-**来源结构**（与任务书的假定不同，需先定来源）：Appendix Settlement Family Life（SRC-022，gov.uk 现行版 2026-08-03）**只有 10 年路线**（SETF 1–SETF 17），且没有财务要求。**5 年路线在 Appendix FM**：合格期 E-ILRP.1.3（"5 years (60 months)"）、伴侣身份 E-LTRP.1.2、财务 E-LTRP.3.1–3.8（经 E-ILRP.1.3(1A) 适用于定居）、英语与 KOL 经 E-ILRP.1.6 引 **Appendix KoLL**（KoLL 2.2 的 B1 / B2 按 2027-03-26 分段，HC 1691 EM 5.60 列有 Appendix KoLL）。Appendix FM 将在 4.4 登记为 SRC-024，表里写 `{ srcId: 'SRC-024', locator: '待 4.4' }`；Appendix KoLL 尚无登记计划（SRC-015 是 Appendix KOL UK，不是 KoLL），写"KoLL 待登记"。**分两步**：10 年路线（SRC-022）随 HK BN(O) 与 Global Talent 一起写；5 年路线与 `CL-FAMILY-FINANCIAL` 等 SRC-024（及 KoLL）合并后再写，此前 `PARTNER_FIVE_YEAR` 的 `CL-FAMILY-RESIDENCE` 输出 `UNKNOWN`（不带 PD，解释"5 年路线尚未建模"），结论"信息不足"。
+**来源结构**（与任务书的假定不同，需先定来源）：Appendix Settlement Family Life（SRC-022，gov.uk 现行版 2026-08-03）**只有 10 年路线**（SETF 1–SETF 17），且没有财务要求。**5 年路线在 Appendix FM**：合格期 E-ILRP.1.3（"5 years (60 months)"）、伴侣身份 E-LTRP.1.2、财务 E-LTRP.3.1–3.8（经 E-ILRP.1.3(1A) 适用于定居）、英语与 KOL 经 E-ILRP.1.6 引 **Appendix KoLL**（KoLL 2.2 的 B1 / B2 按 2027-03-26 分段，HC 1691 EM 5.60 列有 Appendix KoLL）。Appendix FM 与 Appendix KoLL 已在 4.4 登记为 SRC-024 / SRC-025（SRC-015 是 Appendix KOL UK，不是 KoLL）。**分两步**：10 年路线（SRC-022）随 HK BN(O) 与 Global Talent 一起写；5 年路线与 `CL-FAMILY-FINANCIAL` 在 4.4 登记 SRC-024（Appendix FM）与 SRC-025（Appendix KoLL）后写（已完成）。5 年路线的连续居住：Appendix FM 不引用 Appendix Continuous Residence，所以**不**经 `restartAfterAbsences`，填了缺席时写假设（PD-070）；下表 `CL-FAMILY-RESIDENCE` 中"两者都经 `restartAfterAbsences`"只适用于 10 年路线。
 
 #### 字段
 
@@ -418,15 +418,15 @@ HK BN(O) 的英语只有一个等级（HK 60.1 没有按申请日分段），所
 
 | 名称 | 值 | 来源（预期段号） |
 |---|---|---|
-| `familyPartnerQualifyingYearsFive` | 5 | SRC-024 E-ILRP.1.3（待 4.4） |
+| `familyPartnerQualifyingYearsFive` | 5 | SRC-024 E-ILRP.1.3 |
 | `familyPartnerQualifyingYearsTen` | 10 | SRC-022 SETF 3.1 |
-| `familyPartnerMinimumIncome` | 29,000 | SRC-024 E-LTRP.3.1(a)、E-LTRP.3.8（待 4.4） |
-| `familyPartnerTransitionalBefore` | `'2024-04-11'` | SRC-024 E-LTRP.3.5（待 4.4） |
-| `familyPartnerTransitionalIncome` | 18,600 | SRC-024 E-LTRP.3.7(a)(i)（待 4.4） |
-| `familyPartnerTransitionalFirstChild` | 3,800 | SRC-024 E-LTRP.3.7(a)(ii)（待 4.4） |
-| `familyPartnerTransitionalAdditionalChild` | 2,400 | SRC-024 E-LTRP.3.7(a)(iii)（待 4.4） |
-| `familyPartnerSettlementEnglishBefore` | `'B1'` | SRC-022 SETF 5.1(a)；Appendix KoLL 2.2（KoLL 待登记） |
-| `familyPartnerSettlementEnglish` | `{ cefrLevel: 'B2', applicationsFrom: '2027-03-26' }` | SRC-022 SETF 5.1(b)；Appendix KoLL 2.2（KoLL 待登记）；SRC-007 EM 5.60 |
+| `familyPartnerMinimumIncome` | 29,000 | SRC-024 E-LTRP.3.1(a)、E-LTRP.3.8 |
+| `familyPartnerTransitionalBefore` | `'2024-04-11'` | SRC-024 E-LTRP.3.5 |
+| `familyPartnerTransitionalIncome` | 18,600 | SRC-024 E-LTRP.3.7(a)(i) |
+| `familyPartnerTransitionalFirstChild` | 3,800 | SRC-024 E-LTRP.3.7(a)(ii) |
+| `familyPartnerTransitionalAdditionalChild` | 2,400 | SRC-024 E-LTRP.3.7(a)(iii) |
+| `familyPartnerSettlementEnglishBefore` | `'B1'` | SRC-022 SETF 5.1(a)；SRC-025 KoLL 2.2(b)–(c) |
+| `familyPartnerSettlementEnglish` | `{ cefrLevel: 'B2', applicationsFrom: '2027-03-26' }` | SRC-022 SETF 5.1(b)；SRC-025 KoLL 2.2(b)–(c)；SRC-007 EM 5.60 |
 
 #### 规则
 

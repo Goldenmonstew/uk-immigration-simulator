@@ -6,7 +6,7 @@ import {
   nationalPayScaleOccupations,
   routeNames,
 } from '@uk-immigration/policy-data';
-import { addYears, fullYears, fullYearsEn } from '../dates';
+import { addYears, fullYears, fullYearsEn, taxYearsBefore } from '../dates';
 import {
   continuousRun,
   episodeOn,
@@ -28,8 +28,8 @@ import type {
 
 // Current Immigration Rules, modelled for Skilled Worker settlement (SRC-004),
 // Long Residence (SRC-005) and the main applicants of Hong Kong BN(O)
-// (SRC-020) and Global Talent (SRC-021), and the 10-year family partner route
-// (SRC-022).
+// (SRC-020) and Global Talent (SRC-021), and Appendix FM partners on the
+// 10-year (SRC-022) and 5-year (SRC-024, SRC-025) routes.
 
 const RULE_SET = 'current-law-2026-11';
 
@@ -71,6 +71,14 @@ export const onFamilyPartnerTenYear = (
 ) =>
   onFamilyPartner(timeline, date) &&
   episodeOn(timeline, date)!.familyPermission === 'PARTNER_TEN_YEAR';
+
+/** Appendix FM partner on the 5-year route on the date. */
+export const onFamilyPartnerFiveYear = (
+  timeline: PersonTimeline,
+  date: IsoDate,
+) =>
+  onFamilyPartner(timeline, date) &&
+  episodeOn(timeline, date)!.familyPermission === 'PARTNER_FIVE_YEAR';
 
 // Routes modelled for main applicants only: their dependants are out of scope.
 const MAIN_ONLY_ROUTES: Route[] = [
@@ -231,8 +239,8 @@ export const clScope = defineRule(
               'Currently holds Skilled Worker permission as a dependant; not provided whether this is as the principal applicant’s partner or child.',
             )
         : L(
-            '现行规则只建模了 Skilled Worker（主申请人及其 dependent partner / child）、Hong Kong BN(O) 与 Global Talent 主申请人、Appendix FM 伴侣（10 年路线）、Long Residence；当前路线不在其中，也不满足 Long Residence 的 10 年，无法判断其他路线的定居条件。',
-            'The current rules are modelled only for Skilled Worker (main applicants and their dependent partners / children), Hong Kong BN(O) and Global Talent main applicants, Appendix FM partners (10-year route), and Long Residence; the current route is none of these, and the 10 years for Long Residence are not met, so the settlement requirements of other routes cannot be assessed.',
+            '现行规则只建模了 Skilled Worker（主申请人及其 dependent partner / child）、Hong Kong BN(O) 与 Global Talent 主申请人、Appendix FM 伴侣、Long Residence；当前路线不在其中，也不满足 Long Residence 的 10 年，无法判断其他路线的定居条件。',
+            'The current rules are modelled only for Skilled Worker (main applicants and their dependent partners / children), Hong Kong BN(O) and Global Talent main applicants, Appendix FM partners, and Long Residence; the current route is none of these, and the 10 years for Long Residence are not met, so the settlement requirements of other routes cannot be assessed.',
           );
     return { status: 'UNKNOWN', explanation };
   },
@@ -591,6 +599,24 @@ export function familyTenYearStart({
   };
 }
 
+/**
+ * Start of the continuous Appendix FM partner permission (E-ILRP.1.3(1))
+ * ending on the simulation date, while on the 5-year route. Appendix FM does
+ * not refer to Appendix Continuous Residence, so absences do not restart it
+ * (PD-070).
+ */
+export function familyFiveYearStart({
+  timeline,
+  simulationDate,
+}: RuleContext): IsoDate | undefined {
+  if (!onFamilyPartnerFiveYear(timeline, simulationDate)) return undefined;
+  return continuousRun(
+    timeline,
+    simulationDate,
+    (e) => e.route === 'FAMILY_PARTNER_OR_PARENT' && e.role === 'MAIN',
+  ).episodes[0].validFrom;
+}
+
 export const clFamilyResidence = defineRule(
   {
     id: 'CL-FAMILY-RESIDENCE',
@@ -601,9 +627,11 @@ export const clFamilyResidence = defineRule(
       { srcId: 'SRC-022', locator: 'SETF 3.1' },
       { srcId: 'SRC-022', locator: 'SETF 3.2' },
       { srcId: 'SRC-022', locator: 'SETF 4.1' },
+      { srcId: 'SRC-024', locator: 'E-ILRP.1.3' },
+      { srcId: 'SRC-024', locator: 'E-ILRP.1.4' },
       { srcId: 'SRC-008', locator: 'CR 3.1' },
     ],
-    pendingDetails: ['PD-069'],
+    pendingDetails: ['PD-069', 'PD-070'],
   },
   (ctx) => {
     const L = textFor(ctx);
@@ -617,15 +645,41 @@ export const clFamilyResidence = defineRule(
         ),
       };
     }
-    const permission = episodeOn(timeline, simulationDate)!.familyPermission;
-    if (permission === 'PARTNER_FIVE_YEAR') {
-      return {
-        status: 'UNKNOWN',
-        explanation: L(
-          '5 年伴侣路线（Appendix FM E-ILRP）尚未建模，无法判断。',
-          'The 5-year partner route (Appendix FM E-ILRP) is not modelled yet, so this cannot be assessed.',
+    const fiveYearStart = familyFiveYearStart(ctx);
+    if (fiveYearStart) {
+      const years = cl.values.familyPartnerQualifyingYearsFive.value;
+      const due = addYears(fiveYearStart, years);
+      const assumptions = [
+        L(
+          'E-ILRP.1.3 只计 5 年路线的伴侣许可（D-ECP.1.1 / D-LTRP.1.1），不计 fiancé(e) 期间；各段按同属 5 年路线、同一伴侣（E-ILRP.1.4）计算。',
+          'E-ILRP.1.3 counts only partner permission on the 5-year route (D-ECP.1.1 / D-LTRP.1.1), not time as a fiancé(e); each period is taken to be on the 5-year route with the same partner (E-ILRP.1.4).',
         ),
-      };
+        ...(timeline.absences.length > 0
+          ? [
+              L(
+                'Appendix FM 未引用 Appendix Continuous Residence，也没有规定多长的缺席会中断 E-ILRP.1.3 的连续居住；本工具不因缺席重新起算（PD-070）。',
+                'Appendix FM does not refer to Appendix Continuous Residence and does not say what absence breaks the continuous residence in E-ILRP.1.3; this tool does not restart the period for absences (PD-070).',
+              ),
+            ]
+          : []),
+      ];
+      return due <= simulationDate
+        ? {
+            status: 'PASS',
+            explanation: L(
+              `5 年伴侣路线：自 ${fiveYearStart} 起连续持伴侣许可，已满 ${years} 年（E-ILRP.1.3）。`,
+              `5-year partner route: continuous partner permission since ${fiveYearStart}: ${years} years completed (E-ILRP.1.3).`,
+            ),
+            assumptions,
+          }
+        : {
+            status: 'FAIL',
+            explanation: L(
+              `5 年伴侣路线：自 ${fiveYearStart} 起连续持伴侣许可，截至 ${simulationDate} 满 ${fullYears(fiveYearStart, simulationDate)} 年；${due} 满 ${years} 年（E-ILRP.1.3）。`,
+              `5-year partner route: continuous partner permission since ${fiveYearStart}: ${fullYearsEn(fiveYearStart, simulationDate)} by ${simulationDate}; ${years} years are completed on ${due} (E-ILRP.1.3).`,
+            ),
+            assumptions,
+          };
     }
     const run = familyTenYearStart(ctx);
     if (!run) {
@@ -683,6 +737,45 @@ export const clFamilyResidence = defineRule(
   },
 );
 
+/** E-LTRP.1.2(a)–(b), applied at settlement by E-ILRP.1.3(1A). */
+function fiveYearRelationship(
+  ctx: RuleContext,
+  L: Lang,
+): Omit<RuleResult, 'sources'> {
+  const partner = ctx.timeline.relationships.find((r) => r.type === 'PARTNER');
+  if (!partner) {
+    return {
+      status: 'UNKNOWN',
+      explanation: L(
+        '未填写伴侣信息；5 年路线定居时伴侣须为在英国的 British citizen 或已在英国定居（E-LTRP.1.2(a)–(b)，E-ILRP.1.3(1A)）。',
+        'Partner details not provided; on the 5-year route the partner must be a British citizen in the UK or settled in the UK at settlement (E-LTRP.1.2(a)–(b), E-ILRP.1.3(1A)).',
+      ),
+    };
+  }
+  if (partner.otherPartyStatus === 'OTHER') {
+    return {
+      status: 'UNKNOWN',
+      explanation: L(
+        '伴侣既不是 British citizen 也未定居；5 年路线定居时不能依据 E-LTRP.1.2(c)–(f)（protection status 等，E-ILRP.1.3(1A)），本工具无法判断伴侣的实际身份。',
+        'The partner is neither a British citizen nor settled; on the 5-year route settlement cannot rely on E-LTRP.1.2(c)–(f) (protection status and others, E-ILRP.1.3(1A)), and this tool cannot tell the partner’s actual status.',
+      ),
+    };
+  }
+  return {
+    status: 'PASS',
+    explanation: L(
+      `伴侣${partner.otherPartyStatus === 'BRITISH_CITIZEN' ? '为 British citizen（E-LTRP.1.2(a)）' : '已在英国定居（E-LTRP.1.2(b)）'}。`,
+      `The partner is ${partner.otherPartyStatus === 'BRITISH_CITIZEN' ? 'a British citizen (E-LTRP.1.2(a))' : 'settled in the UK (E-LTRP.1.2(b))'}.`,
+    ),
+    assumptions: [
+      L(
+        '按关系真实且持续、双方打算永久共同生活（E-LTRP.1.7–E-LTRP.1.10）处理，本工具未核对。',
+        'The relationship is taken as genuine and subsisting, with both intending to live together permanently (E-LTRP.1.7–E-LTRP.1.10); this tool does not check these.',
+      ),
+    ],
+  };
+}
+
 export const clFamilyRelationship = defineRule(
   {
     id: 'CL-FAMILY-RELATIONSHIP',
@@ -693,11 +786,16 @@ export const clFamilyRelationship = defineRule(
       { srcId: 'SRC-022', locator: 'SETF 7.1' },
       { srcId: 'SRC-022', locator: 'SETF 7.2' },
       { srcId: 'SRC-022', locator: 'SETF 7.3' },
+      { srcId: 'SRC-024', locator: 'E-ILRP.1.3(1A)' },
+      { srcId: 'SRC-024', locator: 'E-LTRP.1.2' },
     ],
     pendingDetails: [],
   },
   (ctx) => {
     const L = textFor(ctx);
+    if (onFamilyPartnerFiveYear(ctx.timeline, ctx.simulationDate)) {
+      return fiveYearRelationship(ctx, L);
+    }
     const partner = ctx.timeline.relationships.find(
       (r) => r.type === 'PARTNER',
     );
@@ -732,6 +830,108 @@ export const clFamilyRelationship = defineRule(
         ),
       ],
     };
+  },
+);
+
+/** E-LTRP.3.1(a) or, transitionally, E-LTRP.3.7(a) capped by E-LTRP.3.8. */
+export function familyIncomeThreshold(ctx: RuleContext): {
+  threshold: number;
+  transitional: boolean;
+  children: number;
+} {
+  const start = familyFiveYearStart(ctx)!;
+  const v = cl.values;
+  const transitional = start < v.familyPartnerTransitionalBefore.value;
+  // E-LTRP.3.7: a "child" is not a British citizen or settled.
+  const children = ctx.timeline.relationships.filter(
+    (r) => r.type === 'CHILD' && r.otherPartyStatus === 'OTHER',
+  ).length;
+  const threshold = transitional
+    ? Math.min(
+        v.familyPartnerTransitionalIncome.value +
+          (children > 0 ? v.familyPartnerTransitionalFirstChild.value : 0) +
+          Math.max(children - 1, 0) *
+            v.familyPartnerTransitionalAdditionalChild.value,
+        v.familyPartnerMinimumIncome.value,
+      )
+    : v.familyPartnerMinimumIncome.value;
+  return { threshold, transitional, children };
+}
+
+export const clFamilyFinancial = defineRule(
+  {
+    id: 'CL-FAMILY-FINANCIAL',
+    ruleSetId: RULE_SET,
+    title: '5 年伴侣路线的财务要求',
+    titleEn: 'Financial requirement on the 5-year partner route',
+    sources: [
+      { srcId: 'SRC-024', locator: 'E-ILRP.1.3(1A)' },
+      { srcId: 'SRC-024', locator: 'E-LTRP.3.1' },
+      { srcId: 'SRC-024', locator: 'E-LTRP.3.2' },
+      { srcId: 'SRC-024', locator: 'E-LTRP.3.5' },
+      { srcId: 'SRC-024', locator: 'E-LTRP.3.7' },
+      { srcId: 'SRC-024', locator: 'E-LTRP.3.8' },
+    ],
+    pendingDetails: [],
+  },
+  (ctx) => {
+    const L = textFor(ctx);
+    if (!onFamilyPartnerFiveYear(ctx.timeline, ctx.simulationDate)) {
+      return {
+        status: 'FAIL',
+        explanation: L(
+          '当前不是 5 年路线的伴侣许可。',
+          'Current permission is not as a partner on the 5-year route.',
+        ),
+      };
+    }
+    const { threshold, transitional, children } = familyIncomeThreshold(ctx);
+    const before = cl.values.familyPartnerTransitionalBefore.value;
+    const basis = transitional
+      ? L(
+          `过渡门槛（E-LTRP.3.5、E-LTRP.3.7(a)，${children} 名子女，最高 ${gbp(cl.values.familyPartnerMinimumIncome.value)}）`,
+          `the transitional requirement (E-LTRP.3.5, E-LTRP.3.7(a); ${children} ${children === 1 ? 'child' : 'children'}, capped at ${gbp(cl.values.familyPartnerMinimumIncome.value)})`,
+        )
+      : L('E-LTRP.3.1(a)', 'E-LTRP.3.1(a)');
+    const assumptions = [
+      L(
+        `是否适用过渡门槛按连续伴侣许可的起点是否早于 ${before} 判断（E-LTRP.3.5 看的是首次申请日；获批在此后而申请在此前的，也适用过渡门槛）；子女按"关系"里身份为其他的子女计。储蓄（E-LTRP.3.1(b)）、伴侣领取特定福利（E-LTRP.3.3）与 Appendix FM-SE 的证据规则未建模。`,
+        `Whether the transitional requirement applies is judged by whether the continuous partner permission started before ${before} (E-LTRP.3.5 looks at the date of the first application, so an application made before that date and granted after it also qualifies); children are those listed under relationships with another status. Savings (E-LTRP.3.1(b)), the partner receiving specified benefits (E-LTRP.3.3) and the evidence rules in Appendix FM-SE are not modelled.`,
+      ),
+    ];
+    const [taxYear] = taxYearsBefore(ctx.simulationDate, 1);
+    const income = ctx.timeline.incomeYears.find((i) => i.taxYear === taxYear);
+    if (
+      !income ||
+      (income.earnings === undefined && income.partnerEarnings === undefined)
+    ) {
+      return {
+        status: 'UNKNOWN',
+        explanation: L(
+          `未填写 ${taxYear} 纳税年度本人与伴侣的收入；按${basis}须合计至少 ${gbp(threshold)}。`,
+          `Earnings of the applicant and partner for the ${taxYear} tax year not provided; ${basis} requires at least ${gbp(threshold)} combined.`,
+        ),
+        assumptions,
+      };
+    }
+    const total = (income.earnings ?? 0) + (income.partnerEarnings ?? 0);
+    return total >= threshold
+      ? {
+          status: 'PASS',
+          explanation: L(
+            `${taxYear} 纳税年度本人与伴侣收入合计 ${gbp(total)}，达到${basis}的 ${gbp(threshold)}。`,
+            `Combined earnings of the applicant and partner in the ${taxYear} tax year are ${gbp(total)}, which meets the ${gbp(threshold)} of ${basis}.`,
+          ),
+          assumptions,
+        }
+      : {
+          status: 'FAIL',
+          explanation: L(
+            `${taxYear} 纳税年度本人与伴侣收入合计 ${gbp(total)}，低于${basis}的 ${gbp(threshold)}。`,
+            `Combined earnings of the applicant and partner in the ${taxYear} tax year are ${gbp(total)}, below the ${gbp(threshold)} of ${basis}.`,
+          ),
+          assumptions,
+        };
   },
 );
 
@@ -1452,6 +1652,8 @@ export const clEnglish = defineRule(
       { srcId: 'SRC-020', locator: 'HK 60.1' },
       { srcId: 'SRC-021', locator: 'GT 13.1' },
       { srcId: 'SRC-022', locator: 'SETF 5.1' },
+      { srcId: 'SRC-024', locator: 'E-ILRP.1.6' },
+      { srcId: 'SRC-025', locator: 'KoLL 2.2' },
       { srcId: 'SRC-007', locator: 'EM 5.60' },
       { srcId: 'SRC-014', locator: 'EL 1.1' },
     ],
@@ -1470,7 +1672,9 @@ export const clEnglish = defineRule(
     }
     const hk = onHongKongBno(timeline, simulationDate);
     const gt = onGlobalTalent(timeline, simulationDate);
-    const family = onFamilyPartnerTenYear(timeline, simulationDate);
+    const familyTen = onFamilyPartnerTenYear(timeline, simulationDate);
+    const familyFive = onFamilyPartnerFiveYear(timeline, simulationDate);
+    const family = familyTen || familyFive;
     const sw = onSkilledWorker(timeline, simulationDate);
     // SW 44.1 covers a dependent partner and a dependent child.
     const partner =
@@ -1508,12 +1712,17 @@ export const clEnglish = defineRule(
             `（Appendix Global Talent GT 13.1(${fromB2 ? 'b' : 'a'})，${b2.applicationsFrom} ${fromB2 ? '起' : '前'}的申请）`,
             ` (Appendix Global Talent GT 13.1(${fromB2 ? 'b' : 'a'}), applications ${fromB2 ? 'from' : 'before'} ${b2.applicationsFrom})`,
           )
-        : family
+        : familyTen
           ? L(
               `（Appendix Settlement Family Life SETF 5.1(${fromB2 ? 'b' : 'a'})，${b2.applicationsFrom} ${fromB2 ? '起' : '前'}的申请）`,
               ` (Appendix Settlement Family Life SETF 5.1(${fromB2 ? 'b' : 'a'}), applications ${fromB2 ? 'from' : 'before'} ${b2.applicationsFrom})`,
             )
-          : '';
+          : familyFive
+            ? L(
+                `（Appendix KoLL 2.2，经 E-ILRP.1.6；${b2.applicationsFrom} ${fromB2 ? '起' : '前'}的申请）`,
+                ` (Appendix KoLL 2.2, through E-ILRP.1.6; applications ${fromB2 ? 'from' : 'before'} ${b2.applicationsFrom})`,
+              )
+            : '';
     if (!required) {
       return {
         status: 'PASS',
@@ -1579,6 +1788,7 @@ export const clKol = defineRule(
       { srcId: 'SRC-020', locator: 'HK 61.1' },
       { srcId: 'SRC-021', locator: 'GT 14.1' },
       { srcId: 'SRC-022', locator: 'SETF 6.1' },
+      { srcId: 'SRC-025', locator: 'KoLL 2.3' },
       { srcId: 'SRC-015', locator: 'KOL 1.1' },
       { srcId: 'SRC-015', locator: 'KOL 2.1' },
     ],
@@ -1601,7 +1811,12 @@ export const clKol = defineRule(
         ? L('（GT 14.1）', ' (GT 14.1)')
         : onFamilyPartnerTenYear(timeline, simulationDate)
           ? L('（SETF 6.1）', ' (SETF 6.1)')
-          : '';
+          : onFamilyPartnerFiveYear(timeline, simulationDate)
+            ? L(
+                '（Appendix KoLL 2.3，经 E-ILRP.1.6）',
+                ' (Appendix KoLL 2.3, through E-ILRP.1.6)',
+              )
+            : '';
     const kol = timeline.lifeInTheUk;
     if (!kol) {
       return {
