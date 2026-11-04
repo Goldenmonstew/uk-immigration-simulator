@@ -52,7 +52,8 @@ export interface PersonTimeline {
    * Read for PROTECTION_WORK_AND_STUDY and CORE_PROTECTION only.
    * Missing = not provided.
    */
-  asylumSupportRepayment?: 'NOT_REQUIRED' | 'REPAID' | 'ON_PLAN' | 'OUTSTANDING';
+  asylumSupportRepayment?:
+    'NOT_REQUIRED' | 'REPAID' | 'ON_PLAN' | 'OUTSTANDING';
 }
 
 export interface ImmigrationEpisode {
