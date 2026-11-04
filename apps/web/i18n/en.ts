@@ -1,6 +1,6 @@
 import type { zhCN } from './zh-CN';
 
-export const en: Partial<Record<keyof typeof zhCN, string>> = {
+export const en: Record<keyof typeof zhCN, string> = {
   'site.name': 'UK Immigration Path Simulator',
   'site.englishName': 'My Immigration Path',
   'site.skip': 'Skip to main content',
@@ -61,6 +61,12 @@ export const en: Partial<Record<keyof typeof zhCN, string>> = {
   'result.missingAssessment': 'No assessment is available for this rule set.',
   'result.sources': 'Sources',
   'result.pendingDetails': 'Details pending government decision',
+  'share.copy': 'Copy share link',
+  'share.privacy':
+    'This link contains all the information you entered. Share it only with people you trust.',
+  'share.copied': 'Share link copied.',
+  'share.manual': 'Copying was not available. Copy the link below manually.',
+  'share.loaded': 'Shared scenario loaded. You can edit the inputs.',
   'whatif.title': 'Scenario lab · What-if',
   'whatif.intro':
     'Adjust inputs to compare rules, durations and dates instantly. Changes apply only to this page and do not update your questionnaire draft. Refreshing returns to the baseline.',
@@ -122,4 +128,114 @@ export const en: Partial<Record<keyof typeof zhCN, string>> = {
     'Answer yes or no; no event details are needed. A yes to any of the first three questions (criminal records, immigration breaches, or asylum or human-rights history) takes you directly to regulated advice. A yes to government debt continues the questionnaire for assessment by the rules engine.',
   'benefits.publicFunds': 'Public funds',
   'benefits.notPublicFunds': 'Not public funds',
+  'site.language': 'Language',
+  'home.disclaimerEnglish':
+    'Based on the information you entered, these rules may be relevant. This simulator provides general policy information and hypothetical scenario modelling. It does not determine your legal immigration status or guarantee the outcome of an application.',
+  'form.title': 'Enter your timeline',
+  'form.step': 'Step',
+  'form.of': 'of',
+  'form.saved':
+    'Your draft is saved on this device. Your inputs are not uploaded.',
+  'form.storageUnavailable':
+    'Storage is unavailable. Your inputs are kept while you navigate, but may be lost if you refresh or close the page.',
+  'form.continue': 'Continue',
+  'form.back': 'Back',
+  'form.results': 'View results',
+  'form.remove': 'Remove',
+  'form.optional': 'Optional',
+  'form.yes': 'Yes',
+  'form.no': 'No',
+  'form.choose': 'Select an option',
+  'step.basic': 'About you',
+  'step.screening': 'Check if you need professional advice',
+  'step.episodes': 'Visa history',
+  'step.absences': 'Time outside the UK',
+  'step.income': 'Earnings by tax year',
+  'step.benefits': 'Benefits and statutory payments',
+  'step.relationships': 'Family relationships',
+  'step.english': 'English and Life in the UK',
+  'step.date': 'Simulation date',
+  'country.CHN': 'China',
+  'country.HKG': 'Hong Kong',
+  'country.IND': 'India',
+  'country.PAK': 'Pakistan',
+  'country.NGA': 'Nigeria',
+  'country.USA': 'United States',
+  'country.GBR': 'United Kingdom',
+  'country.CAN': 'Canada',
+  'country.AUS': 'Australia',
+  'country.SGP': 'Singapore',
+  'basic.dob': 'Date of birth',
+  'basic.nationality': 'Nationality',
+  'basic.nationalityHint':
+    'Enter a three-letter country code (ISO 3166-1 alpha-3), for example CHN.',
+  'screening.criminality':
+    'Do you have a criminal record in the UK or overseas?',
+  'screening.breach': 'Have you breached immigration rules?',
+  'screening.breachHint':
+    'This includes overstaying, breaching visa conditions, deception, obstructing immigration control or illegal entry.',
+  'screening.debt': 'Do you have any outstanding government debt?',
+  'screening.protection':
+    'Have you sought asylum or used a human rights route?',
+  'screening.message':
+    'Your circumstances need professional assessment. This simulator stops the automated assessment here and does not collect further information.',
+  'episodes.hint':
+    'Enter the validity dates for each visa granted to you. Leave the list empty if you have no visa history.',
+  'episodes.item': 'Visa period',
+  'episodes.add': 'Add a visa period',
+  'episodes.empty': 'No visa periods added.',
+  'episodes.route': 'Visa route',
+  'episodes.from': 'Valid from',
+  'episodes.to': 'Valid to',
+  'episodes.role': 'Applicant role',
+  'episodes.MAIN': 'Main applicant',
+  'episodes.DEPENDANT': 'Dependant',
+  'episodes.soc': 'SOC 2020 occupation code (optional)',
+  'episodes.salary': 'Sponsored annual salary (GBP, optional)',
+  'absences.hint':
+    'Enter the dates you left and returned to the UK. Continue if you have no absences. You can remove existing entries.',
+  'absences.item': 'Absence',
+  'absences.add': 'Add an absence',
+  'absences.empty': 'No absences added.',
+  'absences.from': 'Date you left the UK',
+  'absences.to': 'Date you returned',
+  'income.hint':
+    'Enter earnings for the 7 completed UK tax years before the simulation date. Leave unknown amounts blank. Enter 0 for no earnings. All amounts are in GBP.',
+  'income.taxYearHint':
+    'The UK tax year runs from 6 April to 5 April the following year. Changing the simulation date in the final step updates these years.',
+  'income.earnings': 'Personal annual earnings',
+  'income.partner': 'Partner annual earnings (optional)',
+  'income.partnerHint':
+    'Leave partner earnings blank if you are not relying on them.',
+  'benefits.hint':
+    'Enter benefits or statutory payments you have received. The rules engine determines whether they count as public funds and their effect. Leave the end date blank if payments are ongoing.',
+  'benefits.item': 'Payment record',
+  'benefits.add': 'Add a payment record',
+  'benefits.empty': 'No payment records added.',
+  'benefits.type': 'Benefit or payment name',
+  'benefits.from': 'Start date',
+  'benefits.to': 'End date (optional)',
+  'relationships.hint':
+    'Add a partner, parent or child relevant to this scenario. Names and identity documents are not needed.',
+  'relationships.item': 'Family relationship',
+  'relationships.add': 'Add a family relationship',
+  'relationships.empty': 'No family relationships added.',
+  'relationships.type': 'Relationship to you',
+  'relationships.PARTNER': 'Partner',
+  'relationships.PARENT': 'Parent',
+  'relationships.CHILD': 'Child',
+  'relationships.status': 'Their status',
+  'relationships.BRITISH_CITIZEN': 'British citizen',
+  'relationships.SETTLED': 'Settled',
+  'relationships.OTHER': 'Other',
+  'english.hint':
+    'Select “Not provided / unsure” if you are unsure whether an exemption applies.',
+  'date.label': 'Which date would you like to simulate?',
+  'date.hint':
+    'The default is today. You can choose another date. Changing it updates the income years. Check them before viewing your results.',
+  'date.reviewIncome': 'Go back to check earnings',
+  'error.required': 'Complete this field.',
+  'error.nationality': 'Enter a three-letter country code.',
+  'error.range': 'The end date must not be before the start date.',
+  'error.soc': 'Enter a four-digit SOC 2020 occupation code, or leave blank.',
 };

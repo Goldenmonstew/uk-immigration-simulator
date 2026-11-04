@@ -4,7 +4,7 @@ import type {
   PersonTimeline,
   SimulationResult,
 } from '@uk-immigration/engine';
-import { t } from '../i18n';
+import { t, type TranslationKey } from '../i18n';
 import { policyAsOf } from './policy';
 
 export const steps = [
@@ -151,7 +151,7 @@ export function runSimulation(draft: Draft): SimulationResult {
   });
 }
 
-export type Errors = Record<string, string>;
+export type Errors = Record<string, TranslationKey>;
 
 function validDate(value: string): boolean {
   return (
@@ -164,7 +164,7 @@ function validDate(value: string): boolean {
 export function validateStep(draft: Draft): Errors {
   const errors: Errors = {};
   const date = (id: string, value: string) => {
-    if (!validDate(value)) errors[id] = t('error.date');
+    if (!validDate(value)) errors[id] = 'error.date';
   };
   const range = (
     prefix: string,
@@ -175,11 +175,11 @@ export function validateStep(draft: Draft): Errors {
     date(`${prefix}-from`, from);
     if (to || !optionalEnd) date(`${prefix}-to`, to);
     if (validDate(from) && validDate(to) && to < from)
-      errors[`${prefix}-to`] = t('error.range');
+      errors[`${prefix}-to`] = 'error.range';
   };
   const amount = (id: string, value: number | undefined) => {
     if (value !== undefined && (!Number.isFinite(value) || value < 0))
-      errors[id] = t('error.number');
+      errors[id] = 'error.number';
   };
   const { timeline } = draft;
   switch (draft.step) {
@@ -189,20 +189,20 @@ export function validateStep(draft: Draft): Errors {
         timeline.dateOfBirth > today() ||
         timeline.dateOfBirth > draft.simulationDate
       )
-        errors.dob = t('error.dob');
+        errors.dob = 'error.dob';
       if (!/^[A-Z]{3}$/.test(timeline.nationality))
-        errors.nationality = t('error.nationality');
+        errors.nationality = 'error.nationality';
       break;
     case 1:
       for (const key of screeningKeys)
-        if (!draft.screening[key]) errors[key] = t('error.required');
+        if (!draft.screening[key]) errors[key] = 'error.required';
       break;
     case 2:
       timeline.episodes.forEach((episode, i) => {
         range(`episode-${i}`, episode.validFrom, episode.validTo);
         if (episode.route === 'SKILLED_WORKER') {
           if (episode.socCode && !/^\d{4}$/.test(episode.socCode))
-            errors[`episode-${i}-soc`] = t('error.soc');
+            errors[`episode-${i}-soc`] = 'error.soc';
           amount(`episode-${i}-salary`, episode.salary);
         }
       });
@@ -229,7 +229,7 @@ export function validateStep(draft: Draft): Errors {
         validDate(draft.simulationDate) &&
         timeline.dateOfBirth > draft.simulationDate
       )
-        errors.simulationDate = t('error.dob');
+        errors.simulationDate = 'error.dob';
       break;
   }
   return errors;

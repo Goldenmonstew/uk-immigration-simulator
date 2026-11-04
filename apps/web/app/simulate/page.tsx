@@ -12,7 +12,8 @@ import type {
   Relationship,
   Route,
 } from '@uk-immigration/engine';
-import { t } from '../../i18n';
+import type { TranslationKey } from '../../i18n';
+import { useTranslation } from '../../i18n/locale';
 import { routeNames } from '../../i18n/routes';
 import {
   createDraft,
@@ -39,9 +40,10 @@ function Field({
   id: string;
   label: string;
   hint?: string;
-  error?: string;
+  error?: TranslationKey;
   children: ReactNode;
 }) {
+  const { t } = useTranslation();
   return (
     <div className={`${styles.field} ${error ? styles.invalid : ''}`}>
       <label htmlFor={id}>{label}</label>
@@ -52,7 +54,7 @@ function Field({
       )}
       {error && (
         <p id={`${id}-error`} className={styles.error}>
-          {error}
+          {t(error)}
         </p>
       )}
       {children}
@@ -61,6 +63,7 @@ function Field({
 }
 
 export default function SimulatePage() {
+  const { t } = useTranslation();
   const router = useRouter();
   const [draft, dispatch] = useReducer(draftReducer, undefined, createDraft);
   const [ready, setReady] = useState(false);
@@ -269,7 +272,7 @@ export default function SimulatePage() {
                       </p>
                       {errors[key] && (
                         <p id={`${key}-error`} className={styles.error}>
-                          {errors[key]}
+                          {t(errors[key])}
                         </p>
                       )}
                       <div className={styles.radios}>

@@ -1,0 +1,29 @@
+.share {
+  margin: 24px 0;
+  min-width: 0;
+}
+.row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+}
+.row p {
+  flex: 1 1 240px;
+  margin: 0;
+  font-size: 1rem;
+}
+.manual {
+  display: grid;
+  gap: 8px;
+  margin-top: 16px;
+}
+.manual textarea {
+  width: 100%;
+  min-width: 0;
+  padding: 8px;
+  font: inherit;
+  overflow-wrap: anywhere;
+  resize: vertical;
+  border: 2px solid #0b0c0c;
+}

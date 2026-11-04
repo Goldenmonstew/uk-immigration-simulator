@@ -1,10 +1,13 @@
+'use client';
+
 import Link from 'next/link';
 import { PolicyStatus } from '../components/policy-status';
-import { t } from '../i18n';
+import { useTranslation } from '../i18n/locale';
 import { policyAsOf } from '../lib/policy';
 import styles from './site.module.css';
 
 export default function Home() {
+  const { t, locale } = useTranslation();
   return (
     <main id="main" className={styles.main}>
       <PolicyStatus asOf={policyAsOf} />
@@ -25,9 +28,11 @@ export default function Home() {
         <section className={styles.section}>
           <h2>{t('home.disclaimerTitle')}</h2>
           <p>{t('home.disclaimer')}</p>
-          <p lang="en" className={styles.muted}>
-            {t('home.disclaimerEnglish')}
-          </p>
+          {locale === 'zh-CN' && (
+            <p lang="en" className={styles.muted}>
+              {t('home.disclaimerEnglish')}
+            </p>
+          )}
         </section>
       </div>
     </main>

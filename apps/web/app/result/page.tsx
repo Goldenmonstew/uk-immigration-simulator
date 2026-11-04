@@ -4,27 +4,62 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import type { SimulationResult } from '@uk-immigration/engine';
 import { ResultView } from '../../components/result-view';
-import { t } from '../../i18n';
+import { ShareLink } from '../../components/share-link';
+import { useTranslation } from '../../i18n/locale';
 import { mockResults } from '../../lib/mock-results';
-import { runSimulation } from '../../lib/questionnaire';
-import { draftStorage, getRememberedResult } from '../../lib/storage';
+import { type Draft, runSimulation } from '../../lib/questionnaire';
+import { decodeDraft } from '../../lib/share';
+import {
+  draftStorage,
+  getRememberedResult,
+  rememberResult,
+} from '../../lib/storage';
 import styles from '../site.module.css';
 
 export default function ResultPage() {
+  const { t } = useTranslation();
   const [result, setResult] = useState<SimulationResult>();
+  const [draft, setDraft] = useState<Draft>();
+  const [shared, setShared] = useState(false);
   const [ready, setReady] = useState(false);
   const [mock, setMock] = useState(false);
   useEffect(() => {
-    const preview = new URLSearchParams(window.location.search).get('mock');
-    if (preview === '1' || preview === '2') {
-      setResult(mockResults[preview]);
-      setMock(true);
-    } else {
-      const { draft } = draftStorage();
-      if (draft?.completed)
-        setResult(getRememberedResult() ?? runSimulation(draft));
-    }
-    setReady(true);
+    const load = () => {
+      setResult(undefined);
+      setDraft(undefined);
+      setShared(false);
+      setMock(false);
+      const hash = new URLSearchParams(window.location.hash.slice(1));
+      const preview = new URLSearchParams(window.location.search).get('mock');
+      if (hash.has('s')) {
+        const incoming = decodeDraft(hash.get('s')!);
+        try {
+          if (incoming) {
+            const nextResult = runSimulation(incoming);
+            draftStorage(incoming);
+            rememberResult(nextResult);
+            setDraft(incoming);
+            setResult(nextResult);
+            setShared(true);
+          }
+        } catch {
+          // A malformed external scenario must not replace the saved draft.
+        }
+      } else if (preview === '1' || preview === '2') {
+        setResult(mockResults[preview]);
+        setMock(true);
+      } else {
+        const { draft } = draftStorage();
+        if (draft?.completed) {
+          setDraft(draft);
+          setResult(getRememberedResult() ?? runSimulation(draft));
+        }
+      }
+      setReady(true);
+    };
+    load();
+    window.addEventListener('hashchange', load);
+    return () => window.removeEventListener('hashchange', load);
   }, []);
 
   return (
@@ -33,6 +68,12 @@ export default function ResultPage() {
         <p role="status">{t('result.loading')}</p>
       ) : result ? (
         <>
+          {shared && (
+            <p className={styles.notice} role="status">
+              {t('share.loaded')}
+            </p>
+          )}
+          {draft && <ShareLink draft={draft} />}
           <ResultView result={result} mock={mock} />
           <div className={styles.actions}>
             {!result.shortCircuit && (
