@@ -13,7 +13,7 @@ Phase 4 之后，现行法律栏覆盖 Skilled Worker、HK BN(O)、Global Talent
 | 5.3 | 结果页"差距摘要"：每栏在结论下列出"还差什么"（未满足 / 未知规则各一句，来自 `rules[]`），并提供"去 What-if 试试"快捷入口（预填英语、收入、日期控件） | astra | `apps/web` | 无（纯 UI 聚合，不改引擎） | 1 |
 | 5.4 | 现行法律栏的 dependant：HK BN(O)（HK 57–59）、Global Talent（GT 25–34）、Appendix FM / SETF 伴侣的子女；复用 2.2 的主申请人机制 | Opus | `packages/engine`、`fixtures/**`、`docs/contracts.md` | 5.2 合并后 | 2 |
 | 5.5 | 问卷与结果页跟进：5.2 / 5.4 契约的新输入（如 Private Life 路线类型）、范围文案 | astra | `apps/web` | 5.2 契约合到 main | 2 |
-| 5.6 | 引擎健壮性：随机时间线测试（自写生成器，不加依赖）——`evaluate` 不抛错、输出不变量（两栏键齐全、`LIKELY_NOT_ELIGIBLE` 时 `earliestDate` ≥ 申请日、`pathwayYears` 属已知集合、中英文输出结构一致），修发现的问题 | Opus | `packages/engine/test` 及修复处 | 无（与 5.2 串行，同为 Opus） | 2 |
+| 5.6 | 引擎健壮性：随机时间线测试（自写生成器，不加依赖）——`evaluate` 不抛错、输出不变量（两栏键齐全、`LIKELY_NOT_ELIGIBLE` 时 `earliestDate` ≥ 申请日、`pathwayYears` 属已知集合、中英文输出结构一致）；发现的问题只报告，由 Opus 修（规则语义仍归 Opus） | sol（测试）+ Opus（修复） | `packages/engine/test/random.test.ts`；修复处 | 5.2 合并后 | 2 |
 | 5.7 | 繁体中文界面（待定）：web 层把 zh-CN 文案与引擎中文解释按 OpenCC 转繁体（新依赖），语言切换加第三项，法律术语保留英文 | astra | `apps/web` | 用户决定 | 2 |
 | 5.8 | 视觉验收补课：用无头 Chrome 截 375px 与打印预览（首页、问卷各步、结果、What-if、/policy、/about），记录并修发现的问题 | Fable 截图 + astra 修 | `apps/web`（如有问题） | 无 | 1 |
 | 5.9 | 维护项（待定）：LICENSE 文件；PROGRESS.md 内部记录精简；12 月 Statement of Changes 落地后按 `docs/versioning.md` 升级（届时另开任务） | Fable | 根目录、`PROGRESS.md` | 用户决定 | — |
@@ -70,9 +70,10 @@ Wave 1 三个 writer 互不碰同一 package（sol 5.1；Opus 5.2 契约 + 难�
 
 同 Phase 4：gate 全过；新规则三组用例与 fixture；来源定位齐全；UI 改动 Fable 浏览器走查；一个逻辑改动一次 commit；合并后 push main 自动部署。
 
-## 4. 待用户决定
+## 4. 用户决定（2026-11-04）
 
-1. **5.2 的路线范围与顺序**：建议难民 + UK Ancestry + Innovator Founder + Private Life 一起做（难民不依赖 5.1，可先写）；也可去掉 Private Life（最复杂）留到下一阶段。
-2. **5.3 差距摘要**：做不做；"去 What-if 试试"的预填是否需要。
-3. **5.7 繁体中文**：做不做（需要新依赖 opencc-js；面向 HK BN(O) 用户）。
-4. **5.9**：LICENSE 选哪种（建议 MIT；内容数据来自政府公开文件，OGL 已允许复用）；PROGRESS 是否精简。
+1. **5.2**：难民 + UK Ancestry + Innovator Founder + Private Life 四条都做（难民先写，其余等 5.1）。
+2. **5.3 差距摘要**：做，含"去 What-if 试试"预填。
+3. **5.7 繁体中文**：不做。
+4. **5.9**：LICENSE 用 MIT（已加 `LICENSE`，版权署名 Goldenmonstew，快照部分注明 OGL / OPL）；PROGRESS 不精简。
+5. **分工**：后期多用 Codex 的模型（astra / sol）承担任务，规则语义仍由 Opus 负责；所有任务继续遵守"不过度工程化"（本阶段起 5.6 的测试由 sol 写、修复归 Opus；5.8 的修正归 astra）。
