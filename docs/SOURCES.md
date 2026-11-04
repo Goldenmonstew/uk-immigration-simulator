@@ -1,5 +1,8 @@
 # 来源登记表（Sources Register）
 
+每周一 06:00 UTC 自动核对来源，结果见 GitHub Actions 的 **Check sources** 工作流日志，也可手动运行该工作流。
+若运行失败，人工核对日志中的 changed / fetch failed 来源，并按 [docs/versioning.md §2–§3](versioning.md#2-触发与发现) 确认变更、登记新来源或新快照。
+
 > 规则引擎里每条规则都必须引用本表中的一个 `SRC-` 编号 + 页码/段落。
 > 状态：`archived` = 快照已入 `policy-sources/`；`todo` = 只有 URL 或线索，待抓取与登记；`verify` = 只有二手来源，待对照原文。
 > 权威等级：LAW（Immigration Rules / Statement of Changes / legislation）> GUIDANCE（Home Office 指引）> POLICY（命令文件、咨询回应）> PARLIAMENT（Hansard）> SECONDARY（律所、媒体，只能用于交叉验证）。
@@ -37,6 +40,8 @@
 | SRC-021 | LAW | Immigration Rules: Appendix Global Talent（版本 2026-08-03，HC 259；主申请人 settlement 见 GT 8.1–GT 15.2） | https://www.gov.uk/guidance/immigration-rules/immigration-rules-appendix-global-talent | 2026-08-03 | 2026-11-04 | `policy-sources/2026-08-03-immigration-rules-appendix-global-talent.html`（sha256 `680309baff0dc7e8e6f46eb2e0b6cd042e07f65fa3d0e7f13af8d99c24a6c08d`） | archived |
 | SRC-022 | LAW | Immigration Rules: Appendix Settlement Family Life（版本 2026-08-03，HC 259；partner / parent 的 10 年 settlement 见 SETF 1.1–SETF 9.5） | https://www.gov.uk/guidance/immigration-rules/immigration-rules-appendix-settlement-family-life | 2026-08-03 | 2026-11-04 | `policy-sources/2026-08-03-immigration-rules-appendix-settlement-family-life.html`（sha256 `c0d43e0daca75e7ce0fae936f3559e44858dfd2ae25049719fda5718dbbebddf`） | archived |
 | SRC-023 | LAW | Immigration Rules: Appendix Settlement Protection（版本 2026-04-08，HC 1691；主申请人 settlement 见 STP 1.1–STP 5.3） | https://www.gov.uk/guidance/immigration-rules/immigration-rules-appendix-settlement-protection | 2026-04-08 | 2026-11-04 | `policy-sources/2026-04-08-immigration-rules-appendix-settlement-protection.html`（sha256 `3ce467778ba7539b5fc59bb1e4e9aabeb5b7505db5a194ceabd74cb6bd965482`） | archived |
+| SRC-024 | LAW | Immigration Rules: Appendix FM: family members（版本 2026-10-08，HC 584；伴侣 5 年 settlement 见 E-ILRP.1.1–E-ILRP.1.6，财务要求见其引用的 E-LTRP.3.1–E-LTRP.3.9） | https://www.gov.uk/guidance/immigration-rules/immigration-rules-appendix-fm-family-members | 2026-10-08 | 2026-11-04 | `policy-sources/2026-10-08-immigration-rules-appendix-fm-family-members.html`（sha256 `14adc4b2b406b28b4eb5a46e111db870e2edd85101c4c79cccc417f655d576eb`） | archived |
+| SRC-025 | LAW | Immigration Rules: Appendix KoLL（版本 2026-03-26，HC 1691；E-ILRP.1.6 引用的英语与 Life in the UK 要求，见 KoLL 2.1–KoLL 2.3，豁免见 Part 3；不同于 SRC-015 Appendix KOL UK） | https://www.gov.uk/guidance/immigration-rules/immigration-rules-appendix-koll | 2026-03-26 | 2026-11-04 | `policy-sources/2026-03-26-immigration-rules-appendix-koll.html`（sha256 `d3003c6b5b99eacc50e4ac094e8b15c4128d4c11a60400bb5a1b111ed382de38`） | archived |
 
 ## 登记备注（按 SRC）
 
@@ -235,3 +240,32 @@
 - **持续保护身份**：STP 4.1（保护身份未被撤销或放弃）；STP 4.2（safe return review 及其指向的撤销 / 不续期条款）。
 - **保护许可与 settlement 的衔接**：STP 5.1（满足 suitability 与 eligibility 则授予 settlement）；STP 5.2（未满足 settlement 但仍有权享有保护身份时，继续给予至少 30 个月许可）；本 Appendix 未列首次保护许可的授予年限。
 - **英语 / KOL**：本 Appendix 快照未列英语等级、Appendix English Language、Appendix KOL UK 或 2027-03-26 起 B2 的条款，无相应段号可登记。
+
+## SRC-024 常用定位
+
+- 版本：[GOV.UK Content API 变更记录](https://www.gov.uk/api/content/guidance/immigration-rules/immigration-rules-appendix-fm-family-members) 最近一条为 2026-10-08（Statement of Changes HC 584），与[手册变更记录](https://www.gov.uk/guidance/immigration-rules/updates) 中该 Appendix 的最近一条一致；`public_updated_at` 与快照的 `govuk:public-updated-at` 同为 `2026-10-08T07:53:21+01:00`，不取手册头部的 2026-10-29。
+- **来源地址**：任务单的 `/immigration-rules-appendix-family-members` 返回 HTTP 404，本表采用官方手册链接中的 `/immigration-rules-appendix-fm-family-members`。
+- **Settlement 入口 / suitability**：R-ILRP.1.1(a)–(c)、(e)（双方在英国、有效申请、通过 S-ILR 并满足 E-ILRP，(d) 已 deleted）；S-ILR.1.1（不得因 Part Suitability 被拒）。
+- **最近一次许可**：E-ILRP.1.2（申请人须在英国持有效 Appendix FM partner 许可，并列 overstayer 例外）。
+- **5 年合格期 / 可计入许可**：E-ILRP.1.1、E-ILRP.1.3(1)(a)–(c)、(2)（连续至少 5 年 / 60 个月，计入 D-ECP.1.1 的 partner 入境许可、D-LTRP.1.1 的 partner 居留许可或其组合，排除 fiancé(e) / proposed civil partner 期间）。
+- **关系要求**：E-ILRP.1.3(1A) 引用 E-LTRP 并排除 E-LTRP.1.2(c)–(f)，故伴侣身份按 E-LTRP.1.2(a)–(b) 为 British Citizen / settled；E-LTRP.1.7–E-LTRP.1.10（真实持续关系、有效婚姻 / civil partnership、此前关系结束、永久共同生活及同居证据）。
+- **期间计算**：E-ILRP.1.4（只计同一伴侣的期间）；E-ILRP.1.5（Appendix FM-SE paragraph 26A 证据对应期间的境内要求例外）；E-ILRP.1.5A（特定 overstaying 期间可忽略）。
+- **财务引用与储蓄倍数**：E-ILRP.1.3(1A)（须满足 Section E-LTRP，适用 E-LTRP.3.1(b)(ii) / E-LTRP.3.7(b)(ii) 时去掉 “2.5 times”）。
+- **一般收入 / 储蓄**：E-LTRP.3.1(a)–(c)（指定年毛收入至少 £29,000，储蓄项列 £16,000 及收入缺口，或满足 E-LTRP.3.3）；E-LTRP.3.2(a)–(g)（允许的申请人 / 伴侣等收入与储蓄来源）。
+- **财务过渡适用**：E-LTRP.3.5–E-LTRP.3.6（2024-04-11 前首次成功申请且仍持同一伴侣的指定许可者适用 E-LTRP.3.7，更换伴侣适用一般要求）。
+- **过渡收入 / 储蓄**：E-LTRP.3.7(a)–(c)（£18,600，首名符合定义的 child 加 £3,800，其后每名加 £2,400，储蓄项列 £16,000 及收入缺口，或满足 E-LTRP.3.3）；E-LTRP.3.8（因子女数计算超过 £29,000 时只需 £29,000）。
+- **财务替代 / 住宿**：E-LTRP.3.3(a)–(b)（伴侣领取列明福利时须证明 adequate maintenance and accommodation）；E-LTRP.3.4、E-LTRP.3.9（足够且不拥挤、不违反公共卫生规定的住宿）。
+- **英语 / KOL**：E-ILRP.1.6（引用 Appendix KoLL，即 SRC-025；本段不直接列 B1 / B2，分段日期与等级见 KoLL 2.2(b)、(ba)、(c)(i)–(ii)，Life in the UK 见 KoLL 2.3）。
+- **10 年路线与 SETF**：GEN.1.17（10 年合格期的 partner / parent 及其 dependent child settlement 必须依 Appendix Settlement Family Life 申请，不在 Appendix FM 审理）；R-ILRP.1.1(d) 已 deleted，不能从该项补造 10 年路线要求。
+
+## SRC-025 常用定位
+
+- 版本：[GOV.UK Content API 变更记录](https://www.gov.uk/api/content/guidance/immigration-rules/immigration-rules-appendix-koll) 最近一条为 2026-03-26（Statement of Changes HC 1691），与[手册变更记录](https://www.gov.uk/guidance/immigration-rules/updates) 中该 Appendix 的最近一条一致；`public_updated_at` 与快照的 `govuk:public-updated-at` 同为 `2026-03-26T09:33:27+00:00`。
+- **适用与组合要求**：KoLL 1.1、KoLL 2.1（规定 indefinite leave 的英语与英国生活知识要求，通常须同时满足 KoLL 2.2 与 KoLL 2.3，Part 3 有例外）；本 Appendix 为 Appendix KoLL，不是 SRC-015 的 Appendix KOL UK。
+- **英语证明途径**：KoLL 2.2(a)(i)、(iii)–(iv)（列明国籍或学历的指定证明）。
+- **已有英语资格**：KoLL 2.2(b)(i)–(iii)、(ba)(i)–(iii)（以此前连续许可所依据的认可英语资格证明时，申请日早于 2027-03-26 至少 B1，自该日起至少 B2，且提供者在申请日仍获认可）。
+- **英语考试**：KoLL 2.2(c)(i)–(ii)（认可中心的口语与听力考试，申请日前不超过 2 年，申请日早于 2027-03-26 至少 B1，自该日起至少 B2）。
+- **Life in the UK**：KoLL 2.3(a)–(c)（通过获认可的 Life in the UK test，另列 Isle of Man / Guernsey / Jersey 的认可测试）。
+- **一般豁免**：KoLL 3.1(a)–(c)（申请日未满 18 岁、至少 65 岁，或因身心状况由决策者认定不宜要求满足其中一项或两项）。
+- **长期居留特定例外**：KoLL 3.2(a)(xi)–(xii)、(b)–(d)（包括 Appendix FM partner / parent 连续至少 15 年者，须同时满足 A2 等英语证明、努力学习仍未达 B1 / B2 的教师证明及国籍等限定，不是自动豁免）。
+- **后续满足要求**：KoLL 3.3(i)–(iii)（paragraph 39C(c) 适用时，按所欠英语 / Life in the UK 项补足，英语等级亦以 2027-03-26 分 B1 / B2）。

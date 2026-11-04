@@ -15,7 +15,7 @@ export interface ImmigrationSalaryListEntry {
   criteria?: string;
   /** Included nations, in the original country-header order. */
   nations: string;
-  /** Removal date in the source wording, when present. */
+  /** ISO date (YYYY-MM-DD), when present; unparsed source dates are annotated. */
   removalDate?: string;
 }
 
@@ -35,42 +35,42 @@ export const immigrationSalaryListOccupations: {
         'Managers and proprietors in forestry, fishing and related services',
       criteria: 'only “fishing boat masters”',
       nations: 'Scotland',
-      removalDate: '31 December 2026',
+      removalDate: '2026-12-31',
     },
     {
       socCode: '1232',
       title: 'Residential, day and domiciliary care managers and proprietors',
       criteria: 'all jobs',
       nations: 'England, Scotland, Wales and Northern Ireland',
-      removalDate: '31 December 2026',
+      removalDate: '2026-12-31',
     },
     {
       socCode: '2111',
       title: 'Chemical scientists',
       criteria: 'only jobs in the nuclear industry',
       nations: 'Scotland',
-      removalDate: '31 December 2026',
+      removalDate: '2026-12-31',
     },
     {
       socCode: '2112',
       title: 'Biological scientists',
       criteria: 'all jobs',
       nations: 'England, Scotland, Wales and Northern Ireland',
-      removalDate: '31 December 2026',
+      removalDate: '2026-12-31',
     },
     {
       socCode: '2115',
       title: 'Social and humanities scientists',
       criteria: 'only archaeologists',
       nations: 'England, Scotland, Wales and Northern Ireland',
-      removalDate: '31 December 2026',
+      removalDate: '2026-12-31',
     },
     {
       socCode: '2142',
       title: 'Graphic and multimedia designers',
       criteria: 'all jobs',
       nations: 'England, Scotland, Wales and Northern Ireland',
-      removalDate: '31 December 2026',
+      removalDate: '2026-12-31',
     },
     {
       socCode: '3111',
@@ -78,21 +78,21 @@ export const immigrationSalaryListOccupations: {
       criteria:
         'only jobs requiring 3 or more years’ related on-the-job experience. This experience must not have been gained through working illegally.',
       nations: 'England, Scotland, Wales and Northern Ireland',
-      removalDate: '31 December 2026',
+      removalDate: '2026-12-31',
     },
     {
       socCode: '3212',
       title: 'Pharmaceutical technicians',
       criteria: 'all jobs',
       nations: 'England, Scotland, Wales and Northern Ireland',
-      removalDate: '31 December 2026',
+      removalDate: '2026-12-31',
     },
     {
       socCode: '3411',
       title: 'Artists',
       criteria: 'all jobs',
       nations: 'England, Scotland, Wales and Northern Ireland',
-      removalDate: '31 December 2026',
+      removalDate: '2026-12-31',
     },
     {
       socCode: '3414',
@@ -100,7 +100,7 @@ export const immigrationSalaryListOccupations: {
       criteria:
         'only skilled classical ballet dancers or skilled contemporary dancers who meet the standard required by internationally recognised UK ballet or contemporary dance companies. The company must be endorsed as being internationally recognised by a UK industry body such as the Arts Councils (of England, Scotland or Wales).',
       nations: 'England, Scotland, Wales and Northern Ireland',
-      removalDate: '31 December 2026',
+      removalDate: '2026-12-31',
     },
     {
       socCode: '3415',
@@ -108,21 +108,21 @@ export const immigrationSalaryListOccupations: {
       criteria:
         'only skilled orchestral musicians who are leaders, principals, sub-principals or numbered string positions, and who meet the standard required by internationally recognised UK orchestras. The orchestra must be a full member of the Association of British Orchestras.',
       nations: 'England, Scotland, Wales and Northern Ireland',
-      removalDate: '31 December 2026',
+      removalDate: '2026-12-31',
     },
     {
       socCode: '3416',
       title: 'Arts officers, producers and directors',
       criteria: 'all jobs',
       nations: 'England, Scotland, Wales and Northern Ireland',
-      removalDate: '31 December 2026',
+      removalDate: '2026-12-31',
     },
     {
       socCode: '5119',
       title: 'Agriculture and fishing trades not elsewhere classified',
       criteria: 'only jobs in the fishing industry',
       nations: 'England, Scotland, Wales and Northern Ireland',
-      removalDate: '31 December 2026',
+      removalDate: '2026-12-31',
     },
     {
       socCode: '5213',
@@ -130,49 +130,49 @@ export const immigrationSalaryListOccupations: {
       criteria:
         'only high integrity pipe welders, where the job requires 3 or more years’ related on-the-job experience. This experience must not have been gained through working illegally.',
       nations: 'England, Scotland, Wales and Northern Ireland',
-      removalDate: '31 December 2026',
+      removalDate: '2026-12-31',
     },
     {
       socCode: '5235',
       title: 'Boat and ship builders and repairers',
       criteria: 'all jobs',
       nations: 'Scotland',
-      removalDate: '31 December 2026',
+      removalDate: '2026-12-31',
     },
     {
       socCode: '5312',
       title: 'Stonemasons and related trades',
       criteria: 'all jobs',
       nations: 'England, Scotland, Wales and Northern Ireland',
-      removalDate: '31 December 2026',
+      removalDate: '2026-12-31',
     },
     {
       socCode: '5313',
       title: 'Bricklayers',
       criteria: 'all jobs',
       nations: 'England, Scotland, Wales and Northern Ireland',
-      removalDate: '31 December 2026',
+      removalDate: '2026-12-31',
     },
     {
       socCode: '5314',
       title: 'Roofers, roof tilers and slaters',
       criteria: 'all jobs',
       nations: 'England, Scotland, Wales and Northern Ireland',
-      removalDate: '31 December 2026',
+      removalDate: '2026-12-31',
     },
     {
       socCode: '5316',
       title: 'Carpenters and joiners',
       criteria: 'all jobs',
       nations: 'England, Scotland, Wales and Northern Ireland',
-      removalDate: '31 December 2026',
+      removalDate: '2026-12-31',
     },
     {
       socCode: '5319',
       title: 'Construction and building trades not elsewhere classified',
       criteria: 'only retrofitters',
       nations: 'England, Scotland, Wales and Northern Ireland',
-      removalDate: '31 December 2026',
+      removalDate: '2026-12-31',
     },
     {
       socCode: '6129',
@@ -180,7 +180,7 @@ export const immigrationSalaryListOccupations: {
       criteria:
         'only racing grooms, stallion handlers, stud grooms, stud hands, stud handlers and work riders',
       nations: 'England, Scotland, Wales and Northern Ireland',
-      removalDate: '31 December 2026',
+      removalDate: '2026-12-31',
     },
     {
       socCode: '6131',
@@ -188,7 +188,7 @@ export const immigrationSalaryListOccupations: {
       criteria:
         'all jobs Note: For Skilled Worker purposes, SOC 2020 occupation code 6131 only applies to roles in environments where registered nurse or other registered healthcare professional roles also exist.',
       nations: 'England, Scotland, Wales and Northern Ireland',
-      removalDate: '31 December 2026',
+      removalDate: '2026-12-31',
     },
     {
       socCode: '6135',
@@ -196,7 +196,7 @@ export const immigrationSalaryListOccupations: {
       criteria:
         'all jobs, except jobs with a working location in England are only eligible in this SOC 2020 occupation code where the sponsor holds registration with the Care Quality Commission and is currently carrying on a regulated activity. Eligibility for Skilled Worker applicants to be sponsored in this SOC 2020 occupation code is restricted, as set out in SW 6.1B of Appendix Skilled Worker. Private households or individuals (other than sole traders sponsoring someone to work for their business) cannot sponsor Skilled Worker applicants.',
       nations: 'England, Scotland, Wales and Northern Ireland',
-      removalDate: '22 July 2028',
+      removalDate: '2028-07-22',
     },
     {
       socCode: '6136',
@@ -204,7 +204,7 @@ export const immigrationSalaryListOccupations: {
       criteria:
         'all jobs, except jobs with a working location in England are only eligible in this SOC 2020 occupation code where the sponsor holds registration with the Care Quality Commission and is currently carrying on a regulated activity. Eligibility for Skilled Worker applicants to be sponsored in this SOC 2020 occupation code is restricted, as set out in SW 6.1B of Appendix Skilled Worker.',
       nations: 'England, Scotland, Wales and Northern Ireland',
-      removalDate: '22 July 2028',
+      removalDate: '2028-07-22',
     },
     {
       socCode: '9119',
@@ -213,7 +213,7 @@ export const immigrationSalaryListOccupations: {
       criteria:
         'only deckhands on large fishing vessels (9 metres and above) where the job requires the worker to have at least 3 years’ full-time experience in using their skills. This experience must not have been gained through working illegally.',
       nations: 'England, Scotland, Wales and Northern Ireland',
-      removalDate: '31 December 2026',
+      removalDate: '2026-12-31',
     },
   ],
 };
