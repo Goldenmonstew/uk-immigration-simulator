@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
+import { usePathname } from 'next/navigation';
 import { t, type TranslationKey } from './index';
 
 type Locale = 'zh-CN' | 'en';
@@ -14,6 +15,7 @@ export const LocaleContext = createContext<{
 
 export function LocaleProvider({ children }: { children: ReactNode }) {
   const [locale, updateLocale] = useState<Locale>('zh-CN');
+  const pathname = usePathname();
   useEffect(() => {
     try {
       if (localStorage.getItem(localeKey) === 'en') updateLocale('en');
@@ -24,7 +26,7 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     document.documentElement.lang = locale;
     document.title = t('site.name', locale);
-  }, [locale]);
+  }, [locale, pathname]);
   const setLocale = (next: Locale) => {
     updateLocale(next);
     try {

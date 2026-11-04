@@ -16,7 +16,10 @@ import type { TranslationKey } from '../../i18n';
 import { useTranslation } from '../../i18n/locale';
 import { routeNames } from '../../i18n/routes';
 import {
+  activePersonDraft,
   createDraft,
+  needsPrincipal,
+  stepSequence,
   draftReducer,
   runSimulation,
   screeningKeys,
@@ -70,7 +73,11 @@ export default function SimulatePage() {
   const [storageAvailable, setStorageAvailable] = useState(true);
   const [errors, setErrors] = useState<Errors>({});
   const heading = useRef<HTMLHeadingElement>(null);
-  const { timeline } = draft;
+  const active = activePersonDraft(draft);
+  const { timeline } = active;
+  const editingPrincipal = draft.principalStep !== undefined;
+  const sequence = stepSequence(draft);
+  const position = sequence.indexOf(active.step);
 
   useEffect(() => {
     const stored = draftStorage();
@@ -78,7 +85,7 @@ export default function SimulatePage() {
       dispatch({
         type: 'restore',
         draft: stored.draft.completed
-          ? { ...stored.draft, step: 0 }
+          ? { ...stored.draft, step: 0, principalStep: undefined }
           : stored.draft,
       });
     setStorageAvailable(stored.available);
@@ -91,7 +98,7 @@ export default function SimulatePage() {
 
   useEffect(() => {
     if (ready) heading.current?.focus();
-  }, [draft.step, ready]);
+  }, [draft.step, draft.principalStep, ready]);
 
   const update = (patch: Partial<PersonTimeline>) =>
     dispatch({ type: 'timeline', patch });
@@ -118,19 +125,19 @@ export default function SimulatePage() {
   };
   const screen = (key: ScreeningKey, answer: 'yes' | 'no') => {
     if (answer === 'yes' && key !== 'debt') {
-      finish({ ...draft, screening: { ...draft.screening, [key]: answer } });
+      finish(draftReducer(draft, { type: 'screening', key, answer }));
     } else dispatch({ type: 'screening', key, answer });
   };
   const submit = (event: FormEvent) => {
     event.preventDefault();
     if (
-      draft.step === 1 &&
-      shortCircuitKeys.some((key) => draft.screening[key] === 'yes')
+      active.step === 1 &&
+      shortCircuitKeys.some((key) => active.screening[key] === 'yes')
     ) {
       finish(draft);
       return;
     }
-    const nextErrors = validateStep(draft);
+    const nextErrors = validateStep(active);
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length) {
       requestAnimationFrame(() =>
@@ -138,8 +145,12 @@ export default function SimulatePage() {
       );
       return;
     }
-    if (draft.step === steps.length - 1) finish(draft);
-    else goTo(draft.step + 1);
+    if (position === sequence.length - 1) {
+      if (editingPrincipal)
+        dispatch({ type: 'principal-return', completed: true });
+      else if (needsPrincipal(draft) && !draft.principalCompleted) goTo(9);
+      else finish(draft);
+    } else goTo(sequence[position + 1]);
   };
   const updateEpisode = (index: number, patch: Partial<ImmigrationEpisode>) =>
     update({
@@ -180,12 +191,31 @@ export default function SimulatePage() {
           <p role="status">{t('result.loading')}</p>
         ) : (
           <>
+            {editingPrincipal && (
+              <aside className={site.notice} aria-label={t('principal.banner')}>
+                <strong>{t('principal.banner')}</strong>
+                <p>
+                  {t('principal.sharedDate')}{' '}
+                  <time>{draft.simulationDate}</time>
+                </p>
+                <button
+                  type="button"
+                  className={site.secondary}
+                  onClick={() => {
+                    setErrors({});
+                    dispatch({ type: 'principal-return' });
+                  }}
+                >
+                  {t('principal.return')}
+                </button>
+              </aside>
+            )}
             <p className={styles.progress}>
-              {t('form.step')} {draft.step + 1} {t('form.of')} {steps.length} —{' '}
+              {t('form.step')} {position + 1} {t('form.of')} {sequence.length} —{' '}
               {t('form.title')}
             </p>
             <h1 ref={heading} tabIndex={-1}>
-              {t(`step.${steps[draft.step]}`)}
+              {t(`step.${steps[active.step]}`)}
             </h1>
             <p
               className={
@@ -204,7 +234,7 @@ export default function SimulatePage() {
                 </div>
               )}
 
-              {draft.step === 0 && (
+              {active.step === 0 && (
                 <>
                   {dateField(
                     'dob',
@@ -255,7 +285,7 @@ export default function SimulatePage() {
                 </>
               )}
 
-              {draft.step === 1 && (
+              {active.step === 1 && (
                 <>
                   <p>{t('screening.hint')}</p>
                   {screeningKeys.map((key) => (
@@ -283,7 +313,7 @@ export default function SimulatePage() {
                               type="radio"
                               name={key}
                               value={answer}
-                              checked={draft.screening[key] === answer}
+                              checked={active.screening[key] === answer}
                               aria-invalid={errors[key] ? true : undefined}
                               onChange={() => screen(key, answer)}
                             />
@@ -296,7 +326,7 @@ export default function SimulatePage() {
                 </>
               )}
 
-              {draft.step === 2 && (
+              {active.step === 2 && (
                 <>
                   <p>{t('episodes.hint')}</p>
                   {!timeline.episodes.length && (
@@ -351,6 +381,7 @@ export default function SimulatePage() {
                               updateEpisode(index, {
                                 role: event.target
                                   .value as ImmigrationEpisode['role'],
+                                dependantOf: undefined,
                               })
                             }
                           >
@@ -360,6 +391,33 @@ export default function SimulatePage() {
                             </option>
                           </select>
                         </Field>
+                        {episode.role === 'DEPENDANT' && (
+                          <Field
+                            id={`${prefix}-dependantOf`}
+                            label={t('episodes.dependantOf')}
+                            error={errors[`${prefix}-dependantOf`]}
+                          >
+                            <select
+                              {...fieldProps(`${prefix}-dependantOf`)}
+                              required
+                              value={episode.dependantOf ?? ''}
+                              onChange={(event) =>
+                                updateEpisode(index, {
+                                  dependantOf: (event.target.value ||
+                                    undefined) as ImmigrationEpisode['dependantOf'],
+                                })
+                              }
+                            >
+                              <option value="">{t('form.choose')}</option>
+                              <option value="PARTNER">
+                                {t('episodes.partnerDependant')}
+                              </option>
+                              <option value="PARENT">
+                                {t('episodes.childDependant')}
+                              </option>
+                            </select>
+                          </Field>
+                        )}
                         {episode.route === 'SKILLED_WORKER' && (
                           <>
                             <Field
@@ -432,7 +490,39 @@ export default function SimulatePage() {
                 </>
               )}
 
-              {draft.step === 3 && (
+              {active.step === 9 && (
+                <>
+                  <p>{t('principal.hint')}</p>
+                  <p>
+                    {t(
+                      draft.principalCompleted
+                        ? 'principal.saved'
+                        : 'principal.incomplete',
+                    )}
+                  </p>
+                  <Field
+                    id="principal"
+                    label={t('step.principal')}
+                    error={errors.principal}
+                  >
+                    <button
+                      {...fieldProps('principal')}
+                      type="button"
+                      className={site.secondary}
+                      onClick={() => {
+                        setErrors({});
+                        dispatch({ type: 'principal-start' });
+                      }}
+                    >
+                      {t(
+                        draft.principal ? 'principal.edit' : 'principal.start',
+                      )}
+                    </button>
+                  </Field>
+                </>
+              )}
+
+              {active.step === 3 && (
                 <>
                   <p>{t('absences.hint')}</p>
                   {!timeline.absences.length && (
@@ -488,12 +578,12 @@ export default function SimulatePage() {
                 </>
               )}
 
-              {draft.step === 4 && (
+              {active.step === 4 && (
                 <>
                   <p>{t('income.hint')}</p>
                   <p className={styles.hint}>{t('income.taxYearHint')}</p>
                   <p className={styles.hint}>{t('income.partnerHint')}</p>
-                  {visibleIncomeYears(draft).map((row) => (
+                  {visibleIncomeYears(active).map((row) => (
                     <fieldset className={styles.incomeRow} key={row.taxYear}>
                       <legend>{row.taxYear}</legend>
                       <div className={styles.incomeFields}>
@@ -542,7 +632,7 @@ export default function SimulatePage() {
                 </>
               )}
 
-              {draft.step === 5 && (
+              {active.step === 5 && (
                 <>
                   <p>{t('benefits.hint')}</p>
                   {!timeline.benefits.length && (
@@ -641,7 +731,7 @@ export default function SimulatePage() {
                 </>
               )}
 
-              {draft.step === 6 && (
+              {active.step === 6 && (
                 <>
                   <p>{t('relationships.hint')}</p>
                   {!timeline.relationships.length && (
@@ -740,7 +830,7 @@ export default function SimulatePage() {
                 </>
               )}
 
-              {draft.step === 7 && (
+              {active.step === 7 && (
                 <>
                   <p>{t('english.hint')}</p>
                   <Field id="english" label={t('english.level')}>
@@ -804,7 +894,7 @@ export default function SimulatePage() {
                 </>
               )}
 
-              {draft.step === 8 && (
+              {active.step === 8 && (
                 <>
                   <p>{t('date.hint')}</p>
                   {dateField(
@@ -815,7 +905,7 @@ export default function SimulatePage() {
                   )}
                   <p>
                     {t('date.incomeWindow')}：
-                    {visibleIncomeYears(draft)
+                    {visibleIncomeYears(active)
                       .map((row) => row.taxYear)
                       .join('、')}
                   </p>
@@ -826,6 +916,15 @@ export default function SimulatePage() {
                   >
                     {t('date.reviewIncome')}
                   </button>
+                  {needsPrincipal(draft) && draft.principal && (
+                    <button
+                      type="button"
+                      className={site.secondary}
+                      onClick={() => goTo(9)}
+                    >
+                      {t('principal.edit')}
+                    </button>
+                  )}
                   <p className={site.notice}>{t('home.disclaimer')}</p>
                 </>
               )}
@@ -833,16 +932,18 @@ export default function SimulatePage() {
               <div className={site.actions}>
                 <button type="submit" className={site.button}>
                   {t(
-                    draft.step === steps.length - 1
-                      ? 'form.results'
+                    position === sequence.length - 1
+                      ? editingPrincipal
+                        ? 'principal.finish'
+                        : 'form.results'
                       : 'form.continue',
                   )}
                 </button>
-                {draft.step > 0 ? (
+                {position > 0 ? (
                   <button
                     type="button"
                     className={site.secondary}
-                    onClick={() => goTo(draft.step - 1)}
+                    onClick={() => goTo(sequence[position - 1])}
                   >
                     {t('form.back')}
                   </button>

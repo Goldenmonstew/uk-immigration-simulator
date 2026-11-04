@@ -1,6 +1,38 @@
 import type { zhCN } from './zh-CN';
 
 export const en: Record<keyof typeof zhCN, string> = {
+  'step.principal': 'Principal applicant',
+  'principal.banner': 'Entering details for: principal applicant',
+  'principal.sharedDate': 'Shared simulation date:',
+  'principal.hint':
+    'A dependant settles with the principal applicant, so their timeline is needed.',
+  'principal.start': 'Enter the principal applicant’s timeline',
+  'principal.edit': 'Edit the principal applicant’s timeline',
+  'principal.return': 'Return to the applicant questionnaire',
+  'principal.finish': 'Finish and return to the applicant questionnaire',
+  'principal.saved':
+    'The principal applicant’s timeline is complete. Continue with the applicant questionnaire.',
+  'principal.incomplete':
+    'Complete the principal applicant’s timeline to continue.',
+  'principal.required': 'Complete the principal applicant’s timeline first.',
+  'principal.prefix': 'Principal applicant: ',
+  'episodes.dependantOf': 'Dependant relationship',
+  'episodes.partnerDependant': 'Partner dependant (principal is your partner)',
+  'episodes.childDependant': 'Child dependant (principal is your parent)',
+  'result.principal': 'Principal applicant’s assessment',
+  'site.navigation': 'Main navigation',
+  'site.policy': 'Policy',
+  'site.chinese': 'Chinese',
+  'policyPage.title': 'Policy basis',
+  'policyPage.ruleSets': 'Rule sets',
+  'policyPage.parameters': 'Parameters',
+  'policyPage.name': 'Name',
+  'policyPage.value': 'Value',
+  'policyPage.rules': 'Rules',
+  'policyPage.changelog': 'Policy changelog',
+  'policyPage.sources': 'Source register',
+  'policyPage.bestYears': '{required} of {window} years',
+  'policyPage.applicationsFrom': 'for applications from',
   'site.name': 'UK Immigration Path Simulator',
   'site.englishName': 'My Immigration Path',
   'site.skip': 'Skip to main content',
