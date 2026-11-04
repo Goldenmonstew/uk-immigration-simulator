@@ -38,6 +38,7 @@ export interface ParameterSet {
   asOf: string;
   values: Record<
     string,
-    Parameter<number | BestYears | DatedEnglishRequirement>
+    // string: a YYYY-MM-DD date or a CEFR level.
+    Parameter<number | string | BestYears | DatedEnglishRequirement>
   >;
 }

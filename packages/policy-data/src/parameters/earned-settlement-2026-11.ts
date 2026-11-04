@@ -18,6 +18,20 @@ export const earnedSettlement2026_11 = {
       ],
     },
 
+    // From this age the earnings, English and Life in the UK requirements do
+    // not apply (p15, p21).
+    exemptionAge: {
+      value: 65,
+      sources: [
+        { srcId: 'SRC-001', locator: 'p15' },
+        { srcId: 'SRC-001', locator: 'p21' },
+      ],
+    },
+    settlementEnglishLevel: {
+      value: 'B2',
+      sources: [{ srcId: 'SRC-001', locator: 'p21' }],
+    },
+
     // GBP per year
     earningsThreshold3Year: {
       value: 125141,

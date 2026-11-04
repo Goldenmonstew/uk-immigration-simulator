@@ -1,5 +1,9 @@
 import { describe, expect, test } from 'vitest';
-import { esCriminality, esDebt } from '../src/rules/es-requirements';
+import {
+  esCriminality,
+  esDebt,
+  esEnglishB2,
+} from '../src/rules/es-requirements';
 import { run } from './helpers';
 
 describe('ES-CRIMINALITY', () => {
@@ -40,5 +44,42 @@ describe('ES-DEBT', () => {
     const result = run(esDebt, { governmentDebt: undefined });
     expect(result.status).toBe('UNKNOWN');
     expect(result.pendingDetails).toBeUndefined();
+  });
+});
+
+describe('ES-ENGLISH-B2', () => {
+  test('B2 and above pass, B1 fails', () => {
+    expect(run(esEnglishB2).status).toBe('PASS');
+    expect(run(esEnglishB2, { english: { cefrLevel: 'C1' } }).status).toBe(
+      'PASS',
+    );
+    expect(run(esEnglishB2, { english: { cefrLevel: 'B1' } }).status).toBe(
+      'FAIL',
+    );
+  });
+
+  test('exempt passes; missing is unknown', () => {
+    expect(run(esEnglishB2, { english: { exempt: true } }).status).toBe('PASS');
+    expect(run(esEnglishB2, { english: undefined }).status).toBe('UNKNOWN');
+  });
+
+  test('age exemption from 65, not at 64', () => {
+    const b1 = { english: { cefrLevel: 'B1' as const } };
+    expect(run(esEnglishB2, { ...b1, dateOfBirth: '1961-11-05' }).status).toBe(
+      'FAIL',
+    );
+    expect(run(esEnglishB2, { ...b1, dateOfBirth: '1961-11-04' }).status).toBe(
+      'PASS',
+    );
+  });
+
+  test('age exemption under 18, not at 18', () => {
+    const none = { english: undefined };
+    expect(
+      run(esEnglishB2, { ...none, dateOfBirth: '2008-11-05' }).status,
+    ).toBe('PASS');
+    expect(
+      run(esEnglishB2, { ...none, dateOfBirth: '2008-11-04' }).status,
+    ).toBe('UNKNOWN');
   });
 });

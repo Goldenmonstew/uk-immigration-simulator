@@ -1,6 +1,7 @@
 import { earnedSettlement2026_11 as es } from '@uk-immigration/policy-data';
 import { fullYears } from '../dates';
 import { defineRule } from '../rule';
+import type { CefrLevel } from '@uk-immigration/policy-data';
 import type { IsoDate, PersonTimeline } from '../types';
 
 // Mandatory requirements that apply to every Earned Settlement pathway
@@ -11,6 +12,18 @@ const RULE_SET = 'earned-settlement-2026-11';
 
 export function isAdultOn(timeline: PersonTimeline, date: IsoDate): boolean {
   return fullYears(timeline.dateOfBirth, date) >= es.values.adultAge.value;
+}
+
+/** Under 18 or 65 and over: exempt from earnings, English and Life in the UK. */
+export function ageExemptOn(timeline: PersonTimeline, date: IsoDate): boolean {
+  const age = fullYears(timeline.dateOfBirth, date);
+  return age < es.values.adultAge.value || age >= es.values.exemptionAge.value;
+}
+
+const CEFR_ORDER: readonly string[] = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
+
+export function meetsCefr(level: CefrLevel, required: string): boolean {
+  return CEFR_ORDER.indexOf(level) >= CEFR_ORDER.indexOf(required);
 }
 
 export const esCriminality = defineRule(
@@ -71,5 +84,47 @@ export const esDebt = defineRule(
         '"无政府债务"按用户申报判断；正在按还款计划偿还的非 asylum support 债务是否满足要求，原文未说明（PD-018）。',
       ],
     };
+  },
+);
+
+export const esEnglishB2 = defineRule(
+  {
+    id: 'ES-ENGLISH-B2',
+    ruleSetId: RULE_SET,
+    title: '英语达到 B2',
+    sources: [{ srcId: 'SRC-001', locator: 'p21' }],
+    pendingDetails: ['PD-019'],
+  },
+  ({ timeline, simulationDate }) => {
+    const required = es.values.settlementEnglishLevel.value;
+    if (ageExemptOn(timeline, simulationDate)) {
+      return {
+        status: 'PASS',
+        explanation: `申请日未满 18 岁或已满 65 岁，豁免英语要求。`,
+      };
+    }
+    const english = timeline.english;
+    if (!english) {
+      return {
+        status: 'UNKNOWN',
+        explanation: `未填写英语水平。Earned Settlement 要求 CEFR ${required}（现有豁免保留）。`,
+      };
+    }
+    if ('exempt' in english) {
+      return {
+        status: 'PASS',
+        explanation: '申报因身心状况豁免英语要求。',
+        assumptions: ['身心状况豁免按用户申报，未核实认定标准。'],
+      };
+    }
+    return meetsCefr(english.cefrLevel, required)
+      ? {
+          status: 'PASS',
+          explanation: `英语 ${english.cefrLevel}，达到 ${required}。`,
+        }
+      : {
+          status: 'FAIL',
+          explanation: `英语 ${english.cefrLevel}，低于 Earned Settlement 要求的 ${required}。这是强制要求，不能用收入或其他贡献抵消。`,
+        };
   },
 );
