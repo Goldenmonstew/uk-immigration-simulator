@@ -56,6 +56,7 @@
 | 50 | 合并 4.3（astra，四组改动交错在共享文件里，合为一个 commit）：路线与分组名复用 policy-data 显示名（routeLabel 只给中文补英文后缀）、punct(locale) 按语言统一标点、/about 中英文方法说明页（用途与边界、两栏范围、待定事项、来源与核对日期、隐私；导航与免责说明入口；sw.js 预缓存 /about、缓存 v2）、导航 hover 与 skip link 对比度、What-if 滑块可见 label；Fable 复跑工作树 gate（web 106）并通读英文文案；main 构建上脚本驱动走查（/about 中英文、导航与首页入口、政策核对日期、sw v2 缓存、中文路线名"技术工作者 · Skilled Worker"、英文结果页无中文无全角标点）；Lighthouse accessibility 首页 / 问卷 / 结果 / about / policy 均 100；375px 截图因面板隐藏未做 | apps/web/**, docs/tasks/reports/4.3-web-polish-about.md |
 | 51 | 4.2 契约评审通过并合到 main（Opus 三个 commit：globalTalentEndorsement / globalTalentCriteria / familyPermission 字段，contracts.md §12 含 HK BN(O)、Global Talent、家庭伴侣 10 年 / 5 年路线、候选路径；5 年路线与财务要求待 SRC-024 / 025）；Fable 核对 GT 11.3 快照原文与 SW_QUALIFYING_ROUTES 一致、partnerEarnings 字段已有；通知 Opus 继续写规则；派发 sol 4.4（`.worktrees/sol-monitor`，分支 `codex/sol-monitor-4.4`，含每周 check-sources 工作流、ISL ISO 日期、Appendix FM / KoLL 登记） | docs/contracts.md, packages/engine/src/types.ts, PROGRESS.md |
 | 52 | 用户决定反馈渠道为 GitHub issue：扫描仓库无 token 值、无个人邮箱、无 .env 后，`gh repo edit --visibility public` 把仓库设为公开（issues 已开启，无 LICENSE 文件）；加 `.github/ISSUE_TEMPLATE/feedback.md`（中英提示，提醒不要贴分享链接与个人信息）；写 4.3b 任务书并启动 astra（`.worktrees/astra-feedback`，分支 `codex/astra-feedback-4.3b`）在 /about 与页脚加反馈入口；清理已合并的 astra-polish / sol-sources 工作树 | .github/ISSUE_TEMPLATE/feedback.md, docs/tasks/4.3b-feedback-link.md, PROGRESS.md |
+| 53 | 合并 4.3b（astra，一个 commit）：/about "反馈"一节与页脚政策依据 / 方法说明 / 反馈三个入口，链接到带 feedback.md 模板的新 issue 页（target _blank、rel noreferrer），提醒 issue 公开；Fable 复跑工作树 gate、main gate（web 106）并在浏览器核对中英文反馈节与页脚；已 push（db0d7e5），工作树已清理 | apps/web/**, docs/tasks/reports/4.3b-feedback-link.md |
 
 ### 当前状态
 
@@ -68,6 +69,6 @@
 - Web Analytics（2026-11-04）：用户登录后 Fable 在 Pages 项目 Metrics 页点了 Enable（自动注入 beacon，无 cookie、不改代码），Cloudflare 提示下次部署后生效；push `8eb7e24` 触发的 Deploy 成功后，curl pages.dev 的首页与 /result 已见 `static.cloudflareinsights.com/beacon.min.js` 注入；查看入口为 Pages 项目 Metrics → View Web Analytics。
 - 已定口径、页码约定与 Codex 启动参数不变；验收时只看 gate 日志里的 `GATE EXIT` 行，不看后台任务的退出码。
 - 用户授权（2026-11-04）：每次验收合并到 main 后自动 `git push origin main`，不再逐次确认；push 后 GitHub Actions 自动跑 CI 与部署（secrets 就绪后）。
-- Phase 3 Wave 1 完成（2026-11-04）：3.1、3.2、3.3 均已合并并推送，`.worktrees/` 已清空；验收决定与后续候选见 `docs/tasks/phase-3-plan.md` §5。Wave 2 完成（2026-11-04）：3.4、3.5 已合并，`.worktrees/` 已清空；Phase 3 全部任务（3.1–3.5）完成。Phase 4 Wave 1 进行中（2026-11-04）：4.1、4.3 已合并推送；4.2 契约已合到 main，Opus 会话 current-law-4-2 在写规则（5 年伴侣路线待 4.4 的 SRC-024 / 025）；sol 4.4 在 `.worktrees/sol-monitor`；4.7 已写；/about 反馈入口 = GitHub issue（4.3b astra 在做）；4.8 版本化实现在 Wave 2。
+- Phase 3 Wave 1 完成（2026-11-04）：3.1、3.2、3.3 均已合并并推送，`.worktrees/` 已清空；验收决定与后续候选见 `docs/tasks/phase-3-plan.md` §5。Wave 2 完成（2026-11-04）：3.4、3.5 已合并，`.worktrees/` 已清空；Phase 3 全部任务（3.1–3.5）完成。Phase 4 Wave 1 进行中（2026-11-04）：4.1、4.3 已合并推送；4.2 契约已合到 main，Opus 会话 current-law-4-2 在写规则（5 年伴侣路线待 4.4 的 SRC-024 / 025）；sol 4.4 在 `.worktrees/sol-monitor`；4.7 已写；/about 反馈入口已上线（GitHub issue，4.3b 已合并）；4.8 版本化实现在 Wave 2。
 - 后续候选：check-sources 对 GOV.UK 页面改比对归一化后的 `<main>` 正文或用 Content API 的 public_updated_at（sol）；web 路线名复用 policy-data 显示名表、分组英文大小写统一（astra）。
 - 用户已表明不需要 IAA 复核，此前记录中的"安排 IAA 复核"作废。Web Analytics 已开启（见上）。
