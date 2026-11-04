@@ -336,7 +336,7 @@ PD-064（PWS → Core Protection 回切）、PD-065（保护类路线上的其�
 
 把 Hong Kong BN(O) 与 Global Talent 两条路线的**主申请人**纳入现行法律栏（12.1–12.7）；家庭伴侣主申请人见 12.8（范围变更后追加）。只新增可选字段，已有字段与取值不变；`SettlementAssessment` 不加字段。Earned Settlement 栏不变（HK BN(O) 仍 `OUTSIDE_FRAMEWORK` 短路，Global Talent 仍按核心许可 / 高人才评估）。
 
-段号按 gov.uk 现行文本（Appendix Hong Kong British National (Overseas) 2026-10-08 版、Appendix Global Talent 2026-08-03 版）预写，**以 4.1 登记的 SRC-020 / SRC-021 快照为准**；4.1 合并前代码与参数里的 `sources` 写 `{ srcId: 'SRC-020' | 'SRC-021', locator: '待 4.1' }`，不引用未登记的 SRC。
+段号已按 4.1 / 4.4 登记的快照核对：SRC-020 Appendix Hong Kong British National (Overseas)（2026-10-08）、SRC-021 Appendix Global Talent（2026-08-03）、SRC-022 Appendix Settlement Family Life（2026-08-03）、SRC-024 Appendix FM（2026-10-08）、SRC-025 Appendix KoLL（2026-03-26）。
 
 ### 12.1 字段
 
