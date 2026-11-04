@@ -1,7 +1,7 @@
 import type { RuleSetId } from '@uk-immigration/policy-data';
 import type { Rule } from '../types';
 import { esCriminality, esDebt, esEnglishB2, esKol } from './es-requirements';
-import { esRouteGroup } from './es-residence';
+import { esResidence, esRouteGroup } from './es-residence';
 
 /** Every rule, by rule set, in evaluation order. */
 export const RULES: Record<RuleSetId, Rule[]> = {
@@ -11,6 +11,7 @@ export const RULES: Record<RuleSetId, Rule[]> = {
     esEnglishB2,
     esKol,
     esRouteGroup,
+    esResidence,
   ],
   'current-law-2026-11': [],
 };

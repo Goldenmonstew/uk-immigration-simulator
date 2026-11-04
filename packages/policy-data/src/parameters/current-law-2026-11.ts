@@ -6,6 +6,17 @@ export const currentLaw2026_11 = {
   ruleSetId: 'current-law-2026-11',
   asOf: '2026-11-04',
   values: {
+    // Continuous residence: no more than this many days outside the UK in any
+    // window of this many months (CR 3.1).
+    continuousResidenceMaxAbsenceDays: {
+      value: 180,
+      sources: [{ srcId: 'SRC-008', locator: 'CR 3.1' }],
+    },
+    continuousResidenceWindowMonths: {
+      value: 12,
+      sources: [{ srcId: 'SRC-008', locator: 'CR 3.1' }],
+    },
+
     // GBP per year, general salary threshold for permission (SW 4.2 Option A)
     // and for settlement (SW 24.3 row A).
     skilledWorkerGeneralSalaryThreshold: {
