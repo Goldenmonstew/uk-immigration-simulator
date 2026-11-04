@@ -43,6 +43,7 @@
 | 37 | 派发 Phase 3 Wave 1：3.1 sol（`.worktrees/sol-isl`，分支 `codex/sol-isl-3.1`）、3.2 Opus 会话 wording-3-2、3.3 astra（`.worktrees/astra-pwa`，分支 `codex/astra-pwa-3.3`）；用户决定：难民路径做（Wave 2）、Web Analytics 用 Pages 自动注入（Cloudflare 登录态已过期，待用户在右侧重新登录后由 Fable 开启）、不做 IAA 复核 | PROGRESS.md |
 | 38 | 合并 3.1（sol，三个 commit + Fable 集成修正）：SRC-019 Appendix Immigration Salary List 登记与脚本提取（25 条职业，保留 criteria / 国家 / removal date）、Table 3a 改脚本生成、check-sources.mjs 来源核对脚本（首跑 10 unchanged / 11 changed，GOV.UK 页面随机 token 所致，正文一致，改进口径记入报告）；Fable 复跑 gate、核对 sha256、独立抽查 5 行 ISL；web 来源表补 SRC-019；main 上 gate 全过（policy-data 21 / engine 264 / web 87） | policy-sources/2025-11-11-immigration-rules-appendix-immigration-salary-list.html, docs/SOURCES.md, packages/policy-data/scripts/*, packages/policy-data/src/data/*, packages/policy-data/test/*, apps/web/lib/sources.ts, docs/tasks/reports/3.1-isl-and-source-check.md |
 | 39 | 合并 3.3（astra，三个 commit，astra 的第 2、3 组因共用新文件合为一个）：修改输入回到最后一步、路线名 zh-CN / en 双字段（英文模式只显示英文）；本机多情景（uk-immigration-scenarios-v1，保存 / 载入 / 确认删除，不存结果；载入时标记已完成，修复 What-if 改日期后分享草稿载入空页）；打印或保存为 PDF（beforeprint 展开 details、afterprint 恢复、打印单列并隐藏导航与操作区）与静态 Open Graph 元数据；可安装 PWA（manifest、192 / 512 图标、Apple 标签、sw.js 预缓存五页与静态资源、同源 GET 网络优先回退缓存）。Fable 复跑工作树 gate、浏览器走查（beforeprint / afterprint 展开与恢复、打印 CSS 单列；保存两个情景（其一来自 What-if 改日期的分享链接）、载入、确认删除、刷新仍在；英文路线下拉与分组无中文；修改输入回到 9 / 9；停掉静态服务器后首页与结果页仍从 SW 缓存打开；375px 无横向溢出）；main 上 gate 全过（policy-data 21 / engine 264 / web 95） | apps/web/**, docs/tasks/reports/3.3-print-scenarios-pwa.md |
+| 40 | 合并 3.2（Opus，10 个 commit）：policy-data 显示名表（routeNames / routeGroupNames / breachTypeNames，中英）与引擎 nameIn，ES-ROUTE-GROUP / ES-RESIDENCE / CL-LR-RESIDENCE-10Y / ES-BREACH 解释改用可读名（不再出现 SKILLED_WORKER 等枚举码）；英文 "1 full year" 单复数；HC 584 变更日志 locator 去中文；PD-040 按 SW 4.2(b)(ii) 部分关闭；全文案中英对照导出 `export:wording` → docs/review/wording-2026-11.md（541 行、174 组）；未申报 ISL 时按 SOC 推导（SRC-019，申报优先、推导写进假设），6135 care worker 两个 fixture 现行法律栏改按 row D（P45-A 变 LIKELY_ELIGIBLE 5 年、P45-C 年限 10 → 5），Fable 接受并记入 phase-3-plan §5；家庭与私人生活附加句修正。Fable 核对快照 diff 只有这两处状态变化、ISL 三组用例 verbose 通过、文案导出抽读；main 上 gate 全过（policy-data 21 / engine 268 + 1 skipped / web 95）。Phase 3 Wave 1 完成 | packages/engine/**, packages/policy-data/src/**, docs/review/wording-2026-11.md, docs/pending-details.md, docs/tasks/reports/3.2-display-names-and-wording.md, docs/tasks/phase-3-plan.md |
 
 ### 当前状态
 
@@ -52,9 +53,8 @@
 - GitHub：远端 `origin` = https://github.com/Goldenmonstew/uk-immigration-simulator（私有）；secrets `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ACCOUNT_ID` 与变量 `CF_PAGES_PROJECT` 均已设。
 - 自动部署已生效（2026-11-04 18:29）：push main → CI + Deploy 工作流 → Cloudflare Pages 生产部署 → wanruncong.uk。token 名 github-pages-deploy，2027-11-04 到期，到期前需在 Cloudflare 重建并更新 secret。
 - 仍留给用户：撤销并重建曾贴进对话的 API token（可选但建议）；在右侧 Cloudflare 标签页重新登录（开 Web Analytics 用）。
-- 文案小项：英文 "1 full years" 单复数；解释里的枚举码（SKILLED_WORKER、CORE_PERMISSION 等）要可读名需显示名表（Phase 3 候选）。
 - 已定口径、页码约定与 Codex 启动参数不变；验收时只看 gate 日志里的 `GATE EXIT` 行，不看后台任务的退出码。
 - 用户授权（2026-11-04）：每次验收合并到 main 后自动 `git push origin main`，不再逐次确认；push 后 GitHub Actions 自动跑 CI 与部署（secrets 就绪后）。
-- Phase 3 进行中（2026-11-04）：3.1、3.3 已合并（`.worktrees/` 已清空）；3.2 Opus（wording-3-2，分支 claude/wording-3-2-7bf09f）A–D 全部完成，Fable 验收合并中。Wave 2 = 3.4 / 3.5 难民路径（3.2 合并后派）。
+- Phase 3 Wave 1 完成（2026-11-04）：3.1、3.2、3.3 均已合并并推送，`.worktrees/` 已清空；验收决定与后续候选见 `docs/tasks/phase-3-plan.md` §5。下一步：派发 Wave 2 = 3.4 难民路径（Opus，契约先行）+ 3.5 问卷与结果页（astra，随 3.4）；Opus 会话需在用户回合启动。
 - 后续候选：check-sources 对 GOV.UK 页面改比对归一化后的 `<main>` 正文或用 Content API 的 public_updated_at（sol）；web 路线名复用 policy-data 显示名表、分组英文大小写统一（astra）。
 - 用户已表明不需要 IAA 复核，此前记录中的"安排 IAA 复核"作废。Web Analytics：待用户在右侧 Cloudflare 重新登录后，Fable 在 Pages 项目设置开启自动注入。

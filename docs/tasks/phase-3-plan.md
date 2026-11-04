@@ -61,3 +61,13 @@ Wave 1 三个任务互不碰同一 package。3.2 需要 3.1 的 `immigrationSala
 1. **难民路径做**：3.4 / 3.5 列入 Wave 2，3.2 合并后派发。
 2. **Web Analytics 接**：用 Cloudflare Pages 项目设置里的 Web Analytics 自动注入（无 cookie、不改代码），由 Fable 在后台开启；不在 3.3 里写 beacon 脚本。
 3. **IAA 复核不做**：用户此前已表明不需要；3.2 的全文案导出保留，用途改为用户自己通读校对中英文文案。
+
+## 5. 验收记录（2026-11-04）
+
+- 3.1 已合并（main `b3d2058`）；3.3 已合并（`f84a5bb`，三个 commit）；3.2 已合并（`ec1181e`），报告见 `docs/tasks/reports/`。
+- **3.2 验收决定——ISL 按职业推导包含 care worker**：未申报 Immigration Salary List 时按 SOC 代码推导，6135 / 6136 在 SRC-019 清单里，因此满足 SW 4.2(b) 的 care worker 现行法律栏从 row C（£31,300）降到 row D（£25,000）。fixture `ES-OFFICIAL-P45-INDIVIDUAL-A` 现行法律栏由 LIKELY_NOT_ELIGIBLE（10 年）变为 LIKELY_ELIGIBLE（5 年，2028-04-06），`-C` 年限 10 → 5，Earned Settlement 栏不变。接受理由：清单确列该职业；推导写进假设并可在问卷里申报覆盖；原先"按不在清单处理"同样是未核对的默认，只是更保守。用户若不接受，改为 care worker 职业不推导即可（Opus 一处改动）。
+- 后续候选（本阶段不做）：
+  - ISL 条目的 `removalDate`（多数 2026-12-31，care worker 2028-07-22）规范为 ISO 日期（sol），推导时与申请日比较（Opus）。
+  - 中文"且${原因}"在原因以 SOC 开头时缺空格（"且SOC 6135"），下次文案通读时改（Opus）。
+  - web 路线名复用 policy-data 显示名表、分组英文大小写统一；英文界面残留的全角标点（如 "Simulation date："、"（n）"）改半角（astra）。
+  - check-sources 对 GOV.UK 页面改比对归一化后的 `<main>` 正文或 Content API 的 public_updated_at（sol）。
