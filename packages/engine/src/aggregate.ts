@@ -1,9 +1,17 @@
-import { earnedSettlement2026_11 as es } from '@uk-immigration/policy-data';
+import {
+  currentLaw2026_11 as cl,
+  earnedSettlement2026_11 as es,
+} from '@uk-immigration/policy-data';
 import type { RuleSetId } from '@uk-immigration/policy-data';
 import { addYears } from './dates';
 import { episodeOn } from './residence';
 import { runRule } from './rule';
 import { RULES } from './rules';
+import {
+  longResidenceStart,
+  onSkilledWorker,
+  skilledWorkerStart,
+} from './rules/current-law';
 import { esQualifyingResidence, groupsOf } from './rules/es-residence';
 import type {
   IsoDate,
@@ -25,7 +33,10 @@ interface Candidate {
 type Decision = Pick<
   SettlementAssessment,
   'outcome' | 'pathwayYears' | 'earliestDate'
->;
+> & {
+  /** Start of the residence the earliest date was projected from. */
+  projectedFrom?: IsoDate;
+};
 
 function statusOf(c: Candidate): RuleOutcome['status'] {
   if (c.rules.some((r) => r.status === 'FAIL')) return 'FAIL';
@@ -87,20 +98,35 @@ function decide(candidates: Candidate[], simulationDate: IsoDate): Decision {
         outcome: 'LIKELY_NOT_ELIGIBLE',
         pathwayYears: next.years,
         earliestDate: dueOf(next),
+        projectedFrom: next.start,
       }
     : { outcome: 'LIKELY_NOT_ELIGIBLE' };
 }
 
-function projection(decision: Decision, start: IsoDate | undefined): string[] {
-  return decision.outcome === 'LIKELY_NOT_ELIGIBLE' && decision.earliestDate
+function projection(projectedFrom: IsoDate | undefined): string[] {
+  return projectedFrom
     ? [
-        `最早可申请日期按"自 ${start} 起持续居留、收入等状况不变、其余要求届时仍满足"推算，不是对未来的保证。`,
+        `最早可申请日期按"自 ${projectedFrom} 起持续居留、收入等状况不变、其余要求届时仍满足"推算，不是对未来的保证。`,
       ]
     : [];
 }
 
-function ruleAssumptions(rules: RuleOutcome[]): string[] {
-  return rules.flatMap((r) => r.assumptions ?? []);
+function toAssessment(
+  { projectedFrom, ...decision }: Decision,
+  rules: RuleOutcome[],
+  assumptions: string[],
+): SettlementAssessment {
+  return {
+    ...decision,
+    rules,
+    assumptions: [
+      ...new Set([
+        ...assumptions,
+        ...rules.flatMap((r) => r.assumptions ?? []),
+        ...projection(projectedFrom),
+      ]),
+    ],
+  };
 }
 
 const ES_BASE_ASSUMPTION =
@@ -157,30 +183,72 @@ function assessEarnedSettlement(ctx: RuleContext): SettlementAssessment {
     },
   ].map((c) => ({ ...c, start }));
 
-  const decision = decide(candidates, ctx.simulationDate);
-  const assumptions = [ES_BASE_ASSUMPTION, ...ruleAssumptions(rules)];
+  const assumptions = [ES_BASE_ASSUMPTION];
   if (pick('ES-TRANSITIONAL-CARE-WORKER')[0].status === 'PASS') {
     assumptions.push(
       '原文未规定同时符合过渡安排与标准路径时如何取舍；本结果取满足条件的最短路径，申请人可能可以选择更有利的安排，需咨询受监管顾问。',
     );
   }
-  assumptions.push(...projection(decision, start));
   return {
-    ...decision,
+    ...toAssessment(decide(candidates, ctx.simulationDate), rules, assumptions),
     ...(pick('ES-ROUTE-GROUP')[0].status === 'PASS' && {
       routeGroup: groups[0],
     }),
-    rules,
-    assumptions: [...new Set(assumptions)],
   };
 }
 
+const CL_BASE_ASSUMPTION =
+  '现行规则只建模 Skilled Worker 主申请人（Appendix Skilled Worker）与 Long Residence（Appendix Long Residence）；Part Suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。';
+
 function assessCurrentLaw(ctx: RuleContext): SettlementAssessment {
-  return {
-    outcome: 'INSUFFICIENT_INFORMATION',
-    rules: RULES['current-law-2026-11'].map((rule) => runRule(rule, ctx)),
-    assumptions: [],
-  };
+  const [scopeRule, ...others] = RULES['current-law-2026-11'];
+  const scope = runRule(scopeRule, ctx);
+  if (scope.status !== 'PASS') {
+    return toAssessment(
+      { outcome: 'INSUFFICIENT_INFORMATION' },
+      [scope],
+      [CL_BASE_ASSUMPTION],
+    );
+  }
+  const sw = onSkilledWorker(ctx.timeline, ctx.simulationDate);
+  const rules = [
+    scope,
+    ...others
+      .filter((rule) => sw || !rule.meta.id.startsWith('CL-SW-'))
+      .map((rule) => runRule(rule, ctx)),
+  ];
+  const pick = (...ids: string[]) =>
+    ids.map((id) => rules.find((r) => r.id === id)!);
+  const candidates: Candidate[] = [
+    ...(sw
+      ? [
+          {
+            years: cl.values.skilledWorkerQualifyingYears.value,
+            start: skilledWorkerStart(ctx),
+            rules: pick('CL-SW-SALARY', 'CL-ENGLISH', 'CL-KOL'),
+          },
+        ]
+      : []),
+    {
+      years: cl.values.longResidenceQualifyingYears.value,
+      start: longResidenceStart(ctx),
+      rules: pick('CL-ENGLISH', 'CL-KOL'),
+    },
+  ];
+  const decision = decide(candidates, ctx.simulationDate);
+  const assumptions = [CL_BASE_ASSUMPTION];
+  // Projected past the B2 date while assessed under the earlier requirement.
+  const b2 = cl.values.skilledWorkerSettlementEnglish.value;
+  if (
+    decision.earliestDate &&
+    ctx.simulationDate < b2.applicationsFrom &&
+    decision.earliestDate >= b2.applicationsFrom
+  ) {
+    assumptions.push(
+      `预计日期在 ${b2.applicationsFrom} 之后，届时定居须达到英语 ${b2.cefrLevel}（SW 22A.1、LR 13.1(b)）。`,
+    );
+  }
+  return toAssessment(decision, rules, assumptions);
 }
 
 export function assess(id: RuleSetId, ctx: RuleContext): SettlementAssessment {
