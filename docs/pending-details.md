@@ -134,7 +134,7 @@
 |---|---|---|---|---|---|
 | PD-053 | qualifying residence 的连续性 | 原文只说哪些路线计入（p23）、哪些不计入（p24），以及保护 / 人权路线与工作 / 家庭路线切换时重新起算（p25）；没有说不计入路线上的时间或许可之间的空隙是"只扣除"还是"打断连续性"。 | p23–p25 | 合格期 = 截至申请日连续处于同一类计入路线的最后一段；中间夹有不计入路线（如 Student、Graduate）或许可之间空隙超过 1 天，都视为中断、从下一段起重新起算。若政府采用"只扣除"口径，日期可能提前。 | 原文未提及 |
 | PD-054 | Earned Settlement 的缺席口径 | 原文没有规定 Earned Settlement 下缺席多少天会打断连续居留。 | p22–p25 | 沿用现行 Appendix Continuous Residence CR 3.1（SRC-008）：任意 12 个月缺席不超过 180 天，超过则自该次缺席结束次日重新起算；缺席天数按含出境与入境当日计（偏保守）。CR 3.4 的可豁免缺席理由不建模。 | 原文未提及 |
-| PD-055 | dependant 随主申请人定居 | 同时到达的伴侣可与主申请人同时定居（须各自满足相关要求），后到的伴侣须完成同样的合格期；18 岁以下子女随父母定居。引擎的输入只有申请人本人的时间线，没有主申请人的路径、起点或是否满足条件。 | p29；p31 | 当前 episode 为 `DEPENDANT` 时，Earned Settlement 栏不按主申请人评估：`ES-ROUTE-GROUP` 为 `UNKNOWN`，结论 `INSUFFICIENT_INFORMATION`，不给 `pathwayYears` / `earliestDate`。属引擎建模缺口，待 Phase 2 为 dependant 补主申请人信息后建模。 | 原文规则已定；引擎待 Phase 2 |
+| PD-055 | dependant 随主申请人定居 | 同时到达的伴侣可与主申请人同时定居（须各自满足相关要求），后到的伴侣须完成同样的合格期；18 岁以下子女随父母定居并豁免收入、债务、英语、Life in the UK；18–24 岁保留 child-dependant 身份者须满足成人强制要求、不需个人收入；家庭符合资格时已满 25 岁者须独立符合资格。 | p29–p31 | **已建模（任务 2.2）**：请求带 `principal`（主申请人时间线）与 `dependantOf` 时，`ES-DEPENDANT-PATHWAY` 按主申请人在同一申请日的结果给 dependant 年限与日期（见 `docs/contracts.md` §8）；现行法律栏建模 Skilled Worker 的 dependent partner（`CL-SW-PARTNER-5Y`）。仍不能判断：没有 `principal` 或 `dependantOf` → `INSUFFICIENT_INFORMATION`；主申请人本身是 dependant（不递归）；现行法律下的 dependent child（Appendix Children 未登记）与主申请人已定居的伴侣（SW 39.1(b)）。原文未定的口径见 PD-056–PD-062。 | 原文规则已定；剩余为建模范围 |
 
 ## 四、家庭建模假设（任务 2.2 新增）
 
