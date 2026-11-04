@@ -87,6 +87,30 @@ export interface ImmigrationEpisode {
    * into (SRC-001 p38, p47). Missing = not provided.
    */
   sustainedActivity?: 'WORK' | 'EDUCATION' | 'TRAINING';
+  /**
+   * GLOBAL_TALENT MAIN only: what the initial Global Talent permission relied
+   * on, which sets the settlement qualifying period (Appendix Global Talent
+   * GT 11.1–11.2). RESEARCH_BODY = endorsed by the Royal Society, British
+   * Academy, Royal Academy of Engineering or UKRI; ARTS_COUNCIL_ENGLAND /
+   * TECH_NATION = endorsed by that body (criteria in globalTalentCriteria);
+   * PRIZE = a prize in Appendix Global Talent: Prestigious Prizes.
+   * Missing = not provided.
+   */
+  globalTalentEndorsement?:
+    'RESEARCH_BODY' | 'ARTS_COUNCIL_ENGLAND' | 'TECH_NATION' | 'PRIZE';
+  /**
+   * GLOBAL_TALENT MAIN endorsed by ARTS_COUNCIL_ENGLAND or TECH_NATION only:
+   * the endorsement criteria (GT 11.1(b), GT 11.2). Missing = not provided.
+   */
+  globalTalentCriteria?: 'EXCEPTIONAL_TALENT' | 'EXCEPTIONAL_PROMISE';
+  /**
+   * FAMILY_PARTNER_OR_PARENT MAIN only: the kind of Appendix FM permission.
+   * PARTNER_FIVE_YEAR = partner on the 5-year route (D-ECP.1.1 / D-LTRP.1.1,
+   * settlement under E-ILRP); PARTNER_TEN_YEAR = partner on the 10-year route
+   * (settlement under Appendix Settlement Family Life); PARENT = parent of a
+   * child (not modelled). Missing = not provided.
+   */
+  familyPermission?: 'PARTNER_FIVE_YEAR' | 'PARTNER_TEN_YEAR' | 'PARENT';
 }
 
 export interface Absence {
