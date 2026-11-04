@@ -1,5 +1,6 @@
 import type { SimulationResult } from '@uk-immigration/engine';
 import { t } from '../i18n';
+import { routeGroupNames } from '../i18n/routes';
 import { ruleSets } from '../lib/policy';
 import { sourceUrls } from '../lib/sources';
 import { PolicyStatus } from './policy-status';
@@ -33,7 +34,7 @@ export function ResultView({
       {mock && (
         <p className={`${site.notice} ${site.warning}`}>{t('result.mock')}</p>
       )}
-      {result.shortCircuit ? (
+      {result.shortCircuit && Object.keys(result.byRuleSet).length === 0 ? (
         <div className={site.narrow}>
           <h1>{t('result.shortCircuit')}</h1>
           <p className={site.lead}>{result.shortCircuit.message}</p>
@@ -42,6 +43,11 @@ export function ResultView({
       ) : (
         <>
           <h1>{t('result.title')}</h1>
+          {result.shortCircuit && (
+            <p className={`${site.notice} ${site.warning}`}>
+              {result.shortCircuit.message}
+            </p>
+          )}
           <p className={site.lead}>{t('result.intro')}</p>
           <p className={`${site.notice} ${site.warning}`}>
             {t('policy.hypothesis')}
@@ -76,6 +82,12 @@ export function ResultView({
                         <p>{t(`outcome.${assessment.outcome}.description`)}</p>
                       </div>
                       <dl className={styles.facts}>
+                        {assessment.routeGroup && (
+                          <div>
+                            <dt>{t('result.routeGroup')}</dt>
+                            <dd>{routeGroupNames[assessment.routeGroup]}</dd>
+                          </div>
+                        )}
                         <div>
                           <dt>{t('result.pathway')}</dt>
                           <dd>
@@ -145,6 +157,12 @@ export function ResultView({
                                           ),
                                         )}
                                       </div>
+                                      {!!rule.pendingDetails?.length && (
+                                        <p className={site.badge}>
+                                          {t('result.pendingDetails')}：
+                                          {rule.pendingDetails.join('、')}
+                                        </p>
+                                      )}
                                     </li>
                                   ))}
                                 </ul>
@@ -153,17 +171,26 @@ export function ResultView({
                           );
                         })
                       )}
-                      <h3>{t('result.assumptions')}</h3>
                       {assessment.assumptions.length ? (
-                        <ul className={styles.assumptions}>
-                          {assessment.assumptions.map((assumption, i) => (
-                            <li key={i}>{assumption}</li>
-                          ))}
-                        </ul>
+                        <details>
+                          <summary>
+                            {t('result.assumptions')}（
+                            {assessment.assumptions.length}{' '}
+                            {t('result.assumptionCount')}）
+                          </summary>
+                          <ul className={styles.assumptions}>
+                            {assessment.assumptions.map((assumption, i) => (
+                              <li key={i}>{assumption}</li>
+                            ))}
+                          </ul>
+                        </details>
                       ) : (
-                        <p className={site.muted}>
-                          {t('result.noAssumptions')}
-                        </p>
+                        <>
+                          <h3>{t('result.assumptions')}</h3>
+                          <p className={site.muted}>
+                            {t('result.noAssumptions')}
+                          </p>
+                        </>
                       )}
                     </>
                   )}

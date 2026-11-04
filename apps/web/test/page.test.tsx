@@ -4,9 +4,11 @@ import type { DecisionOutcome, SimulationResult } from '@uk-immigration/engine';
 import Home from '../app/page';
 import { ResultView } from '../components/result-view';
 import { t } from '../i18n';
+import { routeGroupNames } from '../i18n/routes';
 import { policyAsOf } from '../lib/policy';
 import { mockResults } from '../lib/mock-results';
 import { sourceUrls } from '../lib/sources';
+import { createDraft, runSimulation } from '../lib/questionnaire';
 
 test('homepage presents policy status, disclaimer, privacy and the questionnaire entry', () => {
   const html = renderToStaticMarkup(<Home />);
@@ -22,7 +24,7 @@ test('homepage presents policy status, disclaimer, privacy and the questionnaire
   expect(html).not.toContain('mock=');
 });
 
-test('an empty rule list from the stub renders without implying eligibility', () => {
+test('an empty rule list renders without implying eligibility', () => {
   const html = renderToStaticMarkup(
     <ResultView
       result={{
@@ -45,6 +47,8 @@ test('an empty rule list from the stub renders without implying eligibility', ()
   expect(html).toContain(t('outcome.INSUFFICIENT_INFORMATION'));
   expect(html).toContain(t('result.noRules'));
   expect(html).toContain(t('result.undetermined'));
+  expect(html).toContain(t('result.noAssumptions'));
+  expect(html).not.toContain('<details');
 });
 
 test.each<DecisionOutcome>([
@@ -66,11 +70,12 @@ test.each<DecisionOutcome>([
   expect(html).toContain(t(`outcome.${outcome}.description`));
 });
 
-test('short circuit takes priority over any per-rule-set assessments', () => {
+test('a frontend short circuit without assessments shows only advice', () => {
   const html = renderToStaticMarkup(
     <ResultView
       result={{
-        ...mockResults['1'],
+        policyAsOf,
+        byRuleSet: {},
         shortCircuit: {
           reason: 'PROTECTION',
           message: '需要专业审查的测试情景',
@@ -84,6 +89,39 @@ test('short circuit takes priority over any per-rule-set assessments', () => {
   expect(html).not.toContain(t('outcome.LIKELY_ELIGIBLE'));
 });
 
+test.each([
+  ['HONG_KONG_BNO', 'OUTSIDE_FRAMEWORK'],
+  ['CORE_PROTECTION', 'PROTECTION'],
+] as const)(
+  'engine short circuit for %s retains both assessment columns',
+  (route, reason) => {
+    const draft = createDraft();
+    draft.simulationDate = '2026-11-04';
+    draft.timeline.dateOfBirth = '1991-08-19';
+    draft.timeline.episodes = [
+      { route, role: 'MAIN', validFrom: '2025-01-01', validTo: '2031-01-01' },
+    ];
+    const result = runSimulation(draft);
+    expect(result.shortCircuit?.reason).toBe(reason);
+    expect(result.byRuleSet['current-law-2026-11']?.outcome).toBe(
+      'INSUFFICIENT_INFORMATION',
+    );
+    expect(result.byRuleSet['earned-settlement-2026-11']?.outcome).toBe(
+      'REQUIRES_REGULATED_REVIEW',
+    );
+    const html = renderToStaticMarkup(<ResultView result={result} />);
+    expect(html).toContain(result.shortCircuit!.message);
+    expect(html).toContain('id="current-law-2026-11-heading"');
+    expect(html).toContain('id="earned-settlement-2026-11-heading"');
+    expect(html).toContain(t('outcome.INSUFFICIENT_INFORMATION'));
+    expect(html).toContain(t('outcome.REQUIRES_REGULATED_REVIEW'));
+    for (const assessment of Object.values(result.byRuleSet)) {
+      expect(assessment.rules.length).toBeGreaterThan(0);
+      for (const rule of assessment.rules) expect(html).toContain(rule.title);
+    }
+  },
+);
+
 test('previews render rules, assumptions, dates, source links and group order', () => {
   const positive = renderToStaticMarkup(
     <ResultView result={mockResults['1']} mock />,
@@ -92,6 +130,10 @@ test('previews render rules, assumptions, dates, source links and group order', 
   expect(positive).toContain('SRC-001 p16');
   expect(positive).toContain(sourceUrls['SRC-001']);
   expect(positive).toContain(`dateTime="${policyAsOf}"`);
+  expect(positive).toContain(routeGroupNames.CORE_PERMISSION);
+  expect(positive).toContain('政府未定细节：PD-012、PD-013');
+  expect(positive).toContain('<details><summary>假设清单（2 条）</summary>');
+  expect(positive).not.toContain('<details open');
   const negative = renderToStaticMarkup(
     <ResultView result={mockResults['2']} mock />,
   );

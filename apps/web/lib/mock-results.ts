@@ -1,5 +1,5 @@
 import type { SimulationResult } from '@uk-immigration/engine';
-import { earnedSettlement2026_11 as es } from '../../../packages/policy-data/src';
+import { earnedSettlement2026_11 as es } from '@uk-immigration/policy-data';
 import { policyAsOf } from './policy';
 
 export const mockResults: Record<'1' | '2', SimulationResult> = {
@@ -8,6 +8,7 @@ export const mockResults: Record<'1' | '2', SimulationResult> = {
     byRuleSet: {
       'current-law-2026-11': {
         outcome: 'LIKELY_ELIGIBLE',
+        earliestDate: policyAsOf,
         rules: [
           {
             id: 'MOCK-CL-RESIDENCE',
@@ -27,9 +28,9 @@ export const mockResults: Record<'1' | '2', SimulationResult> = {
         assumptions: ['仅用于开发预览；这些规则结果是手写示例。'],
       },
       'earned-settlement-2026-11': {
-        outcome: 'LIKELY_ELIGIBLE',
+        outcome: 'POTENTIALLY_ELIGIBLE',
+        routeGroup: 'CORE_PERMISSION',
         pathwayYears: es.values.pathwayYears5.value,
-        earliestDate: policyAsOf,
         rules: [
           {
             id: 'MOCK-ES-EARNINGS',
@@ -44,6 +45,14 @@ export const mockResults: Record<'1' | '2', SimulationResult> = {
             status: 'PASS',
             explanation: '虚构示例：记录中的许可属于可计入的路线。',
             sources: [{ srcId: 'SRC-001', locator: 'p23' }],
+          },
+          {
+            id: 'MOCK-ES-FUNDS',
+            title: 'Specified public funds',
+            status: 'UNKNOWN',
+            explanation: '虚构示例：政府尚未确定最终纳入范围与豁免。',
+            sources: [{ srcId: 'SRC-001', locator: 'p18' }],
+            pendingDetails: ['PD-012', 'PD-013'],
           },
         ],
         assumptions: [
