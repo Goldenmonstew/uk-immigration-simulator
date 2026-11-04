@@ -90,11 +90,12 @@ test('a frontend short circuit without assessments shows only advice', () => {
 });
 
 test.each([
-  ['HONG_KONG_BNO', 'MAIN', 'OUTSIDE_FRAMEWORK'],
-  ['CORE_PROTECTION', 'DEPENDANT', 'PROTECTION'],
+  // A Hong Kong BN(O) main applicant is assessed under current law (§12).
+  ['HONG_KONG_BNO', 'MAIN', 'OUTSIDE_FRAMEWORK', 'LIKELY_NOT_ELIGIBLE'],
+  ['CORE_PROTECTION', 'DEPENDANT', 'PROTECTION', 'INSUFFICIENT_INFORMATION'],
 ] as const)(
   'engine short circuit for %s retains both assessment columns',
-  (route, role, reason) => {
+  (route, role, reason, currentLaw) => {
     const draft = createDraft();
     draft.simulationDate = '2026-11-04';
     draft.timeline.dateOfBirth = '1991-08-19';
@@ -103,9 +104,7 @@ test.each([
     ];
     const result = runSimulation(draft);
     expect(result.shortCircuit?.reason).toBe(reason);
-    expect(result.byRuleSet['current-law-2026-11']?.outcome).toBe(
-      'INSUFFICIENT_INFORMATION',
-    );
+    expect(result.byRuleSet['current-law-2026-11']?.outcome).toBe(currentLaw);
     expect(result.byRuleSet['earned-settlement-2026-11']?.outcome).toBe(
       'REQUIRES_REGULATED_REVIEW',
     );
@@ -113,7 +112,7 @@ test.each([
     expect(html).toContain(result.shortCircuit!.message);
     expect(html).toContain('id="current-law-2026-11-heading"');
     expect(html).toContain('id="earned-settlement-2026-11-heading"');
-    expect(html).toContain(t('outcome.INSUFFICIENT_INFORMATION'));
+    expect(html).toContain(t(`outcome.${currentLaw}`));
     expect(html).toContain(t('outcome.REQUIRES_REGULATED_REVIEW'));
     for (const assessment of Object.values(result.byRuleSet)) {
       expect(assessment.rules.length).toBeGreaterThan(0);
