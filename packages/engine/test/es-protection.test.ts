@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'vitest';
 import { evaluate } from '../src/evaluate';
 import { taxYearsFrom } from '../src/dates';
+import { esPublicFunds } from '../src/rules/es-contribution';
 import {
   esAsylumSupport,
   esProtectionContribution,
@@ -535,5 +536,49 @@ describe('ES-KOL for refugees', () => {
         '2030-01-01',
       ).status,
     ).toBe('UNKNOWN');
+  });
+});
+
+describe('ES-PUBLIC-FUNDS for refugees', () => {
+  const benefits = [
+    { benefitType: 'UNIVERSAL_CREDIT', from: '2028-01-01', to: '2028-06-30' },
+  ];
+  const funds = (episodes: ImmigrationEpisode[]) =>
+    run(esPublicFunds, refugee({ episodes, benefits }), '2030-01-01');
+
+  test('Safe and Legal is exempt', () => {
+    const result = funds(ukrs());
+    expect(result.status).toBe('PASS');
+    expect(result.explanation).toContain('豁免');
+  });
+
+  test('Core Protection does not require it', () => {
+    expect(funds([core]).status).toBe('PASS');
+  });
+
+  test('Protection Work and Study is assessed, with PD-031 and PD-066', () => {
+    const result = funds(coreThenWork);
+    expect(result.status).toBe('FAIL');
+    expect(result.explanation).toContain('只能走 20 年路径');
+    expect(result.assumptions?.join()).toContain('PD-031');
+    expect(result.assumptions?.join()).toContain('PD-066');
+    expect(
+      run(esPublicFunds, refugee({ episodes: coreThenWork }), '2030-01-01')
+        .status,
+    ).toBe('PASS');
+  });
+
+  test('a UK Resettlement Scheme refugee on Universal Credit still settles after 5 years', () => {
+    const { column } = es(
+      {
+        episodes: ukrs(),
+        benefits,
+        english: { cefrLevel: 'A2' },
+        lifeInTheUk: undefined,
+      },
+      '2032-06-01',
+    );
+    expect(column.outcome).toBe('LIKELY_ELIGIBLE');
+    expect(column.pathwayYears).toBe(5);
   });
 });
