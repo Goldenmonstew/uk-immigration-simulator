@@ -14,6 +14,18 @@ const register = readFileSync(
 const primarySources = register.split('## 一级来源')[1].split('\n## ')[0];
 const counts = { unchanged: 0, changed: 0, failed: 0, dynamic: 0 };
 
+// GitHub-hosted runners timed out on the larger PDFs at 30 s: allow 120 s
+// and retry once.
+async function fetchWithRetry(url) {
+  for (let attempt = 0; ; attempt++) {
+    try {
+      return await fetch(url, { signal: AbortSignal.timeout(120000) });
+    } catch (error) {
+      if (attempt > 0) throw error;
+    }
+  }
+}
+
 function sha256(value) {
   return createHash('sha256').update(value).digest('hex');
 }
@@ -30,6 +42,13 @@ function normalizedBody(html) {
     .replace(/<(\/?[a-z][a-z\d:-]*)\b(?:[^"'<>]|"[^"]*"|'[^']*')*>/gi, '<$1>')
     .replace(/\s+/g, ' ')
     .trim();
+}
+
+function hansardBody(json) {
+  return JSON.parse(json)
+    .Items.filter((item) => item.ItemType === 'Contribution')
+    .map((item) => item.Value)
+    .join('\n');
 }
 
 for (const row of primarySources.match(/^\| SRC-\d+ \|.*$/gm)) {
@@ -52,7 +71,7 @@ for (const row of primarySources.match(/^\| SRC-\d+ \|.*$/gm)) {
     }
     const label = `${id} ${snapshot}`;
     try {
-      const response = await fetch(url, { signal: AbortSignal.timeout(30000) });
+      const response = await fetchWithRetry(url);
       if (!response.ok) {
         throw new Error(`HTTP ${response.status} ${response.statusText}`);
       }
@@ -65,18 +84,22 @@ for (const row of primarySources.match(/^\| SRC-\d+ \|.*$/gm)) {
         counts.dynamic++;
         console.log(`${label}: dynamic (动态列表，不计入 changed)`);
       } else if (
-        url.startsWith('https://www.gov.uk/') &&
-        snapshot.endsWith('.html')
+        (url.startsWith('https://www.gov.uk/') && snapshot.endsWith('.html')) ||
+        (url.startsWith('https://hansard-api.parliament.uk/') &&
+          snapshot.endsWith('.json'))
       ) {
+        const normalize = snapshot.endsWith('.json')
+          ? hansardBody
+          : normalizedBody;
         const local = sha256(
-          normalizedBody(
+          normalize(
             readFileSync(
               new URL(`../../../${snapshot}`, import.meta.url),
               'utf8',
             ),
           ),
         );
-        const remote = sha256(normalizedBody(bytes.toString('utf8')));
+        const remote = sha256(normalize(bytes.toString('utf8')));
         if (local === remote) {
           counts.unchanged++;
           const reason =
