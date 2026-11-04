@@ -541,3 +541,89 @@ export const currentLaw2027_01 = {
 - `RULE_SETS`、`RULES`、`PARAMETERS` 的键都等于 `RULE_SET_IDS`，`PARAMETERS[id].ruleSetId === id`。
 - `basedOn` 写法：测试内构造一个合成参数集，展开沿用、覆盖一项，断言沿用值与覆盖值都对。
 - `bilingual` 快照不变（合成规则集只在测试里）。
+
+## 14. 现行法律栏扩展二：难民、UK Ancestry、Innovator Founder 与 Private Life（Phase 5.2）
+
+把四类**主申请人**纳入现行法律栏。只新增可选字段，已有字段与取值不变；`Route`、`SettlementAssessment` 不改。Earned Settlement 栏不变。这些路线的 dependant 留给 5.4（`CL-SCOPE` `UNKNOWN`，同 12.3）。
+
+来源：SRC-023 Appendix Settlement Protection（2026-04-08，已登记）；SRC-026 Appendix UK Ancestry（2026-08-03）、SRC-027 Appendix Innovator Founder（2026-08-03）、SRC-028 Appendix Private Life（2026-10-08）由 5.1 登记。下表段号按 5.1 取得的快照核对；SRC-026–028 合并前只写难民。
+
+### 14.1 字段
+
+| 字段 | 取值 | 含义 | 何时读取 |
+|---|---|---|---|
+| `PersonTimeline.protectionStatusRevoked?` | `boolean` | refugee status 或 humanitarian protection 已被撤销（revoked）或本人放弃（renounced）（STP 4.1）。缺省 = 未撤销、未放弃 | 申请日当天为保护类路线（14.3）+ `MAIN` |
+| `ImmigrationEpisode.innovatorSettlementCriteria?` | `('INVESTMENT' \| 'CUSTOMERS' \| 'RESEARCH_AND_IP' \| 'REVENUE' \| 'EXPORT_REVENUE' \| 'JOBS' \| 'JOBS_WITH_SALARY')[]` | 业务已满足的 INNF 17.1(f)(i)–(vii) 各项（定居背书须至少两项）；`[]` = 一项都没满足；缺省 = 未提供 | 申请日当天的 `INNOVATOR_FOUNDER` + `MAIN` 片段 |
+| `ImmigrationEpisode.privateLifeRoute?` | `'CHILD'` \| `'YOUNG_ADULT'` \| `'ADULT'` | Appendix Private Life 许可的依据：`CHILD` = 作为儿童获批（PL 3.1：未满 18 岁、连续居住 7 年；或首次获批时未满 18 岁，PL 10.1）；`YOUNG_ADULT` = 18–24 岁、未满 18 岁入境且半生在英国（PL 4.1）；`ADULT` = 其余（PL 5.1：连续居住超过 20 年或融入有"very significant obstacles"） | 申请日当天的 `FAMILY_AND_PRIVATE_LIFE` + `MAIN` 片段 |
+
+- `protectionStatusRevoked` 缺省按"仍持有"处理（写进假设），不输出 `UNKNOWN`：撤销 / 放弃是少数情形，问卷可以只在用户主动勾选时填。
+- `innovatorSettlementCriteria` 缺省 → `CL-INNOVATOR-ENDORSEMENT` 为不带 PD 的 `UNKNOWN`。同一项不能算两次（INNF 17.2），数组按去重计数。
+- `privateLifeRoute` 缺省 → `CL-PRIVATE-LIFE-RESIDENCE` 为不带 PD 的 `UNKNOWN`（结论"信息不足"）。路线枚举沿用 `FAMILY_AND_PRIVATE_LIFE`（web 的"家庭与私人生活"），与 Appendix FM 的 `FAMILY_PARTNER_OR_PARENT` 区分。
+- UK Ancestry 不加字段：UKA 12.1 要求定居时"仍满足"UKA 4.1–6.1（祖父母生于英国、自给自足、能工作并打算工作），UKA 10.3 要求申请日为 Commonwealth citizen，都按满足处理、写进假设。
+- 给 5.5（问卷）的 INNF 17.1(f) 各项原文要点（数字均出自该段）：(i) 至少 £50,000 投入业务并已用于推进业务；(ii) 最近 3 年客户数至少翻倍，且高于同类英国企业的平均客户数；(iii) 有显著研发活动并已在英国申请知识产权保护；(iv) 最近一个完整会计年度年总营收至少 £1,000,000；(v) 最近一个完整会计年度年总营收至少 £500,000，其中至少 £100,000 来自出口；(vi) 为 settled workers 创造至少 10 个全职等效岗位；(vii) 为 settled workers 创造至少 5 个全职等效岗位、平均年薪至少 £25,000。
+
+### 14.2 参数（`currentLaw2026_11.values`，规则 commit 时加）
+
+| 名称 | 值 | 来源 |
+|---|---|---|
+| `protectionQualifyingYears` | 5 | SRC-023 STP 3.1 |
+| `ukAncestryQualifyingYears` | 5 | SRC-026 UKA 13.1 |
+| `ukAncestrySettlementEnglishBefore` | `'B1'` | SRC-026 UKA 15.1(a) |
+| `ukAncestrySettlementEnglish` | `{ cefrLevel: 'B2', applicationsFrom: '2027-03-26' }` | SRC-026 UKA 15.1(b)；SRC-007 EM 5.60 |
+| `innovatorFounderQualifyingYears` | 3 | SRC-027 INNF 18.1 |
+| `innovatorFounderSettlementCriteriaMinimum` | 2 | SRC-027 INNF 17.1(f) |
+| `privateLifeQualifyingYearsFive` | 5 | SRC-028 PL 14.1 |
+| `privateLifeQualifyingYearsTen` | 10 | SRC-028 PL 14.2(a) |
+| `privateLifeSettlementEnglishBefore` | `'B1'` | SRC-028 PL 16.1(a) |
+| `privateLifeSettlementEnglish` | `{ cefrLevel: 'B2', applicationsFrom: '2027-03-26' }` | SRC-028 PL 16.1(b)；SRC-007 EM 5.60 |
+
+- INNF 17.1(f) 各项的金额与岗位数只出现在问卷文案与规则解释所引的段号里，引擎不按金额判断（用户自报满足哪几项），所以不设参数。
+- 难民与 Innovator Founder 主申请人没有定居英语参数：STP 未列英语要求；Appendix Innovator Founder 的定居段（INNF 15–21）只有 KOL（INNF 20.1），英语只在首次许可（INNF 11.1，B2）与 dependant 定居（INNF 39.1，HC 1691 改为 B1 / B2 分段，EM 5.60 列入的正是这一段）出现。
+
+### 14.3 规则
+
+"保护类路线" = `CORE_PROTECTION`、`PROTECTION_WORK_AND_STUDY`、`SAFE_AND_LEGAL`（含 11.3 推导出的 Legacy UKRS）、`LEGACY_SAFE_AND_LEGAL`：现行法律下都是 refugee status 或 humanitarian protection 的许可（11.1 让现有难民自获保护之日起填 `CORE_PROTECTION`），不区分 Earned Settlement 的三条路线。
+
+| 规则 | 适用 | 判断 |
+|---|---|---|
+| `CL-SCOPE`（改） | — | 申请日当天为保护类路线 + `MAIN`、`UK_ANCESTRY` + `MAIN`、`INNOVATOR_FOUNDER` + `MAIN`、`FAMILY_AND_PRIVATE_LIFE` + `MAIN`（`privateLifeRoute` 缺省也进入）→ `PASS`，解释写明按哪条 Appendix 与 Appendix Long Residence 评估。这些路线的 `DEPENDANT` → `UNKNOWN`（不带 PD），同 12.3。来源补 STP 1.3、UKA 13.1、INNF 18.1、PL 14.1。 |
+| `CL-PROTECTION-RESIDENCE-5Y`（新） | 当前保护类路线 + `MAIN` | 起点 = 申请日所在的、由保护类路线 `MAIN` 片段任意组合构成的连续段起点；STP 3.1 未引用 Appendix Continuous Residence，**不**经 `restartAfterAbsences`，填了缺席时写假设（新 PD）。起点 + 5 ≤ 申请日 → `PASS`；否则 `FAIL` 写到期日。只用于展示（同 `CL-HKBNO-RESIDENCE-5Y`）。假设：STP 1.3 按申请庇护日期列明许可类别（2022-06-28 前：refugee 或 humanitarian protection；此后：refugee permission to stay），本工具不区分 refugee 与 humanitarian protection，按持有所列许可处理；2022-06-28 及以后申请庇护而获 humanitarian protection 者 STP 1.3(b) 未列（新 PD）。 |
+| `CL-PROTECTION-STATUS`（新） | 同上 | `protectionStatusRevoked === true` → `FAIL`（STP 4.1）；否则 `PASS`，假设"未申报撤销或放弃，按仍持有保护身份处理；STP 4.2 的 safe return review 会核查个人情况与原籍国状况是否已变化，结果无法预判"。两种情况都加假设"不满足定居要求但仍有权受保护时，会再获至少 30 个月保护许可（STP 5.2）"。 |
+| `CL-ANCESTRY-RESIDENCE-5Y`（新） | 当前 `UK_ANCESTRY` + `MAIN` | 起点 = 申请日所在的连续 `UK_ANCESTRY` + `MAIN` 段起点（UKA 13.1 "as a person with UK Ancestry"），经 `restartAfterAbsences`（UKA 14.1）。满 5 年 `PASS`，未满 `FAIL` 写到期日；只用于展示。假设：UKA 12.1、UKA 10.3（见 14.1）。 |
+| `CL-INNOVATOR-RESIDENCE-3Y`（新） | 当前 `INNOVATOR_FOUNDER` + `MAIN` | 起点 = 申请日所在的连续 `INNOVATOR_FOUNDER` + `MAIN` 段起点（INNF 18.1 "with permission as an Innovator Founder"），经 `restartAfterAbsences`（INNF 19.1）。满 3 年 `PASS`，未满 `FAIL` 写到期日；只用于展示。 |
+| `CL-INNOVATOR-ENDORSEMENT`（新） | 同上 | 去重后的 `innovatorSettlementCriteria` 项数 ≥ 2 → `PASS`；< 2 → `FAIL`（解释"已满足 n 项，INNF 17.1(f) 须至少 2 项"，并列出已满足项的段号）；缺省 → `UNKNOWN`（不带 PD）。假设：INNF 17.1(a)–(e)（显著成就、Companies House 登记且为董事或成员、仍在经营、未来 12 个月可持续、在日常管理中起关键作用）由 endorsing body 判断，按满足处理；背书信须在申请前 3 个月内签发且未撤回（INNF 15.2(e)）；团队成员不能共用同一项（INNF 17.3）、岗位须满 12 个月等（INNF 17.4）未核实。 |
+| `CL-PRIVATE-LIFE-RESIDENCE`（新） | 当前 `FAMILY_AND_PRIVATE_LIFE` + `MAIN` | 年限：`CHILD` / `YOUNG_ADULT` → 5（PL 14.1）；`ADULT` → 10（PL 14.2(a)）；缺省 → `UNKNOWN`（不带 PD）。起点 = 由 PL 14.3 所列许可任意组合构成的连续段起点：`FAMILY_PARTNER_OR_PARENT`（任意 `role`，PL 14.3(a)(b)(d)）与 `FAMILY_AND_PRIVATE_LIFE`（任意 `role`，PL 14.3(c)），复用 `countsForFamilyTenYear`（与 SETF 3.1 同一张列表）；PL 14.3(e) 的 Article 8 Leave Outside the Rules 无法区分，不计；经 `restartAfterAbsences`（PL 15.1）。满期 `PASS`，未满 `FAIL` 写到期日。PL 14.4（其他可定居路线的时间，须已持 Private Life 许可满 1 年且非非法入境）不建模，紧接之前有其他路线时加假设（PD-069）。假设：PL 13（英国出生、连续居住 7 年的儿童可直接定居）、PL 14.1A / PL 14.2(b) / PL 14.2A（2022-06-20 前的 Appendix FM 或 Leave Outside the Rules 过渡安排）与 PL 12.3–12.5（suitability 事由迫使走 10 年）未建模。 |
+| `CL-ENGLISH`（改） | — | UK Ancestry → 申请日 < 2027-03-26 为 B1，此后 B2（UKA 15.1）；Private Life → 同样分段（PL 16.1），未满 18 岁由现有 `ageExempt` 豁免。保护类路线与 Innovator Founder 主申请人：该 Appendix 的定居段没有英语要求，本规则按 Long Residence 的等级核对（只用于 10 年候选），解释写明"Appendix Settlement Protection / Appendix Innovator Founder 未对定居设英语要求，此等级只适用于 Long Residence"。来源补 UKA 15.1、PL 16.1。 |
+| `CL-KOL`（改） | — | 判断不变；解释写明依据：UKA 16.1、INNF 20.1、PL 17.1（未满 18 岁豁免，已由 `ageExempt` 覆盖）；保护类路线写"Appendix Settlement Protection 未设 KOL 要求，此项只适用于 Long Residence"。来源补这三段。 |
+
+### 14.4 候选路径（§7、§12.4 的补充）
+
+| 当前 | 候选 | 年限 | 起点 |
+|---|---|---|---|
+| 保护类路线 + `MAIN` | `CL-PROTECTION-STATUS` | 5 | `CL-PROTECTION-RESIDENCE-5Y` 的起点 |
+| `UK_ANCESTRY` + `MAIN` | `CL-ENGLISH` + `CL-KOL` | 5 | `CL-ANCESTRY-RESIDENCE-5Y` 的起点 |
+| `INNOVATOR_FOUNDER` + `MAIN` | `CL-INNOVATOR-ENDORSEMENT` + `CL-KOL` | 3 | `CL-INNOVATOR-RESIDENCE-3Y` 的起点 |
+| `FAMILY_AND_PRIVATE_LIFE` + `MAIN` | `CL-ENGLISH` + `CL-KOL`；`privateLifeRoute` 缺省时为 `CL-PRIVATE-LIFE-RESIDENCE`（`UNKNOWN`）+ `CL-ENGLISH` + `CL-KOL`，不给起点 | 5 或 10（按 14.3） | `CL-PRIVATE-LIFE-RESIDENCE` 的起点 |
+| 以上都有 | Long Residence 10 年候选照常并列（保护类许可属合法居留） | 10 | 不变 |
+
+- 难民候选不含 `CL-ENGLISH` / `CL-KOL`；Innovator Founder 候选不含 `CL-ENGLISH`。两者在 Long Residence 候选里照常使用，`lrEnglish` 的比较不变。
+- 判定（§7 的 1–3 条）不变。`CL-INNOVATOR-ENDORSEMENT` 的 `FAIL` 与 `CL-FAMILY-FINANCIAL` 一样让该候选失败（按"状况不变"推算，不投影 3 年日期）。
+- 聚合里"投影日期在 2027-03-26 之后、届时须 B2"的假设：UK Ancestry（UKA 15.1(b)）与 Private Life（PL 16.1(b)）加；难民 5 年与 Innovator Founder 3 年路径不加（与 HK BN(O) 同理）。
+- `clBaseAssumption` 的建模范围补上四条路线的主申请人；另说明 STP 2.1 / Part Suitability 等未建模（现有一句已覆盖 Part Suitability，补 STP 2.1）。
+- 短路无变化：保护类主申请人本来就不因成年后非法入境短路（11.5），现行法律栏照常评估；`PROTECTION`、`OUTSIDE_FRAMEWORK` 只停 Earned Settlement 栏（13.2）。
+
+### 14.5 不建模与新 PD（登记 `docs/pending-details.md` 新一节"现行法律栏扩展二（任务 5.2）"）
+
+- 新 PD：STP 3.1 的"连续期间"如何因缺席中断（同 PD-070 的写法）；STP 未列英语 / KOL 要求（原文未提及，不从其他路线照搬）；STP 1.3(b) 未列 2022-06-28 及以后申请庇护而获 humanitarian protection 者。
+- 不设 PD 的引擎取舍（写进假设或解释）：四条路线的 dependant（5.4）；STP 4.2 safe return review；STP 5.2 的 30 个月续期；UKA 10.3、UKA 12.1；INNF 17.1(a)–(e)、15.2(e)、17.3、17.4；PL 13、PL 14.1A、PL 14.2(b)、PL 14.2A、PL 12.3–12.5；PL 14.4 归入 PD-069。
+
+### 14.6 给 5.5（问卷）
+
+- 当前片段为保护类路线 + `MAIN` 时，可选勾选"保护身份已被撤销或我已放弃"（`protectionStatusRevoked`）。
+- 当前片段为 `INNOVATOR_FOUNDER` + `MAIN` 时，多选 `innovatorSettlementCriteria`（文案按 14.1 的 INNF 17.1(f) 要点，标注段号），允许"一项都没有"（`[]`）。
+- 当前片段为 `FAMILY_AND_PRIVATE_LIFE` + `MAIN` 时问 `privateLifeRoute`（三选一，文案按 14.1）。
+- UK Ancestry 不新增问题。
+
+### 14.7 fixtures
+
+`packages/policy-data/fixtures/` 新增四个自拟 fixture（文件头注明事实依据为规则条款，不是官方案例），各在满期当天 → 现行法律栏 `LIKELY_ELIGIBLE`：难民（`CORE_PROTECTION` 主申请人满 5 年，未填英语与 KOL）、UK Ancestry（满 5 年，B1、KOL 已过，申请日早于 2027-03-26）、Innovator Founder（满 3 年，两项 INNF 17.1(f)、KOL 已过，未填英语）、Private Life（`YOUNG_ADULT` 满 5 年，B1、KOL 已过）。原有 fixture 的状态 / 年限 / 日期不变。
