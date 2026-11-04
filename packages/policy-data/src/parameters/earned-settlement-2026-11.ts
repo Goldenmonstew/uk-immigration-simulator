@@ -6,6 +6,32 @@ export const earnedSettlement2026_11 = {
   ruleSetId: 'earned-settlement-2026-11',
   asOf: '2026-11-04',
   values: {
+    // Breaches and criminality count from this age (p12, p13); younger
+    // applicants are exempt from earnings, English and Life in the UK (p15, p21).
+    adultAge: {
+      value: 18,
+      sources: [
+        { srcId: 'SRC-001', locator: 'p12' },
+        { srcId: 'SRC-001', locator: 'p13' },
+        { srcId: 'SRC-001', locator: 'p15' },
+        { srcId: 'SRC-001', locator: 'p21' },
+      ],
+    },
+
+    // From this age the earnings, English and Life in the UK requirements do
+    // not apply (p15, p21).
+    exemptionAge: {
+      value: 65,
+      sources: [
+        { srcId: 'SRC-001', locator: 'p15' },
+        { srcId: 'SRC-001', locator: 'p21' },
+      ],
+    },
+    settlementEnglishLevel: {
+      value: 'B2',
+      sources: [{ srcId: 'SRC-001', locator: 'p21' }],
+    },
+
     // GBP per year
     earningsThreshold3Year: {
       value: 125141,
@@ -70,6 +96,22 @@ export const earnedSettlement2026_11 = {
       sources: [
         { srcId: 'SRC-001', locator: 'p18' },
         { srcId: 'SRC-001', locator: 'p46' },
+      ],
+    },
+
+    // Care workers who entered or switched into the route before the
+    // Immigration White Paper (CP 1326) keep the 5-year period if paid at least
+    // this (GBP per year) (p42). The paper is dated May 2025 (p42; SRC-012
+    // cover); the day is its gov.uk publication date (PD-035).
+    careWorkerSalaryThreshold: {
+      value: 25000,
+      sources: [{ srcId: 'SRC-001', locator: 'p42' }],
+    },
+    whitePaperPublished: {
+      value: '2025-05-12',
+      sources: [
+        { srcId: 'SRC-001', locator: 'p42' },
+        { srcId: 'SRC-012', locator: 'cover' },
       ],
     },
 

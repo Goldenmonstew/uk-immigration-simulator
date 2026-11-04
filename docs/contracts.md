@@ -1,4 +1,4 @@
-# 引擎契约（Phase 0.2）
+# 引擎契约（Phase 0.2；Phase 1.1 补充规则、数据表与路径聚合）
 
 给 astra（`apps/web`）和 sol（fixtures 工具链）看的接口说明。类型的唯一真相是代码：`packages/engine/src/types.ts` 与 `packages/policy-data/src/{types,routes}.ts`；本文只讲关系和约定。
 
@@ -31,8 +31,8 @@ SimulationResult {
 | `LIKELY_ELIGIBLE` | 该规则集下全部规则 `PASS` |
 | `LIKELY_NOT_ELIGIBLE` | 有规则 `FAIL`，且补充信息也改变不了 |
 | `POTENTIALLY_ELIGIBLE` | 没有 `FAIL`；`UNKNOWN` 来自政府未定细节（`PD-xxx`），不是用户漏填 |
-| `INSUFFICIENT_INFORMATION` | 用户输入不足以判断（当前 stub 一律返回这个） |
-| `POLICY_NOT_YET_IN_FORCE` | 结论取决于尚未生效的规则何时、如何生效；触发条件由 Phase 1 过渡安排规则定义 |
+| `INSUFFICIENT_INFORMATION` | 用户输入不足以判断（含现行规则未建模的路线，见 §7） |
+| `POLICY_NOT_YET_IN_FORCE` | 结论取决于尚未生效的规则何时、如何生效；只在规则集有已知 `effectiveFrom` 且晚于模拟日、或结论取决于未定生效日的过渡情形时使用（MVP-0 尚无触发情形） |
 | `REQUIRES_REGULATED_REVIEW` | 必须由受监管顾问判断 |
 
 已公布未生效的规则集（`ANNOUNCED_NOT_IN_FORCE`）按"假设它在 `simulationDate` 适用"来评估；"未生效"由 `RuleSet.status` 表达，不塞进 `outcome`。
@@ -49,6 +49,8 @@ interface Rule {
 - 为什么不用 DSL：连续居留窗口、路线切换重置（SRC-001 p25）、伴侣合并收入、豁免覆盖、前向推算，YAML 都表达不了，自研 DSL 本身就是一个项目。TS 函数可测、可调试，类型检查免费。
 - 每条规则 `meta.sources` 至少一条 `SourceRef`；依赖政府未定细节时把 `PD-xxx` 写进 `pendingDetails`，结果给 `UNKNOWN`，不要猜。
 - 规则 ID 用大写短横线，前缀标规则集：`ES-…`（Earned Settlement）、`CL-…`（现行法律）。fixture 的 `mustFail / mustUnknown` 引用的就是这些 ID。
+- engine 导出 `RULES: Record<RuleSetId, Rule[]>`：每个规则集的全部规则，按执行顺序。测试与 UI 可以用它列出规则的 `meta`（标题、来源、PD）。规则代码在 `packages/engine/src/rules/`。
+- `RuleResult` 有两个可选字段（1.1 新增）：`pendingDetails`——只用于 `UNKNOWN`，列出导致未知的 `PD-xxx`；`UNKNOWN` 不带它表示用户没填够。`assumptions`——该结果依赖的假设，会汇总进 `SettlementAssessment.assumptions`（去重）。
 
 ## 4. 来源与参数
 
@@ -62,6 +64,9 @@ const threshold = es.values.earningsThreshold5Year.value; // 50271, SRC-001 p15/
 
 - 参数集用 `satisfies ParameterSet` 声明，名字保持字面量类型，拼错直接编译失败。门槛随税制变动时只改参数文件。
 - 路线分类在 `policy-data/src/routes.ts`：`ROUTE_GROUPS` 把每条 `Route` 映射到一个或多个 `RouteGroup`（Skilled Worker 同时是 core 和 high talent），`ROUTE_GROUP_SOURCES` 给每组来源。表外路线填 `OTHER`。
+- 数据表在 `policy-data/src/data/`，从包入口导出：
+  - `publicFundsBenefits`：`{ publicFunds, notPublicFunds }`，每项 `{ benefitType, name, source }`，来自 SRC-006 各小节。**`benefitType` 命名约定**：SRC-006 上的英文福利名，去掉撇号与括号说明，转大写蛇形（`Universal Credit` → `UNIVERSAL_CREDIT`，`Carer’s Allowance` → `CARERS_ALLOWANCE`，`Statutory Maternity Pay` → `STATUTORY_MATERNITY_PAY`）；原文一条列了两种福利的拆成两项（`CHILD_TAX_CREDIT`、`WORKING_TAX_CREDIT`），英格兰 / 北爱尔兰重复列出的 Social Fund 支付只保留一项；`Job Seekers` / `Jobseeker’s` 统一为 `JOBSEEKERS`，`&` 写作 `AND`；按法条描述的长条目用简称（`COUNCIL_TAX_REDUCTION`、`LOCAL_AUTHORITY_DISCRETIONARY_PAYMENT`、`SCOTTISH_WELFARE_FUND_PAYMENT` 等）。取值以数据表为准。`BenefitEpisode.benefitType` 填这里的值；不在两张表里的值，`ES-PUBLIC-FUNDS` 给 `UNKNOWN`（PD-013）。问卷下拉直接用 `name` 显示。
+  - `annexCOccupations`、`careWorkerOccupations`：`{ sources, occupations: { socCode, title }[] }`。Annex C 原文只有职业名，SOC 2020 代码按同名职业取自 Appendix Skilled Worker SW 16.1。`ImmigrationEpisode.socCode` 填 4 位 SOC 2020 代码字符串。
 
 ## 5. Fixture 怎么写
 
@@ -85,8 +90,28 @@ export const esIndividualC: Fixture = {
 
 - `expected` 只写原文能确定的东西。原文没给的日期、年限不写；为了把案例落成具体时间线而补的事实，在文件注释里说明。
 - fixture 用相对路径 `import type` 引 engine 的类型：engine 依赖 policy-data，反向声明包依赖会成环（pnpm 会告警）。`import type` 编译后消失，没有运行时依赖。
-- `packages/engine/test/evaluate.test.ts` 遍历全部 fixture。现在只检查返回形状；按 `expected` 断言是 Phase 1 的 `test.todo`。
+- `packages/engine/test/evaluate.test.ts` 遍历全部 fixture，断言 `expected` 的 outcome、`pathwayYears`、`earliestDate`（有则查）、`mustFail` / `mustUnknown`。
 
 ## 6. 不在 MVP-0 契约里
 
-Annex C 岗位表、难民路径细节、What-if、前向推算的假设结构，都等用到时再加字段，不提前预留。
+难民路径细节、What-if、前向推算的结构化假设，都等用到时再加字段，不提前预留。
+
+## 7. 路径聚合（`packages/engine/src/aggregate.ts`）
+
+规则只回答"这一条是否满足"，聚合把它们组合成结论。每个规则集先列出**候选路径**：一组必须全部 `PASS` 的规则 + 年限 + 居留起点。
+
+- Earned Settlement（SRC-001 p46 Table 1）：强制要求 = `ES-CRIMINALITY`、`ES-DEBT`、`ES-ENGLISH-B2`、`ES-KOL`、`ES-ROUTE-GROUP`、`ES-RESIDENCE`。
+  - 3 年：强制 + `ES-BREACH` + `ES-PUBLIC-FUNDS` + `ES-EARNINGS-3Y`
+  - 5 年：强制 + `ES-BREACH` + `ES-PUBLIC-FUNDS` + 以下任一：`ES-EARNINGS-5Y`、`ES-BRITISH-CONNECTION`、`ES-PUBLIC-SERVICE`、`ES-TRANSITIONAL-CARE-WORKER`
+  - 10 年：强制 + `ES-BREACH` + `ES-PUBLIC-FUNDS` + `ES-EARNINGS-10Y`
+  - 20 年：强制 + `ES-EARNINGS-10Y`（用过 public funds 或有 breach 时只剩这条）
+  - 当前为 Family and Private Life 时只有 10 / 20 年（p23）。居留起点都是 `ES-RESIDENCE` 的合格期起点。
+- 现行法律：`CL-SCOPE` 不通过时只输出这一条、结论 `INSUFFICIENT_INFORMATION`。否则候选为 Skilled Worker 5 年（`CL-SW-SALARY`、`CL-ENGLISH`、`CL-KOL`，起点为连续 Skilled Worker 段）与 Long Residence 10 年（`CL-ENGLISH`、`CL-KOL`，起点为连续合法居留段）；居留规则 `CL-SW-RESIDENCE-5Y` / `CL-LR-RESIDENCE-10Y` 只用于展示，年限由起点计算。
+
+判定（两个规则集同一套）：
+
+1. 有候选全部 `PASS` 且起点 + 年限 ≤ 申请日 → `LIKELY_ELIGIBLE`，`pathwayYears` 取最短，`earliestDate` = 申请日。
+2. 否则，有候选居留已满（或起点未知）且只有 `UNKNOWN`、没有 `FAIL` → 这些 `UNKNOWN` 都带 `pendingDetails` 时 `POTENTIALLY_ELIGIBLE`，`pathwayYears` 取该候选；否则 `INSUFFICIENT_INFORMATION`，不给 `pathwayYears`。两种都不给 `earliestDate`。
+3. 否则 `LIKELY_NOT_ELIGIBLE`；若还有未 `FAIL` 的候选，取起点 + 年限最早的一条给出 `pathwayYears` 与 `earliestDate`，并加假设"持续居留、收入等状况不变"。强制要求 `FAIL` 时所有候选都失败，不给年限与日期。
+
+短路（`SimulationResult.shortCircuit`）：`CRIMINALITY`（任何犯罪记录）与 `IMMIGRATION_BREACH`（成年后非法入境）让两栏都是 `REQUIRES_REGULATED_REVIEW`；`PROTECTION` 与 `OUTSIDE_FRAMEWORK`（当前路线）只让 Earned Settlement 一栏是 `REQUIRES_REGULATED_REVIEW`，现行法律照常评估。短路时规则照常运行、出现在 `rules` 里，但该栏不给 `pathwayYears` / `earliestDate`。
