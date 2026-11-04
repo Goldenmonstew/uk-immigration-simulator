@@ -109,6 +109,23 @@ function validTimeline(value: unknown): boolean {
         (episode.familyPermission === undefined ||
           ['PARTNER_FIVE_YEAR', 'PARTNER_TEN_YEAR', 'PARENT'].includes(
             episode.familyPermission as string,
+          )) &&
+        (episode.innovatorSettlementCriteria === undefined ||
+          (Array.isArray(episode.innovatorSettlementCriteria) &&
+            episode.innovatorSettlementCriteria.every((criterion) =>
+              [
+                'INVESTMENT',
+                'CUSTOMERS',
+                'RESEARCH_AND_IP',
+                'REVENUE',
+                'EXPORT_REVENUE',
+                'JOBS',
+                'JOBS_WITH_SALARY',
+              ].includes(criterion),
+            ))) &&
+        (episode.privateLifeRoute === undefined ||
+          ['CHILD', 'YOUNG_ADULT', 'ADULT'].includes(
+            episode.privateLifeRoute as string,
           )),
     ) ||
     !(timeline.immigrationBreaches as Record<string, unknown>[]).every(
@@ -119,6 +136,8 @@ function validTimeline(value: unknown): boolean {
       !Object.keys(asylumSupportRepaymentNames).includes(
         timeline.asylumSupportRepayment as string,
       )) ||
+    (timeline.protectionStatusRevoked !== undefined &&
+      typeof timeline.protectionStatusRevoked !== 'boolean') ||
     !['english', 'lifeInTheUk', 'settled'].every(
       (key) =>
         timeline[key] === undefined ||

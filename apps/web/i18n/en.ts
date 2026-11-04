@@ -312,6 +312,34 @@ export const en: Record<keyof typeof zhCN, string> = {
   'episodes.familyPermission.PARENT': 'Parent of a child',
   'episodes.familyPermissionHint':
     'Enter your partner’s status in the Family relationships step, and your own and your partner’s income for the last completed tax year in the Earnings by tax year step (for the 5-year route’s financial requirement).',
+  'episodes.innovatorSettlementCriteria':
+    'Settlement endorsement criteria met by the business (INNF 17.1(f))',
+  'episodes.innovatorCriteriaHint':
+    'Select every criterion met. Leaving all unchecked means “None of the above”.',
+  'episodes.innovatorCriteriaNone': 'None of the above',
+  'episodes.innovatorCriteria.INVESTMENT':
+    'At least £50,000 invested in the business and actively spent furthering it (INNF 17.1(f)(i))',
+  'episodes.innovatorCriteria.CUSTOMERS':
+    'Customer numbers at least doubled in the last 3 years and exceed the average for comparable UK businesses (INNF 17.1(f)(ii))',
+  'episodes.innovatorCriteria.RESEARCH_AND_IP':
+    'Significant research and development activity, with an application for intellectual property protection in the UK (INNF 17.1(f)(iii))',
+  'episodes.innovatorCriteria.REVENUE':
+    'At least £1,000,000 in annual gross revenue in the last full accounting year (INNF 17.1(f)(iv))',
+  'episodes.innovatorCriteria.EXPORT_REVENUE':
+    'At least £500,000 in annual gross revenue in the last full accounting year, including at least £100,000 from exports (INNF 17.1(f)(v))',
+  'episodes.innovatorCriteria.JOBS':
+    'At least 10 full-time equivalent jobs created for settled workers (INNF 17.1(f)(vi))',
+  'episodes.innovatorCriteria.JOBS_WITH_SALARY':
+    'At least 5 full-time equivalent jobs created for settled workers, with an average annual salary of at least £25,000 (INNF 17.1(f)(vii))',
+  'episodes.privateLifeRoute': 'Basis of Appendix Private Life permission',
+  'episodes.privateLifeRoute.CHILD':
+    'Granted as a child (under 18, with 7 years of continuous residence; PL 3.1 / 10.1)',
+  'episodes.privateLifeRoute.YOUNG_ADULT':
+    'Aged 18–24, entered before 18 and spent at least half of life in the UK (PL 4.1)',
+  'episodes.privateLifeRoute.ADULT':
+    'Other (over 20 years of continuous residence or very significant obstacles to integration; PL 5.1)',
+  'benefits.protectionStatusRevoked':
+    'My protection status has been revoked or I have renounced it (STP 4.1)',
   'benefits.asylumSupportRepayment':
     'Do you need to repay asylum support costs?',
   'result.protectionNotice':

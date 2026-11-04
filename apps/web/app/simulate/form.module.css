@@ -90,6 +90,21 @@
   margin: 0;
   accent-color: #0b0c0c;
 }
+.checkboxes label {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  min-height: 48px;
+  padding: 8px 0;
+  cursor: pointer;
+}
+.checkboxes input {
+  flex: 0 0 28px;
+  width: 28px;
+  height: 28px;
+  margin: 0;
+  accent-color: #0b0c0c;
+}
 .entry {
   border: 1px solid #b1b4b6;
   border-top: 4px solid #b1b4b6;

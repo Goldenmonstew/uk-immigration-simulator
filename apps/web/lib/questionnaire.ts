@@ -201,6 +201,8 @@ export function draftReducer(state: Draft, action: Action): Draft {
                 globalTalentEndorsement: undefined,
                 globalTalentCriteria: undefined,
                 familyPermission: undefined,
+                innovatorSettlementCriteria: undefined,
+                privateLifeRoute: undefined,
               }),
             };
           }),
