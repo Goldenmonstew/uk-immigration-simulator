@@ -2,6 +2,7 @@ import { earnedSettlement2026_11 } from '@uk-immigration/policy-data';
 import type { RuleSetId } from '@uk-immigration/policy-data';
 import { assess } from './aggregate';
 import { adultIllegalEntry } from './rules/es-requirements';
+import { episodeOn } from './residence';
 import { esCurrentGroup } from './rules/es-residence';
 import type {
   RuleContext,
@@ -65,9 +66,23 @@ function shortCircuitOf({
 
 export function evaluate(request: SimulationRequest): SimulationResult {
   const ids = request.ruleSetIds ?? (Object.keys(RULE_SETS) as RuleSetId[]);
+  const { timeline, simulationDate, principal } = request;
   const ctx: RuleContext = {
-    timeline: request.timeline,
-    simulationDate: request.simulationDate,
+    timeline,
+    simulationDate,
+    // The principal is assessed as a main applicant: their own principal, if
+    // any, is not followed.
+    ...(principal &&
+      episodeOn(timeline, simulationDate)?.role === 'DEPENDANT' && {
+        principal: {
+          timeline: principal,
+          result: evaluate({
+            timeline: principal,
+            simulationDate,
+            ruleSetIds: ids,
+          }),
+        },
+      }),
   };
   const shortCircuit = shortCircuitOf(ctx);
   const byRuleSet: SimulationResult['byRuleSet'] = {};

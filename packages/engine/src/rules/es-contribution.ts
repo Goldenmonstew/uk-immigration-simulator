@@ -8,7 +8,7 @@ import type {
   BestYears,
   SourceRef,
 } from '@uk-immigration/policy-data';
-import { addDays, addYears, fullYears, taxYearsBefore } from '../dates';
+import { addDays, addYears, taxYearsBefore } from '../dates';
 import { continuousRun, episodeOn } from '../residence';
 import { defineRule } from '../rule';
 import type { ImmigrationEpisode, RuleContext } from '../types';
@@ -142,14 +142,13 @@ export const esEarnings10Y = defineRule(
         explanation: `申请日未满 ${es.values.adultAge.value} 岁或已满 ${es.values.exemptionAge.value} 岁，豁免最低收入要求。`,
       };
     }
-    if (
-      childDependantOn(timeline, simulationDate) &&
-      fullYears(timeline.dateOfBirth, simulationDate) <
-        es.values.independentAge.value
-    ) {
+    // Adult children over the age limit cannot settle as dependants at all
+    // (ES-DEPENDANT-PATHWAY, p30).
+    if (childDependantOn(timeline, simulationDate)) {
       return {
         status: 'PASS',
-        explanation: `${es.values.adultAge.value} 至 ${es.values.independentAge.value - 1} 岁保留 child-dependant 身份者随家庭定居，不需满足个人收入要求。`,
+        explanation:
+          '保留 child-dependant 身份的成年子女随家庭定居，不需满足个人收入要求。',
         sources: [{ srcId: 'SRC-001', locator: 'p30' }],
         assumptions: [CHILD_DEPENDANT_ASSUMPTION],
       };

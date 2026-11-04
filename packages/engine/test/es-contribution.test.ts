@@ -113,16 +113,14 @@ describe('ES-EARNINGS-10Y', () => {
         .status,
     ).toBe('PASS');
   });
-  test('a child dependant aged 18 to 24 needs no income (p30); at 25 they do', () => {
-    const child = (dateOfBirth: string) =>
-      run(esEarnings10Y, {
-        dateOfBirth,
-        episodes: asDependant('PARENT'),
-        incomeYears: [],
-      });
-    expect(child('2001-11-05').status).toBe('PASS');
-    expect(child('2001-11-05').assumptions?.join('')).toContain('PD-059');
-    expect(child('2001-11-04').status).toBe('UNKNOWN');
+  test('an adult child dependant needs no income (p30)', () => {
+    const child = run(esEarnings10Y, {
+      dateOfBirth: '2004-06-01',
+      episodes: asDependant('PARENT'),
+      incomeYears: [],
+    });
+    expect(child.status).toBe('PASS');
+    expect(child.assumptions?.join('')).toContain('PD-059');
   });
 
   test('a partner dependant still needs the minimum income', () => {

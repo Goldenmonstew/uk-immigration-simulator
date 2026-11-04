@@ -142,6 +142,8 @@ export interface RuleMeta {
 export interface RuleContext {
   timeline: PersonTimeline;
   simulationDate: IsoDate;
+  /** Dependants only: the principal's timeline and result on the same date. */
+  principal?: { timeline: PersonTimeline; result: SimulationResult };
 }
 
 export interface RuleResult {

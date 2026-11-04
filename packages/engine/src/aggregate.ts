@@ -12,6 +12,7 @@ import {
   onSkilledWorker,
   skilledWorkerStart,
 } from './rules/current-law';
+import { esDependantSettlement } from './rules/es-dependant';
 import { esQualifyingResidence, groupsOf } from './rules/es-residence';
 import type {
   IsoDate,
@@ -130,28 +131,107 @@ function toAssessment(
 const ES_BASE_ASSUMPTION =
   'Earned Settlement 已公布、尚未生效，按"假设在申请日适用"评估；规则依据为政府回应文件（SRC-001），不是已生效的 Immigration Rules（PD-001）。首批规则修改预计 2026 年 12 月起提交、2027 年 1 月生效，2027–2028 年继续修改（SRC-002 col 593；SRC-003 cols 1423–1424），具体生效日以届时的 Statement of Changes 为准（PD-003）。';
 
-function assessEarnedSettlement(ctx: RuleContext): SettlementAssessment {
-  const rules = RULES['earned-settlement-2026-11'].map((rule) =>
-    runRule(rule, ctx),
-  );
+const ES_MANDATORY = [
+  'ES-CRIMINALITY',
+  'ES-DEBT',
+  'ES-ENGLISH-B2',
+  'ES-KOL',
+  'ES-ROUTE-GROUP',
+  'ES-RESIDENCE',
+];
+
+// A dependant's one pathway: the mandatory requirements (with the exemptions
+// inside the rules, p29–p30), the minimum income and the principal's pathway.
+// ES-PUBLIC-FUNDS and ES-BREACH feed ES-DEPENDANT-PATHWAY (PD-062).
+const ES_DEPENDANT_PATHWAY = [
+  ...ES_MANDATORY,
+  'ES-EARNINGS-10Y',
+  'ES-DEPENDANT-PATHWAY',
+];
+const ES_DEPENDANT_RULES = [
+  ...ES_DEPENDANT_PATHWAY,
+  'ES-PUBLIC-FUNDS',
+  'ES-BREACH',
+];
+
+/** `rules` with `id` failed for want of time, until `earliestDate`. */
+function showProjected(
+  rules: RuleOutcome[],
+  id: string,
+  decision: Decision,
+  note: string,
+): RuleOutcome[] {
+  return decision.projectedFrom
+    ? rules.map((r) =>
+        r.id === id
+          ? { ...r, status: 'FAIL' as const, explanation: r.explanation + note }
+          : r,
+      )
+    : rules;
+}
+
+function assessDependant(
+  ctx: RuleContext,
+  rules: RuleOutcome[],
+): SettlementAssessment {
+  const assumptions = [ES_BASE_ASSUMPTION];
   const current = episodeOn(ctx.timeline, ctx.simulationDate);
-  // A dependant settles with the principal (p29, p31), which is not modelled
-  // (PD-055): no pathway or date, as for current law outside CL-SCOPE.
-  if (current?.role === 'DEPENDANT') {
-    return toAssessment({ outcome: 'INSUFFICIENT_INFORMATION' }, rules, [
-      ES_BASE_ASSUMPTION,
-    ]);
+  if (!ctx.principal || !current?.dependantOf) {
+    return toAssessment(
+      { outcome: 'INSUFFICIENT_INFORMATION' },
+      rules,
+      assumptions,
+    );
   }
+  const pathway = rules.filter((r) => ES_DEPENDANT_PATHWAY.includes(r.id));
+  const settlement = esDependantSettlement(ctx);
+  if (!settlement) {
+    return toAssessment(
+      {
+        outcome: pathway.some((r) => r.status === 'FAIL')
+          ? 'LIKELY_NOT_ELIGIBLE'
+          : 'INSUFFICIENT_INFORMATION',
+      },
+      rules,
+      assumptions,
+    );
+  }
+  const decision = decide(
+    [{ years: settlement.years, start: settlement.start, rules: pathway }],
+    ctx.simulationDate,
+  );
+  const shown = showProjected(
+    rules,
+    'ES-DEPENDANT-PATHWAY',
+    decision,
+    `截至 ${ctx.simulationDate} 尚未满期，${decision.earliestDate} 起可申请。`,
+  );
+  const routeGroupPassed =
+    rules.find((r) => r.id === 'ES-ROUTE-GROUP')?.status === 'PASS';
+  return {
+    ...toAssessment(decision, shown, assumptions),
+    ...(routeGroupPassed &&
+      settlement.routeGroup && { routeGroup: settlement.routeGroup }),
+  };
+}
+
+function assessEarnedSettlement(ctx: RuleContext): SettlementAssessment {
+  const current = episodeOn(ctx.timeline, ctx.simulationDate);
+  // A dependant settles with the principal (p29–p31).
+  if (current?.role === 'DEPENDANT') {
+    return assessDependant(
+      ctx,
+      RULES['earned-settlement-2026-11']
+        .filter((rule) => ES_DEPENDANT_RULES.includes(rule.meta.id))
+        .map((rule) => runRule(rule, ctx)),
+    );
+  }
+  const rules = RULES['earned-settlement-2026-11']
+    .filter((rule) => rule.meta.id !== 'ES-DEPENDANT-PATHWAY')
+    .map((rule) => runRule(rule, ctx));
   const pick = (...ids: string[]) =>
     ids.map((id) => rules.find((r) => r.id === id)!);
-  const mandatory = pick(
-    'ES-CRIMINALITY',
-    'ES-DEBT',
-    'ES-ENGLISH-B2',
-    'ES-KOL',
-    'ES-ROUTE-GROUP',
-    'ES-RESIDENCE',
-  );
+  const mandatory = pick(...ES_MANDATORY);
   const standard = [...mandatory, ...pick('ES-BREACH', 'ES-PUBLIC-FUNDS')];
   const v = es.values;
   const fiveYearRoutes = [
@@ -197,17 +277,12 @@ function assessEarnedSettlement(ctx: RuleContext): SettlementAssessment {
   const decision = decide(candidates, ctx.simulationDate);
   // Not enough residence yet for the pathway the date was projected from:
   // ES-RESIDENCE shows that as the failing rule.
-  const shown = decision.projectedFrom
-    ? rules.map((r) =>
-        r.id === 'ES-RESIDENCE'
-          ? {
-              ...r,
-              status: 'FAIL' as const,
-              explanation: `${r.explanation}${decision.pathwayYears} 年路径的居留还不够，${decision.earliestDate} 满 ${decision.pathwayYears} 年。`,
-            }
-          : r,
-      )
-    : rules;
+  const shown = showProjected(
+    rules,
+    'ES-RESIDENCE',
+    decision,
+    `${decision.pathwayYears} 年路径的居留还不够，${decision.earliestDate} 满 ${decision.pathwayYears} 年。`,
+  );
   return {
     ...toAssessment(decision, shown, assumptions),
     ...(pick('ES-ROUTE-GROUP')[0].status === 'PASS' && {

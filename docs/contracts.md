@@ -141,17 +141,21 @@ SimulationRequest {
 
 Earned Settlement 栏的 dependant 候选路径（只有一条）：
 
-- 规则 = 强制要求（按身份豁免，见下表）+ `ES-DEPENDANT-PATHWAY`；`ES-BREACH`、`ES-PUBLIC-FUNDS` 与加速 / 收入路径规则照常运行、出现在 `rules` 里，但不单独决定 dependant 的年限。
+- 规则 = 强制要求（`ES-CRIMINALITY`、`ES-DEBT`、`ES-ENGLISH-B2`、`ES-KOL`、`ES-ROUTE-GROUP`、`ES-RESIDENCE`）+ `ES-EARNINGS-10Y`（最低收入）+ `ES-DEPENDANT-PATHWAY`。按身份的豁免写在各规则里（见下表），豁免时规则 `PASS` 并引 p29 / p30。dependant 的 `rules` 另外只列 `ES-PUBLIC-FUNDS` 与 `ES-BREACH`（成年 dependant 本人 `FAIL` → `ES-DEPENDANT-PATHWAY` 为 `UNKNOWN`，PD-062）；3 / 5 年收入、British connection、公共服务与过渡安排规则不对 dependant 运行。
 - 年限 = 主申请人该栏的 `pathwayYears`；`routeGroup` = 主申请人的。
 - `earliestDate` = max(主申请人的定居时点, dependant 自己的 dependant 居留起点 + 年限)。同时到达 → 与主申请人同日；后到的伴侣 → 晚到多久就晚多久（p29、p31 Individual B）。
-- 主申请人该栏没有可用的年限与时点（`INSUFFICIENT_INFORMATION`、`POTENTIALLY_ELIGIBLE`、`REQUIRES_REGULATED_REVIEW`、强制要求不满足而无日期）→ `ES-DEPENDANT-PATHWAY` 为 `UNKNOWN`。
+- 主申请人该栏：`LIKELY_ELIGIBLE` 或带日期的 `LIKELY_NOT_ELIGIBLE` → 按上面取年限与时点；`POTENTIALLY_ELIGIBLE` → 同样取年限，`ES-DEPENDANT-PATHWAY` 为 `UNKNOWN` 并带上主申请人的 `pendingDetails`（dependant 也是 `POTENTIALLY_ELIGIBLE`）；强制要求不满足、没有日期的 `LIKELY_NOT_ELIGIBLE` → `FAIL`；`INSUFFICIENT_INFORMATION`、`REQUIRES_REGULATED_REVIEW` → `UNKNOWN`（不带 PD）。
+- 居留不够时（主申请人尚未满期，或伴侣后到）由 `ES-DEPENDANT-PATHWAY` 显示为 `FAIL` 并写明可申请日期（主申请人用 `ES-RESIDENCE`）。
+- 规则通过 `RuleContext.principal`（`{ timeline, result }`，`evaluate` 先算好）读取主申请人的时间线与结果；只在当前 episode 为 `DEPENDANT` 且请求带 `principal` 时设置。
 
 | 身份（按年龄与 `dependantOf`） | 适用的强制要求 | 收入 | 来源 |
 |---|---|---|---|
 | 伴侣 | criminality、debt、B2、KOL | 最低收入（个人或家庭口径，假设，见 PD） | p29、p46 |
 | 子女，18 岁以下 | 只有 criminality（与 suitability） | 豁免 | p29 |
 | 子女，18–24 岁 | criminality、debt、B2、KOL | 豁免 | p29–p30 |
-| 子女，25 岁及以上 | 不能作为 dependant 定居，`ES-DEPENDANT-PATHWAY` 为 `FAIL`，须独立符合资格或转入自己的路线 | — | p30、p31 Individual E |
+| 子女，家庭首次符合资格日（主申请人合格期起点 + 其年限）已满 25 岁 | 不能作为 dependant 定居，`ES-DEPENDANT-PATHWAY` 为 `FAIL`，须独立符合资格或转入自己的路线 | — | p30、p31 Individual E；PD-060 |
+
+年龄分支：是否满 18 岁按申请日（`simulationDate`）；25 岁按家庭首次符合资格日（PD-060）。
 
 现行法律栏：Skilled Worker 主申请人的 dependant partner（有 `principal`）进入 `CL-SCOPE`；`CL-SW-PARTNER-5Y` 判断连续 5 年 dependent partner 许可（SW 42.1、SW 43.1）且主申请人同时或已经定居（SW 39.1），英语与 KOL 按 SW 44.1、SW 45.1。dependent child（SW 41A.1 → Appendix Children）不建模，仍在 `CL-SCOPE` 之外。
 

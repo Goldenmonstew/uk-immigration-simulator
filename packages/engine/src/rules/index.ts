@@ -23,6 +23,7 @@ import {
   esPublicFunds,
   esPublicService,
 } from './es-contribution';
+import { esDependantPathway } from './es-dependant';
 import { esResidence, esRouteGroup } from './es-residence';
 import { esTransitionalCareWorker } from './es-transitional';
 
@@ -43,6 +44,7 @@ export const RULES: Record<RuleSetId, Rule[]> = {
     esBreach,
     esTransitionalCareWorker,
     esPublicService,
+    esDependantPathway,
   ],
   'current-law-2026-11': [
     clScope,
