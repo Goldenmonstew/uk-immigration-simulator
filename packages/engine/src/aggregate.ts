@@ -2,11 +2,7 @@ import {
   currentLaw2026_11 as cl,
   earnedSettlement2026_11 as es,
 } from '@uk-immigration/policy-data';
-import type {
-  Route,
-  RouteGroup,
-  RuleSetId,
-} from '@uk-immigration/policy-data';
+import type { Route, RouteGroup, RuleSetId } from '@uk-immigration/policy-data';
 import { addYears } from './dates';
 import { continuousRun, episodeOn } from './residence';
 import { runRule, textFor } from './rule';
@@ -180,15 +176,22 @@ const ES_DEPENDANT_RULES = [
 ];
 
 // Rules only for protection routes (contracts §11).
-const ES_PROTECTION_ONLY = ['ES-PROTECTION-PATHWAY'];
-// What protection routes run: no earnings, British connection, public
-// service or transitional rules (Table 2).
-const ES_PROTECTION_RULES = [
-  ...ES_MANDATORY,
-  'ES-BREACH',
-  'ES-PUBLIC-FUNDS',
-  ...ES_PROTECTION_ONLY,
-];
+const ES_PROTECTION_ONLY = ['ES-PROTECTION-PATHWAY', 'ES-ASYLUM-SUPPORT'];
+
+/**
+ * What a protection route runs: no earnings, British connection, public
+ * service or transitional rules (Table 2). Table 2 lists asylum support
+ * repayment for Protection Work and Study and Core Protection only.
+ */
+function protectionRuleIds(route: Route): string[] {
+  return [
+    ...ES_MANDATORY,
+    'ES-BREACH',
+    'ES-PUBLIC-FUNDS',
+    'ES-PROTECTION-PATHWAY',
+    ...(route === 'SAFE_AND_LEGAL' ? [] : ['ES-ASYLUM-SUPPORT']),
+  ];
+}
 
 /**
  * Table 2 (p47–p48): one pathway per protection route, plus the 20 years
@@ -200,7 +203,11 @@ function protectionCandidates(
   pick: (...ids: string[]) => RuleOutcome[],
   ctx: RuleContext,
 ): Candidate[] {
-  const mandatory = [...pick(...ES_MANDATORY), ...pick('ES-PROTECTION-PATHWAY')];
+  const mandatory = [
+    ...pick(...ES_MANDATORY),
+    ...pick('ES-PROTECTION-PATHWAY'),
+    ...(route === 'SAFE_AND_LEGAL' ? [] : pick('ES-ASYLUM-SUPPORT')),
+  ];
   const extra = illegalEntryExtraYears(ctx.timeline);
   const base = protectionBaseYears(route) + extra;
   const fallback = es.values.pathwayYears20.value + extra;
@@ -308,7 +315,7 @@ function assessEarnedSettlement(ctx: RuleContext): SettlementAssessment {
   const rules = RULES['earned-settlement-2026-11']
     .filter((rule) =>
       protection
-        ? ES_PROTECTION_RULES.includes(rule.meta.id)
+        ? protectionRuleIds(protection).includes(rule.meta.id)
         : rule.meta.id !== 'ES-DEPENDANT-PATHWAY' &&
           !ES_PROTECTION_ONLY.includes(rule.meta.id),
     )

@@ -1,6 +1,9 @@
 import { describe, expect, test } from 'vitest';
 import { evaluate } from '../src/evaluate';
-import { esProtectionPathway } from '../src/rules/es-protection';
+import {
+  esAsylumSupport,
+  esProtectionPathway,
+} from '../src/rules/es-protection';
 import { esBreach } from '../src/rules/es-requirements';
 import type {
   ImmigrationBreach,
@@ -48,6 +51,7 @@ function refugee(overrides: Partial<PersonTimeline>): PersonTimeline {
     dateOfBirth: '1995-05-01',
     nationality: 'SDN',
     incomeYears: [],
+    asylumSupportRepayment: 'NOT_REQUIRED',
     ...overrides,
   });
 }
@@ -59,13 +63,20 @@ function es(overrides: Partial<PersonTimeline>, simulationDate: string) {
 
 describe('ES-PROTECTION-PATHWAY', () => {
   test('base years per route', () => {
-    const cp = run(esProtectionPathway, refugee({ episodes: [core] }), '2030-01-01');
+    const cp = run(
+      esProtectionPathway,
+      refugee({ episodes: [core] }),
+      '2030-01-01',
+    );
     expect(cp.status).toBe('PASS');
     expect(cp.explanation).toContain('20 年路径');
     expect(cp.assumptions?.[0]).toContain('PD-034');
     expect(
-      run(esProtectionPathway, refugee({ episodes: coreThenWork }), '2030-01-01')
-        .explanation,
+      run(
+        esProtectionPathway,
+        refugee({ episodes: coreThenWork }),
+        '2030-01-01',
+      ).explanation,
     ).toContain('10 年路径');
     expect(
       run(esProtectionPathway, refugee({ episodes: ukrs() }), '2030-01-01')
@@ -276,5 +287,56 @@ describe('ES-BREACH on protection routes', () => {
     );
     expect(column.pathwayYears).toBe(20);
     expect(column.earliestDate).toBe('2048-03-01');
+  });
+});
+
+describe('ES-ASYLUM-SUPPORT', () => {
+  const at = (
+    asylumSupportRepayment: PersonTimeline['asylumSupportRepayment'],
+    episodes = [core],
+  ) =>
+    run(
+      esAsylumSupport,
+      refugee({ episodes, asylumSupportRepayment }),
+      '2030-01-01',
+    );
+
+  test('repaid, on a plan or not required pass; outstanding fails', () => {
+    expect(at('NOT_REQUIRED').status).toBe('PASS');
+    expect(at('REPAID').status).toBe('PASS');
+    expect(at('ON_PLAN').assumptions?.[0]).toContain('PD-031');
+    expect(at('OUTSTANDING').status).toBe('FAIL');
+  });
+
+  test('missing is unknown without a pending detail', () => {
+    const result = at(undefined);
+    expect(result.status).toBe('UNKNOWN');
+    expect(result.pendingDetails).toBeUndefined();
+  });
+
+  test('Safe and Legal does not run it', () => {
+    const { column } = es(
+      { episodes: ukrs(), asylumSupportRepayment: 'OUTSTANDING' },
+      '2030-01-01',
+    );
+    expect(column.rules.map((r) => r.id)).not.toContain('ES-ASYLUM-SUPPORT');
+    expect(at('OUTSTANDING', ukrs()).status).toBe('PASS');
+  });
+
+  test('outstanding repayment fails every Core Protection pathway', () => {
+    const { column } = es(
+      { episodes: [core], asylumSupportRepayment: 'OUTSTANDING' },
+      '2047-03-01',
+    );
+    expect(column.outcome).toBe('LIKELY_NOT_ELIGIBLE');
+    expect(column.pathwayYears).toBeUndefined();
+  });
+
+  test('missing repayment leaves a met pathway at insufficient information', () => {
+    const { column } = es(
+      { episodes: [core], asylumSupportRepayment: undefined },
+      '2047-03-01',
+    );
+    expect(column.outcome).toBe('INSUFFICIENT_INFORMATION');
   });
 });

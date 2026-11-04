@@ -171,3 +171,74 @@ export const esProtectionPathway = defineRule(
     return { status: 'PASS', explanation, sources, assumptions };
   },
 );
+
+export const esAsylumSupport = defineRule(
+  {
+    id: 'ES-ASYLUM-SUPPORT',
+    ruleSetId: RULE_SET,
+    title: '已偿还 asylum support 或按计划还款',
+    titleEn: 'Asylum support repaid or repayment plan kept up',
+    sources: src('p8', 'p39', 'p47'),
+    pendingDetails: ['PD-031', 'PD-068'],
+  },
+  (ctx) => {
+    const { timeline, simulationDate } = ctx;
+    const L = textFor(ctx);
+    const route = esProtectionRouteOn(timeline, simulationDate);
+    if (route !== 'PROTECTION_WORK_AND_STUDY' && route !== 'CORE_PROTECTION') {
+      return {
+        status: 'PASS',
+        explanation: L(
+          '当前不是 Protection Work and Study 或 Core Protection，本条不适用。',
+          'The current route is neither Protection Work and Study nor Core Protection, so this does not apply.',
+        ),
+      };
+    }
+    switch (timeline.asylumSupportRepayment) {
+      case undefined:
+        return {
+          status: 'UNKNOWN',
+          explanation: L(
+            '未填写 asylum support 的偿还情况。领过 asylum support 且须偿还的，定居前须已全额偿还或按约定还款计划持续履行（p8 注 1、p39）。',
+            'Repayment of asylum support not provided. Anyone who received asylum support and must repay it needs to have repaid it in full, or be keeping up with an agreed repayment plan, before settlement (p8 note 1, p39).',
+          ),
+        };
+      case 'OUTSTANDING':
+        return {
+          status: 'FAIL',
+          explanation: L(
+            '须偿还的 asylum support 尚未偿还，也没有按约定的还款计划履行。这是最低要求，不满足即不能定居（p8 注 1、p39、p47）。',
+            'Asylum support that must be repaid is outstanding and no agreed repayment plan is being kept up. This is a minimum requirement: without it settlement is not possible (p8 note 1, p39, p47).',
+          ),
+        };
+      case 'NOT_REQUIRED':
+        return {
+          status: 'PASS',
+          explanation: L(
+            '申报未领取 asylum support 或无需偿还。',
+            'Declared that no asylum support was received or none needs to be repaid.',
+          ),
+        };
+      default:
+        return {
+          status: 'PASS',
+          explanation:
+            timeline.asylumSupportRepayment === 'REPAID'
+              ? L(
+                  '申报已全额偿还 asylum support（p39）。',
+                  'Declared that asylum support has been repaid in full (p39).',
+                )
+              : L(
+                  '申报正按约定的还款计划偿还 asylum support（p39）。',
+                  'Declared that an agreed repayment plan for asylum support is being kept up (p39).',
+                ),
+          assumptions: [
+            L(
+              '难民偿还义务与保障措施的细则将在实施前公布（PD-031）；偿还情况按你的申报判断。',
+              'The details of refugees’ repayment obligations and safeguards are to be set out before implementation (PD-031); repayment follows what you declared.',
+            ),
+          ],
+        };
+    }
+  },
+);
