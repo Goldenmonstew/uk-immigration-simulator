@@ -137,6 +137,13 @@ export interface RuleResult {
   status: 'PASS' | 'FAIL' | 'UNKNOWN';
   explanation: string;
   sources: SourceRef[];
+  /**
+   * UNKNOWN only: the PD-xxx ids that make it unknown. Absent on an UNKNOWN
+   * = the user has not given enough input.
+   */
+  pendingDetails?: string[];
+  /** Assumptions behind this result; also listed in SettlementAssessment.assumptions. */
+  assumptions?: string[];
 }
 
 export interface Rule {

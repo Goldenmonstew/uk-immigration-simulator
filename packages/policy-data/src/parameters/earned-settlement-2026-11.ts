@@ -6,6 +6,18 @@ export const earnedSettlement2026_11 = {
   ruleSetId: 'earned-settlement-2026-11',
   asOf: '2026-11-04',
   values: {
+    // Breaches and criminality count from this age (p12, p13); younger
+    // applicants are exempt from earnings, English and Life in the UK (p15, p21).
+    adultAge: {
+      value: 18,
+      sources: [
+        { srcId: 'SRC-001', locator: 'p12' },
+        { srcId: 'SRC-001', locator: 'p13' },
+        { srcId: 'SRC-001', locator: 'p15' },
+        { srcId: 'SRC-001', locator: 'p21' },
+      ],
+    },
+
     // GBP per year
     earningsThreshold3Year: {
       value: 125141,
