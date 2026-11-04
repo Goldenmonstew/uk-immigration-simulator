@@ -365,7 +365,7 @@
 
 ### CL-SW-SALARY：Skilled Worker 定居薪资（general salary） / Skilled Worker settlement salary (general salary)
 
-来源：SRC-004 SW 24.3；SRC-004 SW 4.2(b)；SRC-004 SW A1.1；SRC-017 Table 3
+来源：SRC-004 SW 24.3；SRC-004 SW 4.2(b)；SRC-004 SW A1.1；SRC-017 Table 3；SRC-019 Unnumbered introductory paragraph; occupation table; SOC 2020 rows
 
 待定细节：无
 
@@ -379,26 +379,28 @@
   - EN: “Granted under the rules in place before 2024-04-04” is judged by the start of the continuous Skilled Worker permission (SW 4.2(b)(ii)).
 - 中：未填写当前 Skilled Worker 工作的年薪。
   - EN: Salary for the current Skilled Worker job not provided.
-- 中：按 SW 24.3 row C（自 2019-11-01 起连续持 Skilled Worker 许可，早于 2024-04-04，且申请日早于 2030-04-04（SW 4.2(b)(ii)）），general salary 门槛 £31,300；当前年薪 £20,000，低于此门槛。
-  - EN: Under SW 24.3 row C (continuous Skilled Worker permission since 2019-11-01, before 2024-04-04, with the application before 2030-04-04 (SW 4.2(b)(ii))), the general salary threshold is £31,300; the current salary of £20,000 is below it.
+- 中：按 SW 24.3 row D（岗位在 Immigration Salary List 上，且自 2019-11-01 起连续持 Skilled Worker 许可，早于 2024-04-04，且申请日早于 2030-04-04（SW 4.2(b)(ii)）），general salary 门槛 £25,000；当前年薪 £20,000，低于此门槛。
+  - EN: Under SW 24.3 row D (the job is on the Immigration Salary List, and continuous Skilled Worker permission since 2019-11-01, before 2024-04-04, with the application before 2030-04-04 (SW 4.2(b)(ii))), the general salary threshold is £25,000; the current salary of £20,000 is below it.
+- 中：未申报是否在 Immigration Salary List 上；SOC 6135 在清单职业表中，按职业代码推导为在清单上。清单对岗位 / 地区的限制（criteria）未核对，可在问卷里申报覆盖。
+  - EN: Not declared whether the job is on the Immigration Salary List; SOC 6135 is in the list’s occupation table, so the job is derived to be on the list from its occupation code. The list’s job / region restrictions (criteria) are not checked; a declaration in the questionnaire overrides this.
 - 中：当前不是 Skilled Worker 主申请人许可。
   - EN: Current permission is not as a Skilled Worker main applicant.
 - 中：按 SW 24.3 row D（SOC 2461 是 Appendix Skilled Occupations Table 3 的医疗 / 教育职业），general salary 门槛 £25,000；当前年薪 £42,000，已达到。
   - EN: Under SW 24.3 row D (SOC 2461 is a health / education occupation in Appendix Skilled Occupations Table 3), the general salary threshold is £25,000; the current salary of £42,000 meets it.
 - 中：按 SW 24.3 row C（自 2021-04-06 起连续持 Skilled Worker 许可，早于 2024-04-04，且申请日早于 2030-04-04（SW 4.2(b)(ii)）），general salary 门槛 £31,300；当前年薪 £60,000，已达到。
   - EN: Under SW 24.3 row C (continuous Skilled Worker permission since 2021-04-06, before 2024-04-04, with the application before 2030-04-04 (SW 4.2(b)(ii))), the general salary threshold is £31,300; the current salary of £60,000 meets it.
-- 中：按 SW 24.3 row C（自 2023-04-06 起连续持 Skilled Worker 许可，早于 2024-04-04，且申请日早于 2030-04-04（SW 4.2(b)(ii)）），general salary 门槛 £31,300；当前年薪 £30,000，低于此门槛。
-  - EN: Under SW 24.3 row C (continuous Skilled Worker permission since 2023-04-06, before 2024-04-04, with the application before 2030-04-04 (SW 4.2(b)(ii))), the general salary threshold is £31,300; the current salary of £30,000 is below it.
-- 中：按 SW 24.3 row C（自 2023-04-06 起连续持 Skilled Worker 许可，早于 2024-04-04，且申请日早于 2030-04-04（SW 4.2(b)(ii)）），general salary 门槛 £31,300；当前年薪 £20,000，低于此门槛。
-  - EN: Under SW 24.3 row C (continuous Skilled Worker permission since 2023-04-06, before 2024-04-04, with the application before 2030-04-04 (SW 4.2(b)(ii))), the general salary threshold is £31,300; the current salary of £20,000 is below it.
-- 中：按 SW 24.3 row C（SOC 6135 属 Health and Care ASHE salary job（SW A1.1）），general salary 门槛 £31,300；当前年薪 £30,000，低于此门槛。
-  - EN: Under SW 24.3 row C (SOC 6135 is a Health and Care ASHE salary job (SW A1.1)), the general salary threshold is £31,300; the current salary of £30,000 is below it.
+- 中：按 SW 24.3 row D（岗位在 Immigration Salary List 上，且自 2023-04-06 起连续持 Skilled Worker 许可，早于 2024-04-04，且申请日早于 2030-04-04（SW 4.2(b)(ii)）），general salary 门槛 £25,000；当前年薪 £30,000，已达到。
+  - EN: Under SW 24.3 row D (the job is on the Immigration Salary List, and continuous Skilled Worker permission since 2023-04-06, before 2024-04-04, with the application before 2030-04-04 (SW 4.2(b)(ii))), the general salary threshold is £25,000; the current salary of £30,000 meets it.
+- 中：按 SW 24.3 row D（岗位在 Immigration Salary List 上，且自 2023-04-06 起连续持 Skilled Worker 许可，早于 2024-04-04，且申请日早于 2030-04-04（SW 4.2(b)(ii)）），general salary 门槛 £25,000；当前年薪 £20,000，低于此门槛。
+  - EN: Under SW 24.3 row D (the job is on the Immigration Salary List, and continuous Skilled Worker permission since 2023-04-06, before 2024-04-04, with the application before 2030-04-04 (SW 4.2(b)(ii))), the general salary threshold is £25,000; the current salary of £20,000 is below it.
+- 中：按 SW 24.3 row D（岗位在 Immigration Salary List 上，且SOC 6135 属 Health and Care ASHE salary job（SW A1.1）），general salary 门槛 £25,000；当前年薪 £30,000，已达到。
+  - EN: Under SW 24.3 row D (the job is on the Immigration Salary List, and SOC 6135 is a Health and Care ASHE salary job (SW A1.1)), the general salary threshold is £25,000; the current salary of £30,000 meets it.
 - 中：SOC 6135 在 SW A1.1 的 Health and Care ASHE salary job 职业列表内，假设雇主属 SW A1.1(a)–(f) 列出的类型。
   - EN: SOC 6135 is on the Health and Care ASHE salary job list in SW A1.1; the employer is assumed to be of a type listed in SW A1.1(a)–(f).
 
 ### CL-SW-GOING-RATE：Skilled Worker 定居薪资（going rate） / Skilled Worker settlement salary (going rate)
 
-来源：SRC-004 SW 24.3；SRC-004 SW 6.1；SRC-004 SW 14.4；SRC-017 Tables 1, 1a, 2, 2aa, 2a, 2b; SOC 2020 rows; Going rate columns
+来源：SRC-004 SW 24.3；SRC-004 SW 6.1；SRC-004 SW 14.4；SRC-017 Tables 1, 1a, 2, 2aa, 2a, 2b; SOC 2020 rows; Going rate columns；SRC-019 Unnumbered introductory paragraph; occupation table; SOC 2020 rows
 
 待定细节：无
 
@@ -408,14 +410,14 @@
   - EN: The going rate is compared as the full annual salary for a 37.5-hour week, not pro-rated for actual hours (SW 14.4).
 - 中：未填写当前 Skilled Worker 工作的 SOC 2020 职业代码，无法查 going rate。
   - EN: SOC 2020 code for the current Skilled Worker job not provided, so the going rate cannot be looked up.
-- 中：按 SW 24.3 row C 查 Appendix Skilled Occupations Table 2aa，SOC 6135（Care workers and home carers）的 going rate 为 £25,000；当前年薪 £20,000，低于 going rate。
-  - EN: Under SW 24.3 row C, Appendix Skilled Occupations Table 2aa gives a going rate of £25,000 for SOC 6135 (Care workers and home carers); the current salary of £20,000 is below the going rate.
+- 中：按 SW 24.3 row D 查 Appendix Skilled Occupations Table 2aa，SOC 6135（Care workers and home carers）的 going rate 为 £25,000；当前年薪 £20,000，低于 going rate。
+  - EN: Under SW 24.3 row D, Appendix Skilled Occupations Table 2aa gives a going rate of £25,000 for SOC 6135 (Care workers and home carers); the current salary of £20,000 is below the going rate.
 - 中：当前不是 Skilled Worker 主申请人许可。
   - EN: Current permission is not as a Skilled Worker main applicant.
 - 中：SOC 2461 是 Table 3 医疗 / 教育职业，going rate 按国家薪级（Appendix Skilled Occupations Table 3–5）确定；Table 4 / 5 的薪级本工具未提取，无法核对。
   - EN: SOC 2461 is a Table 3 health / education occupation, whose going rate is set by national pay scales (Appendix Skilled Occupations Tables 3–5); this tool has not extracted the pay scales in Tables 4 / 5, so it cannot check them.
-- 中：按 SW 24.3 row C 查 Appendix Skilled Occupations Table 2aa，SOC 6135（Care workers and home carers）的 going rate 为 £25,000；当前年薪 £30,000，已达到。
-  - EN: Under SW 24.3 row C, Appendix Skilled Occupations Table 2aa gives a going rate of £25,000 for SOC 6135 (Care workers and home carers); the current salary of £30,000 meets it.
+- 中：按 SW 24.3 row D 查 Appendix Skilled Occupations Table 2aa，SOC 6135（Care workers and home carers）的 going rate 为 £25,000；当前年薪 £30,000，已达到。
+  - EN: Under SW 24.3 row D, Appendix Skilled Occupations Table 2aa gives a going rate of £25,000 for SOC 6135 (Care workers and home carers); the current salary of £30,000 meets it.
 
 ### CL-SW-PARTNER-5Y：Skilled Worker dependent partner 连续 5 年并与主申请人一同定居 / 5 continuous years as a Skilled Worker dependent partner, settling with the principal applicant
 
