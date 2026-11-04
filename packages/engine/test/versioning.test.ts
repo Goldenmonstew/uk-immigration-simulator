@@ -4,10 +4,12 @@ import {
   RULE_SET_IDS,
 } from '@uk-immigration/policy-data';
 import type { ParameterSet, RuleSetId } from '@uk-immigration/policy-data';
+import { fixtures } from '@uk-immigration/policy-data/fixtures';
 import { describe, expect, test } from 'vitest';
-import { RULE_SETS } from '../src/evaluate';
+import { evaluate, RULE_SETS } from '../src/evaluate';
 import { runRule, withRuleSet } from '../src/rule';
 import { RULES } from '../src/rules';
+import type { RuleSet, RuleSetRegistry } from '../src/types';
 import { SAMPLES, SIMULATION_DATE } from './helpers';
 
 const FUTURE = 'current-law-test-future' as RuleSetId;
@@ -64,6 +66,80 @@ describe('withRuleSet (§13.4)', () => {
         const ctx = { timeline, simulationDate: SIMULATION_DATE };
         expect(runRule(copy, ctx)).toEqual(runRule(rule, ctx));
       }
+    }
+  });
+});
+
+// Current law's rules under a third rule set, laid but not yet in force.
+const future: RuleSet = {
+  id: FUTURE,
+  kind: 'LAW',
+  status: 'IN_FORCE_FUTURE_VERSION',
+  effectiveFrom: '2027-01-01',
+  sources: RULE_SETS['current-law-2026-11'].sources,
+};
+const registry: RuleSetRegistry = {
+  ruleSets: { ...RULE_SETS, [FUTURE]: future },
+  rules: {
+    ...RULES,
+    [FUTURE]: RULES['current-law-2026-11'].map((r) => withRuleSet(r, FUTURE)),
+  },
+};
+
+describe('a synthetic third rule set (§13.3, §13.7)', () => {
+  test('effectiveFrom is required for a future version and only for it', () => {
+    // @ts-expect-error effectiveFrom is required for IN_FORCE_FUTURE_VERSION
+    const missing: RuleSet = { ...future, effectiveFrom: undefined };
+    // @ts-expect-error effectiveFrom cannot be set on current law
+    const extra: RuleSet = {
+      ...RULE_SETS['current-law-2026-11'],
+      effectiveFrom: '2027-01-01',
+    };
+    expect([missing.status, extra.status]).toEqual([
+      'IN_FORCE_FUTURE_VERSION',
+      'CURRENT_LAW',
+    ]);
+  });
+
+  test.each(fixtures.map((f) => [f.id, f]))(
+    '%s: three columns; the existing two are unchanged',
+    (_, fixture) => {
+      const two = evaluate(fixture.request);
+      const three = evaluate(fixture.request, registry);
+      expect(Object.keys(three.byRuleSet)).toEqual([...RULE_SET_IDS, FUTURE]);
+      const { [FUTURE]: synthetic, ...existing } = three.byRuleSet;
+      expect(JSON.stringify({ ...three, byRuleSet: existing })).toBe(
+        JSON.stringify(two),
+      );
+      // The same rules and parameters as current law.
+      expect(synthetic).toEqual(three.byRuleSet['current-law-2026-11']);
+    },
+  );
+
+  test('ruleSetIds still filters', () => {
+    const request = {
+      timeline: SAMPLES.default,
+      simulationDate: SIMULATION_DATE,
+    };
+    expect(
+      Object.keys(
+        evaluate({ ...request, ruleSetIds: [FUTURE] }, registry).byRuleSet,
+      ),
+    ).toEqual([FUTURE]);
+    expect(
+      Object.keys(
+        evaluate(
+          { ...request, ruleSetIds: ['earned-settlement-2026-11'] },
+          registry,
+        ).byRuleSet,
+      ),
+    ).toEqual(['earned-settlement-2026-11']);
+  });
+
+  test('fixtures still check only the existing rule sets', () => {
+    for (const fixture of fixtures) {
+      expect(RULE_SET_IDS).toContain(fixture.expected.ruleSetId);
+      expect(fixture.expected.ruleSetId).not.toBe(FUTURE);
     }
   });
 });

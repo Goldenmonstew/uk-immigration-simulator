@@ -2,12 +2,11 @@ import {
   currentLaw2026_11 as cl,
   earnedSettlement2026_11 as es,
 } from '@uk-immigration/policy-data';
-import type { Route, RouteGroup, RuleSetId } from '@uk-immigration/policy-data';
+import type { Route, RouteGroup } from '@uk-immigration/policy-data';
 import { addYears } from './dates';
 import { continuousRun, episodeOn } from './residence';
 import { runRule, textFor } from './rule';
 import type { Lang } from './rule';
-import { RULES } from './rules';
 import { meetsCefr } from './rules/es-requirements';
 import {
   ageExempt,
@@ -38,8 +37,10 @@ import {
 } from './rules/es-residence';
 import type {
   IsoDate,
+  Rule,
   RuleContext,
   RuleOutcome,
+  RuleSet,
   SettlementAssessment,
 } from './types';
 
@@ -330,19 +331,22 @@ function assessDependant(
   };
 }
 
-function assessEarnedSettlement(ctx: RuleContext): SettlementAssessment {
+function assessEarnedSettlement(
+  ctx: RuleContext,
+  ruleList: Rule[],
+): SettlementAssessment {
   const current = episodeOn(ctx.timeline, ctx.simulationDate);
   // A dependant settles with the principal (p29–p31).
   if (current?.role === 'DEPENDANT') {
     return assessDependant(
       ctx,
-      RULES['earned-settlement-2026-11']
+      ruleList
         .filter((rule) => ES_DEPENDANT_RULES.includes(rule.meta.id))
         .map((rule) => runRule(rule, ctx)),
     );
   }
   const protection = esProtectionRouteOn(ctx.timeline, ctx.simulationDate);
-  const rules = RULES['earned-settlement-2026-11']
+  const rules = ruleList
     .filter((rule) =>
       protection
         ? protectionRuleIds(protection).includes(rule.meta.id)
@@ -476,9 +480,12 @@ const clBaseAssumption = (L: Lang) =>
     'The current rules are modelled only for Skilled Worker main applicants and their dependent partners / children (Appendix Skilled Worker, Appendix Children), Hong Kong BN(O) main applicants (Appendix Hong Kong British National (Overseas)), Global Talent main applicants (Appendix Global Talent), Appendix FM partners (the 10-year route under Appendix Settlement Family Life, the 5-year route under Appendix FM) and Long Residence (Appendix Long Residence); other requirements, such as Part Suitability and the sponsor still being approved (SW 24.1–24.2), are not modelled.',
   );
 
-function assessCurrentLaw(ctx: RuleContext): SettlementAssessment {
+function assessCurrentLaw(
+  ctx: RuleContext,
+  ruleList: Rule[],
+): SettlementAssessment {
   const L = textFor(ctx);
-  const [scopeRule, ...others] = RULES['current-law-2026-11'];
+  const [scopeRule, ...others] = ruleList;
   const scope = runRule(scopeRule, ctx);
   if (scope.status !== 'PASS') {
     return toAssessment(
@@ -697,8 +704,13 @@ function assessCurrentLaw(ctx: RuleContext): SettlementAssessment {
   return toAssessment(decision, shown, assumptions, L);
 }
 
-export function assess(id: RuleSetId, ctx: RuleContext): SettlementAssessment {
-  return id === 'earned-settlement-2026-11'
-    ? assessEarnedSettlement(ctx)
-    : assessCurrentLaw(ctx);
+/** Assesses `rules` the way rule sets of this `kind` are aggregated (contracts §13.2). */
+export function assess(
+  kind: RuleSet['kind'],
+  rules: Rule[],
+  ctx: RuleContext,
+): SettlementAssessment {
+  return kind === 'ANNOUNCED'
+    ? assessEarnedSettlement(ctx, rules)
+    : assessCurrentLaw(ctx, rules);
 }
