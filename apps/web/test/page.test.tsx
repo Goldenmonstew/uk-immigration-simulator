@@ -93,7 +93,7 @@ test.each([
   ['HONG_KONG_BNO', 'MAIN', 'OUTSIDE_FRAMEWORK'],
   ['CORE_PROTECTION', 'DEPENDANT', 'PROTECTION'],
 ] as const)(
-  'engine short circuit for %s (%s) retains both assessment columns',
+  'engine short circuit for %s retains both assessment columns',
   (route, role, reason) => {
     const draft = createDraft();
     draft.simulationDate = '2026-11-04';
