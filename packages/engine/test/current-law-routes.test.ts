@@ -120,6 +120,29 @@ describe('Hong Kong BN(O) (SRC-020)', () => {
     ).not.toContain('B2');
   });
 
+  test('Long Residence alongside still needs B2 from 2027-03-26 (LR 13.1(b))', () => {
+    const episodes = [
+      on('STUDENT', '2017-01-01', { validTo: '2023-12-31' }),
+      on('HONG_KONG_BNO', '2024-01-01'),
+    ];
+    const b1 = currentLaw(
+      { episodes, english: { cefrLevel: 'B1' } },
+      '2027-06-01',
+    );
+    expect(b1).toMatchObject({
+      outcome: 'LIKELY_NOT_ELIGIBLE',
+      pathwayYears: 5,
+      earliestDate: '2029-01-01',
+    });
+    expect(b1.assumptions.join()).toContain('LR 13.1(b)');
+    expect(
+      currentLaw({ episodes, english: { cefrLevel: 'B2' } }, '2027-06-01'),
+    ).toMatchObject({ outcome: 'LIKELY_ELIGIBLE', pathwayYears: 10 });
+    expect(
+      currentLaw({ episodes, english: { cefrLevel: 'B1' } }, '2027-03-25'),
+    ).toMatchObject({ outcome: 'LIKELY_ELIGIBLE', pathwayYears: 10 });
+  });
+
   test('Life in the UK: HK 61.1, missing is unknown', () => {
     expect(run(clKol, bno('2021-02-01')).explanation).toContain('HK 61.1');
     expect(

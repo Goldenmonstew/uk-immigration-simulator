@@ -8,6 +8,7 @@ import { continuousRun, episodeOn } from './residence';
 import { runRule, textFor } from './rule';
 import type { Lang } from './rule';
 import { RULES } from './rules';
+import { meetsCefr } from './rules/es-requirements';
 import {
   familyTenYearStart,
   globalTalentQualifying,
@@ -513,6 +514,20 @@ function assessCurrentLaw(ctx: RuleContext): SettlementAssessment {
   ];
   const pick = (...ids: string[]) =>
     ids.map((id) => rules.find((r) => r.id === id)!);
+  // CL-ENGLISH applies the Hong Kong BN(O) level (B1, HK 60.1); Long
+  // Residence needs B2 from 2027-03-26 (LR 13.1(b)).
+  const [english] = pick('CL-ENGLISH');
+  const lrB2 = cl.values.longResidenceSettlementEnglish.value;
+  const lrEnglishShort =
+    hk &&
+    ctx.simulationDate >= lrB2.applicationsFrom &&
+    english.status === 'PASS' &&
+    ctx.timeline.english !== undefined &&
+    'cefrLevel' in ctx.timeline.english &&
+    !meetsCefr(ctx.timeline.english.cefrLevel, lrB2.cefrLevel);
+  const lrEnglish: RuleOutcome = lrEnglishShort
+    ? { ...english, status: 'FAIL' }
+    : english;
   const candidates: Candidate[] = [
     ...(sw
       ? [
@@ -594,7 +609,7 @@ function assessCurrentLaw(ctx: RuleContext): SettlementAssessment {
     {
       years: cl.values.longResidenceQualifyingYears.value,
       start: longResidenceStart(ctx),
-      rules: pick('CL-ENGLISH', 'CL-KOL'),
+      rules: [lrEnglish, ...pick('CL-KOL')],
     },
   ];
   const decision = decide(candidates, ctx.simulationDate);
@@ -612,6 +627,14 @@ function assessCurrentLaw(ctx: RuleContext): SettlementAssessment {
         )
       : rules;
   const assumptions = [clBaseAssumption(L)];
+  if (lrEnglishShort) {
+    assumptions.push(
+      L(
+        `Long Residence 10 年路径自 ${lrB2.applicationsFrom} 起须英语 ${lrB2.cefrLevel}（LR 13.1(b)），当前英语水平不满足；Hong Kong BN(O) 路径仍为 B1（HK 60.1）。`,
+        `The 10-year Long Residence pathway requires English at ${lrB2.cefrLevel} from ${lrB2.applicationsFrom} (LR 13.1(b)), which the current English level does not meet; the Hong Kong BN(O) pathway still requires B1 (HK 60.1).`,
+      ),
+    );
+  }
   // Projected past the B2 date while assessed under the earlier requirement.
   const b2 = cl.values.skilledWorkerSettlementEnglish.value;
   // Hong Kong BN(O) stays at B1 (HK 60.1).
