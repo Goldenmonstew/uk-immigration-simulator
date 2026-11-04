@@ -5,7 +5,7 @@ import {
   routeNames,
 } from '@uk-immigration/policy-data';
 import type { Route, RouteGroup } from '@uk-immigration/policy-data';
-import { fullYears } from '../dates';
+import { fullYears, fullYearsEn } from '../dates';
 import { continuousRun, episodeOn, restartAfterAbsences } from '../residence';
 import type { Run } from '../residence';
 import { defineRule, nameIn, textFor } from '../rule';
@@ -318,7 +318,7 @@ export const esResidence = defineRule(
       explanation: [
         L(
           `计入定居的连续居留自 ${start} 起，截至 ${simulationDate} 满 ${fullYears(start, simulationDate)} 年。`,
-          `Continuous residence counting towards settlement since ${start}: ${fullYears(start, simulationDate)} full years by ${simulationDate}.`,
+          `Continuous residence counting towards settlement since ${start}: ${fullYearsEn(start, simulationDate)} by ${simulationDate}.`,
         ),
         ...notes,
       ].join(L('', ' ')),

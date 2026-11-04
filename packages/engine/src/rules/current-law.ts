@@ -5,7 +5,7 @@ import {
   nationalPayScaleOccupations,
   routeNames,
 } from '@uk-immigration/policy-data';
-import { addYears, fullYears } from '../dates';
+import { addYears, fullYears, fullYearsEn } from '../dates';
 import {
   continuousRun,
   episodeOn,
@@ -242,7 +242,7 @@ export const clSwResidence5Y = defineRule(
           status: 'FAIL',
           explanation: L(
             `自 ${start} 起连续持可计入 Skilled Worker 定居的许可（SW 21.2），截至 ${ctx.simulationDate} 满 ${fullYears(start, ctx.simulationDate)} 年；${due} 满 ${years} 年。`,
-            `Continuous permission counting towards Skilled Worker settlement (SW 21.2) since ${start}: ${fullYears(start, ctx.simulationDate)} full years by ${ctx.simulationDate}; ${years} years are completed on ${due}.`,
+            `Continuous permission counting towards Skilled Worker settlement (SW 21.2) since ${start}: ${fullYearsEn(start, ctx.simulationDate)} by ${ctx.simulationDate}; ${years} years are completed on ${due}.`,
           ),
           assumptions,
         };
@@ -1193,7 +1193,7 @@ export const clLrResidence10Y = defineRule(
           status: 'FAIL',
           explanation: L(
             `自 ${start} 起连续合法居留，截至 ${ctx.simulationDate} 满 ${fullYears(start, ctx.simulationDate)} 年；${due} 满 ${years} 年。`,
-            `Continuous lawful residence since ${start}: ${fullYears(start, ctx.simulationDate)} full years by ${ctx.simulationDate}; ${years} years are completed on ${due}.`,
+            `Continuous lawful residence since ${start}: ${fullYearsEn(start, ctx.simulationDate)} by ${ctx.simulationDate}; ${years} years are completed on ${due}.`,
           ),
           assumptions,
         };
