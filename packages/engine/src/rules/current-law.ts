@@ -1633,7 +1633,8 @@ export const clSwChild = defineRule(
   },
 );
 
-function ageExempt(timeline: PersonTimeline, date: IsoDate): boolean {
+/** Exempt from the settlement English requirement by age on `date` (EL 1.1). */
+export function ageExempt(timeline: PersonTimeline, date: IsoDate): boolean {
   const age = fullYears(timeline.dateOfBirth, date);
   return (
     age < cl.values.settlementMinorAge.value ||

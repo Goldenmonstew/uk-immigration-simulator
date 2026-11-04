@@ -106,7 +106,7 @@ What-if、前向推算的结构化假设，都等用到时再加字段，不提�
   - 10 年：强制 + `ES-BREACH` + `ES-PUBLIC-FUNDS` + `ES-EARNINGS-10Y`
   - 20 年：强制 + `ES-EARNINGS-10Y`（用过 public funds 或有 breach 时只剩这条）
   - 当前为 Family and Private Life 时只有 10 / 20 年（p23）。居留起点都是 `ES-RESIDENCE` 的合格期起点。
-- 现行法律：`CL-SCOPE` 不通过时只输出这一条、结论 `INSUFFICIENT_INFORMATION`。否则候选为 Skilled Worker 5 年（`CL-SW-SALARY`、`CL-SW-GOING-RATE`（2.5）、`CL-ENGLISH`、`CL-KOL`，起点为连续 Skilled Worker 段）与 Long Residence 10 年（`CL-ENGLISH`、`CL-KOL`，起点为连续合法居留段）；居留规则 `CL-SW-RESIDENCE-5Y` / `CL-LR-RESIDENCE-10Y` 只用于展示，年限由起点计算。
+- 现行法律：`CL-SCOPE` 不通过时只输出这一条、结论 `INSUFFICIENT_INFORMATION`。否则候选为 Skilled Worker 5 年（`CL-SW-SALARY`、`CL-SW-GOING-RATE`（2.5）、`CL-ENGLISH`、`CL-KOL`，起点为连续 Skilled Worker 段）与 Long Residence 10 年（`CL-ENGLISH`、`CL-KOL`，起点为连续合法居留段；英语按 LR 13.1 的等级单独核对，与当前路线的等级不同时只改该候选里的状态，`rules[]` 仍只显示按当前路线的一条，差异写进 `assumptions`（4.5））；居留规则 `CL-SW-RESIDENCE-5Y` / `CL-LR-RESIDENCE-10Y` 只用于展示，年限由起点计算。
 
 判定（两个规则集同一套）：
 

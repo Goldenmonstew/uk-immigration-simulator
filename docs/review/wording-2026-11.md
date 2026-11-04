@@ -838,6 +838,8 @@
 
 - 中：现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）、Appendix FM 伴侣（10 年路线按 Appendix Settlement Family Life，5 年路线按 Appendix FM）与 Long Residence（Appendix Long Residence）；Part Suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。
   - EN: The current rules are modelled only for Skilled Worker main applicants and their dependent partners / children (Appendix Skilled Worker, Appendix Children), Hong Kong BN(O) main applicants (Appendix Hong Kong British National (Overseas)), Global Talent main applicants (Appendix Global Talent), Appendix FM partners (the 10-year route under Appendix Settlement Family Life, the 5-year route under Appendix FM) and Long Residence (Appendix Long Residence); other requirements, such as Part Suitability and the sponsor still being approved (SW 24.1–24.2), are not modelled.
+- 中：Long Residence 10 年路径须英语 B1（LR 13.1(a)），未填写英语水平；"定居英语要求"一条按当前路线的等级核对。
+  - EN: The 10-year Long Residence pathway requires English at B1 (LR 13.1(a)), and no English level has been provided; the settlement English requirement shown applies the current route’s level.
 - 中：最早可申请日期按"自 2022-01-01 起持续居留、收入等状况不变、其余要求届时仍满足"推算，不是对未来的保证。
   - EN: The earliest application date is projected on the basis that residence continues from 2022-01-01, earnings and other circumstances stay the same, and the other requirements are still met then; it is not a guarantee about the future.
 - 中：预计日期在 2027-03-26 之后，届时定居须达到英语 B2（SW 22A.1、LR 13.1(b)）。
