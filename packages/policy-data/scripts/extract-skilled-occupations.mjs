@@ -80,6 +80,9 @@ const nationalPayScaleRows = parseTable('3').rows.map(({ socCode, title }) => ({
   socCode,
   title,
 }));
+const nationalPayScaleBelowRqf6Rows = parseTable('3a').rows.map(
+  ({ socCode, title }) => ({ socCode, title }),
+);
 
 function quote(value) {
   return `'${value.replaceAll('\\', '\\\\').replaceAll("'", "\\'")}'`;
@@ -115,7 +118,8 @@ ${headerNotes}
 // Titles exclude subsequent eligibility notes; consult the source for restrictions.
 // Table 3's "Going rate (annual)" contains national pay scales or Table 4 / 5
 // references; retain codes and titles only, including separate regional rows.
-// Equivalent SOC 2010 columns, Table 3a and Tables 4 / 5 / 6 are not extracted.
+// Table 3a retains codes and titles for the additional national pay scale jobs.
+// Equivalent SOC 2010 columns and Tables 4 / 5 / 6 are not extracted.
 
 export interface GoingRate {
   /** Four-digit SOC 2020 occupation code. */
@@ -147,6 +151,17 @@ export const nationalPayScaleOccupations: {
   },
   rows: [
 ${renderRows(nationalPayScaleRows)}
+  ],
+};
+
+/** Table 3a national pay scale occupations skilled to RQF levels 3–5. */
+export const nationalPayScaleBelowRqf6Occupations: {
+  sources: SourceRef[];
+  occupations: { socCode: string; title: string }[];
+} = {
+  sources: [{ srcId: 'SRC-017', locator: 'Table 3a' }],
+  occupations: [
+${renderRows(nationalPayScaleBelowRqf6Rows)}
   ],
 };
 `;

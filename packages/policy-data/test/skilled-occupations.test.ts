@@ -2,7 +2,11 @@
 
 import { readFileSync } from 'node:fs';
 import { expect, test } from 'vitest';
-import { goingRates, nationalPayScaleOccupations } from '../src/index';
+import {
+  goingRates,
+  nationalPayScaleBelowRqf6Occupations,
+  nationalPayScaleOccupations,
+} from '../src/index';
 import type { GoingRate } from '../src/index';
 
 const snapshot = readFileSync(
@@ -100,6 +104,28 @@ test('Table 3 preserves all source rows, including region-specific SOC repeats',
   // The source lists these codes separately for each of the four UK nations.
   for (const socCode of ['2211', '2253', '2312']) {
     expect(rows.filter((row) => row.socCode === socCode)).toHaveLength(4);
+  }
+});
+
+test('Table 3a preserves all eight national pay scale occupations', () => {
+  const rows = nationalPayScaleBelowRqf6Occupations.occupations;
+  const sourceRows = snapshotRows('3a');
+
+  expect(sourceRows).toHaveLength(8);
+  expect(rows).toHaveLength(sourceRows.length);
+  expect(rows.map((row) => row.socCode)).toEqual([
+    '3213',
+    '3219',
+    '3231',
+    '6112',
+    '6113',
+    '6131',
+    '6132',
+    '6133',
+  ]);
+  for (const [index, row] of rows.entries()) {
+    expect(sourceRows[index]).toContain(`<td>${row.socCode} ${row.title}`);
+    expect(row).not.toHaveProperty('goingRate');
   }
 });
 
