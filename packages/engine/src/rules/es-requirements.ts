@@ -261,7 +261,7 @@ export const esKol = defineRule(
     title: '通过 Life in the UK 考试',
     titleEn: 'Pass the Life in the UK test',
     sources: [{ srcId: 'SRC-001', locator: 'p21' }],
-    pendingDetails: ['PD-020'],
+    pendingDetails: ['PD-020', 'PD-021'],
   },
   ({ timeline, simulationDate, locale }) => {
     const L = textFor({ locale });
@@ -272,6 +272,25 @@ export const esKol = defineRule(
           `申请日未满 ${es.values.adultAge.value} 岁或已满 ${es.values.exemptionAge.value} 岁，豁免 Life in the UK 考试。`,
           `Under ${es.values.adultAge.value} or aged ${es.values.exemptionAge.value} or over on the date of application: exempt from the Life in the UK test.`,
         ),
+      };
+    }
+    if (ukrsRefugeeOn(timeline, simulationDate)) {
+      return {
+        status: 'PASS',
+        explanation: L(
+          '经 UK Resettlement Scheme 入境的难民在出现适合 A2 水平的考试版本前，暂免 Life in the UK 考试（p21 注 8、p39）。',
+          'Refugees admitted through the UK Resettlement Scheme are exempt from the Life in the UK test until a version suitable for A2 English is available (p21 note 8, p39).',
+        ),
+        sources: [
+          { srcId: 'SRC-001', locator: 'p21' },
+          { srcId: 'SRC-001', locator: 'p39' },
+        ],
+        assumptions: [
+          L(
+            'A2 版 Life in the UK 考试推出后，这一豁免可能改变；推出时间未公布（PD-021）。',
+            'This exemption may change once an A2 version of the Life in the UK test is available; no date has been given (PD-021).',
+          ),
+        ],
       };
     }
     const kol = timeline.lifeInTheUk;

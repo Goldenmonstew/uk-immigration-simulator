@@ -6,7 +6,7 @@ import {
   esProtectionContribution,
   esProtectionPathway,
 } from '../src/rules/es-protection';
-import { esBreach, esEnglishB2 } from '../src/rules/es-requirements';
+import { esBreach, esEnglishB2, esKol } from '../src/rules/es-requirements';
 import type {
   ImmigrationBreach,
   ImmigrationEpisode,
@@ -503,5 +503,37 @@ describe('ES-ENGLISH-B2 for refugees', () => {
     expect(english([core], 'B2').title).toBe(
       '定居英语要求（B2；UKRS 难民 A2）',
     );
+  });
+});
+
+describe('ES-KOL for refugees', () => {
+  test('UK Resettlement Scheme refugees are exempt for now (PD-021)', () => {
+    const result = run(
+      esKol,
+      refugee({ episodes: ukrs(), lifeInTheUk: undefined }),
+      '2030-01-01',
+    );
+    expect(result.status).toBe('PASS');
+    expect(result.assumptions?.[0]).toContain('PD-021');
+  });
+
+  test('other protection routes still need the test', () => {
+    expect(
+      run(
+        esKol,
+        refugee({ episodes: [core], lifeInTheUk: undefined }),
+        '2030-01-01',
+      ).status,
+    ).toBe('UNKNOWN');
+    expect(
+      run(
+        esKol,
+        refugee({
+          episodes: [{ ...ukrs()[0], resettlementScheme: 'OTHER_DESIGNATED' }],
+          lifeInTheUk: undefined,
+        }),
+        '2030-01-01',
+      ).status,
+    ).toBe('UNKNOWN');
   });
 });
