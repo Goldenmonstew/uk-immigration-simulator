@@ -1,5 +1,8 @@
 # 来源登记表（Sources Register）
 
+每周一 06:00 UTC 自动核对来源，结果见 GitHub Actions 的 **Check sources** 工作流日志，也可手动运行该工作流。
+若运行失败，人工核对日志中的 changed / fetch failed 来源，并按 [docs/versioning.md §2–§3](versioning.md#2-触发与发现) 确认变更、登记新来源或新快照。
+
 > 规则引擎里每条规则都必须引用本表中的一个 `SRC-` 编号 + 页码/段落。
 > 状态：`archived` = 快照已入 `policy-sources/`；`todo` = 只有 URL 或线索，待抓取与登记；`verify` = 只有二手来源，待对照原文。
 > 权威等级：LAW（Immigration Rules / Statement of Changes / legislation）> GUIDANCE（Home Office 指引）> POLICY（命令文件、咨询回应）> PARLIAMENT（Hansard）> SECONDARY（律所、媒体，只能用于交叉验证）。
