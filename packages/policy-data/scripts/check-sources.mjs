@@ -14,6 +14,18 @@ const register = readFileSync(
 const primarySources = register.split('## 一级来源')[1].split('\n## ')[0];
 const counts = { unchanged: 0, changed: 0, failed: 0, dynamic: 0 };
 
+// GitHub-hosted runners timed out on the larger PDFs at 30 s: allow 120 s
+// and retry once.
+async function fetchWithRetry(url) {
+  for (let attempt = 0; ; attempt++) {
+    try {
+      return await fetch(url, { signal: AbortSignal.timeout(120000) });
+    } catch (error) {
+      if (attempt > 0) throw error;
+    }
+  }
+}
+
 function sha256(value) {
   return createHash('sha256').update(value).digest('hex');
 }
@@ -59,7 +71,7 @@ for (const row of primarySources.match(/^\| SRC-\d+ \|.*$/gm)) {
     }
     const label = `${id} ${snapshot}`;
     try {
-      const response = await fetch(url, { signal: AbortSignal.timeout(30000) });
+      const response = await fetchWithRetry(url);
       if (!response.ok) {
         throw new Error(`HTTP ${response.status} ${response.statusText}`);
       }
