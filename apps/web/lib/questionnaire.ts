@@ -18,13 +18,13 @@ export const steps = [
   'english',
   'date',
 ] as const;
-export type ScreeningKey = 'criminality' | 'breach' | 'debt' | 'protection';
-export const screeningKeys: ScreeningKey[] = [
+export const shortCircuitKeys = [
   'criminality',
   'breach',
-  'debt',
   'protection',
-];
+] as const;
+export type ScreeningKey = (typeof shortCircuitKeys)[number] | 'debt';
+export const screeningKeys: ScreeningKey[] = [...shortCircuitKeys, 'debt'];
 export type Screening = Record<ScreeningKey, '' | 'yes' | 'no'>;
 
 export interface Draft {
@@ -126,7 +126,7 @@ export function visibleIncomeYears(draft: Draft): IncomeYear[] {
 }
 
 export function runSimulation(draft: Draft): SimulationResult {
-  const risk = screeningKeys.find((key) => draft.screening[key] === 'yes');
+  const risk = shortCircuitKeys.find((key) => draft.screening[key] === 'yes');
   if (risk) {
     // The screening contract has no event dates or protection-history field.
     // Do not fabricate CriminalEvent / ImmigrationBreach / episode entries.
@@ -134,7 +134,6 @@ export function runSimulation(draft: Draft): SimulationResult {
       criminality: 'CRIMINALITY',
       breach: 'IMMIGRATION_BREACH',
       protection: 'PROTECTION',
-      debt: 'OUTSIDE_FRAMEWORK',
     } as const;
     return {
       policyAsOf,
@@ -147,7 +146,7 @@ export function runSimulation(draft: Draft): SimulationResult {
     timeline: {
       ...draft.timeline,
       incomeYears: visibleIncomeYears(draft),
-      governmentDebt: { outstanding: false },
+      governmentDebt: { outstanding: draft.screening.debt === 'yes' },
     },
   });
 }

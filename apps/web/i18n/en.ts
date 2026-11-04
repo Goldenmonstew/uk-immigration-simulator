@@ -44,6 +44,7 @@ export const en: Partial<Record<keyof typeof zhCN, string>> = {
     'These circumstances depend on legal and evidential details that this simulator does not assess. Consider an IAA-registered immigration adviser or another appropriately qualified legal professional.',
   'result.adviceLink': 'About the Immigration Advice Authority (IAA)',
   'result.pathway': 'Pathway duration',
+  'result.routeGroup': 'Route group',
   'result.years': 'years',
   'result.earliest': 'Earliest possible date',
   'result.undetermined': 'Not yet determined',
@@ -55,9 +56,11 @@ export const en: Partial<Record<keyof typeof zhCN, string>> = {
     'There are no rule details to display yet. This does not mean the conditions are met.',
   'result.noGroupRules': 'No rules in this group.',
   'result.assumptions': 'Assumptions',
+  'result.assumptionCount': 'items',
   'result.noAssumptions': 'The engine has not provided additional assumptions.',
   'result.missingAssessment': 'No assessment is available for this rule set.',
   'result.sources': 'Sources',
+  'result.pendingDetails': 'Details pending government decision',
   'outcome.LIKELY_ELIGIBLE': 'Likely eligible',
   'outcome.LIKELY_ELIGIBLE.description':
     'All assessed rules in this rule set are met. This does not guarantee an application outcome.',
@@ -77,4 +80,8 @@ export const en: Partial<Record<keyof typeof zhCN, string>> = {
   'outcome.REQUIRES_REGULATED_REVIEW': 'Requires regulated review',
   'outcome.REQUIRES_REGULATED_REVIEW.description':
     'A regulated professional needs to review this scenario and its evidence.',
+  'screening.hint':
+    'Answer yes or no; no event details are needed. A yes to any of the first three questions (criminal records, immigration breaches, or asylum or human-rights history) takes you directly to regulated advice. A yes to government debt continues the questionnaire for assessment by the rules engine.',
+  'benefits.publicFunds': 'Public funds',
+  'benefits.notPublicFunds': 'Not public funds',
 };

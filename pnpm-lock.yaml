@@ -35,6 +35,9 @@ importers:
       '@uk-immigration/engine':
         specifier: workspace:*
         version: link:../../packages/engine
+      '@uk-immigration/policy-data':
+        specifier: workspace:*
+        version: link:../../packages/policy-data
       next:
         specifier: 16.4.5
         version: 16.4.5(@types/node@26.6.6)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)

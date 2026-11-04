@@ -1,4 +1,14 @@
-import type { Route } from '@uk-immigration/engine';
+import type { Route, RouteGroup } from '@uk-immigration/engine';
+
+export const routeGroupNames = {
+  CORE_PERMISSION: '核心许可 · Core Permission',
+  HIGH_TALENT: '高技能人才 · High Talent',
+  BRITISH_CONNECTION: '英国联系 · British Connection',
+  FAMILY_AND_PRIVATE_LIFE: '家庭与私人生活 · Family and Private Life',
+  PROTECTION: '保护类 · Protection',
+  NOT_COUNTING: '不计入定居 · Not Counting',
+  OUTSIDE_FRAMEWORK: '框架外 · Outside Framework',
+} satisfies Record<RouteGroup, string>;
 
 export const routeNames = {
   MINISTER_OF_RELIGION: '宗教人士 · Minister of Religion',

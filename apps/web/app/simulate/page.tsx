@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useReducer, useRef, useState } from 'react';
 import type { FormEvent, ReactNode } from 'react';
+import { publicFundsBenefits } from '@uk-immigration/policy-data';
 import type {
   CefrLevel,
   ImmigrationEpisode,
@@ -13,12 +14,12 @@ import type {
 } from '@uk-immigration/engine';
 import { t } from '../../i18n';
 import { routeNames } from '../../i18n/routes';
-import { benefitOptions } from '../../lib/benefits';
 import {
   createDraft,
   draftReducer,
   runSimulation,
   screeningKeys,
+  shortCircuitKeys,
   steps,
   validateStep,
   visibleIncomeYears,
@@ -113,7 +114,7 @@ export default function SimulatePage() {
     router.push('/result');
   };
   const screen = (key: ScreeningKey, answer: 'yes' | 'no') => {
-    if (answer === 'yes') {
+    if (answer === 'yes' && key !== 'debt') {
       finish({ ...draft, screening: { ...draft.screening, [key]: answer } });
     } else dispatch({ type: 'screening', key, answer });
   };
@@ -121,7 +122,7 @@ export default function SimulatePage() {
     event.preventDefault();
     if (
       draft.step === 1 &&
-      screeningKeys.some((key) => draft.screening[key] === 'yes')
+      shortCircuitKeys.some((key) => draft.screening[key] === 'yes')
     ) {
       finish(draft);
       return;
@@ -566,11 +567,23 @@ export default function SimulatePage() {
                             })
                           }
                         >
-                          {Object.entries(benefitOptions).map(
-                            ([value, name]) => (
-                              <option key={value} value={value}>
-                                {name}
-                              </option>
+                          {(['publicFunds', 'notPublicFunds'] as const).map(
+                            (group) => (
+                              <optgroup
+                                key={group}
+                                label={t(`benefits.${group}`)}
+                              >
+                                {publicFundsBenefits[group].map(
+                                  ({ benefitType, name }) => (
+                                    <option
+                                      key={benefitType}
+                                      value={benefitType}
+                                    >
+                                      {name}
+                                    </option>
+                                  ),
+                                )}
+                              </optgroup>
                             ),
                           )}
                         </select>

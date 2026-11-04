@@ -39,6 +39,7 @@ export const zhCN = {
     '这些情况涉及本模拟器无法评估的法律与证据细节。请向 IAA 注册移民顾问或其他具备相应资格的法律专业人士寻求建议。',
   'result.adviceLink': '了解 Immigration Advice Authority（IAA）',
   'result.pathway': '路径所需年限',
+  'result.routeGroup': '路线分组',
   'result.years': '年',
   'result.earliest': '最早可能日期',
   'result.undetermined': '尚无法确定',
@@ -49,9 +50,11 @@ export const zhCN = {
   'result.noRules': '目前没有可展示的规则明细，不能据此视为满足条件。',
   'result.noGroupRules': '此组暂无规则。',
   'result.assumptions': '假设清单',
+  'result.assumptionCount': '条',
   'result.noAssumptions': '引擎未提供额外假设。',
   'result.missingAssessment': '此规则集暂无评估结果。',
   'result.sources': '来源',
+  'result.pendingDetails': '政府未定细节',
   'outcome.LIKELY_ELIGIBLE': '可能符合条件',
   'outcome.LIKELY_ELIGIBLE.description':
     '该规则集下已评估的规则全部满足；这不保证申请结果。',
@@ -110,7 +113,7 @@ export const zhCN = {
   'basic.nationalityHint':
     '输入三位英文字母国家代码（ISO 3166-1 alpha-3），例如 CHN。',
   'screening.hint':
-    '只需回答是或否，无需提供事件细节。任一回答为“是”时，我们将直接显示专业建议提示。',
+    '只需回答是或否，无需提供事件细节。前三项（犯罪记录、移民违规、庇护或人权经历）任一回答为“是”时，将直接显示专业建议提示。政府债务回答为“是”时仍继续问卷，由规则引擎评估。',
   'screening.criminality': '是否有英国或海外犯罪记录？',
   'screening.breach': '是否有移民违规经历？',
   'screening.breachHint':
@@ -151,6 +154,8 @@ export const zhCN = {
   'benefits.add': '添加领取记录',
   'benefits.empty': '尚无领取记录。',
   'benefits.type': '福利或支付名称',
+  'benefits.publicFunds': '公共资金 · Public funds',
+  'benefits.notPublicFunds': '不属于公共资金 · Not public funds',
   'benefits.from': '开始日期',
   'benefits.to': '结束日期（可选）',
   'relationships.hint':

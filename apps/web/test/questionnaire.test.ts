@@ -4,7 +4,7 @@ import {
   createDraft,
   draftReducer,
   runSimulation,
-  screeningKeys,
+  shortCircuitKeys,
   taxYearsBefore,
   validateStep,
   visibleIncomeYears,
@@ -100,7 +100,7 @@ test('changing simulation date preserves entered income; blanks and zero remain 
   expect(visibleIncomeYears(draft)[0].earnings).toBe(0);
 });
 
-test.each(screeningKeys)(
+test.each(shortCircuitKeys)(
   'a yes to %s short-circuits without inventing event details',
   (key) => {
     const draft = draftReducer(createDraft(), {
@@ -115,6 +115,90 @@ test.each(screeningKeys)(
     expect(draft.timeline.episodes).toEqual([]);
   },
 );
+
+test.each(['yes', 'no'] as const)(
+  'government debt = %s reaches the real engine after a complete Skilled Worker questionnaire',
+  (debt) => {
+    const draft = draftReducer(createDraft(), {
+      type: 'date',
+      date: '2026-11-04',
+    });
+    draft.screening = {
+      criminality: 'no',
+      breach: 'no',
+      protection: 'no',
+      debt,
+    };
+    draft.timeline = {
+      ...draft.timeline,
+      dateOfBirth: '1991-08-19',
+      nationality: 'CHN',
+      episodes: [
+        {
+          route: 'SKILLED_WORKER',
+          role: 'MAIN',
+          validFrom: '2025-01-01',
+          validTo: '2031-01-01',
+          salary: 55000,
+        },
+      ],
+      incomeYears: visibleIncomeYears(draft).map((row) => ({
+        ...row,
+        earnings: 55000,
+      })),
+      english: { cefrLevel: 'B2' },
+      lifeInTheUk: { passed: true },
+    };
+    const result = runSimulation(draft);
+    expect(result.shortCircuit).toBeUndefined();
+    expect(result.byRuleSet['current-law-2026-11']).toMatchObject({
+      pathwayYears: 5,
+      earliestDate: '2030-01-01',
+    });
+    const earned = result.byRuleSet['earned-settlement-2026-11'];
+    expect(earned).toMatchObject({
+      outcome: 'LIKELY_NOT_ELIGIBLE',
+      routeGroup: 'CORE_PERMISSION',
+    });
+    expect(earned?.rules.find((rule) => rule.id === 'ES-DEBT')?.status).toBe(
+      debt === 'yes' ? 'FAIL' : 'PASS',
+    );
+    if (debt === 'yes') {
+      expect(earned?.pathwayYears).toBeUndefined();
+      expect(earned?.earliestDate).toBeUndefined();
+    } else {
+      expect(earned).toMatchObject({
+        pathwayYears: 5,
+        earliestDate: '2030-01-01',
+      });
+    }
+  },
+);
+
+test('Visit retains the engine route failure without inventing an OUTSIDE_FRAMEWORK short circuit', () => {
+  const draft = createDraft();
+  draft.simulationDate = '2026-11-04';
+  draft.timeline.dateOfBirth = '1991-08-19';
+  draft.timeline.episodes = [
+    {
+      route: 'VISIT',
+      role: 'MAIN',
+      validFrom: '2026-10-01',
+      validTo: '2027-03-01',
+    },
+  ];
+  const result = runSimulation(draft);
+  expect(result.shortCircuit).toBeUndefined();
+  expect(result.byRuleSet['current-law-2026-11']).toMatchObject({
+    outcome: 'INSUFFICIENT_INFORMATION',
+    rules: [expect.objectContaining({ id: 'CL-SCOPE' })],
+  });
+  const earned = result.byRuleSet['earned-settlement-2026-11'];
+  expect(earned?.outcome).toBe('LIKELY_NOT_ELIGIBLE');
+  expect(earned?.rules.find((rule) => rule.id === 'ES-ROUTE-GROUP')?.status).toBe(
+    'FAIL',
+  );
+});
 
 test('field validation rejects missing screening, reversed dates and invalid amounts', () => {
   const draft = createDraft();
