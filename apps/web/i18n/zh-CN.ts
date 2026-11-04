@@ -251,6 +251,24 @@ export const zhCN = {
   'breaches.required': '请添加至少一条违规记录，或将移民违规经历改为“否”。',
   'episodes.resettlementScheme': '安置 / 担保路线',
   'episodes.sustainedActivity': '在该路线上的持续活动',
+  'episodes.globalTalentEndorsement':
+    '首次 Global Talent 许可依据的背书 / 奖项',
+  'episodes.globalTalentEndorsementHint':
+    '背书机构不在以下选项中时，请保留“不确定”。',
+  'episodes.endorsement.RESEARCH_BODY':
+    '研究机构背书（Royal Society、British Academy、Royal Academy of Engineering 或 UKRI）',
+  'episodes.endorsement.ARTS_COUNCIL_ENGLAND': 'Arts Council England 背书',
+  'episodes.endorsement.TECH_NATION': 'Tech Nation 背书',
+  'episodes.endorsement.PRIZE': 'Prestigious Prizes 所列奖项',
+  'episodes.globalTalentCriteria': '背书标准',
+  'episodes.criteria.EXCEPTIONAL_TALENT': 'exceptional talent',
+  'episodes.criteria.EXCEPTIONAL_PROMISE': 'exceptional promise',
+  'episodes.familyPermission': 'Appendix FM 许可类型',
+  'episodes.familyPermission.PARTNER_FIVE_YEAR': '伴侣，5 年路线',
+  'episodes.familyPermission.PARTNER_TEN_YEAR': '伴侣，10 年路线',
+  'episodes.familyPermission.PARENT': '父母（parent of a child）',
+  'episodes.familyPermissionHint':
+    '请在“家庭关系”步骤填写伴侣身份，并在“收入”步骤填写上一 tax year 的本人与伴侣收入（用于 5 年路线的财务要求）。',
   'benefits.asylumSupportRepayment': '是否需要偿还 asylum support 费用？',
   'episodes.hint': '逐段填写获批的签证有效期。列表为空表示没有签证历史。',
   'episodes.item': '签证片段',

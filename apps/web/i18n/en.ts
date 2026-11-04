@@ -281,6 +281,25 @@ export const en: Record<keyof typeof zhCN, string> = {
     'Add at least one breach record, or answer no to immigration breaches.',
   'episodes.resettlementScheme': 'Resettlement or sponsorship route',
   'episodes.sustainedActivity': 'Sustained activity on this route',
+  'episodes.globalTalentEndorsement':
+    'Endorsement or prize for your first Global Talent permission',
+  'episodes.globalTalentEndorsementHint':
+    'If your endorsing body is not listed below, leave this as “Not provided / unsure”.',
+  'episodes.endorsement.RESEARCH_BODY':
+    'Research body endorsement (Royal Society, British Academy, Royal Academy of Engineering or UKRI)',
+  'episodes.endorsement.ARTS_COUNCIL_ENGLAND':
+    'Arts Council England endorsement',
+  'episodes.endorsement.TECH_NATION': 'Tech Nation endorsement',
+  'episodes.endorsement.PRIZE': 'A prize listed in Prestigious Prizes',
+  'episodes.globalTalentCriteria': 'Endorsement criteria',
+  'episodes.criteria.EXCEPTIONAL_TALENT': 'exceptional talent',
+  'episodes.criteria.EXCEPTIONAL_PROMISE': 'exceptional promise',
+  'episodes.familyPermission': 'Appendix FM permission type',
+  'episodes.familyPermission.PARTNER_FIVE_YEAR': 'Partner, 5-year route',
+  'episodes.familyPermission.PARTNER_TEN_YEAR': 'Partner, 10-year route',
+  'episodes.familyPermission.PARENT': 'Parent of a child',
+  'episodes.familyPermissionHint':
+    'Enter your partner’s status in the Family relationships step, and your own and your partner’s income for the last completed tax year in the Earnings by tax year step (for the 5-year route’s financial requirement).',
   'benefits.asylumSupportRepayment':
     'Do you need to repay asylum support costs?',
   'result.protectionNotice':

@@ -213,3 +213,83 @@ test('sharing rejects malformed new protection fields at the input boundary', ()
     }
   }
 });
+
+test('sharing accepts all optional current law inputs on both timelines', () => {
+  const draft = createDraft();
+  for (const globalTalentEndorsement of [
+    undefined,
+    'RESEARCH_BODY',
+    'ARTS_COUNCIL_ENGLAND',
+    'TECH_NATION',
+    'PRIZE',
+  ] as const) {
+    for (const globalTalentCriteria of [
+      undefined,
+      'EXCEPTIONAL_TALENT',
+      'EXCEPTIONAL_PROMISE',
+    ] as const) {
+      for (const familyPermission of [
+        undefined,
+        'PARTNER_FIVE_YEAR',
+        'PARTNER_TEN_YEAR',
+        'PARENT',
+      ] as const) {
+        draft.timeline.episodes = [
+          {
+            route: 'GLOBAL_TALENT',
+            role: 'MAIN',
+            validFrom: '2023-11-04',
+            validTo: '2026-11-04',
+            globalTalentEndorsement,
+            globalTalentCriteria,
+          },
+          {
+            route: 'FAMILY_PARTNER_OR_PARENT',
+            role: 'MAIN',
+            validFrom: '2026-11-05',
+            validTo: '2036-11-04',
+            familyPermission,
+          },
+        ];
+        draft.principal = structuredClone(draft.timeline);
+        expect(decodeDraft(encodeDraft(draft))).toEqual(
+          JSON.parse(JSON.stringify(draft)),
+        );
+      }
+    }
+  }
+  expect(draft.version).toBe(1);
+});
+
+test('sharing rejects invalid current law values on either timeline', () => {
+  const draft = createDraft();
+  for (const field of [
+    'globalTalentEndorsement',
+    'globalTalentCriteria',
+    'familyPermission',
+  ]) {
+    for (const value of [
+      '',
+      'UNKNOWN',
+      'PARENT_OF_CHILD',
+      true,
+      1,
+      null,
+      [],
+      {},
+    ]) {
+      for (const key of ['timeline', 'principal']) {
+        expect(
+          decodeDraft(
+            btoa(
+              JSON.stringify({
+                ...draft,
+                [key]: { ...draft.timeline, episodes: [{ [field]: value }] },
+              }),
+            ),
+          ),
+        ).toBeUndefined();
+      }
+    }
+  }
+});

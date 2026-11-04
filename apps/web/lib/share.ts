@@ -94,6 +94,21 @@ function validTimeline(value: unknown): boolean {
         (episode.sustainedActivity === undefined ||
           Object.keys(sustainedActivityNames).includes(
             episode.sustainedActivity as string,
+          )) &&
+        (episode.globalTalentEndorsement === undefined ||
+          [
+            'RESEARCH_BODY',
+            'ARTS_COUNCIL_ENGLAND',
+            'TECH_NATION',
+            'PRIZE',
+          ].includes(episode.globalTalentEndorsement as string)) &&
+        (episode.globalTalentCriteria === undefined ||
+          ['EXCEPTIONAL_TALENT', 'EXCEPTIONAL_PROMISE'].includes(
+            episode.globalTalentCriteria as string,
+          )) &&
+        (episode.familyPermission === undefined ||
+          ['PARTNER_FIVE_YEAR', 'PARTNER_TEN_YEAR', 'PARENT'].includes(
+            episode.familyPermission as string,
           )),
     ) ||
     !(timeline.immigrationBreaches as Record<string, unknown>[]).every(

@@ -161,11 +161,7 @@ export default function SimulatePage() {
     } else goTo(sequence[position + 1]);
   };
   const updateEpisode = (index: number, patch: Partial<ImmigrationEpisode>) =>
-    update({
-      episodes: timeline.episodes.map((episode, i) =>
-        i === index ? { ...episode, ...patch } : episode,
-      ),
-    });
+    dispatch({ type: 'episode', index, patch });
   const updateBreach = (index: number, patch: Partial<ImmigrationBreach>) =>
     update({
       immigrationBreaches: timeline.immigrationBreaches.map((breach, i) =>
@@ -527,11 +523,6 @@ export default function SimulatePage() {
                             onChange={(event) =>
                               updateEpisode(index, {
                                 route: event.target.value as Route,
-                                socCode: undefined,
-                                salary: undefined,
-                                immigrationSalaryList: undefined,
-                                resettlementScheme: undefined,
-                                sustainedActivity: undefined,
                               })
                             }
                           >
@@ -562,8 +553,6 @@ export default function SimulatePage() {
                               updateEpisode(index, {
                                 role: event.target
                                   .value as ImmigrationEpisode['role'],
-                                dependantOf: undefined,
-                                immigrationSalaryList: undefined,
                               })
                             }
                           >
@@ -600,6 +589,124 @@ export default function SimulatePage() {
                             </select>
                           </Field>
                         )}
+                        {episode.route === 'GLOBAL_TALENT' &&
+                          episode.role === 'MAIN' && (
+                            <>
+                              <Field
+                                id={`${prefix}-endorsement`}
+                                label={t('episodes.globalTalentEndorsement')}
+                                hint={t('episodes.globalTalentEndorsementHint')}
+                              >
+                                <select
+                                  {...fieldProps(`${prefix}-endorsement`, true)}
+                                  value={episode.globalTalentEndorsement ?? ''}
+                                  onChange={(event) =>
+                                    updateEpisode(index, {
+                                      globalTalentEndorsement: (event.target
+                                        .value ||
+                                        undefined) as ImmigrationEpisode['globalTalentEndorsement'],
+                                      globalTalentCriteria: undefined,
+                                    })
+                                  }
+                                >
+                                  <option value="">{t('form.unknown')}</option>
+                                  {(
+                                    [
+                                      'RESEARCH_BODY',
+                                      'ARTS_COUNCIL_ENGLAND',
+                                      'TECH_NATION',
+                                      'PRIZE',
+                                    ] as const
+                                  ).map((value) => (
+                                    <option key={value} value={value}>
+                                      {t(`episodes.endorsement.${value}`)}
+                                    </option>
+                                  ))}
+                                </select>
+                              </Field>
+                              {(episode.globalTalentEndorsement ===
+                                'ARTS_COUNCIL_ENGLAND' ||
+                                episode.globalTalentEndorsement ===
+                                  'TECH_NATION') && (
+                                <Field
+                                  id={`${prefix}-criteria`}
+                                  label={t('episodes.globalTalentCriteria')}
+                                >
+                                  <select
+                                    id={`${prefix}-criteria`}
+                                    value={episode.globalTalentCriteria ?? ''}
+                                    onChange={(event) =>
+                                      updateEpisode(index, {
+                                        globalTalentCriteria: (event.target
+                                          .value ||
+                                          undefined) as ImmigrationEpisode['globalTalentCriteria'],
+                                      })
+                                    }
+                                  >
+                                    <option value="">
+                                      {t('form.unknown')}
+                                    </option>
+                                    <option value="EXCEPTIONAL_TALENT">
+                                      {t(
+                                        'episodes.criteria.EXCEPTIONAL_TALENT',
+                                      )}
+                                    </option>
+                                    <option value="EXCEPTIONAL_PROMISE">
+                                      {t(
+                                        'episodes.criteria.EXCEPTIONAL_PROMISE',
+                                      )}
+                                    </option>
+                                  </select>
+                                </Field>
+                              )}
+                            </>
+                          )}
+                        {episode.route === 'FAMILY_PARTNER_OR_PARENT' &&
+                          episode.role === 'MAIN' && (
+                            <Field
+                              id={`${prefix}-familyPermission`}
+                              label={t('episodes.familyPermission')}
+                              hint={
+                                episode.familyPermission ===
+                                  'PARTNER_FIVE_YEAR' ||
+                                episode.familyPermission === 'PARTNER_TEN_YEAR'
+                                  ? t('episodes.familyPermissionHint')
+                                  : undefined
+                              }
+                            >
+                              <select
+                                {...fieldProps(
+                                  `${prefix}-familyPermission`,
+                                  episode.familyPermission ===
+                                    'PARTNER_FIVE_YEAR' ||
+                                    episode.familyPermission ===
+                                      'PARTNER_TEN_YEAR',
+                                )}
+                                value={episode.familyPermission ?? ''}
+                                onChange={(event) =>
+                                  updateEpisode(index, {
+                                    familyPermission: (event.target.value ||
+                                      undefined) as ImmigrationEpisode['familyPermission'],
+                                  })
+                                }
+                              >
+                                <option value="">{t('form.unknown')}</option>
+                                <option value="PARTNER_FIVE_YEAR">
+                                  {t(
+                                    'episodes.familyPermission.PARTNER_FIVE_YEAR',
+                                  )}
+                                </option>
+                                <option value="PARTNER_TEN_YEAR">
+                                  {t(
+                                    'episodes.familyPermission.PARTNER_TEN_YEAR',
+                                  )}
+                                </option>
+                                <option value="PARENT">
+                                  {t('episodes.familyPermission.PARENT')}
+                                </option>
+                              </select>
+                            </Field>
+                          )}
                         {episode.route === 'SAFE_AND_LEGAL' && (
                           <Field
                             id={`${prefix}-resettlement`}
