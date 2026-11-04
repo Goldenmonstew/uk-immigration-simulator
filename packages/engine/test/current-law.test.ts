@@ -38,7 +38,7 @@ describe('CL-SCOPE', () => {
       run(clScope, { episodes: [episode({ role: 'DEPENDANT' })] }).status,
     ).toBe('UNKNOWN');
     expect(
-      run(clScope, { episodes: [episode({ route: 'GLOBAL_TALENT' })] }).status,
+      run(clScope, { episodes: [episode({ route: 'UK_ANCESTRY' })] }).status,
     ).toBe('UNKNOWN');
   });
 });

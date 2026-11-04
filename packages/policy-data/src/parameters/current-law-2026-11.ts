@@ -134,5 +134,108 @@ export const currentLaw2026_11 = {
       value: 'B1',
       sources: [{ srcId: 'SRC-004', locator: 'SW 44.1(a)' }],
     },
+
+    // Appendix Hong Kong British National (Overseas), version 2026-10-08.
+    hongKongBnoQualifyingYears: {
+      value: 5,
+      sources: [{ srcId: 'SRC-020', locator: 'HK 62.1(b)' }],
+    },
+    // B1 whatever the application date: HC 1691 did not add B2 to this
+    // Appendix (it is not among those listed in EM 5.60).
+    hongKongBnoSettlementEnglish: {
+      value: 'B1',
+      sources: [
+        { srcId: 'SRC-020', locator: 'HK 60.1' },
+        { srcId: 'SRC-007', locator: 'EM 5.60' },
+      ],
+    },
+
+    // Appendix Global Talent, version 2026-08-03. 3 years if endorsed by a
+    // research body, under the exceptional talent criteria by Arts Council
+    // England or Tech Nation, or granted on a prize; 5 years if endorsed under
+    // the exceptional promise criteria by Arts Council England or Tech Nation.
+    globalTalentQualifyingYearsShort: {
+      value: 3,
+      sources: [{ srcId: 'SRC-021', locator: 'GT 11.1' }],
+    },
+    globalTalentQualifyingYearsLong: {
+      value: 5,
+      sources: [{ srcId: 'SRC-021', locator: 'GT 11.2' }],
+    },
+    // B1 before 2027-03-26, B2 from then.
+    globalTalentSettlementEnglishBefore: {
+      value: 'B1',
+      sources: [{ srcId: 'SRC-021', locator: 'GT 13.1(a)' }],
+    },
+    globalTalentSettlementEnglish: {
+      value: { cefrLevel: 'B2', applicationsFrom: '2027-03-26' },
+      sources: [
+        { srcId: 'SRC-021', locator: 'GT 13.1(b)' },
+        { srcId: 'SRC-007', locator: 'EM 5.60' },
+      ],
+    },
+
+    // Appendix Settlement Family Life (10-year partner route), version
+    // 2026-08-03.
+    familyPartnerQualifyingYearsTen: {
+      value: 10,
+      sources: [{ srcId: 'SRC-022', locator: 'SETF 3.1' }],
+    },
+    // B1 before 2027-03-26, B2 from then: SETF 5.1 for the 10-year route,
+    // Appendix KoLL (via E-ILRP.1.6) for the 5-year route.
+    familyPartnerSettlementEnglishBefore: {
+      value: 'B1',
+      sources: [
+        { srcId: 'SRC-022', locator: 'SETF 5.1(a)' },
+        { srcId: 'SRC-025', locator: 'KoLL 2.2(b)' },
+        { srcId: 'SRC-025', locator: 'KoLL 2.2(c)(i)' },
+      ],
+    },
+    familyPartnerSettlementEnglish: {
+      value: { cefrLevel: 'B2', applicationsFrom: '2027-03-26' },
+      sources: [
+        { srcId: 'SRC-022', locator: 'SETF 5.1(b)' },
+        { srcId: 'SRC-025', locator: 'KoLL 2.2(ba)' },
+        { srcId: 'SRC-025', locator: 'KoLL 2.2(c)(ii)' },
+        { srcId: 'SRC-007', locator: 'EM 5.60' },
+      ],
+    },
+
+    // Appendix FM (5-year partner route), version 2026-10-08.
+    familyPartnerQualifyingYearsFive: {
+      value: 5,
+      sources: [{ srcId: 'SRC-024', locator: 'E-ILRP.1.3(1)' }],
+    },
+    // GBP per year, gross income of the applicant and partner (E-LTRP.3.2),
+    // applied at settlement through E-ILRP.1.3(1A). Also the cap on the
+    // transitional requirement (E-LTRP.3.8).
+    familyPartnerMinimumIncome: {
+      value: 29000,
+      sources: [
+        { srcId: 'SRC-024', locator: 'E-LTRP.3.1(a)' },
+        { srcId: 'SRC-024', locator: 'E-LTRP.3.8' },
+      ],
+    },
+    // A successful first partner (or fiancé(e)) application before this date,
+    // with the same partner since: the transitional requirement applies.
+    familyPartnerTransitionalBefore: {
+      value: '2024-04-11',
+      sources: [
+        { srcId: 'SRC-024', locator: 'E-LTRP.3.5' },
+        { srcId: 'SRC-024', locator: 'E-LTRP.3.6' },
+      ],
+    },
+    familyPartnerTransitionalIncome: {
+      value: 18600,
+      sources: [{ srcId: 'SRC-024', locator: 'E-LTRP.3.7(a)(i)' }],
+    },
+    familyPartnerTransitionalFirstChild: {
+      value: 3800,
+      sources: [{ srcId: 'SRC-024', locator: 'E-LTRP.3.7(a)(ii)' }],
+    },
+    familyPartnerTransitionalAdditionalChild: {
+      value: 2400,
+      sources: [{ srcId: 'SRC-024', locator: 'E-LTRP.3.7(a)(iii)' }],
+    },
   },
 } satisfies ParameterSet;

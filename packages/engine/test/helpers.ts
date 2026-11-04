@@ -228,6 +228,66 @@ export const SAMPLES: Record<string, PersonTimeline> = {
       },
     ],
   }),
+  // Current-law routes (contracts §12): Hong Kong BN(O) after Skilled Worker,
+  // not yet 5 years; Global Talent without the criteria; family partner on
+  // the 10-year route with a partner who is neither British nor settled.
+  hongKongBno: timeline({
+    episodes: [
+      {
+        route: 'SKILLED_WORKER',
+        role: 'MAIN',
+        validFrom: '2020-01-01',
+        validTo: '2022-12-31',
+      },
+      {
+        route: 'HONG_KONG_BNO',
+        role: 'MAIN',
+        validFrom: '2023-01-01',
+        validTo: '2027-12-31',
+      },
+    ],
+  }),
+  globalTalent: timeline({
+    episodes: [
+      {
+        route: 'GLOBAL_TALENT',
+        role: 'MAIN',
+        validFrom: '2023-01-01',
+        validTo: '2027-12-31',
+        globalTalentEndorsement: 'TECH_NATION',
+      },
+    ],
+  }),
+  familyPartner: timeline({
+    episodes: [
+      {
+        route: 'FAMILY_PARTNER_OR_PARENT',
+        role: 'MAIN',
+        validFrom: '2019-01-01',
+        validTo: '2027-12-31',
+        familyPermission: 'PARTNER_TEN_YEAR',
+      },
+    ],
+    relationships: [{ type: 'PARTNER', otherPartyStatus: 'OTHER' }],
+  }),
+  // 5-year partner route under the £29,000 rules, combined income below it,
+  // with an absence (PD-070).
+  familyPartnerFiveYear: timeline({
+    episodes: [
+      {
+        route: 'FAMILY_PARTNER_OR_PARENT',
+        role: 'MAIN',
+        validFrom: '2024-06-01',
+        validTo: '2027-11-30',
+        familyPermission: 'PARTNER_FIVE_YEAR',
+      },
+    ],
+    relationships: [{ type: 'PARTNER', otherPartyStatus: 'SETTLED' }],
+    incomeYears: [
+      { taxYear: '2025-26', earnings: 18000, partnerEarnings: 9000 },
+    ],
+    absences: [{ from: '2025-07-01', to: '2025-08-15' }],
+  }),
   student: timeline({
     episodes: [
       {
