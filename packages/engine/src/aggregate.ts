@@ -206,7 +206,7 @@ function assessDependant(
     rules,
     'ES-DEPENDANT-PATHWAY',
     decision,
-    `截至 ${ctx.simulationDate} 尚未满期，${decision.earliestDate} 起可申请。`,
+    `截至 ${ctx.simulationDate} 尚未满期。`,
   );
   const routeGroupPassed =
     rules.find((r) => r.id === 'ES-ROUTE-GROUP')?.status === 'PASS';
