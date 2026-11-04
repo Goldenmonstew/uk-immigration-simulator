@@ -35,6 +35,7 @@
   - `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`
 - 只 `git add` 本次改动相关的文件；不要提交 `node_modules`、构建产物、`.env`。
 - commit 前必须通过 brief 里的验收命令。
+- Codex（astra / sol）的沙箱不能写 `.git`：不要反复尝试 commit，把改动按"应当成为的 commit"分组写进最终报告（每组：commit message + 文件清单），由 Fable 审后替你提交。Claude Code 会话正常自己 commit。
 
 ## 验证
 
