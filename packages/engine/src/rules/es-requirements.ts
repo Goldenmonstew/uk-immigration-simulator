@@ -128,3 +128,35 @@ export const esEnglishB2 = defineRule(
         };
   },
 );
+
+export const esKol = defineRule(
+  {
+    id: 'ES-KOL',
+    ruleSetId: RULE_SET,
+    title: '通过 Life in the UK 考试',
+    sources: [{ srcId: 'SRC-001', locator: 'p21' }],
+    pendingDetails: ['PD-020'],
+  },
+  ({ timeline, simulationDate }) => {
+    if (ageExemptOn(timeline, simulationDate)) {
+      return {
+        status: 'PASS',
+        explanation: '申请日未满 18 岁或已满 65 岁，豁免 Life in the UK 考试。',
+      };
+    }
+    const kol = timeline.lifeInTheUk;
+    if (!kol) {
+      return {
+        status: 'UNKNOWN',
+        explanation: '未填写是否已通过 Life in the UK 考试。',
+      };
+    }
+    return 'exempt' in kol
+      ? {
+          status: 'PASS',
+          explanation: '申报因身心状况豁免 Life in the UK 考试。',
+          assumptions: ['身心状况豁免按用户申报，未核实认定标准。'],
+        }
+      : { status: 'PASS', explanation: '已通过 Life in the UK 考试。' };
+  },
+);

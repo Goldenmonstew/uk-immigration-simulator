@@ -3,6 +3,7 @@ import {
   esCriminality,
   esDebt,
   esEnglishB2,
+  esKol,
 } from '../src/rules/es-requirements';
 import { run } from './helpers';
 
@@ -81,5 +82,23 @@ describe('ES-ENGLISH-B2', () => {
     expect(
       run(esEnglishB2, { ...none, dateOfBirth: '2008-11-04' }).status,
     ).toBe('UNKNOWN');
+  });
+});
+
+describe('ES-KOL', () => {
+  test('passed or exempt passes; missing is unknown', () => {
+    expect(run(esKol).status).toBe('PASS');
+    expect(run(esKol, { lifeInTheUk: { exempt: true } }).status).toBe('PASS');
+    expect(run(esKol, { lifeInTheUk: undefined }).status).toBe('UNKNOWN');
+  });
+
+  test('age exemption from 65, not at 64', () => {
+    const none = { lifeInTheUk: undefined };
+    expect(run(esKol, { ...none, dateOfBirth: '1961-11-05' }).status).toBe(
+      'UNKNOWN',
+    );
+    expect(run(esKol, { ...none, dateOfBirth: '1961-11-04' }).status).toBe(
+      'PASS',
+    );
   });
 });
