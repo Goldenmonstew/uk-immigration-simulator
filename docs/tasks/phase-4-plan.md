@@ -93,3 +93,14 @@ Wave 1 三个 writer 互不碰同一 package（sol 先做 4.1 再做 4.4；Opus 
 2. **每周自动来源核对的 GitHub Actions**：加（4.4），只输出日志、不开 issue、不阻塞部署。
 3. **/about 的反馈渠道**：要；具体渠道（GitHub issue 需仓库公开 / mailto 需指定邮箱 / 表单）待用户指定后作为 4.3 的补充任务派给 astra。
 4. **版本化**：除文档（4.7）外还要实现（4.8，Wave 2）。
+
+## 5. 完成状态（2026-11-04）
+
+4.1–4.8 全部验收合并到 main（含补充任务 4.3b 反馈入口、4.4b Hansard 比较口径、4.8b web 两栏选择）；验收过程见 `PROGRESS.md` 第 49 行起与 `docs/tasks/reports/4.*.md`。
+
+- 现行法律栏：Skilled Worker（含 dependant）、Hong Kong BN(O)、Global Talent、Appendix FM 伴侣（5 年 / 10 年）、Long Residence；来源 SRC-020–025。
+- 来源监控：归一化正文 / Hansard 发言正文比较，每周 Check sources 工作流（runner 实跑 26 unchanged / 1 dynamic）。
+- 版本化：`docs/versioning.md` 流程 + 引擎机制（RULE_SET_IDS、PARAMETERS、withRuleSet、evaluate registry）+ web 两栏选择与生效日徽章；参数按规则集注入等真实版本出现再做（contracts §13.4）。
+- 公开仓库与 GitHub issue 反馈入口、/about 方法说明页、Lighthouse accessibility 100。
+
+留给下一阶段的候选（按价值）：难民与其他路线的现行法律栏（Appendix Settlement Protection 已登记为 SRC-023）；HK BN(O) / Global Talent / 家庭路线的 dependant；Appendix FM 伴侣的储蓄与 E-LTRP.3.3；PD-069"可定居路线"合并；`SimulationResult.policyAsOf` 改为所评估规则集的较晚者（会改快照）；真实 IN_FORCE_FUTURE_VERSION 出现时 `POLICY_NOT_YET_IN_FORCE` 的取舍；LICENSE 文件；PROGRESS 内部记录是否精简。
