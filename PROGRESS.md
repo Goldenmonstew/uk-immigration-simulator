@@ -40,6 +40,7 @@
 | 34 | 建 GitHub 远端：私有仓库 https://github.com/Goldenmonstew/uk-immigration-simulator（gh，SSH），main 已推送；仓库变量 CF_PAGES_PROJECT 已设；首个 CI run 触发，Deploy run 因尚无 Cloudflare secrets 先取消 | PROGRESS.md |
 | 35 | 自动部署打通：仓库 secrets CLOUDFLARE_ACCOUNT_ID（Fable 设）与 CLOUDFLARE_API_TOKEN（用户创建 Pages: Edit、一年期 token 并自行粘贴），重跑 Deploy 工作流成功（59 秒，上传并发布到生产）；用户曾把 token 贴进对话，建议用后撤销重建 | PROGRESS.md |
 | 36 | Phase 3 规划：docs/tasks/phase-3-plan.md（Wave 1：3.1 sol ISL / Table 3a / 来源核对脚本，3.2 Opus 可读名 / ISL 推导 / 文案收尾 / IAA 复核导出，3.3 astra 打印 / 多情景 / PWA / 细节；Wave 2 难民路径待用户决定） | docs/tasks/phase-3-plan.md, PROGRESS.md |
+| 37 | 派发 Phase 3 Wave 1：3.1 sol（`.worktrees/sol-isl`，分支 `codex/sol-isl-3.1`）、3.2 Opus 会话 wording-3-2、3.3 astra（`.worktrees/astra-pwa`，分支 `codex/astra-pwa-3.3`）；用户决定：难民路径做（Wave 2）、Web Analytics 用 Pages 自动注入（Cloudflare 登录态已过期，待用户在右侧重新登录后由 Fable 开启）、不做 IAA 复核 | PROGRESS.md |
 
 ### 当前状态
 
@@ -48,8 +49,9 @@
 - 部署（2026-11-04）：Pages 项目 `uk-immigration-simulator` 已建并完成首次直传（https://uk-immigration-simulator.pages.dev），自定义域名 wanruncong.uk 已绑定并对外可访问（外部多节点 200；用户决定不等 IAA 复核先绑）；本机 wrangler 已 OAuth 登录（可在 Cloudflare My Profile → Connected Applications 撤销）。之后每次改动合并到 main 后跑 `pnpm deploy:pages`（需 `CF_PAGES_PROJECT=uk-immigration-simulator`）。
 - GitHub：远端 `origin` = https://github.com/Goldenmonstew/uk-immigration-simulator（私有）；secrets `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ACCOUNT_ID` 与变量 `CF_PAGES_PROJECT` 均已设。
 - 自动部署已生效（2026-11-04 18:29）：push main → CI + Deploy 工作流 → Cloudflare Pages 生产部署 → wanruncong.uk。token 名 github-pages-deploy，2027-11-04 到期，到期前需在 Cloudflare 重建并更新 secret。
-- 仍留给用户：撤销并重建曾贴进对话的 API token（可选但建议）；安排 IAA 措辞复核。
+- 仍留给用户：撤销并重建曾贴进对话的 API token（可选但建议）；在右侧 Cloudflare 标签页重新登录（开 Web Analytics 用）。
 - 文案小项：英文 "1 full years" 单复数；解释里的枚举码（SKILLED_WORKER、CORE_PERMISSION 等）要可读名需显示名表（Phase 3 候选）。
 - 已定口径、页码约定与 Codex 启动参数不变；验收时只看 gate 日志里的 `GATE EXIT` 行，不看后台任务的退出码。
 - 用户授权（2026-11-04）：每次验收合并到 main 后自动 `git push origin main`，不再逐次确认；push 后 GitHub Actions 自动跑 CI 与部署（secrets 就绪后）。
-- 下一步：Phase 3 规划已写（`docs/tasks/phase-3-plan.md`），等用户确认 Wave 1 派发与 §4 三项决定。
+- Phase 3 进行中（2026-11-04）：Wave 1 在跑——3.1 sol、3.2 Opus（wording-3-2）、3.3 astra；Codex 日志在 scratchpad `sol-3.1*` / `astra-3.3*`。3.2 的 ISL 推导依赖 3.1 的表，Opus 最后做 B，必要时等 3.1 合并。Wave 2 = 3.4 / 3.5 难民路径（3.2 合并后派）。
+- 用户已表明不需要 IAA 复核，此前记录中的"安排 IAA 复核"作废。Web Analytics：待用户在右侧 Cloudflare 重新登录后，Fable 在 Pages 项目设置开启自动注入。
