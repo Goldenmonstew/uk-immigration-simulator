@@ -7,6 +7,11 @@
 // or timeline; see the task report. The dependant does not independently meet
 // the accelerated earnings threshold. All other requirements are assumed met:
 // B2, Life in the UK, no absences, public funds, criminality, breaches or debt.
+//
+// Expected outcome: the source concludes the partner settles with the
+// principal after five years. The engine does not model dependants settling
+// with a principal yet (PD-055), so it answers INSUFFICIENT_INFORMATION; restore
+// LIKELY_ELIGIBLE with pathwayYears 5 once dependants are modelled in Phase 2.
 import type { Fixture } from '../../engine/src/types';
 
 const TAX_YEARS = ['2021-22', '2022-23', '2023-24', '2024-25', '2025-26'];
@@ -47,7 +52,6 @@ export const esP31IndividualAPartnerArrivesTogether: Fixture = {
   },
   expected: {
     ruleSetId: 'earned-settlement-2026-11',
-    outcome: 'LIKELY_ELIGIBLE',
-    pathwayYears: 5,
+    outcome: 'INSUFFICIENT_INFORMATION',
   },
 };

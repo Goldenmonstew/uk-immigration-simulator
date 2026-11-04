@@ -29,7 +29,7 @@ export const esRouteGroup = defineRule(
       { srcId: 'SRC-001', locator: 'p25' },
       { srcId: 'SRC-001', locator: 'p26' },
     ],
-    pendingDetails: ['PD-022', 'PD-023'],
+    pendingDetails: ['PD-022', 'PD-023', 'PD-055'],
   },
   ({ timeline, simulationDate }) => {
     const episode = episodeOn(timeline, simulationDate);
@@ -40,6 +40,12 @@ export const esRouteGroup = defineRule(
       };
     }
     const { route } = episode;
+    if (episode.role === 'DEPENDANT') {
+      return {
+        status: 'UNKNOWN',
+        explanation: `当前以 ${route} 的 dependant 身份在英。dependant 随主申请人定居的规则与主申请人的信息尚未建模，不能按主申请人评估（PD-055）。`,
+      };
+    }
     const groups = groupsOf(route);
     if (groups.includes('OUTSIDE_FRAMEWORK')) {
       return {

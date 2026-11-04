@@ -136,6 +136,14 @@ function assessEarnedSettlement(ctx: RuleContext): SettlementAssessment {
   const rules = RULES['earned-settlement-2026-11'].map((rule) =>
     runRule(rule, ctx),
   );
+  const current = episodeOn(ctx.timeline, ctx.simulationDate);
+  // A dependant settles with the principal (p29, p31), which is not modelled
+  // (PD-055): no pathway or date, as for current law outside CL-SCOPE.
+  if (current?.role === 'DEPENDANT') {
+    return toAssessment({ outcome: 'INSUFFICIENT_INFORMATION' }, rules, [
+      ES_BASE_ASSUMPTION,
+    ]);
+  }
   const pick = (...ids: string[]) =>
     ids.map((id) => rules.find((r) => r.id === id)!);
   const mandatory = pick(
@@ -155,7 +163,6 @@ function assessEarnedSettlement(ctx: RuleContext): SettlementAssessment {
     'ES-TRANSITIONAL-CARE-WORKER',
   ];
   const start = esQualifyingResidence(ctx)?.start;
-  const current = episodeOn(ctx.timeline, ctx.simulationDate);
   const groups = current ? groupsOf(current.route) : [];
   // Family and Private Life only qualifies for the 10 and 20-year pathways (p23).
   const shortPathways = !groups.includes('FAMILY_AND_PRIVATE_LIFE');

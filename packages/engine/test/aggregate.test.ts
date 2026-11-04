@@ -218,3 +218,17 @@ describe('current law', () => {
     expect(a.rules.some((r) => r.id.startsWith('CL-SW-'))).toBe(false);
   });
 });
+
+describe('dependants', () => {
+  test('a dependant gets no Earned Settlement pathway or date', () => {
+    const a = es({
+      episodes: [sw('2025-01-15', { role: 'DEPENDANT', salary: undefined })],
+    });
+    expect(a.outcome).toBe('INSUFFICIENT_INFORMATION');
+    expect(a.pathwayYears).toBeUndefined();
+    expect(a.earliestDate).toBeUndefined();
+    const routeGroup = a.rules.find((r) => r.id === 'ES-ROUTE-GROUP');
+    expect(routeGroup?.status).toBe('UNKNOWN');
+    expect(routeGroup?.pendingDetails).toBeUndefined();
+  });
+});
