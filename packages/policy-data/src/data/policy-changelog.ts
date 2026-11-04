@@ -67,8 +67,8 @@ export const policyChangelog: PolicyChange[] = [
     summaryEn:
       'Records the 2026-10-08 snapshots of Appendix Skilled Worker and Appendix Long Residence. Both change histories associate this version with Statement of Changes HC 584.',
     sources: [
-      { srcId: 'SRC-004', locator: '版本 2026-10-08' },
-      { srcId: 'SRC-005', locator: '版本 2026-10-08' },
+      { srcId: 'SRC-004', locator: 'version 2026-10-08' },
+      { srcId: 'SRC-005', locator: 'version 2026-10-08' },
     ],
   },
   {
