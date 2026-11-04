@@ -44,6 +44,10 @@ exports[`CL-FAMILY-PARTNER-FIVE-YEARS default-locale output is unchanged 1`] = `
             {
               "srcId": "SRC-023",
               "locator": "STP 1.3"
+            },
+            {
+              "srcId": "SRC-026",
+              "locator": "UKA 13.1"
             }
           ],
           "status": "PASS",
@@ -191,6 +195,10 @@ exports[`CL-FAMILY-PARTNER-FIVE-YEARS default-locale output is unchanged 1`] = `
               "locator": "KoLL 2.2"
             },
             {
+              "srcId": "SRC-026",
+              "locator": "UKA 15.1"
+            },
+            {
               "srcId": "SRC-007",
               "locator": "EM 5.60"
             },
@@ -235,6 +243,10 @@ exports[`CL-FAMILY-PARTNER-FIVE-YEARS default-locale output is unchanged 1`] = `
               "locator": "KoLL 2.3"
             },
             {
+              "srcId": "SRC-026",
+              "locator": "UKA 16.1"
+            },
+            {
               "srcId": "SRC-015",
               "locator": "KOL 1.1"
             },
@@ -275,7 +287,7 @@ exports[`CL-FAMILY-PARTNER-FIVE-YEARS default-locale output is unchanged 1`] = `
         }
       ],
       "assumptions": [
-        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）、Appendix FM 伴侣（10 年路线按 Appendix Settlement Family Life，5 年路线按 Appendix FM）、持 refugee status 或 humanitarian protection 的主申请人（Appendix Settlement Protection）与 Long Residence（Appendix Long Residence）；Part Suitability、STP 2.1 的 suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
+        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）、Appendix FM 伴侣（10 年路线按 Appendix Settlement Family Life，5 年路线按 Appendix FM）、持 refugee status 或 humanitarian protection 的主申请人（Appendix Settlement Protection）、UK Ancestry 主申请人（Appendix UK Ancestry）与 Long Residence（Appendix Long Residence）；Part Suitability、STP 2.1 的 suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
         "E-ILRP.1.3 只计 5 年路线的伴侣许可（D-ECP.1.1 / D-LTRP.1.1），不计 fiancé(e) 期间；各段按同属 5 年路线、同一伴侣（E-ILRP.1.4）计算。",
         "按关系真实且持续、双方打算永久共同生活（E-LTRP.1.7–E-LTRP.1.10）处理，本工具未核对。",
         "是否适用过渡门槛按连续伴侣许可的起点是否早于 2024-04-11 判断（E-LTRP.3.5 看的是首次申请日；获批在此后而申请在此前的，也适用过渡门槛）；子女按\\"关系\\"里身份为其他的子女计。储蓄（E-LTRP.3.1(b)）、伴侣领取特定福利（E-LTRP.3.3）与 Appendix FM-SE 的证据规则未建模。",
@@ -677,6 +689,10 @@ exports[`CL-GLOBAL-TALENT-THREE-YEARS default-locale output is unchanged 1`] = `
             {
               "srcId": "SRC-023",
               "locator": "STP 1.3"
+            },
+            {
+              "srcId": "SRC-026",
+              "locator": "UKA 13.1"
             }
           ],
           "status": "PASS",
@@ -755,6 +771,10 @@ exports[`CL-GLOBAL-TALENT-THREE-YEARS default-locale output is unchanged 1`] = `
               "locator": "KoLL 2.2"
             },
             {
+              "srcId": "SRC-026",
+              "locator": "UKA 15.1"
+            },
+            {
               "srcId": "SRC-007",
               "locator": "EM 5.60"
             },
@@ -799,6 +819,10 @@ exports[`CL-GLOBAL-TALENT-THREE-YEARS default-locale output is unchanged 1`] = `
               "locator": "KoLL 2.3"
             },
             {
+              "srcId": "SRC-026",
+              "locator": "UKA 16.1"
+            },
+            {
               "srcId": "SRC-015",
               "locator": "KOL 1.1"
             },
@@ -839,7 +863,7 @@ exports[`CL-GLOBAL-TALENT-THREE-YEARS default-locale output is unchanged 1`] = `
         }
       ],
       "assumptions": [
-        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）、Appendix FM 伴侣（10 年路线按 Appendix Settlement Family Life，5 年路线按 Appendix FM）、持 refugee status 或 humanitarian protection 的主申请人（Appendix Settlement Protection）与 Long Residence（Appendix Long Residence）；Part Suitability、STP 2.1 的 suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
+        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）、Appendix FM 伴侣（10 年路线按 Appendix Settlement Family Life，5 年路线按 Appendix FM）、持 refugee status 或 humanitarian protection 的主申请人（Appendix Settlement Protection）、UK Ancestry 主申请人（Appendix UK Ancestry）与 Long Residence（Appendix Long Residence）；Part Suitability、STP 2.1 的 suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
         "连续期合并 GT 11.3 列出的 Global Talent、Innovator Founder、Skilled Worker、T2 Minister of Religion、International Sportsperson、Scale-up 主申请人许可；Tier 1 与 Representative of an Overseas Business 本工具无法填写，不计入。",
         "按背书未被撤回（GT 10.1）、上一段许可期间在背书或奖项领域有收入（GT 10.2）处理，本工具未核对。",
         "连续合法居留计入学生、毕业生等临时路线，不计访问、季节性工作者、乌克兰计划（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。"
@@ -1240,6 +1264,10 @@ exports[`CL-HKBNO-FIVE-YEARS default-locale output is unchanged 1`] = `
             {
               "srcId": "SRC-023",
               "locator": "STP 1.3"
+            },
+            {
+              "srcId": "SRC-026",
+              "locator": "UKA 13.1"
             }
           ],
           "status": "PASS",
@@ -1307,6 +1335,10 @@ exports[`CL-HKBNO-FIVE-YEARS default-locale output is unchanged 1`] = `
               "locator": "KoLL 2.2"
             },
             {
+              "srcId": "SRC-026",
+              "locator": "UKA 15.1"
+            },
+            {
               "srcId": "SRC-007",
               "locator": "EM 5.60"
             },
@@ -1351,6 +1383,10 @@ exports[`CL-HKBNO-FIVE-YEARS default-locale output is unchanged 1`] = `
               "locator": "KoLL 2.3"
             },
             {
+              "srcId": "SRC-026",
+              "locator": "UKA 16.1"
+            },
+            {
               "srcId": "SRC-015",
               "locator": "KOL 1.1"
             },
@@ -1391,7 +1427,7 @@ exports[`CL-HKBNO-FIVE-YEARS default-locale output is unchanged 1`] = `
         }
       ],
       "assumptions": [
-        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）、Appendix FM 伴侣（10 年路线按 Appendix Settlement Family Life，5 年路线按 Appendix FM）、持 refugee status 或 humanitarian protection 的主申请人（Appendix Settlement Protection）与 Long Residence（Appendix Long Residence）；Part Suitability、STP 2.1 的 suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
+        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）、Appendix FM 伴侣（10 年路线按 Appendix Settlement Family Life，5 年路线按 Appendix FM）、持 refugee status 或 humanitarian protection 的主申请人（Appendix Settlement Protection）、UK Ancestry 主申请人（Appendix UK Ancestry）与 Long Residence（Appendix Long Residence）；Part Suitability、STP 2.1 的 suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
         "连续合法居留计入学生、毕业生等临时路线，不计访问、季节性工作者、乌克兰计划（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。"
       ]
     },
@@ -1792,6 +1828,10 @@ exports[`CL-REFUGEE-FIVE-YEARS default-locale output is unchanged 1`] = `
             {
               "srcId": "SRC-023",
               "locator": "STP 1.3"
+            },
+            {
+              "srcId": "SRC-026",
+              "locator": "UKA 13.1"
             }
           ],
           "status": "PASS",
@@ -1881,6 +1921,10 @@ exports[`CL-REFUGEE-FIVE-YEARS default-locale output is unchanged 1`] = `
               "locator": "KoLL 2.2"
             },
             {
+              "srcId": "SRC-026",
+              "locator": "UKA 15.1"
+            },
+            {
               "srcId": "SRC-007",
               "locator": "EM 5.60"
             },
@@ -1925,6 +1969,10 @@ exports[`CL-REFUGEE-FIVE-YEARS default-locale output is unchanged 1`] = `
               "locator": "KoLL 2.3"
             },
             {
+              "srcId": "SRC-026",
+              "locator": "UKA 16.1"
+            },
+            {
               "srcId": "SRC-015",
               "locator": "KOL 1.1"
             },
@@ -1965,7 +2013,7 @@ exports[`CL-REFUGEE-FIVE-YEARS default-locale output is unchanged 1`] = `
         }
       ],
       "assumptions": [
-        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）、Appendix FM 伴侣（10 年路线按 Appendix Settlement Family Life，5 年路线按 Appendix FM）、持 refugee status 或 humanitarian protection 的主申请人（Appendix Settlement Protection）与 Long Residence（Appendix Long Residence）；Part Suitability、STP 2.1 的 suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
+        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）、Appendix FM 伴侣（10 年路线按 Appendix Settlement Family Life，5 年路线按 Appendix FM）、持 refugee status 或 humanitarian protection 的主申请人（Appendix Settlement Protection）、UK Ancestry 主申请人（Appendix UK Ancestry）与 Long Residence（Appendix Long Residence）；Part Suitability、STP 2.1 的 suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
         "STP 1.3 按申请庇护的日期列明许可类别：2022-06-28 前申请的为 refugee 或 humanitarian protection 许可，此后申请的为 refugee permission to stay；本工具不区分 refugee 与 humanitarian protection，按你持有所列许可处理。2022-06-28 及以后申请庇护而获 humanitarian protection 的，STP 1.3(b) 未列明（PD-073）。",
         "审理定居申请时会做 safe return review（STP 4.2），核查个人情况或原籍国状况是否已变化到可撤销或不续期保护身份，结果无法预判。",
         "不满足定居要求、但仍有权享有 refugee status 或 humanitarian protection 时，会再获至少 30 个月的保护许可（STP 5.2）。",
@@ -2166,6 +2214,579 @@ exports[`CL-REFUGEE-FIVE-YEARS default-locale output is unchanged 1`] = `
 }"
 `;
 
+exports[`CL-UK-ANCESTRY-FIVE-YEARS default-locale output is unchanged 1`] = `
+"{
+  "policyAsOf": "2026-11-04",
+  "byRuleSet": {
+    "current-law-2026-11": {
+      "outcome": "LIKELY_ELIGIBLE",
+      "pathwayYears": 5,
+      "earliestDate": "2026-09-01",
+      "rules": [
+        {
+          "id": "CL-SCOPE",
+          "title": "在现行规则的建模范围内",
+          "sources": [
+            {
+              "srcId": "SRC-004",
+              "locator": "SW 21.1"
+            },
+            {
+              "srcId": "SRC-004",
+              "locator": "SW 39.1"
+            },
+            {
+              "srcId": "SRC-004",
+              "locator": "SW 41A.1"
+            },
+            {
+              "srcId": "SRC-005",
+              "locator": "LR 11.1"
+            },
+            {
+              "srcId": "SRC-020",
+              "locator": "HK 62.1"
+            },
+            {
+              "srcId": "SRC-021",
+              "locator": "GT 11.1"
+            },
+            {
+              "srcId": "SRC-022",
+              "locator": "SETF 1.3"
+            },
+            {
+              "srcId": "SRC-023",
+              "locator": "STP 1.3"
+            },
+            {
+              "srcId": "SRC-026",
+              "locator": "UKA 13.1"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "当前持 UK Ancestry 主申请人许可，按 Appendix UK Ancestry 与 Appendix Long Residence 评估。"
+        },
+        {
+          "id": "CL-ANCESTRY-RESIDENCE-5Y",
+          "title": "UK Ancestry 连续 5 年",
+          "sources": [
+            {
+              "srcId": "SRC-026",
+              "locator": "UKA 10.3"
+            },
+            {
+              "srcId": "SRC-026",
+              "locator": "UKA 12.1"
+            },
+            {
+              "srcId": "SRC-026",
+              "locator": "UKA 13.1"
+            },
+            {
+              "srcId": "SRC-026",
+              "locator": "UKA 14.1"
+            },
+            {
+              "srcId": "SRC-008",
+              "locator": "CR 3.1"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "自 2021-09-01 起连续持 UK Ancestry 主申请人许可，已满 5 年（UKA 13.1）。",
+          "assumptions": [
+            "按你在申请日仍是 Commonwealth citizen（UKA 10.3），且仍满足 UKA 4.1–6.1（祖父母之一生于 UK 或 Islands、能自给自足且不依赖 public funds、能工作并打算在英国工作，UKA 12.1）处理。"
+          ]
+        },
+        {
+          "id": "CL-ENGLISH",
+          "title": "定居英语要求",
+          "sources": [
+            {
+              "srcId": "SRC-004",
+              "locator": "SW 22A.1"
+            },
+            {
+              "srcId": "SRC-004",
+              "locator": "SW 44.1"
+            },
+            {
+              "srcId": "SRC-007",
+              "locator": "p24"
+            },
+            {
+              "srcId": "SRC-005",
+              "locator": "LR 13.1"
+            },
+            {
+              "srcId": "SRC-020",
+              "locator": "HK 60.1"
+            },
+            {
+              "srcId": "SRC-021",
+              "locator": "GT 13.1"
+            },
+            {
+              "srcId": "SRC-022",
+              "locator": "SETF 5.1"
+            },
+            {
+              "srcId": "SRC-024",
+              "locator": "E-ILRP.1.6"
+            },
+            {
+              "srcId": "SRC-025",
+              "locator": "KoLL 2.2"
+            },
+            {
+              "srcId": "SRC-026",
+              "locator": "UKA 15.1"
+            },
+            {
+              "srcId": "SRC-007",
+              "locator": "EM 5.60"
+            },
+            {
+              "srcId": "SRC-014",
+              "locator": "EL 1.1"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "英语 B1，达到定居要求的 B1（Appendix UK Ancestry UKA 15.1(a)，2027-03-26 前的申请）。"
+        },
+        {
+          "id": "CL-KOL",
+          "title": "通过 Life in the UK 考试",
+          "sources": [
+            {
+              "srcId": "SRC-004",
+              "locator": "SW 23.1"
+            },
+            {
+              "srcId": "SRC-004",
+              "locator": "SW 45.1"
+            },
+            {
+              "srcId": "SRC-005",
+              "locator": "LR 14.1"
+            },
+            {
+              "srcId": "SRC-020",
+              "locator": "HK 61.1"
+            },
+            {
+              "srcId": "SRC-021",
+              "locator": "GT 14.1"
+            },
+            {
+              "srcId": "SRC-022",
+              "locator": "SETF 6.1"
+            },
+            {
+              "srcId": "SRC-025",
+              "locator": "KoLL 2.3"
+            },
+            {
+              "srcId": "SRC-026",
+              "locator": "UKA 16.1"
+            },
+            {
+              "srcId": "SRC-015",
+              "locator": "KOL 1.1"
+            },
+            {
+              "srcId": "SRC-015",
+              "locator": "KOL 2.1"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "已通过 Life in the UK 考试（UKA 16.1）。"
+        },
+        {
+          "id": "CL-LR-RESIDENCE-10Y",
+          "title": "Long Residence 连续合法居留 10 年",
+          "sources": [
+            {
+              "srcId": "SRC-005",
+              "locator": "LR 11.1"
+            },
+            {
+              "srcId": "SRC-005",
+              "locator": "LR 11.2"
+            },
+            {
+              "srcId": "SRC-008",
+              "locator": "CR 3.1"
+            },
+            {
+              "srcId": "SRC-008",
+              "locator": "CR 3.3"
+            }
+          ],
+          "status": "FAIL",
+          "explanation": "自 2021-09-01 起连续合法居留，截至 2026-09-01 满 5 年；2031-09-01 满 10 年。",
+          "assumptions": [
+            "连续合法居留计入学生、毕业生等临时路线，不计访问、季节性工作者、乌克兰计划（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。"
+          ]
+        }
+      ],
+      "assumptions": [
+        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）、Appendix FM 伴侣（10 年路线按 Appendix Settlement Family Life，5 年路线按 Appendix FM）、持 refugee status 或 humanitarian protection 的主申请人（Appendix Settlement Protection）、UK Ancestry 主申请人（Appendix UK Ancestry）与 Long Residence（Appendix Long Residence）；Part Suitability、STP 2.1 的 suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
+        "按你在申请日仍是 Commonwealth citizen（UKA 10.3），且仍满足 UKA 4.1–6.1（祖父母之一生于 UK 或 Islands、能自给自足且不依赖 public funds、能工作并打算在英国工作，UKA 12.1）处理。",
+        "连续合法居留计入学生、毕业生等临时路线，不计访问、季节性工作者、乌克兰计划（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。"
+      ]
+    },
+    "earned-settlement-2026-11": {
+      "outcome": "LIKELY_NOT_ELIGIBLE",
+      "rules": [
+        {
+          "id": "ES-CRIMINALITY",
+          "title": "无犯罪记录",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p12"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "未申报犯罪记录。"
+        },
+        {
+          "id": "ES-DEBT",
+          "title": "无未清偿的政府债务",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p12"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p29"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "申报无未清偿的政府债务。",
+          "assumptions": [
+            "\\"无政府债务\\"按用户申报判断；正在按还款计划偿还的非 asylum support 债务是否满足要求，原文未说明（PD-018）。"
+          ]
+        },
+        {
+          "id": "ES-ENGLISH-B2",
+          "title": "定居英语要求（B2；UKRS 难民 A2）",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p21"
+            }
+          ],
+          "status": "FAIL",
+          "explanation": "英语 B1，低于 Earned Settlement 要求的 B2。这是强制要求，不能用收入或其他贡献抵消。"
+        },
+        {
+          "id": "ES-KOL",
+          "title": "通过 Life in the UK 考试",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p21"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "已通过 Life in the UK 考试。"
+        },
+        {
+          "id": "ES-ROUTE-GROUP",
+          "title": "当前路线计入定居",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p23"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p24"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p25"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p26"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "当前路线\\"英国血统\\"属核心许可 / 英国联系分组，计入定居。"
+        },
+        {
+          "id": "ES-RESIDENCE",
+          "title": "计入定居的连续居留",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p22"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p23"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p24"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p25"
+            },
+            {
+              "srcId": "SRC-008",
+              "locator": "CR 3.1"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "计入定居的连续居留自 2021-09-01 起，截至 2026-09-01 满 5 年。",
+          "assumptions": []
+        },
+        {
+          "id": "ES-EARNINGS-3Y",
+          "title": "3 年路径收入：4 年中 3 年达到 £125,141",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p15"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p16"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p46"
+            }
+          ],
+          "status": "UNKNOWN",
+          "explanation": "2022-23 至 2025-26 这 4 个 tax year 中，有 0 年收入达到 £125,141，需要 3 年；4 年未填写收入。",
+          "assumptions": [
+            "收入按英国 tax year 的税前收入计算，窗口为申请日所在 tax year 之前的完整 tax year；各年份统一按现行门槛比较（PD-005 / PD-006 / PD-007）。"
+          ]
+        },
+        {
+          "id": "ES-EARNINGS-5Y",
+          "title": "5 年路径收入：5 年中 3 年达到 £50,271",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p15"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p16"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p46"
+            }
+          ],
+          "status": "UNKNOWN",
+          "explanation": "2021-22 至 2025-26 这 5 个 tax year 中，有 0 年收入达到 £50,271，需要 3 年；5 年未填写收入。",
+          "assumptions": [
+            "收入按英国 tax year 的税前收入计算，窗口为申请日所在 tax year 之前的完整 tax year；各年份统一按现行门槛比较（PD-005 / PD-006 / PD-007）。"
+          ]
+        },
+        {
+          "id": "ES-EARNINGS-10Y",
+          "title": "最低收入：7 年中 5 年达到 £12,571（或家庭合计 £25,142）",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p15"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p16"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p46"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p17"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p30"
+            }
+          ],
+          "status": "UNKNOWN",
+          "explanation": "2019-20 至 2025-26 这 7 个 tax year 中，有 0 年收入达到 £12,571，需要 5 年；7 年未填写收入。",
+          "assumptions": [
+            "收入按英国 tax year 的税前收入计算，窗口为申请日所在 tax year 之前的完整 tax year；各年份统一按现行门槛比较（PD-005 / PD-006 / PD-007）。",
+            "最低收入按 p16 与 Table 1 的\\"申请前 7 年中 5 年\\"计算；p15 另有\\"至少 3 年\\"的说法（PD-041）。"
+          ]
+        },
+        {
+          "id": "ES-BRITISH-CONNECTION",
+          "title": "British connection（5 年路径）",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p18"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "持 UK Ancestry 签证，属 recognised British connection，可走 5 年路径。"
+        },
+        {
+          "id": "ES-PUBLIC-FUNDS",
+          "title": "申请前 5 年未使用 public funds",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p18"
+            },
+            {
+              "srcId": "SRC-006",
+              "locator": "#benefits-open-to-new-claims"
+            },
+            {
+              "srcId": "SRC-006",
+              "locator": "#contributory-benefits-and-statutory-payments"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "申请前 5 年内未领取 public funds。",
+          "assumptions": []
+        },
+        {
+          "id": "ES-BREACH",
+          "title": "成年后无 qualifying immigration breach",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p13"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "成年后无 qualifying immigration breach。"
+        },
+        {
+          "id": "ES-ASYLUM-SUPPORT",
+          "title": "已偿还 asylum support 或按计划还款",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p8"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p39"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p47"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "未申报 asylum support 的偿还情况，按未领取 asylum support 处理（领过且须偿还的，定居前须已全额偿还或按约定还款计划持续履行，p8 注 1）。"
+        },
+        {
+          "id": "ES-TRANSITIONAL-CARE-WORKER",
+          "title": "care worker 过渡安排（保留 5 年）",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p42"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p43"
+            },
+            {
+              "srcId": "SRC-012",
+              "locator": "cover"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p42"
+            },
+            {
+              "srcId": "SRC-004",
+              "locator": "SW 6.1B"
+            }
+          ],
+          "status": "FAIL",
+          "explanation": "当前不是 care worker（SOC 2020 6135 / 6136）的 Skilled Worker 签证，不适用 care worker 过渡安排。"
+        },
+        {
+          "id": "ES-TRANSITIONAL-HEALTH-EDUCATION",
+          "title": "RQF6 以下国家薪级医疗 / 教育岗位过渡安排（保留 5 年）",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p44"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p42"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p46"
+            },
+            {
+              "srcId": "SRC-012",
+              "locator": "cover"
+            },
+            {
+              "srcId": "SRC-017",
+              "locator": "Table 3a"
+            }
+          ],
+          "status": "FAIL",
+          "explanation": "当前不是 RQF6 以下、国家薪级的医疗 / 教育职业（Appendix Skilled Occupations Table 3a）的 Skilled Worker 签证，不适用该过渡安排。"
+        },
+        {
+          "id": "ES-PUBLIC-SERVICE",
+          "title": "公共服务职业满 5 年（5 年路径）",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p16"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p46 fn 17"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p58"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p59"
+            },
+            {
+              "srcId": "SRC-004",
+              "locator": "SW 16.1"
+            }
+          ],
+          "status": "FAIL",
+          "explanation": "当前工作不在 Annex C 公共服务职业表中，不走这条 5 年路径。"
+        }
+      ],
+      "assumptions": [
+        "Earned Settlement 已公布、尚未生效，按\\"假设在申请日适用\\"评估；规则依据为政府回应文件（SRC-001），不是已生效的 Immigration Rules（PD-001）。首批规则修改预计 2026 年 12 月起提交、2027 年 1 月生效，2027–2028 年继续修改（SRC-002 col 593；SRC-003 cols 1423–1424），具体生效日以届时的 Statement of Changes 为准（PD-003）。",
+        "\\"无政府债务\\"按用户申报判断；正在按还款计划偿还的非 asylum support 债务是否满足要求，原文未说明（PD-018）。",
+        "收入按英国 tax year 的税前收入计算，窗口为申请日所在 tax year 之前的完整 tax year；各年份统一按现行门槛比较（PD-005 / PD-006 / PD-007）。",
+        "最低收入按 p16 与 Table 1 的\\"申请前 7 年中 5 年\\"计算；p15 另有\\"至少 3 年\\"的说法（PD-041）。"
+      ],
+      "routeGroup": "CORE_PERMISSION"
+    }
+  }
+}"
+`;
+
 exports[`ES-OFFICIAL-INDIVIDUAL-C default-locale output is unchanged 1`] = `
 "{
   "policyAsOf": "2026-11-04",
@@ -2210,6 +2831,10 @@ exports[`ES-OFFICIAL-INDIVIDUAL-C default-locale output is unchanged 1`] = `
             {
               "srcId": "SRC-023",
               "locator": "STP 1.3"
+            },
+            {
+              "srcId": "SRC-026",
+              "locator": "UKA 13.1"
             }
           ],
           "status": "PASS",
@@ -2288,6 +2913,10 @@ exports[`ES-OFFICIAL-INDIVIDUAL-C default-locale output is unchanged 1`] = `
               "locator": "KoLL 2.2"
             },
             {
+              "srcId": "SRC-026",
+              "locator": "UKA 15.1"
+            },
+            {
               "srcId": "SRC-007",
               "locator": "EM 5.60"
             },
@@ -2332,6 +2961,10 @@ exports[`ES-OFFICIAL-INDIVIDUAL-C default-locale output is unchanged 1`] = `
               "locator": "KoLL 2.3"
             },
             {
+              "srcId": "SRC-026",
+              "locator": "UKA 16.1"
+            },
+            {
               "srcId": "SRC-015",
               "locator": "KOL 1.1"
             },
@@ -2372,7 +3005,7 @@ exports[`ES-OFFICIAL-INDIVIDUAL-C default-locale output is unchanged 1`] = `
         }
       ],
       "assumptions": [
-        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）、Appendix FM 伴侣（10 年路线按 Appendix Settlement Family Life，5 年路线按 Appendix FM）、持 refugee status 或 humanitarian protection 的主申请人（Appendix Settlement Protection）与 Long Residence（Appendix Long Residence）；Part Suitability、STP 2.1 的 suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
+        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）、Appendix FM 伴侣（10 年路线按 Appendix Settlement Family Life，5 年路线按 Appendix FM）、持 refugee status 或 humanitarian protection 的主申请人（Appendix Settlement Protection）、UK Ancestry 主申请人（Appendix UK Ancestry）与 Long Residence（Appendix Long Residence）；Part Suitability、STP 2.1 的 suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
         "连续合法居留计入学生、毕业生等临时路线，不计访问、季节性工作者、乌克兰计划（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。"
       ]
     },
@@ -2775,6 +3408,10 @@ exports[`ES-OFFICIAL-INDIVIDUAL-D default-locale output is unchanged 1`] = `
             {
               "srcId": "SRC-023",
               "locator": "STP 1.3"
+            },
+            {
+              "srcId": "SRC-026",
+              "locator": "UKA 13.1"
             }
           ],
           "status": "PASS",
@@ -2821,6 +3458,10 @@ exports[`ES-OFFICIAL-INDIVIDUAL-D default-locale output is unchanged 1`] = `
               "locator": "KoLL 2.2"
             },
             {
+              "srcId": "SRC-026",
+              "locator": "UKA 15.1"
+            },
+            {
               "srcId": "SRC-007",
               "locator": "EM 5.60"
             },
@@ -2865,6 +3506,10 @@ exports[`ES-OFFICIAL-INDIVIDUAL-D default-locale output is unchanged 1`] = `
               "locator": "KoLL 2.3"
             },
             {
+              "srcId": "SRC-026",
+              "locator": "UKA 16.1"
+            },
+            {
               "srcId": "SRC-015",
               "locator": "KOL 1.1"
             },
@@ -2905,7 +3550,7 @@ exports[`ES-OFFICIAL-INDIVIDUAL-D default-locale output is unchanged 1`] = `
         }
       ],
       "assumptions": [
-        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）、Appendix FM 伴侣（10 年路线按 Appendix Settlement Family Life，5 年路线按 Appendix FM）、持 refugee status 或 humanitarian protection 的主申请人（Appendix Settlement Protection）与 Long Residence（Appendix Long Residence）；Part Suitability、STP 2.1 的 suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
+        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）、Appendix FM 伴侣（10 年路线按 Appendix Settlement Family Life，5 年路线按 Appendix FM）、持 refugee status 或 humanitarian protection 的主申请人（Appendix Settlement Protection）、UK Ancestry 主申请人（Appendix UK Ancestry）与 Long Residence（Appendix Long Residence）；Part Suitability、STP 2.1 的 suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
         "连续合法居留计入学生、毕业生等临时路线，不计访问、季节性工作者、乌克兰计划（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。"
       ]
     },
@@ -3314,6 +3959,10 @@ exports[`ES-OFFICIAL-P16-MATERNITY-BEST-YEARS default-locale output is unchanged
             {
               "srcId": "SRC-023",
               "locator": "STP 1.3"
+            },
+            {
+              "srcId": "SRC-026",
+              "locator": "UKA 13.1"
             }
           ],
           "status": "PASS",
@@ -3392,6 +4041,10 @@ exports[`ES-OFFICIAL-P16-MATERNITY-BEST-YEARS default-locale output is unchanged
               "locator": "KoLL 2.2"
             },
             {
+              "srcId": "SRC-026",
+              "locator": "UKA 15.1"
+            },
+            {
               "srcId": "SRC-007",
               "locator": "EM 5.60"
             },
@@ -3436,6 +4089,10 @@ exports[`ES-OFFICIAL-P16-MATERNITY-BEST-YEARS default-locale output is unchanged
               "locator": "KoLL 2.3"
             },
             {
+              "srcId": "SRC-026",
+              "locator": "UKA 16.1"
+            },
+            {
               "srcId": "SRC-015",
               "locator": "KOL 1.1"
             },
@@ -3476,7 +4133,7 @@ exports[`ES-OFFICIAL-P16-MATERNITY-BEST-YEARS default-locale output is unchanged
         }
       ],
       "assumptions": [
-        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）、Appendix FM 伴侣（10 年路线按 Appendix Settlement Family Life，5 年路线按 Appendix FM）、持 refugee status 或 humanitarian protection 的主申请人（Appendix Settlement Protection）与 Long Residence（Appendix Long Residence）；Part Suitability、STP 2.1 的 suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
+        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）、Appendix FM 伴侣（10 年路线按 Appendix Settlement Family Life，5 年路线按 Appendix FM）、持 refugee status 或 humanitarian protection 的主申请人（Appendix Settlement Protection）、UK Ancestry 主申请人（Appendix UK Ancestry）与 Long Residence（Appendix Long Residence）；Part Suitability、STP 2.1 的 suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
         "连续合法居留计入学生、毕业生等临时路线，不计访问、季节性工作者、乌克兰计划（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。"
       ]
     },
@@ -3875,6 +4532,10 @@ exports[`ES-OFFICIAL-P19-INDIVIDUAL-A default-locale output is unchanged 1`] = `
             {
               "srcId": "SRC-023",
               "locator": "STP 1.3"
+            },
+            {
+              "srcId": "SRC-026",
+              "locator": "UKA 13.1"
             }
           ],
           "status": "PASS",
@@ -4012,6 +4673,10 @@ exports[`ES-OFFICIAL-P19-INDIVIDUAL-A default-locale output is unchanged 1`] = `
               "locator": "KoLL 2.2"
             },
             {
+              "srcId": "SRC-026",
+              "locator": "UKA 15.1"
+            },
+            {
               "srcId": "SRC-007",
               "locator": "EM 5.60"
             },
@@ -4056,6 +4721,10 @@ exports[`ES-OFFICIAL-P19-INDIVIDUAL-A default-locale output is unchanged 1`] = `
               "locator": "KoLL 2.3"
             },
             {
+              "srcId": "SRC-026",
+              "locator": "UKA 16.1"
+            },
+            {
               "srcId": "SRC-015",
               "locator": "KOL 1.1"
             },
@@ -4096,7 +4765,7 @@ exports[`ES-OFFICIAL-P19-INDIVIDUAL-A default-locale output is unchanged 1`] = `
         }
       ],
       "assumptions": [
-        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）、Appendix FM 伴侣（10 年路线按 Appendix Settlement Family Life，5 年路线按 Appendix FM）、持 refugee status 或 humanitarian protection 的主申请人（Appendix Settlement Protection）与 Long Residence（Appendix Long Residence）；Part Suitability、STP 2.1 的 suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
+        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）、Appendix FM 伴侣（10 年路线按 Appendix Settlement Family Life，5 年路线按 Appendix FM）、持 refugee status 或 humanitarian protection 的主申请人（Appendix Settlement Protection）、UK Ancestry 主申请人（Appendix UK Ancestry）与 Long Residence（Appendix Long Residence）；Part Suitability、STP 2.1 的 suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
         "连续期合并 SW 21.2 列出的 Skilled Worker、Global Talent、Innovator Founder、T2 Minister of Religion、International Sportsperson、Scale-up 主申请人许可；Representative of an Overseas Business 与 Tier 1 本工具无法填写，不计入；SW 21.2(i) 的等待决定期间未建模。",
         "SW 24.3 row E（5 年期含 Tier 2 (General) 下的 STEM 类 SOC 2010 职业）未建模。",
         "未申报是否在 Immigration Salary List 上，按不在清单处理。",
@@ -4501,6 +5170,10 @@ exports[`ES-OFFICIAL-P19-INDIVIDUAL-B default-locale output is unchanged 1`] = `
             {
               "srcId": "SRC-023",
               "locator": "STP 1.3"
+            },
+            {
+              "srcId": "SRC-026",
+              "locator": "UKA 13.1"
             }
           ],
           "status": "PASS",
@@ -4579,6 +5252,10 @@ exports[`ES-OFFICIAL-P19-INDIVIDUAL-B default-locale output is unchanged 1`] = `
               "locator": "KoLL 2.2"
             },
             {
+              "srcId": "SRC-026",
+              "locator": "UKA 15.1"
+            },
+            {
               "srcId": "SRC-007",
               "locator": "EM 5.60"
             },
@@ -4623,6 +5300,10 @@ exports[`ES-OFFICIAL-P19-INDIVIDUAL-B default-locale output is unchanged 1`] = `
               "locator": "KoLL 2.3"
             },
             {
+              "srcId": "SRC-026",
+              "locator": "UKA 16.1"
+            },
+            {
               "srcId": "SRC-015",
               "locator": "KOL 1.1"
             },
@@ -4663,7 +5344,7 @@ exports[`ES-OFFICIAL-P19-INDIVIDUAL-B default-locale output is unchanged 1`] = `
         }
       ],
       "assumptions": [
-        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）、Appendix FM 伴侣（10 年路线按 Appendix Settlement Family Life，5 年路线按 Appendix FM）、持 refugee status 或 humanitarian protection 的主申请人（Appendix Settlement Protection）与 Long Residence（Appendix Long Residence）；Part Suitability、STP 2.1 的 suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
+        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）、Appendix FM 伴侣（10 年路线按 Appendix Settlement Family Life，5 年路线按 Appendix FM）、持 refugee status 或 humanitarian protection 的主申请人（Appendix Settlement Protection）、UK Ancestry 主申请人（Appendix UK Ancestry）与 Long Residence（Appendix Long Residence）；Part Suitability、STP 2.1 的 suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
         "连续合法居留计入学生、毕业生等临时路线，不计访问、季节性工作者、乌克兰计划（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。"
       ]
     },
@@ -5064,6 +5745,10 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-A default-locale output is unchanged 1`] = `
             {
               "srcId": "SRC-023",
               "locator": "STP 1.3"
+            },
+            {
+              "srcId": "SRC-026",
+              "locator": "UKA 13.1"
             }
           ],
           "status": "PASS",
@@ -5138,6 +5823,10 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-A default-locale output is unchanged 1`] = `
               "locator": "KoLL 2.2"
             },
             {
+              "srcId": "SRC-026",
+              "locator": "UKA 15.1"
+            },
+            {
               "srcId": "SRC-007",
               "locator": "EM 5.60"
             },
@@ -5182,6 +5871,10 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-A default-locale output is unchanged 1`] = `
               "locator": "KoLL 2.3"
             },
             {
+              "srcId": "SRC-026",
+              "locator": "UKA 16.1"
+            },
+            {
               "srcId": "SRC-015",
               "locator": "KOL 1.1"
             },
@@ -5222,7 +5915,7 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-A default-locale output is unchanged 1`] = `
         }
       ],
       "assumptions": [
-        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）、Appendix FM 伴侣（10 年路线按 Appendix Settlement Family Life，5 年路线按 Appendix FM）、持 refugee status 或 humanitarian protection 的主申请人（Appendix Settlement Protection）与 Long Residence（Appendix Long Residence）；Part Suitability、STP 2.1 的 suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
+        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）、Appendix FM 伴侣（10 年路线按 Appendix Settlement Family Life，5 年路线按 Appendix FM）、持 refugee status 或 humanitarian protection 的主申请人（Appendix Settlement Protection）、UK Ancestry 主申请人（Appendix UK Ancestry）与 Long Residence（Appendix Long Residence）；Part Suitability、STP 2.1 的 suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
         "只计连续的 Skilled Worker dependant 许可，假设整段都是同一主申请人的 dependent partner；Appendix Relationship with Partner（SW 39.3）未核对。",
         "主申请人尚未定居时，只判断与主申请人同时获批（SW 39.1(a)）；若其已定居，须在主申请人信息里填写定居日期与路线（SW 39.1(b)）。",
         "连续合法居留计入学生、毕业生等临时路线，不计访问、季节性工作者、乌克兰计划（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。"
@@ -5507,6 +6200,10 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-B default-locale output is unchanged 1`] = `
             {
               "srcId": "SRC-023",
               "locator": "STP 1.3"
+            },
+            {
+              "srcId": "SRC-026",
+              "locator": "UKA 13.1"
             }
           ],
           "status": "PASS",
@@ -5644,6 +6341,10 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-B default-locale output is unchanged 1`] = `
               "locator": "KoLL 2.2"
             },
             {
+              "srcId": "SRC-026",
+              "locator": "UKA 15.1"
+            },
+            {
               "srcId": "SRC-007",
               "locator": "EM 5.60"
             },
@@ -5688,6 +6389,10 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-B default-locale output is unchanged 1`] = `
               "locator": "KoLL 2.3"
             },
             {
+              "srcId": "SRC-026",
+              "locator": "UKA 16.1"
+            },
+            {
               "srcId": "SRC-015",
               "locator": "KOL 1.1"
             },
@@ -5728,7 +6433,7 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-B default-locale output is unchanged 1`] = `
         }
       ],
       "assumptions": [
-        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）、Appendix FM 伴侣（10 年路线按 Appendix Settlement Family Life，5 年路线按 Appendix FM）、持 refugee status 或 humanitarian protection 的主申请人（Appendix Settlement Protection）与 Long Residence（Appendix Long Residence）；Part Suitability、STP 2.1 的 suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
+        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）、Appendix FM 伴侣（10 年路线按 Appendix Settlement Family Life，5 年路线按 Appendix FM）、持 refugee status 或 humanitarian protection 的主申请人（Appendix Settlement Protection）、UK Ancestry 主申请人（Appendix UK Ancestry）与 Long Residence（Appendix Long Residence）；Part Suitability、STP 2.1 的 suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
         "连续期合并 SW 21.2 列出的 Skilled Worker、Global Talent、Innovator Founder、T2 Minister of Religion、International Sportsperson、Scale-up 主申请人许可；Representative of an Overseas Business 与 Tier 1 本工具无法填写，不计入；SW 21.2(i) 的等待决定期间未建模。",
         "SW 24.3 row E（5 年期含 Tier 2 (General) 下的 STEM 类 SOC 2010 职业）未建模。",
         "未申报是否在 Immigration Salary List 上，按不在清单处理。",
@@ -6135,6 +6840,10 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-B-PARTNER default-locale output is unchanged
             {
               "srcId": "SRC-023",
               "locator": "STP 1.3"
+            },
+            {
+              "srcId": "SRC-026",
+              "locator": "UKA 13.1"
             }
           ],
           "status": "PASS",
@@ -6209,6 +6918,10 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-B-PARTNER default-locale output is unchanged
               "locator": "KoLL 2.2"
             },
             {
+              "srcId": "SRC-026",
+              "locator": "UKA 15.1"
+            },
+            {
               "srcId": "SRC-007",
               "locator": "EM 5.60"
             },
@@ -6253,6 +6966,10 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-B-PARTNER default-locale output is unchanged
               "locator": "KoLL 2.3"
             },
             {
+              "srcId": "SRC-026",
+              "locator": "UKA 16.1"
+            },
+            {
               "srcId": "SRC-015",
               "locator": "KOL 1.1"
             },
@@ -6293,7 +7010,7 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-B-PARTNER default-locale output is unchanged
         }
       ],
       "assumptions": [
-        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）、Appendix FM 伴侣（10 年路线按 Appendix Settlement Family Life，5 年路线按 Appendix FM）、持 refugee status 或 humanitarian protection 的主申请人（Appendix Settlement Protection）与 Long Residence（Appendix Long Residence）；Part Suitability、STP 2.1 的 suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
+        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）、Appendix FM 伴侣（10 年路线按 Appendix Settlement Family Life，5 年路线按 Appendix FM）、持 refugee status 或 humanitarian protection 的主申请人（Appendix Settlement Protection）、UK Ancestry 主申请人（Appendix UK Ancestry）与 Long Residence（Appendix Long Residence）；Part Suitability、STP 2.1 的 suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
         "预计日期在 2027-03-26 之后，届时定居须达到英语 B2（SW 22A.1、LR 13.1(b)）。",
         "只计连续的 Skilled Worker dependant 许可，假设整段都是同一主申请人的 dependent partner；Appendix Relationship with Partner（SW 39.3）未核对。",
         "主申请人尚未定居时，只判断与主申请人同时获批（SW 39.1(a)）；若其已定居，须在主申请人信息里填写定居日期与路线（SW 39.1(b)）。",
@@ -6585,6 +7302,10 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-C default-locale output is unchanged 1`] = `
             {
               "srcId": "SRC-023",
               "locator": "STP 1.3"
+            },
+            {
+              "srcId": "SRC-026",
+              "locator": "UKA 13.1"
             }
           ],
           "status": "PASS",
@@ -6669,6 +7390,10 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-C default-locale output is unchanged 1`] = `
               "locator": "KoLL 2.2"
             },
             {
+              "srcId": "SRC-026",
+              "locator": "UKA 15.1"
+            },
+            {
               "srcId": "SRC-007",
               "locator": "EM 5.60"
             },
@@ -6713,6 +7438,10 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-C default-locale output is unchanged 1`] = `
               "locator": "KoLL 2.3"
             },
             {
+              "srcId": "SRC-026",
+              "locator": "UKA 16.1"
+            },
+            {
               "srcId": "SRC-015",
               "locator": "KOL 1.1"
             },
@@ -6753,7 +7482,7 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-C default-locale output is unchanged 1`] = `
         }
       ],
       "assumptions": [
-        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）、Appendix FM 伴侣（10 年路线按 Appendix Settlement Family Life，5 年路线按 Appendix FM）、持 refugee status 或 humanitarian protection 的主申请人（Appendix Settlement Protection）与 Long Residence（Appendix Long Residence）；Part Suitability、STP 2.1 的 suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
+        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）、Appendix FM 伴侣（10 年路线按 Appendix Settlement Family Life，5 年路线按 Appendix FM）、持 refugee status 或 humanitarian protection 的主申请人（Appendix Settlement Protection）、UK Ancestry 主申请人（Appendix UK Ancestry）与 Long Residence（Appendix Long Residence）；Part Suitability、STP 2.1 的 suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
         "假设子女未 leading an independent life（CHI 1A.1）。",
         "假设子女有符合英国法律的照护与住宿安排（CHI 2.1）。",
         "只看申请日当天的 Skilled Worker dependent child 许可，假设是同一主申请人的子女；另一位家长须同时获批定居、已定居或为英国公民，除非主申请人负唯一抚养责任等（CHI 4.3，经 SW 39.4），本工具未核对。",
@@ -7030,6 +7759,10 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-D default-locale output is unchanged 1`] = `
             {
               "srcId": "SRC-023",
               "locator": "STP 1.3"
+            },
+            {
+              "srcId": "SRC-026",
+              "locator": "UKA 13.1"
             }
           ],
           "status": "PASS",
@@ -7113,6 +7846,10 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-D default-locale output is unchanged 1`] = `
               "locator": "KoLL 2.2"
             },
             {
+              "srcId": "SRC-026",
+              "locator": "UKA 15.1"
+            },
+            {
               "srcId": "SRC-007",
               "locator": "EM 5.60"
             },
@@ -7157,6 +7894,10 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-D default-locale output is unchanged 1`] = `
               "locator": "KoLL 2.3"
             },
             {
+              "srcId": "SRC-026",
+              "locator": "UKA 16.1"
+            },
+            {
               "srcId": "SRC-015",
               "locator": "KOL 1.1"
             },
@@ -7197,7 +7938,7 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-D default-locale output is unchanged 1`] = `
         }
       ],
       "assumptions": [
-        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）、Appendix FM 伴侣（10 年路线按 Appendix Settlement Family Life，5 年路线按 Appendix FM）、持 refugee status 或 humanitarian protection 的主申请人（Appendix Settlement Protection）与 Long Residence（Appendix Long Residence）；Part Suitability、STP 2.1 的 suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
+        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）、Appendix FM 伴侣（10 年路线按 Appendix Settlement Family Life，5 年路线按 Appendix FM）、持 refugee status 或 humanitarian protection 的主申请人（Appendix Settlement Protection）、UK Ancestry 主申请人（Appendix UK Ancestry）与 Long Residence（Appendix Long Residence）；Part Suitability、STP 2.1 的 suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
         "假设子女未 leading an independent life（CHI 1A.1）。",
         "只看申请日当天的 Skilled Worker dependent child 许可，假设是同一主申请人的子女；另一位家长须同时获批定居、已定居或为英国公民，除非主申请人负唯一抚养责任等（CHI 4.3，经 SW 39.4），本工具未核对。",
         "主申请人尚未定居时，只判断与主申请人同时获批（SW 39.1(a)）；若其已定居，须在主申请人信息里填写定居日期与路线（SW 39.1(b)）。",
@@ -7470,6 +8211,10 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-E default-locale output is unchanged 1`] = `
             {
               "srcId": "SRC-023",
               "locator": "STP 1.3"
+            },
+            {
+              "srcId": "SRC-026",
+              "locator": "UKA 13.1"
             }
           ],
           "status": "PASS",
@@ -7553,6 +8298,10 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-E default-locale output is unchanged 1`] = `
               "locator": "KoLL 2.2"
             },
             {
+              "srcId": "SRC-026",
+              "locator": "UKA 15.1"
+            },
+            {
               "srcId": "SRC-007",
               "locator": "EM 5.60"
             },
@@ -7597,6 +8346,10 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-E default-locale output is unchanged 1`] = `
               "locator": "KoLL 2.3"
             },
             {
+              "srcId": "SRC-026",
+              "locator": "UKA 16.1"
+            },
+            {
               "srcId": "SRC-015",
               "locator": "KOL 1.1"
             },
@@ -7637,7 +8390,7 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-E default-locale output is unchanged 1`] = `
         }
       ],
       "assumptions": [
-        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）、Appendix FM 伴侣（10 年路线按 Appendix Settlement Family Life，5 年路线按 Appendix FM）、持 refugee status 或 humanitarian protection 的主申请人（Appendix Settlement Protection）与 Long Residence（Appendix Long Residence）；Part Suitability、STP 2.1 的 suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
+        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）、Appendix FM 伴侣（10 年路线按 Appendix Settlement Family Life，5 年路线按 Appendix FM）、持 refugee status 或 humanitarian protection 的主申请人（Appendix Settlement Protection）、UK Ancestry 主申请人（Appendix UK Ancestry）与 Long Residence（Appendix Long Residence）；Part Suitability、STP 2.1 的 suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
         "预计日期在 2027-03-26 之后，届时定居须达到英语 B2（SW 22A.1、LR 13.1(b)）。",
         "假设子女未 leading an independent life（CHI 1A.1）。",
         "只看申请日当天的 Skilled Worker dependent child 许可，假设是同一主申请人的子女；另一位家长须同时获批定居、已定居或为英国公民，除非主申请人负唯一抚养责任等（CHI 4.3，经 SW 39.4），本工具未核对。",
@@ -7909,6 +8662,10 @@ exports[`ES-OFFICIAL-P40-INDIVIDUAL-A default-locale output is unchanged 1`] = `
             {
               "srcId": "SRC-023",
               "locator": "STP 1.3"
+            },
+            {
+              "srcId": "SRC-026",
+              "locator": "UKA 13.1"
             }
           ],
           "status": "PASS",
@@ -7998,6 +8755,10 @@ exports[`ES-OFFICIAL-P40-INDIVIDUAL-A default-locale output is unchanged 1`] = `
               "locator": "KoLL 2.2"
             },
             {
+              "srcId": "SRC-026",
+              "locator": "UKA 15.1"
+            },
+            {
               "srcId": "SRC-007",
               "locator": "EM 5.60"
             },
@@ -8042,6 +8803,10 @@ exports[`ES-OFFICIAL-P40-INDIVIDUAL-A default-locale output is unchanged 1`] = `
               "locator": "KoLL 2.3"
             },
             {
+              "srcId": "SRC-026",
+              "locator": "UKA 16.1"
+            },
+            {
               "srcId": "SRC-015",
               "locator": "KOL 1.1"
             },
@@ -8082,7 +8847,7 @@ exports[`ES-OFFICIAL-P40-INDIVIDUAL-A default-locale output is unchanged 1`] = `
         }
       ],
       "assumptions": [
-        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）、Appendix FM 伴侣（10 年路线按 Appendix Settlement Family Life，5 年路线按 Appendix FM）、持 refugee status 或 humanitarian protection 的主申请人（Appendix Settlement Protection）与 Long Residence（Appendix Long Residence）；Part Suitability、STP 2.1 的 suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
+        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）、Appendix FM 伴侣（10 年路线按 Appendix Settlement Family Life，5 年路线按 Appendix FM）、持 refugee status 或 humanitarian protection 的主申请人（Appendix Settlement Protection）、UK Ancestry 主申请人（Appendix UK Ancestry）与 Long Residence（Appendix Long Residence）；Part Suitability、STP 2.1 的 suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
         "STP 1.3 按申请庇护的日期列明许可类别：2022-06-28 前申请的为 refugee 或 humanitarian protection 许可，此后申请的为 refugee permission to stay；本工具不区分 refugee 与 humanitarian protection，按你持有所列许可处理。2022-06-28 及以后申请庇护而获 humanitarian protection 的，STP 1.3(b) 未列明（PD-073）。",
         "审理定居申请时会做 safe return review（STP 4.2），核查个人情况或原籍国状况是否已变化到可撤销或不续期保护身份，结果无法预判。",
         "不满足定居要求、但仍有权享有 refugee status 或 humanitarian protection 时，会再获至少 30 个月的保护许可（STP 5.2）。",
@@ -8319,6 +9084,10 @@ exports[`ES-OFFICIAL-P40-INDIVIDUAL-B default-locale output is unchanged 1`] = `
             {
               "srcId": "SRC-023",
               "locator": "STP 1.3"
+            },
+            {
+              "srcId": "SRC-026",
+              "locator": "UKA 13.1"
             }
           ],
           "status": "PASS",
@@ -8408,6 +9177,10 @@ exports[`ES-OFFICIAL-P40-INDIVIDUAL-B default-locale output is unchanged 1`] = `
               "locator": "KoLL 2.2"
             },
             {
+              "srcId": "SRC-026",
+              "locator": "UKA 15.1"
+            },
+            {
               "srcId": "SRC-007",
               "locator": "EM 5.60"
             },
@@ -8452,6 +9225,10 @@ exports[`ES-OFFICIAL-P40-INDIVIDUAL-B default-locale output is unchanged 1`] = `
               "locator": "KoLL 2.3"
             },
             {
+              "srcId": "SRC-026",
+              "locator": "UKA 16.1"
+            },
+            {
               "srcId": "SRC-015",
               "locator": "KOL 1.1"
             },
@@ -8492,7 +9269,7 @@ exports[`ES-OFFICIAL-P40-INDIVIDUAL-B default-locale output is unchanged 1`] = `
         }
       ],
       "assumptions": [
-        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）、Appendix FM 伴侣（10 年路线按 Appendix Settlement Family Life，5 年路线按 Appendix FM）、持 refugee status 或 humanitarian protection 的主申请人（Appendix Settlement Protection）与 Long Residence（Appendix Long Residence）；Part Suitability、STP 2.1 的 suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
+        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）、Appendix FM 伴侣（10 年路线按 Appendix Settlement Family Life，5 年路线按 Appendix FM）、持 refugee status 或 humanitarian protection 的主申请人（Appendix Settlement Protection）、UK Ancestry 主申请人（Appendix UK Ancestry）与 Long Residence（Appendix Long Residence）；Part Suitability、STP 2.1 的 suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
         "STP 1.3 按申请庇护的日期列明许可类别：2022-06-28 前申请的为 refugee 或 humanitarian protection 许可，此后申请的为 refugee permission to stay；本工具不区分 refugee 与 humanitarian protection，按你持有所列许可处理。2022-06-28 及以后申请庇护而获 humanitarian protection 的，STP 1.3(b) 未列明（PD-073）。",
         "审理定居申请时会做 safe return review（STP 4.2），核查个人情况或原籍国状况是否已变化到可撤销或不续期保护身份，结果无法预判。",
         "不满足定居要求、但仍有权享有 refugee status 或 humanitarian protection 时，会再获至少 30 个月的保护许可（STP 5.2）。",
@@ -8770,6 +9547,10 @@ exports[`ES-OFFICIAL-P40-INDIVIDUAL-C default-locale output is unchanged 1`] = `
             {
               "srcId": "SRC-023",
               "locator": "STP 1.3"
+            },
+            {
+              "srcId": "SRC-026",
+              "locator": "UKA 13.1"
             }
           ],
           "status": "PASS",
@@ -8859,6 +9640,10 @@ exports[`ES-OFFICIAL-P40-INDIVIDUAL-C default-locale output is unchanged 1`] = `
               "locator": "KoLL 2.2"
             },
             {
+              "srcId": "SRC-026",
+              "locator": "UKA 15.1"
+            },
+            {
               "srcId": "SRC-007",
               "locator": "EM 5.60"
             },
@@ -8903,6 +9688,10 @@ exports[`ES-OFFICIAL-P40-INDIVIDUAL-C default-locale output is unchanged 1`] = `
               "locator": "KoLL 2.3"
             },
             {
+              "srcId": "SRC-026",
+              "locator": "UKA 16.1"
+            },
+            {
               "srcId": "SRC-015",
               "locator": "KOL 1.1"
             },
@@ -8943,7 +9732,7 @@ exports[`ES-OFFICIAL-P40-INDIVIDUAL-C default-locale output is unchanged 1`] = `
         }
       ],
       "assumptions": [
-        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）、Appendix FM 伴侣（10 年路线按 Appendix Settlement Family Life，5 年路线按 Appendix FM）、持 refugee status 或 humanitarian protection 的主申请人（Appendix Settlement Protection）与 Long Residence（Appendix Long Residence）；Part Suitability、STP 2.1 的 suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
+        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）、Appendix FM 伴侣（10 年路线按 Appendix Settlement Family Life，5 年路线按 Appendix FM）、持 refugee status 或 humanitarian protection 的主申请人（Appendix Settlement Protection）、UK Ancestry 主申请人（Appendix UK Ancestry）与 Long Residence（Appendix Long Residence）；Part Suitability、STP 2.1 的 suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
         "STP 1.3 按申请庇护的日期列明许可类别：2022-06-28 前申请的为 refugee 或 humanitarian protection 许可，此后申请的为 refugee permission to stay；本工具不区分 refugee 与 humanitarian protection，按你持有所列许可处理。2022-06-28 及以后申请庇护而获 humanitarian protection 的，STP 1.3(b) 未列明（PD-073）。",
         "审理定居申请时会做 safe return review（STP 4.2），核查个人情况或原籍国状况是否已变化到可撤销或不续期保护身份，结果无法预判。",
         "不满足定居要求、但仍有权享有 refugee status 或 humanitarian protection 时，会再获至少 30 个月的保护许可（STP 5.2）。",
@@ -9225,6 +10014,10 @@ exports[`ES-OFFICIAL-P40-INDIVIDUAL-D default-locale output is unchanged 1`] = `
             {
               "srcId": "SRC-023",
               "locator": "STP 1.3"
+            },
+            {
+              "srcId": "SRC-026",
+              "locator": "UKA 13.1"
             }
           ],
           "status": "PASS",
@@ -9314,6 +10107,10 @@ exports[`ES-OFFICIAL-P40-INDIVIDUAL-D default-locale output is unchanged 1`] = `
               "locator": "KoLL 2.2"
             },
             {
+              "srcId": "SRC-026",
+              "locator": "UKA 15.1"
+            },
+            {
               "srcId": "SRC-007",
               "locator": "EM 5.60"
             },
@@ -9358,6 +10155,10 @@ exports[`ES-OFFICIAL-P40-INDIVIDUAL-D default-locale output is unchanged 1`] = `
               "locator": "KoLL 2.3"
             },
             {
+              "srcId": "SRC-026",
+              "locator": "UKA 16.1"
+            },
+            {
               "srcId": "SRC-015",
               "locator": "KOL 1.1"
             },
@@ -9398,7 +10199,7 @@ exports[`ES-OFFICIAL-P40-INDIVIDUAL-D default-locale output is unchanged 1`] = `
         }
       ],
       "assumptions": [
-        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）、Appendix FM 伴侣（10 年路线按 Appendix Settlement Family Life，5 年路线按 Appendix FM）、持 refugee status 或 humanitarian protection 的主申请人（Appendix Settlement Protection）与 Long Residence（Appendix Long Residence）；Part Suitability、STP 2.1 的 suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
+        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）、Appendix FM 伴侣（10 年路线按 Appendix Settlement Family Life，5 年路线按 Appendix FM）、持 refugee status 或 humanitarian protection 的主申请人（Appendix Settlement Protection）、UK Ancestry 主申请人（Appendix UK Ancestry）与 Long Residence（Appendix Long Residence）；Part Suitability、STP 2.1 的 suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
         "STP 1.3 按申请庇护的日期列明许可类别：2022-06-28 前申请的为 refugee 或 humanitarian protection 许可，此后申请的为 refugee permission to stay；本工具不区分 refugee 与 humanitarian protection，按你持有所列许可处理。2022-06-28 及以后申请庇护而获 humanitarian protection 的，STP 1.3(b) 未列明（PD-073）。",
         "审理定居申请时会做 safe return review（STP 4.2），核查个人情况或原籍国状况是否已变化到可撤销或不续期保护身份，结果无法预判。",
         "不满足定居要求、但仍有权享有 refugee status 或 humanitarian protection 时，会再获至少 30 个月的保护许可（STP 5.2）。",
@@ -9652,6 +10453,10 @@ exports[`ES-OFFICIAL-P45-INDIVIDUAL-A default-locale output is unchanged 1`] = `
             {
               "srcId": "SRC-023",
               "locator": "STP 1.3"
+            },
+            {
+              "srcId": "SRC-026",
+              "locator": "UKA 13.1"
             }
           ],
           "status": "PASS",
@@ -9789,6 +10594,10 @@ exports[`ES-OFFICIAL-P45-INDIVIDUAL-A default-locale output is unchanged 1`] = `
               "locator": "KoLL 2.2"
             },
             {
+              "srcId": "SRC-026",
+              "locator": "UKA 15.1"
+            },
+            {
               "srcId": "SRC-007",
               "locator": "EM 5.60"
             },
@@ -9833,6 +10642,10 @@ exports[`ES-OFFICIAL-P45-INDIVIDUAL-A default-locale output is unchanged 1`] = `
               "locator": "KoLL 2.3"
             },
             {
+              "srcId": "SRC-026",
+              "locator": "UKA 16.1"
+            },
+            {
               "srcId": "SRC-015",
               "locator": "KOL 1.1"
             },
@@ -9873,7 +10686,7 @@ exports[`ES-OFFICIAL-P45-INDIVIDUAL-A default-locale output is unchanged 1`] = `
         }
       ],
       "assumptions": [
-        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）、Appendix FM 伴侣（10 年路线按 Appendix Settlement Family Life，5 年路线按 Appendix FM）、持 refugee status 或 humanitarian protection 的主申请人（Appendix Settlement Protection）与 Long Residence（Appendix Long Residence）；Part Suitability、STP 2.1 的 suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
+        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）、Appendix FM 伴侣（10 年路线按 Appendix Settlement Family Life，5 年路线按 Appendix FM）、持 refugee status 或 humanitarian protection 的主申请人（Appendix Settlement Protection）、UK Ancestry 主申请人（Appendix UK Ancestry）与 Long Residence（Appendix Long Residence）；Part Suitability、STP 2.1 的 suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
         "连续期合并 SW 21.2 列出的 Skilled Worker、Global Talent、Innovator Founder、T2 Minister of Religion、International Sportsperson、Scale-up 主申请人许可；Representative of an Overseas Business 与 Tier 1 本工具无法填写，不计入；SW 21.2(i) 的等待决定期间未建模。",
         "SW 24.3 row E（5 年期含 Tier 2 (General) 下的 STEM 类 SOC 2010 职业）未建模。",
         "未申报是否在 Immigration Salary List 上；SOC 6135 在清单职业表中，按职业代码推导为在清单上。清单对岗位 / 地区的限制（criteria）未核对，可在问卷里申报覆盖。清单条目的移除日期为 2028-07-22，已按申请日比较。",
@@ -10287,6 +11100,10 @@ exports[`ES-OFFICIAL-P45-INDIVIDUAL-B default-locale output is unchanged 1`] = `
             {
               "srcId": "SRC-023",
               "locator": "STP 1.3"
+            },
+            {
+              "srcId": "SRC-026",
+              "locator": "UKA 13.1"
             }
           ],
           "status": "PASS",
@@ -10424,6 +11241,10 @@ exports[`ES-OFFICIAL-P45-INDIVIDUAL-B default-locale output is unchanged 1`] = `
               "locator": "KoLL 2.2"
             },
             {
+              "srcId": "SRC-026",
+              "locator": "UKA 15.1"
+            },
+            {
               "srcId": "SRC-007",
               "locator": "EM 5.60"
             },
@@ -10468,6 +11289,10 @@ exports[`ES-OFFICIAL-P45-INDIVIDUAL-B default-locale output is unchanged 1`] = `
               "locator": "KoLL 2.3"
             },
             {
+              "srcId": "SRC-026",
+              "locator": "UKA 16.1"
+            },
+            {
               "srcId": "SRC-015",
               "locator": "KOL 1.1"
             },
@@ -10508,7 +11333,7 @@ exports[`ES-OFFICIAL-P45-INDIVIDUAL-B default-locale output is unchanged 1`] = `
         }
       ],
       "assumptions": [
-        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）、Appendix FM 伴侣（10 年路线按 Appendix Settlement Family Life，5 年路线按 Appendix FM）、持 refugee status 或 humanitarian protection 的主申请人（Appendix Settlement Protection）与 Long Residence（Appendix Long Residence）；Part Suitability、STP 2.1 的 suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
+        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）、Appendix FM 伴侣（10 年路线按 Appendix Settlement Family Life，5 年路线按 Appendix FM）、持 refugee status 或 humanitarian protection 的主申请人（Appendix Settlement Protection）、UK Ancestry 主申请人（Appendix UK Ancestry）与 Long Residence（Appendix Long Residence）；Part Suitability、STP 2.1 的 suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
         "连续期合并 SW 21.2 列出的 Skilled Worker、Global Talent、Innovator Founder、T2 Minister of Religion、International Sportsperson、Scale-up 主申请人许可；Representative of an Overseas Business 与 Tier 1 本工具无法填写，不计入；SW 21.2(i) 的等待决定期间未建模。",
         "SW 24.3 row E（5 年期含 Tier 2 (General) 下的 STEM 类 SOC 2010 职业）未建模。",
         "未申报是否在 Immigration Salary List 上；SOC 6135 在清单职业表中，按职业代码推导为在清单上。清单对岗位 / 地区的限制（criteria）未核对，可在问卷里申报覆盖。清单条目的移除日期为 2028-07-22，已按申请日比较。",
@@ -10921,6 +11746,10 @@ exports[`ES-OFFICIAL-P45-INDIVIDUAL-C default-locale output is unchanged 1`] = `
             {
               "srcId": "SRC-023",
               "locator": "STP 1.3"
+            },
+            {
+              "srcId": "SRC-026",
+              "locator": "UKA 13.1"
             }
           ],
           "status": "PASS",
@@ -11058,6 +11887,10 @@ exports[`ES-OFFICIAL-P45-INDIVIDUAL-C default-locale output is unchanged 1`] = `
               "locator": "KoLL 2.2"
             },
             {
+              "srcId": "SRC-026",
+              "locator": "UKA 15.1"
+            },
+            {
               "srcId": "SRC-007",
               "locator": "EM 5.60"
             },
@@ -11102,6 +11935,10 @@ exports[`ES-OFFICIAL-P45-INDIVIDUAL-C default-locale output is unchanged 1`] = `
               "locator": "KoLL 2.3"
             },
             {
+              "srcId": "SRC-026",
+              "locator": "UKA 16.1"
+            },
+            {
               "srcId": "SRC-015",
               "locator": "KOL 1.1"
             },
@@ -11142,7 +11979,7 @@ exports[`ES-OFFICIAL-P45-INDIVIDUAL-C default-locale output is unchanged 1`] = `
         }
       ],
       "assumptions": [
-        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）、Appendix FM 伴侣（10 年路线按 Appendix Settlement Family Life，5 年路线按 Appendix FM）、持 refugee status 或 humanitarian protection 的主申请人（Appendix Settlement Protection）与 Long Residence（Appendix Long Residence）；Part Suitability、STP 2.1 的 suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
+        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）、Appendix FM 伴侣（10 年路线按 Appendix Settlement Family Life，5 年路线按 Appendix FM）、持 refugee status 或 humanitarian protection 的主申请人（Appendix Settlement Protection）、UK Ancestry 主申请人（Appendix UK Ancestry）与 Long Residence（Appendix Long Residence）；Part Suitability、STP 2.1 的 suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
         "连续期合并 SW 21.2 列出的 Skilled Worker、Global Talent、Innovator Founder、T2 Minister of Religion、International Sportsperson、Scale-up 主申请人许可；Representative of an Overseas Business 与 Tier 1 本工具无法填写，不计入；SW 21.2(i) 的等待决定期间未建模。",
         "SW 24.3 row E（5 年期含 Tier 2 (General) 下的 STEM 类 SOC 2010 职业）未建模。",
         "未申报是否在 Immigration Salary List 上；SOC 6135 的清单条目移除日期为 2028-07-22，早于申请日，按不在清单处理。",

@@ -2,6 +2,7 @@ import { fixtures } from '@uk-immigration/policy-data/fixtures';
 import { describe, expect, test } from 'vitest';
 import { evaluate } from '../src/evaluate';
 import {
+  clAncestryResidence5Y,
   clEnglish,
   clKol,
   clProtectionResidence5Y,
@@ -206,6 +207,88 @@ describe('refugee status or humanitarian protection (SRC-023)', () => {
     expect(r.shortCircuit).toBeUndefined();
     expect(r.byRuleSet['earned-settlement-2026-11']?.routeGroup).toBe(
       'PROTECTION',
+    );
+  });
+});
+
+describe('UK Ancestry (SRC-026)', () => {
+  const ancestry = (
+    validFrom: string,
+    extra: Partial<PersonTimeline> = {},
+  ): Partial<PersonTimeline> => ({
+    episodes: [on('UK_ANCESTRY', validFrom)],
+    english: { cefrLevel: 'B1' },
+    ...extra,
+  });
+
+  test('CL-SCOPE: a main applicant is in scope, a dependant is not', () => {
+    expect(run(clScope, ancestry('2021-09-01')).explanation).toContain(
+      'Appendix UK Ancestry',
+    );
+    expect(
+      run(clScope, {
+        episodes: [on('UK_ANCESTRY', '2021-09-01', { role: 'DEPENDANT' })],
+      }).status,
+    ).toBe('UNKNOWN');
+  });
+
+  test('5 years to the day: likely eligible (UKA 13.1)', () => {
+    const result = run(
+      clAncestryResidence5Y,
+      ancestry('2021-09-01'),
+      '2026-09-01',
+    );
+    expect(result.status).toBe('PASS');
+    expect(result.assumptions?.join()).toContain('UKA 12.1');
+    expect(currentLaw(ancestry('2021-09-01'), '2026-09-01')).toMatchObject({
+      outcome: 'LIKELY_ELIGIBLE',
+      pathwayYears: 5,
+      earliestDate: '2026-09-01',
+    });
+  });
+
+  test('a day short: projects the date, with the B2 note after 2027-03-26', () => {
+    expect(
+      run(clAncestryResidence5Y, ancestry('2021-09-02'), '2026-09-01').status,
+    ).toBe('FAIL');
+    expect(currentLaw(ancestry('2021-09-02'), '2026-09-01')).toMatchObject({
+      outcome: 'LIKELY_NOT_ELIGIBLE',
+      pathwayYears: 5,
+      earliestDate: '2026-09-02',
+    });
+    expect(
+      currentLaw(ancestry('2023-01-01'), '2026-11-04').assumptions.join(),
+    ).toContain('UKA 15.1(b)');
+  });
+
+  test('only UK Ancestry main permission counts; absences restart it (UKA 14.1)', () => {
+    const episodes = [
+      on('STUDENT', '2019-01-01', { validTo: '2021-08-31' }),
+      on('UK_ANCESTRY', '2021-09-01'),
+    ];
+    expect(
+      run(clAncestryResidence5Y, { episodes }, '2026-09-01').explanation,
+    ).toContain('自 2021-09-01 起');
+    const absent = run(
+      clAncestryResidence5Y,
+      ancestry('2021-09-01', {
+        absences: [{ from: '2022-01-01', to: '2022-06-30' }],
+      }),
+      '2026-09-01',
+    );
+    expect(absent.status).toBe('FAIL');
+    expect(absent.explanation).toContain('2027-07-01');
+  });
+
+  test('English B1 before 2027-03-26, B2 from then (UKA 15.1); KOL UKA 16.1', () => {
+    const before = run(clEnglish, ancestry('2021-09-01'), '2027-03-25');
+    expect(before.status).toBe('PASS');
+    expect(before.explanation).toContain('UKA 15.1(a)');
+    const after = run(clEnglish, ancestry('2021-09-01'), '2027-03-26');
+    expect(after.status).toBe('FAIL');
+    expect(after.explanation).toContain('UKA 15.1(b)');
+    expect(run(clKol, ancestry('2021-09-01')).explanation).toContain(
+      'UKA 16.1',
     );
   });
 });

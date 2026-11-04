@@ -21,10 +21,12 @@ import {
   onProtection,
   onSkilledWorker,
   onSkilledWorkerChild,
+  onUkAncestry,
   onSkilledWorkerPartner,
   skilledWorkerChildStart,
   skilledWorkerPartnerStart,
   skilledWorkerStart,
+  ukAncestryStart,
 } from './rules/current-law';
 import { esDependantSettlement } from './rules/es-dependant';
 import {
@@ -478,8 +480,8 @@ function finishEarnedSettlement(
 
 const clBaseAssumption = (L: Lang) =>
   L(
-    '现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）、Appendix FM 伴侣（10 年路线按 Appendix Settlement Family Life，5 年路线按 Appendix FM）、持 refugee status 或 humanitarian protection 的主申请人（Appendix Settlement Protection）与 Long Residence（Appendix Long Residence）；Part Suitability、STP 2.1 的 suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。',
-    'The current rules are modelled only for Skilled Worker main applicants and their dependent partners / children (Appendix Skilled Worker, Appendix Children), Hong Kong BN(O) main applicants (Appendix Hong Kong British National (Overseas)), Global Talent main applicants (Appendix Global Talent), Appendix FM partners (the 10-year route under Appendix Settlement Family Life, the 5-year route under Appendix FM), main applicants with refugee status or humanitarian protection (Appendix Settlement Protection) and Long Residence (Appendix Long Residence); other requirements, such as Part Suitability, suitability under STP 2.1 and the sponsor still being approved (SW 24.1–24.2), are not modelled.',
+    '现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）、Appendix FM 伴侣（10 年路线按 Appendix Settlement Family Life，5 年路线按 Appendix FM）、持 refugee status 或 humanitarian protection 的主申请人（Appendix Settlement Protection）、UK Ancestry 主申请人（Appendix UK Ancestry）与 Long Residence（Appendix Long Residence）；Part Suitability、STP 2.1 的 suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。',
+    'The current rules are modelled only for Skilled Worker main applicants and their dependent partners / children (Appendix Skilled Worker, Appendix Children), Hong Kong BN(O) main applicants (Appendix Hong Kong British National (Overseas)), Global Talent main applicants (Appendix Global Talent), Appendix FM partners (the 10-year route under Appendix Settlement Family Life, the 5-year route under Appendix FM), main applicants with refugee status or humanitarian protection (Appendix Settlement Protection), UK Ancestry main applicants (Appendix UK Ancestry) and Long Residence (Appendix Long Residence); other requirements, such as Part Suitability, suitability under STP 2.1 and the sponsor still being approved (SW 24.1–24.2), are not modelled.',
   );
 
 function assessCurrentLaw(
@@ -504,6 +506,7 @@ function assessCurrentLaw(
   const familyTen = familyTenYearStart(ctx);
   const familyFive = familyFiveYearStart(ctx);
   const protection = onProtection(ctx.timeline, ctx.simulationDate);
+  const ancestry = onUkAncestry(ctx.timeline, ctx.simulationDate);
   // In scope as a partner or child only with the principal (CL-SCOPE).
   const partner =
     ctx.principal !== undefined &&
@@ -530,7 +533,9 @@ function assessCurrentLaw(
                     ? familyFive !== undefined
                     : id.startsWith('CL-PROTECTION-')
                       ? protection
-                      : true;
+                      : id.startsWith('CL-ANCESTRY-')
+                        ? ancestry
+                        : true;
   const rules = [
     scope,
     ...others
@@ -646,6 +651,15 @@ function assessCurrentLaw(
           },
         ]
       : []),
+    ...(ancestry
+      ? [
+          {
+            years: cl.values.ukAncestryQualifyingYears.value,
+            start: ukAncestryStart(ctx),
+            rules: pick('CL-ENGLISH', 'CL-KOL'),
+          },
+        ]
+      : []),
     ...(partner
       ? [
           {
@@ -716,8 +730,8 @@ function assessCurrentLaw(
   ) {
     assumptions.push(
       L(
-        `预计日期在 ${b2.applicationsFrom} 之后，届时定居须达到英语 ${b2.cefrLevel}（${gt ? 'GT 13.1(b)' : familyTen ? 'SETF 5.1(b)' : familyFive ? 'KoLL 2.2' : 'SW 22A.1'}、LR 13.1(b)）。`,
-        `The projected date is on or after ${b2.applicationsFrom}, when settlement requires English at ${b2.cefrLevel} (${gt ? 'GT 13.1(b)' : familyTen ? 'SETF 5.1(b)' : familyFive ? 'KoLL 2.2' : 'SW 22A.1'}, LR 13.1(b)).`,
+        `预计日期在 ${b2.applicationsFrom} 之后，届时定居须达到英语 ${b2.cefrLevel}（${gt ? 'GT 13.1(b)' : ancestry ? 'UKA 15.1(b)' : familyTen ? 'SETF 5.1(b)' : familyFive ? 'KoLL 2.2' : 'SW 22A.1'}、LR 13.1(b)）。`,
+        `The projected date is on or after ${b2.applicationsFrom}, when settlement requires English at ${b2.cefrLevel} (${gt ? 'GT 13.1(b)' : ancestry ? 'UKA 15.1(b)' : familyTen ? 'SETF 5.1(b)' : familyFive ? 'KoLL 2.2' : 'SW 22A.1'}, LR 13.1(b)).`,
       ),
     );
   }

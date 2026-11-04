@@ -244,5 +244,22 @@ export const currentLaw2026_11 = {
       value: 5,
       sources: [{ srcId: 'SRC-023', locator: 'STP 3.1' }],
     },
+
+    // Appendix UK Ancestry, version 2026-08-03.
+    ukAncestryQualifyingYears: {
+      value: 5,
+      sources: [{ srcId: 'SRC-026', locator: 'UKA 13.1' }],
+    },
+    ukAncestrySettlementEnglishBefore: {
+      value: 'B1',
+      sources: [{ srcId: 'SRC-026', locator: 'UKA 15.1(a)' }],
+    },
+    ukAncestrySettlementEnglish: {
+      value: { cefrLevel: 'B2', applicationsFrom: '2027-03-26' },
+      sources: [
+        { srcId: 'SRC-026', locator: 'UKA 15.1(b)' },
+        { srcId: 'SRC-007', locator: 'EM 5.60' },
+      ],
+    },
   },
 } satisfies ParameterSet;

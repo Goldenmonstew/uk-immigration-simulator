@@ -3,6 +3,7 @@ import { clFamilyPartnerFiveYears } from './cl-family-partner-five-years';
 import { clGlobalTalentThreeYears } from './cl-global-talent-three-years';
 import { clHkbnoFiveYears } from './cl-hkbno-five-years';
 import { clRefugeeFiveYears } from './cl-refugee-five-years';
+import { clUkAncestryFiveYears } from './cl-uk-ancestry-five-years';
 import { esIndividualC } from './es-individual-c-combined-income';
 import { esIndividualD } from './es-individual-d-public-funds';
 import { esP16MaternityBestYears } from './es-p16-maternity-best-years';
@@ -45,4 +46,5 @@ export const fixtures: Fixture[] = [
   clGlobalTalentThreeYears,
   clFamilyPartnerFiveYears,
   clRefugeeFiveYears,
+  clUkAncestryFiveYears,
 ];
