@@ -977,11 +977,28 @@ export function settlementSalaryRow({
   const pre2024 =
     skilledWorkerFrom < v.skilledWorkerPre2024RulesBefore.value &&
     simulationDate < v.skilledWorkerPre2024ApplicationsBefore.value;
-  // Declared answer first; otherwise derived from the SOC code (SRC-019).
-  const islDerived =
-    current.immigrationSalaryList === undefined &&
-    inTable(immigrationSalaryListOccupations.entries, soc);
+  // Declared answer first; otherwise derived from the SOC code (SRC-019),
+  // counting only entries not removed before the date of application.
+  const islEntries = immigrationSalaryListOccupations.entries.filter(
+    (e) => e.socCode === soc,
+  );
+  const islInForce = islEntries.filter(
+    (e) => e.removalDate === undefined || e.removalDate >= simulationDate,
+  );
+  const islUndeclared = current.immigrationSalaryList === undefined;
+  const islDerived = islUndeclared && islInForce.length > 0;
   const isl = current.immigrationSalaryList ?? islDerived;
+  const removalDates = (entries: typeof islEntries) =>
+    [...new Set(entries.flatMap((e) => e.removalDate ?? []))].join(
+      L('、', ', '),
+    );
+  const inForceDates = removalDates(islInForce);
+  const islRemovalNote = inForceDates
+    ? L(
+        `清单条目的移除日期为 ${inForceDates}，已按申请日比较。`,
+        ` The list entry’s removal date is ${inForceDates}, compared with the date of application.`,
+      )
+    : '';
   const pre2024Reason = L(
     `自 ${skilledWorkerFrom} 起连续持 Skilled Worker 许可，早于 ${v.skilledWorkerPre2024RulesBefore.value}，且申请日早于 ${v.skilledWorkerPre2024ApplicationsBefore.value}（SW 4.2(b)(ii)）`,
     `continuous Skilled Worker permission since ${skilledWorkerFrom}, before ${v.skilledWorkerPre2024RulesBefore.value}, with the application before ${v.skilledWorkerPre2024ApplicationsBefore.value} (SW 4.2(b)(ii))`,
@@ -999,18 +1016,25 @@ export function settlementSalaryRow({
     ...(islDerived
       ? [
           L(
-            `未申报是否在 Immigration Salary List 上；SOC ${soc} 在清单职业表中，按职业代码推导为在清单上。清单对岗位 / 地区的限制（criteria）未核对，可在问卷里申报覆盖。`,
-            `Not declared whether the job is on the Immigration Salary List; SOC ${soc} is in the list’s occupation table, so the job is derived to be on the list from its occupation code. The list’s job / region restrictions (criteria) are not checked; a declaration in the questionnaire overrides this.`,
+            `未申报是否在 Immigration Salary List 上；SOC ${soc} 在清单职业表中，按职业代码推导为在清单上。清单对岗位 / 地区的限制（criteria）未核对，可在问卷里申报覆盖。${islRemovalNote}`,
+            `Not declared whether the job is on the Immigration Salary List; SOC ${soc} is in the list’s occupation table, so the job is derived to be on the list from its occupation code. The list’s job / region restrictions (criteria) are not checked; a declaration in the questionnaire overrides this.${islRemovalNote}`,
           ),
         ]
-      : current.immigrationSalaryList === undefined
+      : islUndeclared && islEntries.length > 0
         ? [
             L(
-              '未申报是否在 Immigration Salary List 上，按不在清单处理。',
-              'Not declared whether the job is on the Immigration Salary List; treated as not on the list.',
+              `未申报是否在 Immigration Salary List 上；SOC ${soc} 的清单条目移除日期为 ${removalDates(islEntries)}，早于申请日，按不在清单处理。`,
+              `Not declared whether the job is on the Immigration Salary List; the list entry for SOC ${soc} has a removal date of ${removalDates(islEntries)}, before the date of application, so the job is treated as not on the list.`,
             ),
           ]
-        : []),
+        : islUndeclared
+          ? [
+              L(
+                '未申报是否在 Immigration Salary List 上，按不在清单处理。',
+                'Not declared whether the job is on the Immigration Salary List; treated as not on the list.',
+              ),
+            ]
+          : []),
     ...(ashe && !pre2024
       ? [
           L(
