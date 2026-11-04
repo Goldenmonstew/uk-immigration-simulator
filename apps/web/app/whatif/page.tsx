@@ -2,12 +2,13 @@
 
 import { useEffect, useState } from 'react';
 import { WhatIfView } from '../../components/whatif-lab';
-import { t } from '../../i18n';
+import { useTranslation } from '../../i18n/locale';
 import type { Draft } from '../../lib/questionnaire';
 import { draftStorage } from '../../lib/storage';
 import site from '../site.module.css';
 
 export default function WhatIfPage() {
+  const { t } = useTranslation();
   const [draft, setDraft] = useState<Draft>();
   const [ready, setReady] = useState(false);
   useEffect(() => {

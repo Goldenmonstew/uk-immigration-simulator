@@ -1,5 +1,7 @@
+'use client';
+
 import type { SimulationResult } from '@uk-immigration/engine';
-import { t } from '../i18n';
+import { useTranslation } from '../i18n/locale';
 import { routeGroupNames } from '../i18n/routes';
 import { ruleSets } from '../lib/policy';
 import { sourceUrls } from '../lib/sources';
@@ -8,6 +10,7 @@ import site from '../app/site.module.css';
 import styles from '../app/result/result.module.css';
 
 function Advice() {
+  const { t } = useTranslation();
   return (
     <section className={site.notice}>
       <h2>{t('result.advice')}</h2>
@@ -28,6 +31,7 @@ export function ResultView({
   result: SimulationResult;
   mock?: boolean;
 }) {
+  const { t } = useTranslation();
   return (
     <>
       <PolicyStatus asOf={result.policyAsOf} />

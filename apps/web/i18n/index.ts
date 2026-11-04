@@ -6,5 +6,5 @@ export function t(
   key: TranslationKey,
   locale: 'zh-CN' | 'en' = 'zh-CN',
 ): string {
-  return (locale === 'en' ? en[key] : undefined) ?? zhCN[key];
+  return locale === 'en' ? en[key] : zhCN[key];
 }

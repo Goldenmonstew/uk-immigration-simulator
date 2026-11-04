@@ -1,8 +1,11 @@
-import { t } from '../i18n';
+'use client';
+
+import { useTranslation } from '../i18n/locale';
 import { ruleSets } from '../lib/policy';
 import styles from '../app/site.module.css';
 
 export function PolicyStatus({ asOf }: { asOf: string }) {
+  const { t } = useTranslation();
   return (
     <section className={styles.policy} aria-label={t('policy.asOf')}>
       <p>

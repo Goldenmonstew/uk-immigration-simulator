@@ -10,7 +10,7 @@ import {
   type CefrLevel,
   earnedSettlement2026_11,
 } from '@uk-immigration/policy-data';
-import { t } from '../i18n';
+import { useTranslation } from '../i18n/locale';
 import { ruleSets } from '../lib/policy';
 import {
   type Draft,
@@ -25,6 +25,7 @@ import {
   type WhatIf,
 } from '../lib/whatif';
 import { PolicyStatus } from './policy-status';
+import { ShareLink } from './share-link';
 import site from '../app/site.module.css';
 import resultStyles from '../app/result/result.module.css';
 import styles from '../app/whatif/whatif.module.css';
@@ -45,6 +46,7 @@ function Comparison({
   before: SettlementAssessment;
   after: SettlementAssessment;
 }) {
+  const { t } = useTranslation();
   const diff = diffAssessment(before, after);
   const years = (assessment: SettlementAssessment) =>
     assessment.pathwayYears === undefined
@@ -139,6 +141,7 @@ function WhatIfLab({
   draft: Draft;
   before: SimulationResult;
 }) {
+  const { t } = useTranslation();
   const [whatIf, setWhatIf] = useState(() => initialWhatIf(draft));
   const update = (patch: Partial<WhatIf>) =>
     setWhatIf((current) => ({ ...current, ...patch }));
@@ -154,6 +157,7 @@ function WhatIfLab({
   return (
     <>
       <p className={site.lead}>{t('whatif.intro')}</p>
+      {after && <ShareLink draft={afterDraft} />}
       <p className={`${site.notice} ${site.warning}`}>
         {t('policy.hypothesis')}
       </p>
@@ -174,7 +178,7 @@ function WhatIfLab({
             />
             {dateError && (
               <p id="whatif-date-error" role="alert" className={styles.error}>
-                {dateError}
+                {t(dateError)}
               </p>
             )}
           </div>
@@ -398,6 +402,7 @@ function WhatIfLab({
 }
 
 export function WhatIfView({ draft }: { draft?: Draft }) {
+  const { t } = useTranslation();
   if (!draft?.completed)
     return (
       <div className={site.narrow}>
@@ -417,6 +422,7 @@ export function WhatIfView({ draft }: { draft?: Draft }) {
         <div className={site.narrow}>
           <p className={site.notice}>{t('whatif.unsupported')}</p>
           <p>{before.shortCircuit.message}</p>
+          <ShareLink draft={draft} />
           <Link className={site.secondary} href="/result">
             {t('whatif.back')}
           </Link>

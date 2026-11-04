@@ -87,6 +87,23 @@
   color: #d9e5ee;
   font-size: 0.95rem;
 }
+.languages {
+  display: flex;
+  gap: 8px;
+}
+.languages button {
+  padding: 8px 12px;
+  min-height: 44px;
+  border: 1px solid #d9e5ee;
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+}
+.languages button[aria-pressed='true'] {
+  background: #fff;
+  color: #16324f;
+  font-weight: 700;
+}
 .main {
   max-width: 1120px;
   margin: 0 auto;
