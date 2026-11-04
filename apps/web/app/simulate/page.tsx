@@ -1,0 +1,843 @@
+'use client';
+
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useEffect, useReducer, useRef, useState } from 'react';
+import type { FormEvent, ReactNode } from 'react';
+import type {
+  CefrLevel,
+  ImmigrationEpisode,
+  PersonTimeline,
+  Relationship,
+  Route,
+} from '@uk-immigration/engine';
+import { t } from '../../i18n';
+import { routeNames } from '../../i18n/routes';
+import { benefitOptions } from '../../lib/benefits';
+import {
+  createDraft,
+  draftReducer,
+  runSimulation,
+  screeningKeys,
+  steps,
+  validateStep,
+  visibleIncomeYears,
+} from '../../lib/questionnaire';
+import type { Draft, Errors, ScreeningKey } from '../../lib/questionnaire';
+import { draftStorage, rememberResult } from '../../lib/storage';
+import site from '../site.module.css';
+import styles from './form.module.css';
+
+function Field({
+  id,
+  label,
+  hint,
+  error,
+  children,
+}: {
+  id: string;
+  label: string;
+  hint?: string;
+  error?: string;
+  children: ReactNode;
+}) {
+  return (
+    <div className={`${styles.field} ${error ? styles.invalid : ''}`}>
+      <label htmlFor={id}>{label}</label>
+      {hint && (
+        <p id={`${id}-hint`} className={styles.hint}>
+          {hint}
+        </p>
+      )}
+      {error && (
+        <p id={`${id}-error`} className={styles.error}>
+          {error}
+        </p>
+      )}
+      {children}
+    </div>
+  );
+}
+
+export default function SimulatePage() {
+  const router = useRouter();
+  const [draft, dispatch] = useReducer(draftReducer, undefined, createDraft);
+  const [ready, setReady] = useState(false);
+  const [storageAvailable, setStorageAvailable] = useState(true);
+  const [errors, setErrors] = useState<Errors>({});
+  const heading = useRef<HTMLHeadingElement>(null);
+  const { timeline } = draft;
+
+  useEffect(() => {
+    const stored = draftStorage();
+    if (stored.draft)
+      dispatch({
+        type: 'restore',
+        draft: stored.draft.completed
+          ? { ...stored.draft, step: 0 }
+          : stored.draft,
+      });
+    setStorageAvailable(stored.available);
+    setReady(true);
+  }, []);
+
+  useEffect(() => {
+    if (ready) setStorageAvailable(draftStorage(draft).available);
+  }, [draft, ready]);
+
+  useEffect(() => {
+    if (ready) heading.current?.focus();
+  }, [draft.step, ready]);
+
+  const update = (patch: Partial<PersonTimeline>) =>
+    dispatch({ type: 'timeline', patch });
+  const fieldProps = (id: string, hasHint = false) => ({
+    id,
+    'aria-invalid': errors[id] ? (true as const) : undefined,
+    'aria-describedby':
+      [hasHint ? `${id}-hint` : '', errors[id] ? `${id}-error` : '']
+        .filter(Boolean)
+        .join(' ') || undefined,
+  });
+  const amount = (value: string) => (value === '' ? undefined : Number(value));
+  const goTo = (step: number) => {
+    setErrors({});
+    dispatch({ type: 'step', step });
+  };
+  const finish = (value: Draft) => {
+    const completed = { ...value, completed: true };
+    const result = runSimulation(completed);
+    setStorageAvailable(draftStorage(completed).available);
+    rememberResult(result);
+    dispatch({ type: 'restore', draft: completed });
+    router.push('/result');
+  };
+  const screen = (key: ScreeningKey, answer: 'yes' | 'no') => {
+    if (answer === 'yes') {
+      finish({ ...draft, screening: { ...draft.screening, [key]: answer } });
+    } else dispatch({ type: 'screening', key, answer });
+  };
+  const submit = (event: FormEvent) => {
+    event.preventDefault();
+    if (
+      draft.step === 1 &&
+      screeningKeys.some((key) => draft.screening[key] === 'yes')
+    ) {
+      finish(draft);
+      return;
+    }
+    const nextErrors = validateStep(draft);
+    setErrors(nextErrors);
+    if (Object.keys(nextErrors).length) {
+      requestAnimationFrame(() =>
+        document.getElementById(Object.keys(nextErrors)[0])?.focus(),
+      );
+      return;
+    }
+    if (draft.step === steps.length - 1) finish(draft);
+    else goTo(draft.step + 1);
+  };
+  const updateEpisode = (index: number, patch: Partial<ImmigrationEpisode>) =>
+    update({
+      episodes: timeline.episodes.map((episode, i) =>
+        i === index ? { ...episode, ...patch } : episode,
+      ),
+    });
+  const dateField = (
+    id: string,
+    label: string,
+    value: string,
+    onChange: (value: string) => void,
+  ) => (
+    <Field id={id} label={label} error={errors[id]}>
+      <input
+        {...fieldProps(id)}
+        type="date"
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+      />
+    </Field>
+  );
+  const remove = (label: string, onClick: () => void) => (
+    <button
+      type="button"
+      className={styles.remove}
+      aria-label={`${t('form.remove')} ${label}`}
+      onClick={onClick}
+    >
+      {t('form.remove')} {label}
+    </button>
+  );
+
+  return (
+    <main id="main" className={site.main}>
+      <div className={site.narrow}>
+        {!ready ? (
+          <p role="status">{t('result.loading')}</p>
+        ) : (
+          <>
+            <p className={styles.progress}>
+              {t('form.step')} {draft.step + 1} {t('form.of')} {steps.length} —{' '}
+              {t('form.title')}
+            </p>
+            <h1 ref={heading} tabIndex={-1}>
+              {t(`step.${steps[draft.step]}`)}
+            </h1>
+            <p
+              className={
+                storageAvailable
+                  ? styles.saved
+                  : `${site.notice} ${site.warning}`
+              }
+              role="status"
+            >
+              {t(storageAvailable ? 'form.saved' : 'form.storageUnavailable')}
+            </p>
+            <form onSubmit={submit} noValidate autoComplete="off">
+              {Object.keys(errors).length > 0 && (
+                <div role="alert" className={styles.errorSummary}>
+                  <p>{t('form.fixErrors')}</p>
+                </div>
+              )}
+
+              {draft.step === 0 && (
+                <>
+                  {dateField(
+                    'dob',
+                    t('basic.dob'),
+                    timeline.dateOfBirth,
+                    (dateOfBirth) => update({ dateOfBirth }),
+                  )}
+                  <Field
+                    id="nationality"
+                    label={t('basic.nationality')}
+                    hint={t('basic.nationalityHint')}
+                    error={errors.nationality}
+                  >
+                    <input
+                      {...fieldProps('nationality', true)}
+                      value={timeline.nationality}
+                      list="nationalities"
+                      maxLength={3}
+                      autoCapitalize="characters"
+                      spellCheck={false}
+                      onChange={(event) =>
+                        update({
+                          nationality: event.target.value.toUpperCase().trim(),
+                        })
+                      }
+                    />
+                    <datalist id="nationalities">
+                      {(
+                        [
+                          'CHN',
+                          'HKG',
+                          'IND',
+                          'PAK',
+                          'NGA',
+                          'USA',
+                          'GBR',
+                          'CAN',
+                          'AUS',
+                          'SGP',
+                        ] as const
+                      ).map((code) => (
+                        <option key={code} value={code}>
+                          {t(`country.${code}`)}
+                        </option>
+                      ))}
+                    </datalist>
+                  </Field>
+                </>
+              )}
+
+              {draft.step === 1 && (
+                <>
+                  <p>{t('screening.hint')}</p>
+                  {screeningKeys.map((key) => (
+                    <fieldset
+                      key={key}
+                      className={`${styles.fieldset} ${errors[key] ? styles.invalid : ''}`}
+                      aria-describedby={`${key}-hint ${errors[key] ? `${key}-error` : ''}`}
+                    >
+                      <legend className={styles.legend}>
+                        {t(`screening.${key}`)}
+                      </legend>
+                      <p id={`${key}-hint`} className={styles.hint}>
+                        {key === 'breach' ? t('screening.breachHint') : null}
+                      </p>
+                      {errors[key] && (
+                        <p id={`${key}-error`} className={styles.error}>
+                          {errors[key]}
+                        </p>
+                      )}
+                      <div className={styles.radios}>
+                        {(['yes', 'no'] as const).map((answer, index) => (
+                          <label key={answer}>
+                            <input
+                              id={index === 0 ? key : `${key}-no`}
+                              type="radio"
+                              name={key}
+                              value={answer}
+                              checked={draft.screening[key] === answer}
+                              aria-invalid={errors[key] ? true : undefined}
+                              onChange={() => screen(key, answer)}
+                            />
+                            {t(`form.${answer}`)}
+                          </label>
+                        ))}
+                      </div>
+                    </fieldset>
+                  ))}
+                </>
+              )}
+
+              {draft.step === 2 && (
+                <>
+                  <p>{t('episodes.hint')}</p>
+                  {!timeline.episodes.length && (
+                    <p className={site.muted}>{t('episodes.empty')}</p>
+                  )}
+                  {timeline.episodes.map((episode, index) => {
+                    const prefix = `episode-${index}`;
+                    return (
+                      <fieldset key={index} className={styles.entry}>
+                        <legend>
+                          {t('episodes.item')} {index + 1}
+                        </legend>
+                        <Field
+                          id={`${prefix}-route`}
+                          label={t('episodes.route')}
+                        >
+                          <select
+                            id={`${prefix}-route`}
+                            value={episode.route}
+                            onChange={(event) =>
+                              updateEpisode(index, {
+                                route: event.target.value as Route,
+                                socCode: undefined,
+                                salary: undefined,
+                              })
+                            }
+                          >
+                            {Object.entries(routeNames).map(([route, name]) => (
+                              <option key={route} value={route}>
+                                {name}
+                              </option>
+                            ))}
+                          </select>
+                        </Field>
+                        {dateField(
+                          `${prefix}-from`,
+                          t('episodes.from'),
+                          episode.validFrom,
+                          (validFrom) => updateEpisode(index, { validFrom }),
+                        )}
+                        {dateField(
+                          `${prefix}-to`,
+                          t('episodes.to'),
+                          episode.validTo,
+                          (validTo) => updateEpisode(index, { validTo }),
+                        )}
+                        <Field id={`${prefix}-role`} label={t('episodes.role')}>
+                          <select
+                            id={`${prefix}-role`}
+                            value={episode.role}
+                            onChange={(event) =>
+                              updateEpisode(index, {
+                                role: event.target
+                                  .value as ImmigrationEpisode['role'],
+                              })
+                            }
+                          >
+                            <option value="MAIN">{t('episodes.MAIN')}</option>
+                            <option value="DEPENDANT">
+                              {t('episodes.DEPENDANT')}
+                            </option>
+                          </select>
+                        </Field>
+                        {episode.route === 'SKILLED_WORKER' && (
+                          <>
+                            <Field
+                              id={`${prefix}-soc`}
+                              label={t('episodes.soc')}
+                              error={errors[`${prefix}-soc`]}
+                            >
+                              <input
+                                {...fieldProps(`${prefix}-soc`)}
+                                inputMode="numeric"
+                                maxLength={4}
+                                value={episode.socCode ?? ''}
+                                onChange={(event) =>
+                                  updateEpisode(index, {
+                                    socCode: event.target.value || undefined,
+                                  })
+                                }
+                              />
+                            </Field>
+                            <Field
+                              id={`${prefix}-salary`}
+                              label={t('episodes.salary')}
+                              error={errors[`${prefix}-salary`]}
+                            >
+                              <input
+                                {...fieldProps(`${prefix}-salary`)}
+                                type="number"
+                                inputMode="decimal"
+                                min="0"
+                                step="any"
+                                value={episode.salary ?? ''}
+                                onChange={(event) =>
+                                  updateEpisode(index, {
+                                    salary: amount(event.target.value),
+                                  })
+                                }
+                              />
+                            </Field>
+                          </>
+                        )}
+                        {remove(`${t('episodes.item')} ${index + 1}`, () =>
+                          update({
+                            episodes: timeline.episodes.filter(
+                              (_, i) => i !== index,
+                            ),
+                          }),
+                        )}
+                      </fieldset>
+                    );
+                  })}
+                  <button
+                    type="button"
+                    className={site.secondary}
+                    onClick={() =>
+                      update({
+                        episodes: [
+                          ...timeline.episodes,
+                          {
+                            route: 'SKILLED_WORKER',
+                            role: 'MAIN',
+                            validFrom: '',
+                            validTo: '',
+                          },
+                        ],
+                      })
+                    }
+                  >
+                    {t('episodes.add')}
+                  </button>
+                </>
+              )}
+
+              {draft.step === 3 && (
+                <>
+                  <p>{t('absences.hint')}</p>
+                  {!timeline.absences.length && (
+                    <p className={site.muted}>{t('absences.empty')}</p>
+                  )}
+                  {timeline.absences.map((absence, index) => (
+                    <fieldset key={index} className={styles.entry}>
+                      <legend>
+                        {t('absences.item')} {index + 1}
+                      </legend>
+                      {dateField(
+                        `absence-${index}-from`,
+                        t('absences.from'),
+                        absence.from,
+                        (from) =>
+                          update({
+                            absences: timeline.absences.map((row, i) =>
+                              i === index ? { ...row, from } : row,
+                            ),
+                          }),
+                      )}
+                      {dateField(
+                        `absence-${index}-to`,
+                        t('absences.to'),
+                        absence.to,
+                        (to) =>
+                          update({
+                            absences: timeline.absences.map((row, i) =>
+                              i === index ? { ...row, to } : row,
+                            ),
+                          }),
+                      )}
+                      {remove(`${t('absences.item')} ${index + 1}`, () =>
+                        update({
+                          absences: timeline.absences.filter(
+                            (_, i) => i !== index,
+                          ),
+                        }),
+                      )}
+                    </fieldset>
+                  ))}
+                  <button
+                    type="button"
+                    className={site.secondary}
+                    onClick={() =>
+                      update({
+                        absences: [...timeline.absences, { from: '', to: '' }],
+                      })
+                    }
+                  >
+                    {t('absences.add')}
+                  </button>
+                </>
+              )}
+
+              {draft.step === 4 && (
+                <>
+                  <p>{t('income.hint')}</p>
+                  <p className={styles.hint}>{t('income.taxYearHint')}</p>
+                  <p className={styles.hint}>{t('income.partnerHint')}</p>
+                  {visibleIncomeYears(draft).map((row) => (
+                    <fieldset className={styles.incomeRow} key={row.taxYear}>
+                      <legend>{row.taxYear}</legend>
+                      <div className={styles.incomeFields}>
+                        {(['earnings', 'partnerEarnings'] as const).map(
+                          (key) => {
+                            const suffix =
+                              key === 'earnings' ? 'earnings' : 'partner';
+                            const id = `${row.taxYear}-${suffix}`;
+                            return (
+                              <Field
+                                key={key}
+                                id={id}
+                                label={t(`income.${suffix}`)}
+                                error={errors[id]}
+                              >
+                                <input
+                                  {...fieldProps(id)}
+                                  type="number"
+                                  inputMode="decimal"
+                                  min="0"
+                                  step="any"
+                                  value={row[key] ?? ''}
+                                  onChange={(event) =>
+                                    update({
+                                      incomeYears: timeline.incomeYears.map(
+                                        (year) =>
+                                          year.taxYear === row.taxYear
+                                            ? {
+                                                ...year,
+                                                [key]: amount(
+                                                  event.target.value,
+                                                ),
+                                              }
+                                            : year,
+                                      ),
+                                    })
+                                  }
+                                />
+                              </Field>
+                            );
+                          },
+                        )}
+                      </div>
+                    </fieldset>
+                  ))}
+                </>
+              )}
+
+              {draft.step === 5 && (
+                <>
+                  <p>{t('benefits.hint')}</p>
+                  {!timeline.benefits.length && (
+                    <p className={site.muted}>{t('benefits.empty')}</p>
+                  )}
+                  {timeline.benefits.map((benefit, index) => (
+                    <fieldset key={index} className={styles.entry}>
+                      <legend>
+                        {t('benefits.item')} {index + 1}
+                      </legend>
+                      <Field
+                        id={`benefit-${index}-type`}
+                        label={t('benefits.type')}
+                      >
+                        <select
+                          id={`benefit-${index}-type`}
+                          value={benefit.benefitType}
+                          onChange={(event) =>
+                            update({
+                              benefits: timeline.benefits.map((row, i) =>
+                                i === index
+                                  ? { ...row, benefitType: event.target.value }
+                                  : row,
+                              ),
+                            })
+                          }
+                        >
+                          {Object.entries(benefitOptions).map(
+                            ([value, name]) => (
+                              <option key={value} value={value}>
+                                {name}
+                              </option>
+                            ),
+                          )}
+                        </select>
+                      </Field>
+                      {dateField(
+                        `benefit-${index}-from`,
+                        t('benefits.from'),
+                        benefit.from,
+                        (from) =>
+                          update({
+                            benefits: timeline.benefits.map((row, i) =>
+                              i === index ? { ...row, from } : row,
+                            ),
+                          }),
+                      )}
+                      {dateField(
+                        `benefit-${index}-to`,
+                        t('benefits.to'),
+                        benefit.to ?? '',
+                        (to) =>
+                          update({
+                            benefits: timeline.benefits.map((row, i) =>
+                              i === index
+                                ? { ...row, to: to || undefined }
+                                : row,
+                            ),
+                          }),
+                      )}
+                      {remove(`${t('benefits.item')} ${index + 1}`, () =>
+                        update({
+                          benefits: timeline.benefits.filter(
+                            (_, i) => i !== index,
+                          ),
+                        }),
+                      )}
+                    </fieldset>
+                  ))}
+                  <button
+                    type="button"
+                    className={site.secondary}
+                    onClick={() =>
+                      update({
+                        benefits: [
+                          ...timeline.benefits,
+                          { benefitType: 'UNIVERSAL_CREDIT', from: '' },
+                        ],
+                      })
+                    }
+                  >
+                    {t('benefits.add')}
+                  </button>
+                </>
+              )}
+
+              {draft.step === 6 && (
+                <>
+                  <p>{t('relationships.hint')}</p>
+                  {!timeline.relationships.length && (
+                    <p className={site.muted}>{t('relationships.empty')}</p>
+                  )}
+                  {timeline.relationships.map((relationship, index) => (
+                    <fieldset key={index} className={styles.entry}>
+                      <legend>
+                        {t('relationships.item')} {index + 1}
+                      </legend>
+                      <Field
+                        id={`relationship-${index}-type`}
+                        label={t('relationships.type')}
+                      >
+                        <select
+                          id={`relationship-${index}-type`}
+                          value={relationship.type}
+                          onChange={(event) =>
+                            update({
+                              relationships: timeline.relationships.map(
+                                (row, i) =>
+                                  i === index
+                                    ? {
+                                        ...row,
+                                        type: event.target
+                                          .value as Relationship['type'],
+                                      }
+                                    : row,
+                              ),
+                            })
+                          }
+                        >
+                          {(['PARTNER', 'PARENT', 'CHILD'] as const).map(
+                            (value) => (
+                              <option key={value} value={value}>
+                                {t(`relationships.${value}`)}
+                              </option>
+                            ),
+                          )}
+                        </select>
+                      </Field>
+                      <Field
+                        id={`relationship-${index}-status`}
+                        label={t('relationships.status')}
+                      >
+                        <select
+                          id={`relationship-${index}-status`}
+                          value={relationship.otherPartyStatus}
+                          onChange={(event) =>
+                            update({
+                              relationships: timeline.relationships.map(
+                                (row, i) =>
+                                  i === index
+                                    ? {
+                                        ...row,
+                                        otherPartyStatus: event.target
+                                          .value as Relationship['otherPartyStatus'],
+                                      }
+                                    : row,
+                              ),
+                            })
+                          }
+                        >
+                          {(
+                            ['BRITISH_CITIZEN', 'SETTLED', 'OTHER'] as const
+                          ).map((value) => (
+                            <option key={value} value={value}>
+                              {t(`relationships.${value}`)}
+                            </option>
+                          ))}
+                        </select>
+                      </Field>
+                      {remove(`${t('relationships.item')} ${index + 1}`, () =>
+                        update({
+                          relationships: timeline.relationships.filter(
+                            (_, i) => i !== index,
+                          ),
+                        }),
+                      )}
+                    </fieldset>
+                  ))}
+                  <button
+                    type="button"
+                    className={site.secondary}
+                    onClick={() =>
+                      update({
+                        relationships: [
+                          ...timeline.relationships,
+                          { type: 'PARTNER', otherPartyStatus: 'OTHER' },
+                        ],
+                      })
+                    }
+                  >
+                    {t('relationships.add')}
+                  </button>
+                </>
+              )}
+
+              {draft.step === 7 && (
+                <>
+                  <p>{t('english.hint')}</p>
+                  <Field id="english" label={t('english.level')}>
+                    <select
+                      id="english"
+                      value={
+                        timeline.english
+                          ? 'exempt' in timeline.english
+                            ? 'exempt'
+                            : timeline.english.cefrLevel
+                          : ''
+                      }
+                      onChange={(event) =>
+                        update({
+                          english:
+                            event.target.value === ''
+                              ? undefined
+                              : event.target.value === 'exempt'
+                                ? { exempt: true }
+                                : {
+                                    cefrLevel: event.target.value as CefrLevel,
+                                  },
+                        })
+                      }
+                    >
+                      <option value="">{t('form.unknown')}</option>
+                      {['A1', 'A2', 'B1', 'B2', 'C1', 'C2'].map((level) => (
+                        <option key={level} value={level}>
+                          {level}
+                        </option>
+                      ))}
+                      <option value="exempt">{t('english.exempt')}</option>
+                    </select>
+                  </Field>
+                  <Field id="life" label={t('english.life')}>
+                    <select
+                      id="life"
+                      value={
+                        timeline.lifeInTheUk
+                          ? 'passed' in timeline.lifeInTheUk
+                            ? 'passed'
+                            : 'exempt'
+                          : ''
+                      }
+                      onChange={(event) =>
+                        update({
+                          lifeInTheUk:
+                            event.target.value === ''
+                              ? undefined
+                              : event.target.value === 'passed'
+                                ? { passed: true }
+                                : { exempt: true },
+                        })
+                      }
+                    >
+                      <option value="">{t('form.unknown')}</option>
+                      <option value="passed">{t('english.passed')}</option>
+                      <option value="exempt">{t('english.exempt')}</option>
+                    </select>
+                  </Field>
+                </>
+              )}
+
+              {draft.step === 8 && (
+                <>
+                  <p>{t('date.hint')}</p>
+                  {dateField(
+                    'simulationDate',
+                    t('date.label'),
+                    draft.simulationDate,
+                    (date) => dispatch({ type: 'date', date }),
+                  )}
+                  <p>
+                    {t('date.incomeWindow')}：
+                    {visibleIncomeYears(draft)
+                      .map((row) => row.taxYear)
+                      .join('、')}
+                  </p>
+                  <button
+                    type="button"
+                    className={site.secondary}
+                    onClick={() => goTo(4)}
+                  >
+                    {t('date.reviewIncome')}
+                  </button>
+                  <p className={site.notice}>{t('home.disclaimer')}</p>
+                </>
+              )}
+
+              <div className={site.actions}>
+                <button type="submit" className={site.button}>
+                  {t(
+                    draft.step === steps.length - 1
+                      ? 'form.results'
+                      : 'form.continue',
+                  )}
+                </button>
+                {draft.step > 0 ? (
+                  <button
+                    type="button"
+                    className={site.secondary}
+                    onClick={() => goTo(draft.step - 1)}
+                  >
+                    {t('form.back')}
+                  </button>
+                ) : (
+                  <Link href="/">{t('site.home')}</Link>
+                )}
+              </div>
+            </form>
+          </>
+        )}
+      </div>
+    </main>
+  );
+}

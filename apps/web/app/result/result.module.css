@@ -1,0 +1,106 @@
+.columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 32px;
+  align-items: start;
+  margin-top: 32px;
+}
+.assessment {
+  border: 1px solid #b1b4b6;
+  border-top: 6px solid #1d70b8;
+  padding: 24px;
+  min-width: 0;
+}
+.announced {
+  border-top-color: #b58800;
+}
+.heading {
+  margin-bottom: 12px;
+}
+.outcome {
+  background: #f3f2f1;
+  padding: 20px;
+  margin: 24px -8px;
+}
+.outcome h3 {
+  font-size: 1.4rem;
+  line-height: 1.4;
+  margin-bottom: 12px;
+}
+.outcome p {
+  margin-bottom: 0;
+}
+.success {
+  border-left: 5px solid #00703c;
+}
+.failure {
+  border-left: 5px solid #d4351c;
+}
+.unknown {
+  border-left: 5px solid #b58800;
+}
+.facts {
+  margin: 0 0 32px;
+}
+.facts div {
+  border-bottom: 1px solid #b1b4b6;
+  padding: 12px 0;
+}
+.facts dt {
+  color: #505a5f;
+  font-size: 1rem;
+}
+.facts dd {
+  margin: 4px 0 0;
+  font-weight: 700;
+}
+.group {
+  margin: 24px 0;
+}
+.group h4 {
+  font-size: 1.1rem;
+  margin: 0 0 12px;
+}
+.rules {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.rule {
+  border-left: 3px solid #b1b4b6;
+  padding: 0 0 0 16px;
+  margin: 20px 0;
+}
+.rule[data-status='FAIL'] {
+  border-left-color: #d4351c;
+}
+.rule[data-status='UNKNOWN'] {
+  border-left-color: #b58800;
+}
+.rule[data-status='PASS'] {
+  border-left-color: #00703c;
+}
+.rule p {
+  margin: 8px 0;
+}
+.sources {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  font-size: 0.95rem;
+}
+.assumptions {
+  padding-left: 24px;
+}
+.assumptions li {
+  margin-bottom: 12px;
+}
+@media (max-width: 760px) {
+  .columns {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .assessment {
+    padding: 20px;
+  }
+}
