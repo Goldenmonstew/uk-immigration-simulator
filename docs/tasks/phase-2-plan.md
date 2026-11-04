@@ -13,9 +13,11 @@ Phase 1 交付了一个能真实判断的 MVP-0：规则引擎（20 条规则、
 | 2.3 | Cloudflare Pages 部署 + 政策变更日志数据 | sol | 根 `package.json`、`.github/workflows`、`docs/deploy.md`、`packages/policy-data/src/data/policy-changelog.ts` | 用户提供 Cloudflare 账号侧信息（见 §4） | 1 |
 | 2.4 | 家庭问卷 + 政策页 | astra | `apps/web` | 2.2 的契约、2.3 的变更日志 | 2 |
 | 2.5 | 现行法律补全与剩余过渡安排 | Opus | `packages/engine`、`packages/policy-data` | 2.2 合并后 | 2 |
-| 2.6（可选） | going rate 数据表（Appendix Skilled Occupations） | sol | `packages/policy-data`、`docs/SOURCES.md` | 无 | 2 |
+| 2.6 | going rate 数据表（Appendix Skilled Occupations 登记为 SRC-017） | sol | `packages/policy-data`（data、scripts、test）、`docs/SOURCES.md`、`policy-sources/` | 无（2.3 合并后立即派发） | 1 |
+| 2.7 + 2.8 | 分享链接 + en 文案与语言切换 | astra | `apps/web` | 2.1 合并后 | 2 |
+| 2.9 | 引擎双语解释（`SimulationRequest.locale`） | Opus | `packages/engine`、`docs/contracts.md` | 2.2、2.5 合并后；契约先行 | 2 |
 
-Wave 1 三个任务互不碰同一 package，可同时开工。Wave 2 在 Wave 1 合并后派发。
+Wave 1 三个任务互不碰同一 package，可同时开工；2.3 合并后 sol 接 2.6。Wave 2 在 Wave 1 合并后派发；astra 顺序为 2.1 → 2.7 + 2.8 → 2.4，Opus 顺序为 2.2 → 2.5 → 2.9。
 
 ## 2. 任务卡
 
@@ -62,15 +64,20 @@ Wave 1 三个任务互不碰同一 package，可同时开工。Wave 2 在 Wave 1
 
 - SW 21.2：Global Talent、Innovator Founder、Scale-up 等可与 Skilled Worker 合并计入 5 年；SW 24.3 rows B–E 的定居薪资例外（新入行、PhD、ISL、国家薪级）；每条带段号与 boundary 用例。
 - 过渡安排 §2.2（RQF6 以下、国家薪级医疗 / 教育，White Paper 前来英 → 保留 5 年；职业清单 PD-038、时间口径 PD-039 → `UNKNOWN`）；§2.3（2024-04 前 Skilled Worker 群体只影响续签至 2035，输出为假设说明，不改年限）。
-- 不做：going rate 规则（等 2.6 的数据表）、难民路径（Ch.7，Phase 3）、Highest Talent Group（PD-011 政府未定）。
+- `CL-SW-GOING-RATE`：用 2.6 的 `goingRates` 表按 `socCode` 查 going rate，与一般门槛取高（SW 24.3 row A；rows B–E 的百分比折减一并实现）；表里没有该 SOC → UNKNOWN。
+- 不做：难民路径（Ch.7，Phase 3）、Highest Talent Group（PD-011 政府未定）。
 
-### 2.6（可选）going rate 数据表（sol，Wave 2）
+### 2.6 going rate 数据表（sol，2.3 合并后立即派发）
 
-登记 Appendix Skilled Occupations（Table 1 / 1a）并提取 SOC 2020 → going rate 表到 `policy-data/src/data/`，供后续 `CL-SW-GOING-RATE` 使用。数据量大（数百行），价值集中在现行法律栏的薪资判断。建议 Phase 2 不做，列为 Phase 3 候选；用户要就在 Wave 2 派给 sol。
+用户决定纳入（2026-11-04）。登记 Immigration Rules Appendix Skilled Occupations 为 SRC-017（快照 + sha256），用脚本从快照机械提取 Table 1 / 1a / 2 / 2aa / 2a / 2b 的 SOC 2020 → 年 going rate，以及 Table 3 的国家薪级职业代码清单，放进 `policy-data/src/data/skilled-occupations.ts`，脚本留在 `policy-data/scripts/` 供 Appendix 更新时重跑。测试断言行数与快照一致并抽查若干行。brief：`docs/tasks/2.6-going-rates.md`。
 
-### 2.7（可选）分享链接（astra）
+### 2.7 + 2.8 分享链接 + en 文案与语言切换（astra，2.1 合并后）
 
-把草稿编码进 URL hash，复制即分享，无后端。小改动，可并入 2.4。
+用户决定纳入（2026-11-04）。分享链接：把问卷草稿编码进 URL hash，复制即分享，无后端，复制时提示链接含全部填写信息。en 文案：`en.ts` 补全到与 zh-CN 同键集（类型强制），页头语言切换并记住选择；引擎输出的中文解释在 2.9 之前原样显示。brief：`docs/tasks/2.7-share-link-and-en.md`。
+
+### 2.9 引擎双语解释（Opus，2.5 之后，契约先行）
+
+`SimulationRequest.locale?: 'zh-CN' | 'en'`（默认 zh-CN），每条规则的 `title` / `explanation` / `assumptions` 与 `shortCircuit.message` 按 locale 产出；`RuleMeta.title` 改为双语对象需经 Fable 评审（影响政策页）。先出契约 commit，再写文案。
 
 ## 3. 验收总则
 
@@ -80,7 +87,8 @@ Wave 1 三个任务互不碰同一 package，可同时开工。Wave 2 在 Wave 1
 
 1. **远端仓库。** 目前没有 git remote。Cloudflare Pages 两条路：(a) 建 GitHub 仓库 → 现有 CI 生效 + `deploy.yml` 自动部署（推荐；也是 iOS 阶段多 agent 协作的前提）；(b) 不建远端，只用 `deploy:pages` 从本机直传。2.3 两条都支持，区别只在 `deploy.yml` 是否马上有用。
 2. **IAA 复核时机。** 绑定正式域名前，由 IAA 注册顾问 review 结果页措辞（§5 第 12 条）；`*.pages.dev` 预览地址不受此限。这一步只有用户能安排。
-3. **可选项取舍。** 2.6 going rate、2.7 分享链接、en 文案补全（§9 第 2 项）是否进 Phase 2。默认都不进。
+3. **可选项取舍。** ~~默认都不进。~~ 用户 2026-11-04 决定：going rate、分享链接、en 文案全部纳入 Phase 2（2.6、2.7 + 2.8、2.9）。
+4. **产品定位与 IAA。** 用户提出改为"仅供参考 / 理解政策 / 带游戏性"的定位。SRC-009 §1.1 的法定定义是"给某个特定个人、且顾问知道该建议针对该个人的建议"；一般性政策信息不在其内。免责声明本身不改变性质，产品设计才改变：不收集证件、不说"你应该申请 X"、结果以"情景"而非"你的申请"呈现、每个结果带未定事项与受监管建议入口（现有设计已如此）。IAA 复核是上线前的风险控制，不是法律前置条件；是否安排由用户决定。
 
 ## 5. 不在 Phase 2
 
