@@ -34,6 +34,7 @@
 | 28 | 2.4 与 2.5 并行合并后的集成修正（Fable）：p31 主申请人 fixture 补 SOC 2136（现行法律栏恢复 LIKELY_ELIGIBLE / 5）、`sources.ts` 补 SRC-018、`i18n/policy.ts` 补三条新规则的英文标题；main 上 gate 全过（policy-data 16 / engine 200 / web 69） | packages/policy-data/fixtures/p31-principal.ts, apps/web/lib/sources.ts, apps/web/i18n/policy.ts, PROGRESS.md |
 | 29 | 派发 2.9（Opus 会话 bilingual-2-9，契约先行：locale 参数、RuleMeta.titleEn、变更日志双语；中文输出须逐字不变） | PROGRESS.md |
 | 30 | 合并 2.9 引擎双语解释（Opus，14 个 commit）：locale 参数、textFor 选择函数、25 条规则与聚合 / 短路的英文文案、titleEn、变更日志双语、50 个英文测试 + 中文输出快照（6320 行）；Fable 评审契约、独立复跑 gate（engine 264）、用 p31 A / p45 A / SW £55k 三个场景抽读英文（通顺准确，仅 "1 full years" 单复数小瑕疵）；main 上 gate 全过（policy-data 16 / engine 264 / web 69） | packages/engine/**, packages/policy-data/src/data/policy-changelog.ts, docs/contracts.md, docs/tasks/reports/2.9-engine-bilingual.md |
+| 31 | 派发 2.10（astra，`.worktrees/astra-locale-wrapup`，分支 `codex/astra-locale-wrapup-2.10`，xhigh） | PROGRESS.md |
 
 ### 当前状态
 
@@ -46,7 +47,7 @@
 - 页码约定与 Codex 启动参数不变。
 - Phase 2 规划已写入 `docs/tasks/phase-2-plan.md`：Wave 1 = 2.1 What-if（astra）、2.2 dependant 与家庭建模（Opus，契约先行）、2.3 Cloudflare Pages 部署 + 政策变更日志数据（sol）；Wave 2 = 2.4 家庭问卷 + 政策页（astra）、2.5 现行法律补全与剩余过渡安排（Opus）；2.6 going rate、2.7 分享链接可选。
 - 待用户决定：是否建 GitHub 远端（目前无 remote）；IAA 复核安排在绑定正式域名前；可选项取舍。
-- Phase 2 进行中（2026-11-04）：2.1–2.9 全部合并，没有在跑的任务；`.worktrees/` 为空。2.10（astra：带 locale 调引擎、删 `i18n/policy.ts`、问卷加 ISL 与主申请人已定居输入、修整页刷新标题）brief 已写好等用户确认派发；2.9 报告提示两条 titleEn 措辞与 web 映射不同（ES-BREACH、ES-TRANSITIONAL-HEALTH-EDUCATION），2.10 删除映射时顺带处理。
+- Phase 2 进行中（2026-11-04）：2.1–2.9 全部合并。在跑：2.10 astra 在 `.worktrees/astra-locale-wrapup`（分支 `codex/astra-locale-wrapup-2.10`，日志 scratchpad `astra-2.10*`）；2.9 报告提示两条 titleEn 措辞与 web 映射不同（ES-BREACH、ES-TRANSITIONAL-HEALTH-EDUCATION），2.10 删除映射时顺带处理。
 - 文案小项：英文 "1 full years" 单复数；解释里直接出现枚举码（SKILLED_WORKER、CORE_PERMISSION 等），要可读名需另做显示名表（Phase 3 候选）。
 - 2.5 报告留下的后续：p31 主申请人 fixture 可补 SOC（否则其现行法律栏为信息不足）；登记 Appendix Immigration Salary List（care worker £25,000 走 row D 需要）；PD-040 可按 SW 4.2(b)(ii) 部分关闭；提取 SRC-017 Table 4 / 5（row D 的国家薪级）。均列 Phase 3 候选。
 - 2.9 brief 要点：引擎 `locale` 参数与双语文案；合并后删除 web 的 `i18n/policy.ts` 手写英文映射；顺手修整页刷新时英文标题回中文（Next 静态 metadata 覆盖 LocaleProvider）。
