@@ -1,5 +1,6 @@
 import type { RuleSetId } from '@uk-immigration/policy-data';
 import type { Rule } from '../types';
+import { clScope } from './current-law';
 import {
   esBreach,
   esCriminality,
@@ -36,5 +37,5 @@ export const RULES: Record<RuleSetId, Rule[]> = {
     esTransitionalCareWorker,
     esPublicService,
   ],
-  'current-law-2026-11': [],
+  'current-law-2026-11': [clScope],
 };
