@@ -325,7 +325,7 @@ export const esProtectionContribution = defineRule(
         explanation:
           summary +
           L(
-            `合格期 ${due} 才满，届时之前仍可达到。`,
+            `合格期到 ${due} 才满，在此之前仍可达到。`,
             ` The qualifying period ends on ${due}, so this can still be met by then.`,
           ) +
           window,

@@ -5120,7 +5120,7 @@ exports[`ES-OFFICIAL-P40-INDIVIDUAL-B default-locale output is unchanged 1`] = `
             }
           ],
           "status": "UNKNOWN",
-          "explanation": "1 个完整 tax year 中有 1 个年收入达 £12,571（2028-29），需 3 个（p38、p47）。合格期 2038-03-01 才满，届时之前仍可达到。计入自 2028-03-01 起的完整 tax year（起点所在 tax year 不计，因年收入无法拆出转入前的部分），截至申请日所在 tax year 之前。",
+          "explanation": "1 个完整 tax year 中有 1 个年收入达 £12,571（2028-29），需 3 个（p38、p47）。合格期到 2038-03-01 才满，在此之前仍可达到。计入自 2028-03-01 起的完整 tax year（起点所在 tax year 不计，因年收入无法拆出转入前的部分），截至申请日所在 tax year 之前。",
           "pendingDetails": [
             "PD-030"
           ],
@@ -5386,7 +5386,7 @@ exports[`ES-OFFICIAL-P40-INDIVIDUAL-C default-locale output is unchanged 1`] = `
             }
           ],
           "status": "UNKNOWN",
-          "explanation": "1 个完整 tax year 中有 1 个年收入达 £12,571（2028-29），需 3 个（p38、p47）。合格期 2048-03-01 才满，届时之前仍可达到。计入自 2028-03-01 起的完整 tax year（起点所在 tax year 不计，因年收入无法拆出转入前的部分），截至申请日所在 tax year 之前。",
+          "explanation": "1 个完整 tax year 中有 1 个年收入达 £12,571（2028-29），需 3 个（p38、p47）。合格期到 2048-03-01 才满，在此之前仍可达到。计入自 2028-03-01 起的完整 tax year（起点所在 tax year 不计，因年收入无法拆出转入前的部分），截至申请日所在 tax year 之前。",
           "pendingDetails": [
             "PD-030"
           ],
