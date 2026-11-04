@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from '../i18n/locale';
 import { punct } from '../i18n/punctuation';
-import { ruleSets } from '../lib/policy';
+import { displayedRuleSets } from '../lib/policy';
 import { type Draft, runSimulation } from '../lib/questionnaire';
 import {
   type SavedScenario,
@@ -101,7 +101,7 @@ export function SavedScenarios({
               </time>
             </p>
             <dl className={styles.summaries}>
-              {ruleSets.map((ruleSet) => {
+              {displayedRuleSets.map((ruleSet) => {
                 const assessment = scenario.result.byRuleSet[ruleSet.id];
                 return (
                   <div key={ruleSet.id}>

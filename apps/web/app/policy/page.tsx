@@ -1,23 +1,15 @@
 'use client';
 
 import { RULES } from '@uk-immigration/engine';
-import {
-  currentLaw2026_11,
-  earnedSettlement2026_11,
-  policyChangelog,
-} from '@uk-immigration/policy-data';
+import { PARAMETERS, policyChangelog } from '@uk-immigration/policy-data';
 import type { ParameterSet, SourceRef } from '@uk-immigration/policy-data';
+import { RuleSetStatus } from '../../components/policy-status';
 import { useTranslation } from '../../i18n/locale';
 import { punct } from '../../i18n/punctuation';
-import { ruleSets } from '../../lib/policy';
+import { allRuleSets, displayedRuleSets } from '../../lib/policy';
 import { sourceUrls } from '../../lib/sources';
 import site from '../site.module.css';
 import styles from './policy.module.css';
-
-const parameterSets: Record<string, ParameterSet> = {
-  [currentLaw2026_11.ruleSetId]: currentLaw2026_11,
-  [earnedSettlement2026_11.ruleSetId]: earnedSettlement2026_11,
-};
 
 function Sources({ sources }: { sources: SourceRef[] }) {
   const { locale } = useTranslation();
@@ -69,21 +61,26 @@ export default function PolicyPage() {
       <section className={site.section} aria-labelledby="rule-sets-heading">
         <h2 id="rule-sets-heading">{t('policyPage.ruleSets')}</h2>
         <div className={styles.ruleSets}>
-          {ruleSets.map((ruleSet) => (
+          {allRuleSets.map((ruleSet) => (
             <article
               key={ruleSet.id}
               className={styles.card}
               data-rule-set={ruleSet.id}
             >
               <h3>{t(`policy.${ruleSet.kind}`)}</h3>
-              <p className={site.badge}>{t(`policy.${ruleSet.status}`)}</p>
+              <p className={site.badge}>
+                <RuleSetStatus ruleSet={ruleSet} />
+              </p>
+              {!displayedRuleSets.includes(ruleSet) && (
+                <p className={site.muted}>{t('policyPage.notDisplayed')}</p>
+              )}
               <p>
                 <code>{ruleSet.id}</code>
               </p>
               <p>
                 {t('policy.asOf')}{' '}
-                <time dateTime={parameterSets[ruleSet.id].asOf}>
-                  {parameterSets[ruleSet.id].asOf}
+                <time dateTime={PARAMETERS[ruleSet.id].asOf}>
+                  {PARAMETERS[ruleSet.id].asOf}
                 </time>
               </p>
               <Sources sources={ruleSet.sources} />
@@ -93,7 +90,7 @@ export default function PolicyPage() {
       </section>
       <section className={site.section} aria-labelledby="parameters-heading">
         <h2 id="parameters-heading">{t('policyPage.parameters')}</h2>
-        {ruleSets.map((ruleSet) => (
+        {allRuleSets.map((ruleSet) => (
           <table key={ruleSet.id} className={styles.parameters}>
             <caption>{t(`policy.${ruleSet.kind}`)}</caption>
             <thead>
@@ -104,7 +101,7 @@ export default function PolicyPage() {
               </tr>
             </thead>
             <tbody>
-              {Object.entries(parameterSets[ruleSet.id].values).map(
+              {Object.entries(PARAMETERS[ruleSet.id].values).map(
                 ([name, parameter]) => (
                   <tr key={name} data-parameter={name}>
                     <th scope="row">
@@ -125,7 +122,7 @@ export default function PolicyPage() {
       </section>
       <section className={site.section} aria-labelledby="rules-heading">
         <h2 id="rules-heading">{t('policyPage.rules')}</h2>
-        {ruleSets.map((ruleSet) => (
+        {allRuleSets.map((ruleSet) => (
           <section key={ruleSet.id} className={site.section}>
             <h3>{t(`policy.${ruleSet.kind}`)}</h3>
             <ul className={styles.entries}>

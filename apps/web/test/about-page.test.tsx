@@ -8,7 +8,7 @@ import { ResultView } from '../components/result-view';
 import { SiteShell } from '../components/site-shell';
 import { t } from '../i18n';
 import { LocaleContext } from '../i18n/locale';
-import { policyAsOf, ruleSets } from '../lib/policy';
+import { policyAsOf, displayedRuleSets } from '../lib/policy';
 import { createDraft, runSimulation } from '../lib/questionnaire';
 
 test.each(['zh-CN', 'en'] as const)(
@@ -39,7 +39,7 @@ test.each(['zh-CN', 'en'] as const)(
     ] as const)
       expect(html).toContain(t(key, locale));
     expect(html).toContain(`dateTime="${policyAsOf}">${policyAsOf}</time>`);
-    for (const ruleSet of ruleSets) {
+    for (const ruleSet of displayedRuleSets) {
       expect(html).toContain(`<code>${ruleSet.id}</code>`);
       expect(html).toContain(t(`policy.${ruleSet.status}`, locale));
     }

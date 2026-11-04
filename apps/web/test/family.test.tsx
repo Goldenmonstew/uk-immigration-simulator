@@ -124,6 +124,7 @@ test('runSimulation passes the principal income window and government debt to ev
     runSimulation({ ...draft, principalScreening });
     expect(evaluate).toHaveBeenCalledExactlyOnceWith({
       locale: 'zh-CN',
+      ruleSetIds: ['current-law-2026-11', 'earned-settlement-2026-11'],
       simulationDate: draft.simulationDate,
       timeline: {
         ...draft.timeline,

@@ -77,6 +77,7 @@ export const zhCN = {
   'site.policy': '政策依据 · Policy',
   'site.chinese': '中文',
   'policyPage.title': '政策依据',
+  'policyPage.notDisplayed': '结果页未显示',
   'policyPage.ruleSets': '规则集',
   'policyPage.parameters': '参数表',
   'policyPage.name': '名称',
@@ -112,6 +113,7 @@ export const zhCN = {
   'policy.ANNOUNCED': '已公布改革',
   'policy.CURRENT_LAW': '现行法律',
   'policy.ANNOUNCED_NOT_IN_FORCE': '已公布、未生效',
+  'policy.IN_FORCE_FUTURE_VERSION.effectiveFrom': '已立法，{date} 起生效',
   'policy.IN_FORCE_FUTURE_VERSION': '未来生效版本',
   'policy.hypothesis':
     '改革栏假设该规则集在模拟日期适用；标签“已公布、未生效”不代表已经实施。',

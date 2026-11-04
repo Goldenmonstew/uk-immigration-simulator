@@ -81,6 +81,7 @@ test('normal submission sends the entered timeline and selected income window to
   runSimulation(draft);
   expect(evaluate).toHaveBeenCalledExactlyOnceWith({
     locale: 'zh-CN',
+    ruleSetIds: ['current-law-2026-11', 'earned-settlement-2026-11'],
     simulationDate: '2026-11-04',
     timeline: {
       ...draft.timeline,

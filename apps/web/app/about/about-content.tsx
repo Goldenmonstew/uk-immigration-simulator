@@ -1,9 +1,10 @@
 'use client';
 
 import Link from 'next/link';
+import { RuleSetStatus } from '../../components/policy-status';
 import { useTranslation } from '../../i18n/locale';
 import { punct } from '../../i18n/punctuation';
-import { policyAsOf, ruleSets } from '../../lib/policy';
+import { policyAsOf, displayedRuleSets } from '../../lib/policy';
 import site from '../site.module.css';
 import styles from '../policy/policy.module.css';
 
@@ -20,13 +21,13 @@ export default function AboutContent() {
       <section className={site.section} aria-labelledby="about-columns">
         <h2 id="about-columns">{t('about.columnsTitle')}</h2>
         <div className={styles.ruleSets}>
-          {ruleSets.map((ruleSet) => (
+          {displayedRuleSets.map((ruleSet) => (
             <article key={ruleSet.id} className={styles.card}>
               <h3>{t(`policy.${ruleSet.kind}`)}</h3>
               <p
                 className={`${site.badge} ${ruleSet.kind === 'ANNOUNCED' ? site.announced : ''}`}
               >
-                {t(`policy.${ruleSet.status}`)}
+                <RuleSetStatus ruleSet={ruleSet} />
               </p>
               <p>
                 {t(
@@ -55,7 +56,7 @@ export default function AboutContent() {
             <time dateTime={policyAsOf}>{policyAsOf}</time>
           </p>
           <ul>
-            {ruleSets.map((ruleSet) => (
+            {displayedRuleSets.map((ruleSet) => (
               <li key={ruleSet.id}>
                 {t(`policy.${ruleSet.kind}`)}
                 {p.colon}
