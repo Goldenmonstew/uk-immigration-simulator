@@ -46,6 +46,11 @@ export interface ImmigrationEpisode {
   socCode?: string;
   /** Sponsored salary in GBP per year. */
   salary?: number;
+  /**
+   * DEPENDANT only: the principal is this person's partner, or their parent
+   * (this person is a child dependant). Missing = not provided.
+   */
+  dependantOf?: 'PARTNER' | 'PARENT';
 }
 
 export interface Absence {
@@ -99,6 +104,12 @@ export interface SimulationRequest {
   timeline: PersonTimeline;
   /** The date the person would apply. */
   simulationDate: IsoDate;
+  /**
+   * The principal's full timeline, when `timeline` is a dependant. The engine
+   * assesses the principal first, on the same simulationDate, and settles the
+   * dependant from that result. Missing = not provided.
+   */
+  principal?: PersonTimeline;
   /** Defaults to every rule set. */
   ruleSetIds?: RuleSetId[];
 }

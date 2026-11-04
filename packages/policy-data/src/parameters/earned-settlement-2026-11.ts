@@ -18,6 +18,16 @@ export const earnedSettlement2026_11 = {
       ],
     },
 
+    // A child dependant this age or over when the family becomes eligible
+    // must qualify independently (p30).
+    independentAge: {
+      value: 25,
+      sources: [
+        { srcId: 'SRC-001', locator: 'p30' },
+        { srcId: 'SRC-001', locator: 'p31' },
+      ],
+    },
+
     // From this age the earnings, English and Life in the UK requirements do
     // not apply (p15, p21).
     exemptionAge: {
