@@ -6,10 +6,10 @@ import { ROUTE_GROUPS } from '@uk-immigration/policy-data';
 import { useTranslation } from '../i18n/locale';
 import { punct } from '../i18n/punctuation';
 import { routeGroupNames, routeLabel } from '../i18n/routes';
-import { ruleSets } from '../lib/policy';
+import { displayedRuleSets } from '../lib/policy';
 import { currentEpisode, type Draft } from '../lib/questionnaire';
 import { sourceUrls } from '../lib/sources';
-import { PolicyStatus } from './policy-status';
+import { PolicyStatus, RuleSetStatus } from './policy-status';
 import site from '../app/site.module.css';
 import styles from '../app/result/result.module.css';
 
@@ -93,7 +93,7 @@ export function AssessmentColumns({
   const p = punct(locale);
   return (
     <div className={styles.columns}>
-      {ruleSets.map((ruleSet) => {
+      {displayedRuleSets.map((ruleSet) => {
         const assessment = result.byRuleSet[ruleSet.id];
         return (
           <section
@@ -110,7 +110,7 @@ export function AssessmentColumns({
             <span
               className={`${site.badge} ${ruleSet.kind === 'ANNOUNCED' ? site.announced : ''}`}
             >
-              {t(`policy.${ruleSet.status}`)}
+              <RuleSetStatus ruleSet={ruleSet} />
             </span>
             {!assessment ? (
               <p className={site.notice}>{t('result.missingAssessment')}</p>

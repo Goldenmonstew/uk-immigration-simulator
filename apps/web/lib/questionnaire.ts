@@ -7,7 +7,7 @@ import type {
   SimulationResult,
 } from '@uk-immigration/engine';
 import { t, type TranslationKey } from '../i18n';
-import { policyAsOf } from './policy';
+import { displayedRuleSets, policyAsOf } from './policy';
 
 export const steps = [
   'basic',
@@ -278,8 +278,9 @@ export function runSimulation(
       },
     };
   }
-  return evaluate({
+  const result = evaluate({
     locale,
+    ruleSetIds: displayedRuleSets.map((ruleSet) => ruleSet.id),
     simulationDate: draft.simulationDate,
     timeline: {
       ...draft.timeline,
@@ -301,6 +302,7 @@ export function runSimulation(
       },
     }),
   });
+  return { ...result, policyAsOf };
 }
 
 export function runPrincipalSimulation(

@@ -12,7 +12,7 @@ import {
 } from '@uk-immigration/policy-data';
 import { useTranslation } from '../i18n/locale';
 import { punct } from '../i18n/punctuation';
-import { ruleSets } from '../lib/policy';
+import { displayedRuleSets } from '../lib/policy';
 import {
   type Draft,
   runSimulation,
@@ -25,7 +25,7 @@ import {
   initialWhatIf,
   type WhatIf,
 } from '../lib/whatif';
-import { PolicyStatus } from './policy-status';
+import { PolicyStatus, RuleSetStatus } from './policy-status';
 import { ShareLink } from './share-link';
 import site from '../app/site.module.css';
 import resultStyles from '../app/result/result.module.css';
@@ -380,7 +380,7 @@ function WhatIfLab({
           {!after ? (
             <p role="status">{t('form.fixErrors')}</p>
           ) : (
-            ruleSets.map((ruleSet) => {
+            displayedRuleSets.map((ruleSet) => {
               const previous = before.byRuleSet[ruleSet.id];
               const next = after.byRuleSet[ruleSet.id];
               return (
@@ -395,7 +395,7 @@ function WhatIfLab({
                   <span
                     className={`${site.badge} ${ruleSet.kind === 'ANNOUNCED' ? site.announced : ''}`}
                   >
-                    {t(`policy.${ruleSet.status}`)}
+                    <RuleSetStatus ruleSet={ruleSet} />
                   </span>
                   {previous && next ? (
                     <Comparison before={previous} after={next} />

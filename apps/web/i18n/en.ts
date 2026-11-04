@@ -85,6 +85,7 @@ export const en: Record<keyof typeof zhCN, string> = {
   'site.policy': 'Policy',
   'site.chinese': 'Chinese',
   'policyPage.title': 'Policy basis',
+  'policyPage.notDisplayed': 'Not shown on the results page',
   'policyPage.ruleSets': 'Rule sets',
   'policyPage.parameters': 'Parameters',
   'policyPage.name': 'Name',
@@ -119,6 +120,7 @@ export const en: Record<keyof typeof zhCN, string> = {
   'policy.ANNOUNCED': 'Announced reforms',
   'policy.CURRENT_LAW': 'Current law',
   'policy.ANNOUNCED_NOT_IN_FORCE': 'Announced, not in force',
+  'policy.IN_FORCE_FUTURE_VERSION.effectiveFrom': 'Laid, in force from {date}',
   'policy.IN_FORCE_FUTURE_VERSION': 'Future version',
   'policy.hypothesis':
     'The reforms column assumes that the rule set applies on the simulation date. Announced rules are not yet in force.',
