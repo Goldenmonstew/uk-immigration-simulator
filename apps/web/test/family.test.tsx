@@ -123,6 +123,7 @@ test('runSimulation passes the principal income window and government debt to ev
   try {
     runSimulation({ ...draft, principalScreening });
     expect(evaluate).toHaveBeenCalledExactlyOnceWith({
+      locale: 'zh-CN',
       simulationDate: draft.simulationDate,
       timeline: {
         ...draft.timeline,
@@ -226,4 +227,103 @@ test('share boundary rejects invalid principal containers and subflow state', ()
   expect(
     decodeDraft(encode({ ...draft, principalScreening: null })),
   ).toBeUndefined();
+});
+
+test.each([true, false, undefined])(
+  'principal ISL = %s and settlement survive editing, storage, sharing and request mapping',
+  (immigrationSalaryList) => {
+    const stored = new Map<string, string>();
+    vi.stubGlobal('localStorage', {
+      setItem: (key: string, value: string) => stored.set(key, value),
+      getItem: (key: string) => stored.get(key) ?? null,
+    });
+    const evaluate = vi.spyOn(engine, 'evaluate');
+    try {
+      const original = familyDraft();
+      let draft = draftReducer(original, { type: 'principal-start' });
+      draft = draftReducer(draft, {
+        type: 'timeline',
+        patch: {
+          settled: { date: '2024-04-06', route: 'SKILLED_WORKER' },
+          episodes: draft.principal!.episodes.map((episode) => ({
+            ...episode,
+            immigrationSalaryList,
+          })),
+        },
+      });
+      expect(validateStep(activePersonDraft(draft))).toEqual({});
+      expect(draft.timeline).toEqual(original.timeline);
+      draft = draftReducer(draft, {
+        type: 'principal-return',
+        completed: true,
+      });
+      draftStorage(draft);
+      const saved = draftStorage().draft!;
+      const shared = decodeDraft(encodeDraft(saved))!;
+      expect(saved).toEqual(draft);
+      expect(shared).toEqual(saved);
+      runSimulation(shared, 'en');
+      expect(evaluate).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          locale: 'en',
+          principal: expect.objectContaining({
+            settled: { date: '2024-04-06', route: 'SKILLED_WORKER' },
+            episodes: shared.principal!.episodes,
+          }),
+        }),
+      );
+      expect(shared.principal!.episodes[0].immigrationSalaryList).toBe(
+        immigrationSalaryList,
+      );
+      runPrincipalSimulation(shared, 'en');
+      expect(evaluate).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          timeline: expect.objectContaining({
+            settled: shared.principal!.settled,
+            episodes: shared.principal!.episodes,
+          }),
+        }),
+      );
+      const cleared = draftReducer(
+        draftReducer(shared, { type: 'principal-start' }),
+        {
+          type: 'timeline',
+          patch: { settled: undefined },
+        },
+      );
+      expect(validateStep(activePersonDraft(cleared))).toEqual({});
+      expect(
+        decodeDraft(encodeDraft(cleared))!.principal!.settled,
+      ).toBeUndefined();
+    } finally {
+      evaluate.mockRestore();
+      vi.unstubAllGlobals();
+    }
+  },
+);
+
+test('settled principal requires a valid grant date in the basic information step', () => {
+  let draft = draftReducer(familyDraft(), { type: 'principal-start' });
+  for (const date of ['', '2024-02-30']) {
+    draft = draftReducer(draft, {
+      type: 'timeline',
+      patch: { settled: { date, route: 'SKILLED_WORKER' } },
+    });
+    expect(validateStep(activePersonDraft(draft))).toEqual({
+      'principal-settled-date': 'error.date',
+    });
+  }
+});
+
+test('a partner with a settled Skilled Worker principal reaches SW 39.1(b) through the web request', () => {
+  const draft = familyDraft();
+  draft.principal!.settled = { date: '2024-04-06', route: 'SKILLED_WORKER' };
+  const result = runSimulation(decodeDraft(encodeDraft(draft))!, 'en');
+  const currentLaw = result.byRuleSet['current-law-2026-11']!;
+  expect(currentLaw.outcome).toBe('LIKELY_ELIGIBLE');
+  const partner = currentLaw.rules.find(
+    (rule) => rule.id === 'CL-SW-PARTNER-5Y',
+  )!;
+  expect(partner.status).toBe('PASS');
+  expect(partner.explanation).toContain('SW 39.1(b)');
 });

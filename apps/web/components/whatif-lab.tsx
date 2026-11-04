@@ -141,7 +141,7 @@ function WhatIfLab({
   draft: Draft;
   before: SimulationResult;
 }) {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const [whatIf, setWhatIf] = useState(() => initialWhatIf(draft));
   const update = (patch: Partial<WhatIf>) =>
     setWhatIf((current) => ({ ...current, ...patch }));
@@ -153,7 +153,7 @@ function WhatIfLab({
       !Number.isFinite(whatIf.earnings) ||
       whatIf.earnings < 0);
   const after =
-    dateError || incomeError ? undefined : runSimulation(afterDraft);
+    dateError || incomeError ? undefined : runSimulation(afterDraft, locale);
   return (
     <>
       <p className={site.lead}>{t('whatif.intro')}</p>
@@ -402,7 +402,7 @@ function WhatIfLab({
 }
 
 export function WhatIfView({ draft }: { draft?: Draft }) {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   if (!draft?.completed)
     return (
       <div className={site.narrow}>
@@ -413,7 +413,7 @@ export function WhatIfView({ draft }: { draft?: Draft }) {
         </Link>
       </div>
     );
-  const before = runSimulation(draft);
+  const before = runSimulation(draft, locale);
   return (
     <>
       <PolicyStatus asOf={before.policyAsOf} />

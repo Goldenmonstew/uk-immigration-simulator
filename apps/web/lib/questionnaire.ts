@@ -1,6 +1,7 @@
 import { evaluate } from '@uk-immigration/engine';
 import type {
   IncomeYear,
+  Locale,
   PersonTimeline,
   SimulationResult,
 } from '@uk-immigration/engine';
@@ -206,7 +207,10 @@ export function visibleIncomeYears(draft: Draft): IncomeYear[] {
   );
 }
 
-export function runSimulation(draft: Draft): SimulationResult {
+export function runSimulation(
+  draft: Draft,
+  locale: Locale = 'zh-CN',
+): SimulationResult {
   const applicantRisk = shortCircuitKeys.find(
     (key) => draft.screening[key] === 'yes',
   );
@@ -228,11 +232,12 @@ export function runSimulation(draft: Draft): SimulationResult {
       byRuleSet: {},
       shortCircuit: {
         reason: reasons[risk],
-        message: `${!applicantRisk && principalRisk ? t('principal.prefix') : ''}${t('screening.message')}`,
+        message: `${!applicantRisk && principalRisk ? t('principal.prefix', locale) : ''}${t('screening.message', locale)}`,
       },
     };
   }
   return evaluate({
+    locale,
     simulationDate: draft.simulationDate,
     timeline: {
       ...draft.timeline,
@@ -258,18 +263,22 @@ export function runSimulation(draft: Draft): SimulationResult {
 
 export function runPrincipalSimulation(
   draft: Draft,
+  locale: Locale = 'zh-CN',
 ): SimulationResult | undefined {
   if (!draft.principal) return undefined;
-  return runSimulation({
-    ...draft,
-    timeline: draft.principal,
-    screening: draft.principalScreening ?? {
-      ...emptyScreening(),
-      debt: draft.principal.governmentDebt?.outstanding ? 'yes' : 'no',
+  return runSimulation(
+    {
+      ...draft,
+      timeline: draft.principal,
+      screening: draft.principalScreening ?? {
+        ...emptyScreening(),
+        debt: draft.principal.governmentDebt?.outstanding ? 'yes' : 'no',
+      },
+      principal: undefined,
+      principalScreening: undefined,
     },
-    principal: undefined,
-    principalScreening: undefined,
-  });
+    locale,
+  );
 }
 
 export type Errors = Record<string, TranslationKey>;
@@ -313,6 +322,8 @@ export function validateStep(draft: Draft): Errors {
         errors.dob = 'error.dob';
       if (!/^[A-Z]{3}$/.test(timeline.nationality))
         errors.nationality = 'error.nationality';
+      if (draft.principalStep !== undefined && timeline.settled)
+        date('principal-settled-date', timeline.settled.date);
       break;
     case 1:
       for (const key of screeningKeys)

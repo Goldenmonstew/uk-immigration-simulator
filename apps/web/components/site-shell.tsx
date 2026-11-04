@@ -9,6 +9,7 @@ export function SiteShell({ children }: { children: ReactNode }) {
   const { t, locale, setLocale } = useTranslation();
   return (
     <>
+      <title>{t('site.name')}</title>
       <a className={styles.skip} href="#main">
         {t('site.skip')}
       </a>

@@ -16,6 +16,13 @@ export const en: Record<keyof typeof zhCN, string> = {
     'Complete the principal applicant’s timeline to continue.',
   'principal.required': 'Complete the principal applicant’s timeline first.',
   'principal.prefix': 'Principal applicant: ',
+  'principal.settled': 'Has the principal applicant already settled?',
+  'principal.settledDate': 'Date settlement was granted',
+  'principal.settledRoute': 'Visa route held when settlement was granted',
+  'episodes.immigrationSalaryList':
+    'Is the sponsored job on the Immigration Salary List?',
+  'episodes.immigrationSalaryListHint':
+    'If unsure, the job is treated as not being on the list.',
   'episodes.dependantOf': 'Dependant relationship',
   'episodes.partnerDependant': 'Partner dependant (principal is your partner)',
   'episodes.childDependant': 'Child dependant (principal is your parent)',
