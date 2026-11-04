@@ -2,6 +2,7 @@ import { currentLaw2026_11 as cl } from '@uk-immigration/policy-data';
 import { addYears, fullYears } from '../dates';
 import { continuousRun, episodeOn, restartAfterAbsences } from '../residence';
 import { defineRule } from '../rule';
+import { gbp } from './es-contribution';
 import type {
   ImmigrationEpisode,
   IsoDate,
@@ -108,6 +109,44 @@ export const clSwResidence5Y = defineRule(
           status: 'FAIL',
           explanation: `自 ${start} 起连续持 Skilled Worker 许可，截至 ${ctx.simulationDate} 满 ${fullYears(start, ctx.simulationDate)} 年；${due} 满 ${years} 年。`,
           assumptions,
+        };
+  },
+);
+
+export const clSwSalary = defineRule(
+  {
+    id: 'CL-SW-SALARY',
+    ruleSetId: RULE_SET,
+    title: 'Skilled Worker 定居薪资',
+    sources: [{ srcId: 'SRC-004', locator: 'SW 24.3' }],
+    pendingDetails: [],
+  },
+  ({ timeline, simulationDate }) => {
+    const threshold = cl.values.skilledWorkerGeneralSalaryThreshold.value;
+    const current = episodeOn(timeline, simulationDate);
+    if (!current || !isSkilledWorker(current)) {
+      return {
+        status: 'FAIL',
+        explanation: '当前不是 Skilled Worker 主申请人许可。',
+      };
+    }
+    if (current.salary === undefined) {
+      return {
+        status: 'UNKNOWN',
+        explanation: '未填写当前 Skilled Worker 工作的年薪。',
+      };
+    }
+    return current.salary >= threshold
+      ? {
+          status: 'PASS',
+          explanation: `当前年薪 ${gbp(current.salary)}，达到 SW 24.3 row A 的一般门槛 ${gbp(threshold)}。`,
+          assumptions: [
+            '薪资还须达到该职业的 going rate（Appendix Skilled Occupations Table 1 / 1a），本工具未核对。',
+          ],
+        }
+      : {
+          status: 'UNKNOWN',
+          explanation: `当前年薪 ${gbp(current.salary)}，低于 SW 24.3 row A 的 ${gbp(threshold)}；若适用 rows B–E（Immigration Salary List、新入职、Table 3 医疗与教育职业等），门槛更低，需按具体职业判断。`,
         };
   },
 );

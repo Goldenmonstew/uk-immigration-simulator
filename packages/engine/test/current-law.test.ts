@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { clScope, clSwResidence5Y } from '../src/rules/current-law';
+import { clScope, clSwResidence5Y, clSwSalary } from '../src/rules/current-law';
 import type { ImmigrationEpisode } from '../src/types';
 import { run } from './helpers';
 
@@ -69,5 +69,20 @@ describe('CL-SW-RESIDENCE-5Y', () => {
       run(clSwResidence5Y, { episodes: [episode({ role: 'DEPENDANT' })] })
         .status,
     ).toBe('FAIL');
+  });
+});
+
+describe('CL-SW-SALARY', () => {
+  const at = (salary?: number) =>
+    run(clSwSalary, { episodes: [episode({ salary })] }).status;
+
+  test('£41,700 passes with a going-rate assumption; £41,699 is unknown', () => {
+    expect(at(41700)).toBe('PASS');
+    expect(run(clSwSalary).assumptions?.[0]).toContain('going rate');
+    expect(at(41699)).toBe('UNKNOWN');
+  });
+
+  test('missing salary is unknown', () => {
+    expect(at(undefined)).toBe('UNKNOWN');
   });
 });
