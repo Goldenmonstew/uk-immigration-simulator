@@ -184,14 +184,30 @@ export interface SimulationRequest {
 
 // ---------- Rules ----------
 
-export interface RuleSet {
+/**
+ * A column of the result. `kind` picks the aggregation: LAW is assessed like
+ * current law, ANNOUNCED like Earned Settlement (contracts §13).
+ */
+export type RuleSet = {
   id: RuleSetId;
   kind: 'LAW' | 'ANNOUNCED';
-  status: 'CURRENT_LAW' | 'ANNOUNCED_NOT_IN_FORCE' | 'IN_FORCE_FUTURE_VERSION';
-  effectiveFrom?: IsoDate;
   effectiveTo?: IsoDate;
   supersedes?: RuleSetId;
   sources: SourceRef[];
+} & (
+  | { status: 'CURRENT_LAW' | 'ANNOUNCED_NOT_IN_FORCE'; effectiveFrom?: never }
+  | {
+      /** Laid but not yet in force. */
+      status: 'IN_FORCE_FUTURE_VERSION';
+      /** When the laid rules come into force. Display only: `evaluate` ignores it. */
+      effectiveFrom: IsoDate;
+    }
+);
+
+/** What `evaluate` assesses: rule sets and their rules, by the same ids. */
+export interface RuleSetRegistry {
+  ruleSets: Record<RuleSetId, RuleSet>;
+  rules: Record<RuleSetId, Rule[]>;
 }
 
 /** e.g. 'ES-PUBLIC-FUNDS' */

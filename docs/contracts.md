@@ -455,3 +455,89 @@ HK BN(O) 的英语只有一个等级（HK 60.1 没有按申请日分段），所
 
 - `cl-family-partner-five-years.ts`：`PARTNER_FIVE_YEAR`，伴侣 `BRITISH_CITIZEN`，2021-03-01 起，申请日 2026-03-01（5 年到期当天）；连续段起点早于 2024-04-11 → 过渡门槛 £18,600（无子女），上一 tax year 合并收入达标；英语 B1、KOL 已过 → `LIKELY_ELIGIBLE`、5 年。Earned Settlement 栏照常。随第二步（SRC-024 合并后）加入；第一步用单测覆盖 10 年路线。
 - 问卷：当前片段为 `FAMILY_PARTNER_OR_PARENT` + `MAIN` 时问 `familyPermission`；伴侣路线时提示填写伴侣身份（`relationships`）与上一 tax year 的本人及伴侣收入。
+
+## 13. 规则集版本化（Phase 4.8）
+
+把 `docs/versioning.md` §4 里需要代码支撑的部分定下来：Statement of Changes 落地时只需"加一个规则集 + 参数文件 + 规则差异"。本任务**不新增真实规则集、参数或规则**，机制用测试内的合成规则集证明；现有两栏的输出与 `bilingual` 快照不变。
+
+### 13.1 字段
+
+| 位置 | 字段 | 取值 / 含义 |
+|---|---|---|
+| `policy-data` `types.ts` | `RULE_SET_IDS`（新，常量） | `['current-law-2026-11', 'earned-settlement-2026-11'] as const`，按加入顺序。**加一个规则集 = 在这里加一项**。 |
+| | `RuleSetId`（改） | 由 `RULE_SET_IDS` 推导（`(typeof RULE_SET_IDS)[number]`），不再手写联合类型；定义只在这一处。 |
+| | `ParameterSet.basedOn?: RuleSetId`（新） | 本参数文件的值与来源沿用自哪个版本，只作文档用途，引擎不读。 |
+| `engine` `types.ts` | `RuleSet.effectiveFrom`（改） | `RuleSet` 改为按 `status` 区分的联合：`IN_FORCE_FUTURE_VERSION`（已提交、未生效）时**必填**，为生效日；`CURRENT_LAW` / `ANNOUNCED_NOT_IN_FORCE` 时不能填（`never`）。`evaluate` 不读它，哪两栏显示由 web 决定（13.5）。`effectiveTo` / `supersedes` 不变（仍未使用）。 |
+| | `RuleSetRegistry`（新） | `{ ruleSets: Record<RuleSetId, RuleSet>; rules: Record<RuleSetId, Rule[]> }`：`evaluate` 评估的规则集与各自的规则，键相同。 |
+
+### 13.2 注册方式
+
+- `RULE_SET_IDS` 是唯一入口；下面三张表都是 `Record<RuleSetId, …>`，加了 ID 而漏了哪张，typecheck 会报错：
+  - `RULE_SETS`（engine，`evaluate.ts`）：规则集元数据，web 用它列栏与徽章。
+  - `RULES`（engine，`rules/index.ts`）：各规则集的规则，按执行顺序。
+  - `PARAMETERS`（policy-data，新）：`Record<RuleSetId, ParameterSet>`，各规则集的参数文件；web 用它取各栏的 `asOf`（13.5）。规则仍直接 import 本版本的参数文件，不经 `PARAMETERS`（13.4）。
+- 聚合按 `RuleSet.kind` 选：`LAW` 按现行法律栏的候选路径（§7、§12），`ANNOUNCED` 按 Earned Settlement（§7、§11）；规则取 `registry.rules[id]`，不再写死 ID。短路时 `PROTECTION` / `OUTSIDE_FRAMEWORK` 只停 `kind: 'ANNOUNCED'` 的栏（原来写死 `earned-settlement-2026-11`），`CRIMINALITY` / `IMMIGRATION_BREACH` 停所有栏。新版本若改了候选路径或短路，在它自己的契约小节里写，不在本节预留。
+- `SimulationResult.policyAsOf` 不变（仍为 `earnedSettlement2026_11.asOf`），web 的显示用 13.5 的算法。
+
+### 13.3 测试注入：`evaluate(request, registry?)`
+
+- 签名改为 `evaluate(request: SimulationRequest, registry: RuleSetRegistry = { ruleSets: RULE_SETS, rules: RULES })`。现有调用不传第二个参数，行为不变；`request.ruleSetIds` 缺省时取 `registry.ruleSets` 的全部键，给了时照常过滤；主申请人的递归评估传同一个 `registry`。
+- 合成规则集只在测试里构造：ID 写成 `'current-law-test-future' as RuleSetId`（类型上借用，生产代码与 `RULE_SET_IDS` 不出现它），`registry = { ruleSets: { ...RULE_SETS, [id]: … }, rules: { ...RULES, [id]: … } }`。
+- 不选"可替换的模块级 `RULES`"或 `vi.mock`：显式参数最直接，测试里能在同一个用例中对比"不传 / 传合成 registry"两次结果。
+
+### 13.4 同一规则挂到多个规则集：`withRuleSet(rule, ruleSetId)`
+
+- `rule.ts` 新增 `withRuleSet(rule: Rule, ruleSetId: RuleSetId): Rule`，返回 `meta.ruleSetId` 换成新 ID、`evaluate`（即 check）不变的规则；`defineRule` 不变。沿用的规则用它注册到新规则集，不复制代码；语义变了的规则在新规则集下另写新版本，旧版本不动（`docs/versioning.md` §4.3）。
+- **参数按规则集注入：等真实版本出现再做（同意任务书的倾向）**。理由：
+  1. 没有第二个参数文件，无法测出"同一 check 在不同版本下取到不同值"是对的。
+  2. 现有规则在模块顶层 import `currentLaw2026_11 as cl` / `earnedSettlement2026_11 as es`，引用约数百处。现在改成从 `ctx` 取值，是一次全量重写，却换不来可验证的收益。
+  3. 12 月的 Statement of Changes 是改数字、改段号还是改结构，现在不知道。若主要是新段落与新条件，规则本来就要新写，注入用处有限。
+- 代价：在注入做出来之前，`withRuleSet` 沿用的规则读的仍是 2026-11 的参数。所以新版本里**只要有数字变化的规则，都要另写**，或在那时先做注入。
+- 届时的改法（只记在这里，不实现）：`RuleContext` 加 `values`，由 `evaluate` 按 `PARAMETERS[id]` 填入；规则把 `cl.values.x` 机械替换为 `ctx.values.x`；两个参数文件的值类型须一致（`basedOn` 展开保证同形）。范围：`packages/engine/src/rules/**` 与 `aggregate.ts`，快照应不变。
+
+### 13.5 参数文件的"沿用"写法
+
+```ts
+export const currentLaw2027_01 = {
+  ruleSetId: 'current-law-2027-01',
+  basedOn: 'current-law-2026-11',
+  asOf: '2027-01-05',
+  values: {
+    ...currentLaw2026_11.values,          // 沿用：值与 SRC 定位不变
+    skilledWorkerSettlementSalaryRowA: {  // 覆盖：新值 + 新 SRC 定位
+      value: /* 新 Statement of Changes 的值 */,
+      sources: [{ srcId: 'SRC-0xx', locator: 'SW 24.3' }],
+    },
+  },
+} satisfies ParameterSet;
+```
+
+- 前提：`'current-law-2027-01'` 已加进 `RULE_SET_IDS`。`satisfies ParameterSet` 下逐项覆盖仍保留各值的具体类型。沿用的值不必逐项写"沿用"注释，`basedOn` 说明来源版本（`docs/versioning.md` §4.2 按此改）。
+
+### 13.6 给 astra（web 部分，另做）
+
+- **两栏选择**（`apps/web/lib/policy.ts`，按 `RULE_SET_IDS` 顺序遍历 `RULE_SETS`）：
+  - 左栏：`kind: 'LAW'` 且 `status: 'CURRENT_LAW'` 的那个。
+  - 右栏：有 `status: 'IN_FORCE_FUTURE_VERSION'` 时取它；有多个时取 `effectiveFrom` 最早的。没有时取 `kind: 'ANNOUNCED'` 中最后加入的（`RULE_SET_IDS` 里靠后）。
+  - 评估时 `ruleSetIds` 只传这两个。
+- **徽章文案键**：保留 `policy.<status>`；新增 `policy.IN_FORCE_FUTURE_VERSION.effectiveFrom`，用于 `IN_FORCE_FUTURE_VERSION` 栏，按 web 现有插值写法带日期。
+  - 中文："已立法，{date} 起生效"
+  - 英文："Laid, in force from {date}"
+- **`policyAsOf`**：所显示两栏 `PARAMETERS[id].asOf` 的较晚者。
+- **/policy**：列出 `RULE_SET_IDS` 的全部规则集（含未显示的），写明状态、生效日（若有）与来源。
+
+### 13.7 测试（合成规则集）
+
+`packages/engine/test/versioning.test.ts`：
+
+- 合成规则集 `current-law-test-future`：复用 `RULES['current-law-2026-11']` 的全部规则（经 `withRuleSet`），`kind: 'LAW'`、`status: 'IN_FORCE_FUTURE_VERSION'`、`effectiveFrom: '2027-01-01'`。
+- 对每个 fixture：
+  - 传合成 registry 时出三栏；
+  - 现有两栏与不传 registry 时逐字节相同；
+  - 合成栏与 `current-law-2026-11` 栏相同（同一组规则与参数）。
+- `ruleSetIds: [合成 ID]` 只出这一栏。
+- 合成规则的 `meta.ruleSetId` 都是合成 ID，原规则不变。
+- 所有 fixture 的 `expected.ruleSetId` 都在 `RULE_SET_IDS` 里，且没有合成 ID。
+- `RULE_SETS`、`RULES`、`PARAMETERS` 的键都等于 `RULE_SET_IDS`，`PARAMETERS[id].ruleSetId === id`。
+- `basedOn` 写法：测试内构造一个合成参数集，展开沿用、覆盖一项，断言沿用值与覆盖值都对。
+- `bilingual` 快照不变（合成规则集只在测试里）。
