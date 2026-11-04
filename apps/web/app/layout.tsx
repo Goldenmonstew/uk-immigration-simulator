@@ -6,7 +6,6 @@ import { SiteShell } from '../components/site-shell';
 import styles from './site.module.css';
 
 export const metadata: Metadata = {
-  title: t('site.name'),
   description: t('home.intro'),
   referrer: 'no-referrer',
 };
