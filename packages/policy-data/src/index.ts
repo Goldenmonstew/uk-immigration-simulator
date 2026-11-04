@@ -17,3 +17,5 @@ export { publicFundsBenefits } from './data/public-funds-benefits';
 export type { Benefit } from './data/public-funds-benefits';
 export { annexCOccupations, careWorkerOccupations } from './data/occupations';
 export type { Occupation } from './data/occupations';
+export { policyChangelog } from './data/policy-changelog';
+export type { PolicyChange } from './data/policy-changelog';
