@@ -331,3 +331,71 @@ PD-064（PWS → Core Protection 回切）、PD-065（保护类路线上的其�
 ### 11.8 fixtures
 
 `packages/policy-data/fixtures/` 新增 p40 Individual A–D 四个（日期为补充事实，文件头注明）：A（UKRS 2027-06-01 抵达、A2、用过 Universal Credit；2032-06-01 → `LIKELY_ELIGIBLE`、5 年）；B（2027-03-01 Core Protection → 2028-03-01 PWS；2030-01-01 → `LIKELY_NOT_ELIGIBLE`、10 年、2038-03-01）；C（同 B，成年后 2026-08-10 非法入境 → 20 年、2048-03-01）；D（同 C 但一直 Core Protection → 30 年、2057-03-01）。原有 fixture 的状态 / 年限 / 日期不变。
+
+## 12. 现行法律栏：HK BN(O) 与 Global Talent（Phase 4.2）
+
+把 Hong Kong BN(O) 与 Global Talent 两条路线的**主申请人**纳入现行法律栏。只新增可选字段，已有字段与取值不变；`SettlementAssessment` 不加字段。Earned Settlement 栏不变（HK BN(O) 仍 `OUTSIDE_FRAMEWORK` 短路，Global Talent 仍按核心许可 / 高人才评估）。
+
+段号按 gov.uk 现行文本（Appendix Hong Kong British National (Overseas) 2026-10-08 版、Appendix Global Talent 2026-08-03 版）预写，**以 4.1 登记的 SRC-020 / SRC-021 快照为准**；4.1 合并前代码与参数里的 `sources` 写 `{ srcId: 'SRC-020' | 'SRC-021', locator: '待 4.1' }`，不引用未登记的 SRC。
+
+### 12.1 字段
+
+| 字段 | 取值 | 含义 | 何时读取 |
+|---|---|---|---|
+| `ImmigrationEpisode.globalTalentEndorsement?` | `'RESEARCH_BODY'` \| `'ARTS_COUNCIL_ENGLAND'` \| `'TECH_NATION'` \| `'PRIZE'` | 首次 Global Talent 许可依据的背书 / 奖项（GT 11.1–11.2）。`RESEARCH_BODY` = Royal Society、British Academy、Royal Academy of Engineering 或 UKRI 背书；`ARTS_COUNCIL_ENGLAND` / `TECH_NATION` = 该机构背书（标准看下一字段）；`PRIZE` = Appendix Global Talent: Prestigious Prizes 所列奖项 | 申请日当天的 `GLOBAL_TALENT` + `MAIN` 片段 |
+| `ImmigrationEpisode.globalTalentCriteria?` | `'EXCEPTIONAL_TALENT'` \| `'EXCEPTIONAL_PROMISE'` | Arts Council England / Tech Nation 背书所依据的标准（GT 11.1(b)、GT 11.2） | 同上，且 `globalTalentEndorsement` 为 `ARTS_COUNCIL_ENGLAND` 或 `TECH_NATION` |
+
+- 缺省 = 用户没提供：`CL-GT-RESIDENCE` 输出不带 PD 的 `UNKNOWN`。背书机构不是 GT 11 点名的六个机构之一时，用户留空（同样 `UNKNOWN`，解释列出 GT 11 点名的机构）。
+- HK BN(O) 不加字段：Status Holder、Adult Child 与 household member 的定居条款是同一组（HK 55–HK 64），合格期都是 HK 62.1。
+
+### 12.2 参数（`currentLaw2026_11.values`，规则 commit 时加）
+
+| 名称 | 值 | 来源（预期段号） |
+|---|---|---|
+| `hongKongBnoQualifyingYears` | 5 | SRC-020 HK 62.1(b) |
+| `hongKongBnoSettlementEnglish` | `'B1'` | SRC-020 HK 60.1；SRC-007 EM 5.60（列出升 B2 的 14 个 Appendix，不含 Appendix Hong Kong BN(O)） |
+| `globalTalentQualifyingYearsShort` | 3 | SRC-021 GT 11.1 |
+| `globalTalentQualifyingYearsLong` | 5 | SRC-021 GT 11.2 |
+| `globalTalentSettlementEnglishBefore` | `'B1'` | SRC-021 GT 13.1(a) |
+| `globalTalentSettlementEnglish` | `{ cefrLevel: 'B2', applicationsFrom: '2027-03-26' }` | SRC-021 GT 13.1(b)；SRC-007 EM 5.60 |
+
+HK BN(O) 的英语只有一个等级（HK 60.1 没有按申请日分段），所以是标量，不用"等级 + 生效日"的形状。
+
+### 12.3 规则
+
+| 规则 | 适用 | 判断 |
+|---|---|---|
+| `CL-SCOPE`（改） | — | 申请日当天的 episode 为 `HONG_KONG_BNO` + `MAIN` 或 `GLOBAL_TALENT` + `MAIN` → `PASS`，解释写明按哪条 Appendix 与 Appendix Long Residence 评估。两条路线的 `DEPENDANT` → `UNKNOWN`（不带 PD），解释"现行法律栏只建模该路线的主申请人"；其余不变。来源补 HK 62.1、GT 11.1。 |
+| `CL-HKBNO-RESIDENCE-5Y`（新） | 当前 `HONG_KONG_BNO` + `MAIN` | 起点 = 申请日所在的连续 `HONG_KONG_BNO` 段（任意 `role`）的起点，经 `restartAfterAbsences`（CR 3.1，HK 63.1）。起点 + 5 ≤ 申请日 → `PASS`；否则 `FAIL`，解释写到期日（写法同 `CL-SW-RESIDENCE-5Y`）。HK 62.1(b) 允许合并"可定居路线"（a route under which a person can settle）的时间，本工具只计 BN(O) 段：紧接该段之前有其他路线的许可时，加假设"此前 X 的时间若属可定居路线也可计入，实际日期可能更早"（新 PD）。HK 62.1(a)（最近一次许可为 BN(O)）由 `CL-SCOPE` 保证。 |
+| `CL-GT-RESIDENCE`（新） | 当前 `GLOBAL_TALENT` + `MAIN` | 年限：`RESEARCH_BODY`、`PRIZE`、(`ARTS_COUNCIL_ENGLAND` \| `TECH_NATION`) + `EXCEPTIONAL_TALENT` → 3（GT 11.1(a)–(c)）；(`ARTS_COUNCIL_ENGLAND` \| `TECH_NATION`) + `EXCEPTIONAL_PROMISE` → 5（GT 11.2）；`globalTalentEndorsement` 缺省，或为 ACE / Tech Nation 而 `globalTalentCriteria` 缺省 → `UNKNOWN`（不带 PD）。起点 = 申请日所在的、由 GT 11.3 路线的 `MAIN` 许可任意组合构成的连续段起点，经 `restartAfterAbsences`（CR 3.1，GT 12.1）。GT 11.3 的列表与 SW 21.2 相同（Global Talent、Innovator Founder、Skilled Worker、T2 Minister of Religion、International Sportsperson、Scale-up；Tier 1 与 Representative of an Overseas Business 不在 `Route` 里，不计，假设说明），复用 `SW_QUALIFYING_ROUTES`。满期 → `PASS`，未满 → `FAIL` 写到期日。GT 10.1（背书未被撤回）与 GT 10.2（上一段许可期间在背书领域有收入）不建模，按满足处理并写进假设。 |
+| `CL-ENGLISH`（改） | — | 当前 HK BN(O) 主申请人 → 一律 B1（HK 60.1），解释注明 HC 1691 的 B2 不覆盖该 Appendix（EM 5.60）；当前 Global Talent 主申请人 → 申请日 < 2027-03-26 为 B1（GT 13.1(a)），此后 B2（GT 13.1(b)）。豁免与其余路线不变。来源补 HK 60.1、GT 13.1、EM 5.60。 |
+| `CL-KOL`（改） | — | 判断不变（HK 61.1、GT 14.1 都引 Appendix KOL UK）；来源补这两段，解释写明按哪条 Appendix。 |
+
+### 12.4 候选路径（§7 现行法律部分的补充）
+
+| 当前 | 候选 | 年限 | 起点 |
+|---|---|---|---|
+| `HONG_KONG_BNO` + `MAIN` | `CL-ENGLISH` + `CL-KOL` | 5 | `CL-HKBNO-RESIDENCE-5Y` 的起点 |
+| `GLOBAL_TALENT` + `MAIN` | `CL-GT-RESIDENCE` + `CL-ENGLISH` + `CL-KOL` | 3 或 5（按 12.3）；`CL-GT-RESIDENCE` 为 `UNKNOWN` 时不给起点 | `CL-GT-RESIDENCE` 的起点 |
+| 两者 | Long Residence 10 年候选照常并列 | 10 | 不变 |
+
+- `CL-HKBNO-RESIDENCE-5Y` 与 `CL-SW-RESIDENCE-5Y` 一样只用于展示，年限由起点计算。`CL-GT-RESIDENCE` 进候选，是为了背书未填时让结论落到 `INSUFFICIENT_INFORMATION`（§7 判定第 2 条：起点未知且 `UNKNOWN` 不带 PD），不按 3 年或 5 年猜。
+- 判定（§7 的 1–3 条）不变：满期且英语、KOL 都 `PASS` → `LIKELY_ELIGIBLE`；未满期 → `LIKELY_NOT_ELIGIBLE` 投影到期日。
+- 聚合里"投影日期在 2027-03-26 之后、届时须 B2"的假设只对 Skilled Worker、Global Talent 与 Long Residence 加；HK BN(O) 5 年路径不加（HK 60.1 没有 B2）。
+- `clBaseAssumption` 的建模范围说明补上 HK BN(O) 与 Global Talent 的主申请人。
+
+### 12.5 不建模（登记 `docs/pending-details.md` 新一节"现行法律栏扩展（任务 4.2）"）
+
+- 两条路线的 dependant（HK 57、HK 59 的子女与 adult dependant relative；GT 25–GT 34 的伴侣 5 年与子女）：`CL-SCOPE` `UNKNOWN`，见 12.3。
+- HK 62.1(b) 中 BN(O) 以外"可定居路线"的时间（含 BN(O) concession 下的 Leave Outside the Rules）：只计 BN(O) 段，见 12.3。
+- GT 10.1 / GT 10.2：按满足处理，见 12.3。
+- HC 1691 不覆盖 HK BN(O)：已由 EM 5.60 确认，不是 PD；写在 `CL-ENGLISH` 的解释与参数来源里。
+
+### 12.6 给 4.6（问卷）
+
+- 当前片段为 `GLOBAL_TALENT` + `MAIN` 时问 `globalTalentEndorsement`；选了 `ARTS_COUNCIL_ENGLAND` 或 `TECH_NATION` 时再问 `globalTalentCriteria`。背书机构不在这四项里时提示留空。
+- HK BN(O) 不新增问题。
+
+### 12.7 fixtures
+
+`packages/policy-data/fixtures/` 新增两个自拟 fixture（文件头注明事实依据为规则条款，不是官方案例）：`cl-hkbno-five-years.ts`（2021-02-01 起持 `HONG_KONG_BNO` 主申请人许可，申请日 2026-02-01 → 现行法律栏 `LIKELY_ELIGIBLE`、5 年；Earned Settlement 栏 `OUTSIDE_FRAMEWORK` 短路）；`cl-global-talent-three-years.ts`（`ARTS_COUNCIL_ENGLAND` + `EXCEPTIONAL_TALENT`，3 年到期当天 → `LIKELY_ELIGIBLE`、3 年；Earned Settlement 栏照常）。原有 fixture 的状态 / 年限 / 日期不变。
