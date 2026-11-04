@@ -51,6 +51,7 @@
 | 45 | Phase 4 规划：docs/tasks/phase-4-plan.md（主题：现行法律栏补到与改革栏对称、Statement of Changes 版本化与来源监控准备、web 打磨；Wave 1：4.1 sol 登记 HK BN(O) / Global Talent / Settlement Family Life / Settlement Protection 四个 Appendix，4.2 Opus 现行法律栏扩展契约先行，4.3 astra web 打磨与 /about，4.4 sol 来源监控改进与 ISL 日期，4.7 Fable 版本化流程文档；Wave 2：4.5 Opus 规则小项、4.6 astra 问卷跟进；§4 待用户决定：4.2 路线范围与顺序、是否加每周来源核对工作流、/about 反馈渠道、版本化只写文档） | docs/tasks/phase-4-plan.md, PROGRESS.md |
 | 46 | 派发 Phase 4 Wave 1（用户按建议决定：4.2 先做 HK BN(O) 与 Global Talent、不加每周来源核对工作流、/about 不提供反馈入口、版本化只写文档）：任务书 4.1–4.4；sol 4.1（`.worktrees/sol-sources`，分支 `codex/sol-sources-4.1`，日志 scratchpad `sol-4.1*`）；astra 4.3（`.worktrees/astra-polish`，分支 `codex/astra-polish-4.3`，日志 `astra-4.3*`）；Opus 会话 current-law-4-2（契约先行，规则待 4.1 合并）；4.4 待 4.1 验收后派；4.7 版本化流程文档由 Fable 写 | docs/tasks/4.1-current-law-sources.md, docs/tasks/4.2-current-law-hkbno-global-talent.md, docs/tasks/4.3-web-polish-about.md, docs/tasks/4.4-source-check-and-isl-dates.md, PROGRESS.md |
 | 47 | 4.7 规则集版本化流程文档 docs/versioning.md：现状、触发与发现、登记（旧快照保留、段号对照）、新规则集命名与 IN_FORCE_FUTURE_VERSION 的用法、规则沿用不复制、fixtures 与 PD 的处理、web 两栏选择逻辑、保留与退役、升级检查清单；只写流程，不实现 | docs/versioning.md, PROGRESS.md |
+| 48 | 用户修订 Phase 4 决定：4.2 加家庭伴侣（Appendix Settlement Family Life，已更新任务书并通知 Opus 会话追加契约）；4.4 加每周自动来源核对的 GitHub Actions（任务书加 B 节）；/about 要反馈入口（渠道待用户指定，作为 4.3 补充任务）；版本化除文档外还要实现（新增 4.8，Wave 2：引擎多规则集注册与 effectiveFrom、web 两栏选择与徽章） | docs/tasks/phase-4-plan.md, docs/tasks/4.2-current-law-hkbno-global-talent.md, docs/tasks/4.4-source-check-and-isl-dates.md, PROGRESS.md |
 
 ### 当前状态
 
