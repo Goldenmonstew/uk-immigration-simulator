@@ -1,6 +1,7 @@
 import { earnedSettlement2026_11 as es } from '@uk-immigration/policy-data';
 import type { BestYears, SourceRef } from '@uk-immigration/policy-data';
 import { taxYearsBefore } from '../dates';
+import { episodeOn } from '../residence';
 import { defineRule } from '../rule';
 import type { RuleContext } from '../types';
 import { ageExemptOn } from './es-requirements';
@@ -146,5 +147,42 @@ export const esEarnings10Y = defineRule(
       );
     }
     return { status, explanation, assumptions };
+  },
+);
+
+export const esBritishConnection = defineRule(
+  {
+    id: 'ES-BRITISH-CONNECTION',
+    ruleSetId: RULE_SET,
+    title: 'British connection（5 年路径）',
+    sources: [{ srcId: 'SRC-001', locator: 'p18' }],
+    pendingDetails: [],
+  },
+  ({ timeline, simulationDate }) => {
+    const route = episodeOn(timeline, simulationDate)?.route;
+    if (route === 'UK_ANCESTRY') {
+      return {
+        status: 'PASS',
+        explanation:
+          '持 UK Ancestry 签证，属 recognised British connection，可走 5 年路径。',
+      };
+    }
+    if (
+      route === 'FAMILY_PARTNER_OR_PARENT' &&
+      timeline.relationships.some(
+        (r) => r.otherPartyStatus === 'BRITISH_CITIZEN',
+      )
+    ) {
+      return {
+        status: 'PASS',
+        explanation:
+          '以 British citizen 的伴侣、父母或子女身份持家庭签证，属 recognised British connection，可走 5 年路径。',
+      };
+    }
+    return {
+      status: 'FAIL',
+      explanation:
+        '不属于 British citizen 家属路线或 UK Ancestry，不走这条 5 年路径。',
+    };
   },
 );

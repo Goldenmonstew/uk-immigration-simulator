@@ -1,10 +1,11 @@
 import { describe, expect, test } from 'vitest';
 import {
+  esBritishConnection,
   esEarnings10Y,
   esEarnings3Y,
   esEarnings5Y,
 } from '../src/rules/es-contribution';
-import type { IncomeYear } from '../src/types';
+import type { ImmigrationEpisode, IncomeYear } from '../src/types';
 import { run } from './helpers';
 
 // SIMULATION_DATE 2026-11-04 is in 2026-27, so windows end with 2025-26.
@@ -109,5 +110,51 @@ describe('ES-EARNINGS-10Y', () => {
       run(esEarnings10Y, { incomeYears: [], earningsExemptHealth: true })
         .status,
     ).toBe('PASS');
+  });
+});
+
+describe('ES-BRITISH-CONNECTION', () => {
+  const family: ImmigrationEpisode[] = [
+    {
+      route: 'FAMILY_PARTNER_OR_PARENT',
+      role: 'MAIN',
+      validFrom: '2022-01-01',
+      validTo: '2027-06-30',
+    },
+  ];
+
+  test('partner of a British citizen on a family route passes', () => {
+    expect(
+      run(esBritishConnection, {
+        episodes: family,
+        relationships: [
+          { type: 'PARTNER', otherPartyStatus: 'BRITISH_CITIZEN' },
+        ],
+      }).status,
+    ).toBe('PASS');
+  });
+
+  test('partner who is settled but not British fails', () => {
+    expect(
+      run(esBritishConnection, {
+        episodes: family,
+        relationships: [{ type: 'PARTNER', otherPartyStatus: 'SETTLED' }],
+      }).status,
+    ).toBe('FAIL');
+  });
+
+  test('UK Ancestry passes; a British partner on a work route does not count', () => {
+    expect(
+      run(esBritishConnection, {
+        episodes: [{ ...family[0], route: 'UK_ANCESTRY' }],
+      }).status,
+    ).toBe('PASS');
+    expect(
+      run(esBritishConnection, {
+        relationships: [
+          { type: 'PARTNER', otherPartyStatus: 'BRITISH_CITIZEN' },
+        ],
+      }).status,
+    ).toBe('FAIL');
   });
 });
