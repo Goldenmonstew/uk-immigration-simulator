@@ -1,11 +1,13 @@
 import { describe, expect, test } from 'vitest';
 import {
+  esBreach,
   esCriminality,
   esDebt,
   esEnglishB2,
   esKol,
 } from '../src/rules/es-requirements';
-import { run } from './helpers';
+import { evaluate } from '../src/evaluate';
+import { run, SIMULATION_DATE, timeline } from './helpers';
 
 describe('ES-CRIMINALITY', () => {
   test('no record passes', () => {
@@ -100,5 +102,43 @@ describe('ES-KOL', () => {
     expect(run(esKol, { ...none, dateOfBirth: '1961-11-04' }).status).toBe(
       'PASS',
     );
+  });
+});
+
+describe('ES-BREACH', () => {
+  test('no breach passes; adult overstaying fails', () => {
+    expect(run(esBreach).status).toBe('PASS');
+    expect(
+      run(esBreach, {
+        immigrationBreaches: [{ type: 'OVERSTAYING', date: '2018-05-01' }],
+      }).status,
+    ).toBe('FAIL');
+  });
+
+  test('a breach the day before turning 18 is ignored, on the birthday it counts', () => {
+    expect(
+      run(esBreach, {
+        immigrationBreaches: [{ type: 'DECEPTION', date: '2008-01-14' }],
+      }).status,
+    ).toBe('PASS');
+    expect(
+      run(esBreach, {
+        immigrationBreaches: [{ type: 'DECEPTION', date: '2008-01-15' }],
+      }).status,
+    ).toBe('FAIL');
+  });
+
+  test('adult illegal entry is unknown (PD-044) and short-circuits', () => {
+    const breaches = {
+      immigrationBreaches: [
+        { type: 'ILLEGAL_ENTRY' as const, date: '2015-01-01' },
+      ],
+    };
+    expect(run(esBreach, breaches).pendingDetails).toEqual(['PD-044']);
+    const result = evaluate({
+      timeline: timeline(breaches),
+      simulationDate: SIMULATION_DATE,
+    });
+    expect(result.shortCircuit?.reason).toBe('IMMIGRATION_BREACH');
   });
 });

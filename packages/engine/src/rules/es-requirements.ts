@@ -160,3 +160,49 @@ export const esKol = defineRule(
       : { status: 'PASS', explanation: '已通过 Life in the UK 考试。' };
   },
 );
+
+/** Adult illegal entry, which short-circuits (PD-044). */
+export function adultIllegalEntry(timeline: PersonTimeline): boolean {
+  return timeline.immigrationBreaches.some(
+    (b) => b.type === 'ILLEGAL_ENTRY' && isAdultOn(timeline, b.date),
+  );
+}
+
+export const esBreach = defineRule(
+  {
+    id: 'ES-BREACH',
+    ruleSetId: RULE_SET,
+    title: '成年后无 qualifying immigration breach',
+    sources: [{ srcId: 'SRC-001', locator: 'p13' }],
+    pendingDetails: ['PD-015', 'PD-016', 'PD-044'],
+  },
+  ({ timeline }) => {
+    const adult = timeline.immigrationBreaches.filter((b) =>
+      isAdultOn(timeline, b.date),
+    );
+    const minorNote =
+      adult.length < timeline.immigrationBreaches.length
+        ? '未满 18 岁时的违规不计入（p13）。'
+        : '';
+    if (adultIllegalEntry(timeline)) {
+      return {
+        status: 'UNKNOWN',
+        explanation: `成年后非法入境。第 1 章暗示进入 20 年路径，第 7 章又说无论走哪条路线都额外加 10 年，原文不一致，需由受监管顾问判断。${minorNote}`,
+        pendingDetails: ['PD-044'],
+      };
+    }
+    if (adult.length > 0) {
+      return {
+        status: 'FAIL',
+        explanation: `成年后有 qualifying immigration breach（${[...new Set(adult.map((b) => b.type))].join('、')}），不论收入多高都进入 20 年路径。${minorNote}`,
+        assumptions: [
+          '20 年按在 qualifying route 上的连续居留计算，违规不设时效（PD-016）。',
+        ],
+      };
+    }
+    return {
+      status: 'PASS',
+      explanation: `成年后无 qualifying immigration breach。${minorNote}`,
+    };
+  },
+);

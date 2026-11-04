@@ -1,6 +1,12 @@
 import type { RuleSetId } from '@uk-immigration/policy-data';
 import type { Rule } from '../types';
-import { esCriminality, esDebt, esEnglishB2, esKol } from './es-requirements';
+import {
+  esBreach,
+  esCriminality,
+  esDebt,
+  esEnglishB2,
+  esKol,
+} from './es-requirements';
 import {
   esBritishConnection,
   esEarnings10Y,
@@ -24,6 +30,7 @@ export const RULES: Record<RuleSetId, Rule[]> = {
     esEarnings10Y,
     esBritishConnection,
     esPublicFunds,
+    esBreach,
   ],
   'current-law-2026-11': [],
 };

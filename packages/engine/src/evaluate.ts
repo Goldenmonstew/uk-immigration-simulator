@@ -1,6 +1,7 @@
 import { earnedSettlement2026_11 } from '@uk-immigration/policy-data';
 import type { RuleSetId } from '@uk-immigration/policy-data';
 import { runRule } from './rule';
+import { adultIllegalEntry } from './rules/es-requirements';
 import { esCurrentGroup } from './rules/es-residence';
 import { RULES } from './rules';
 import type {
@@ -37,6 +38,13 @@ function shortCircuitOf({
       reason: 'CRIMINALITY',
       message:
         '申报了犯罪记录。Earned Settlement 下成年人的任何犯罪记录都会导致拒绝定居，现行规则下也取决于 Part Suitability 的具体情形；本工具不作结论，请咨询受监管的移民顾问。',
+    };
+  }
+  if (adultIllegalEntry(timeline)) {
+    return {
+      reason: 'IMMIGRATION_BREACH',
+      message:
+        '申报了成年后的非法入境。Earned Settlement 对非法入境的后果前后说法不一（20 年路径或额外加 10 年，PD-044），现行规则下也可能涉及拒绝理由；本工具不作结论，请咨询受监管的移民顾问。',
     };
   }
   const group = esCurrentGroup(timeline, simulationDate);
