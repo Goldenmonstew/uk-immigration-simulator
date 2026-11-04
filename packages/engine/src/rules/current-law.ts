@@ -28,8 +28,9 @@ import type {
 
 // Current Immigration Rules, modelled for Skilled Worker settlement (SRC-004),
 // Long Residence (SRC-005) and the main applicants of Hong Kong BN(O)
-// (SRC-020) and Global Talent (SRC-021), and Appendix FM partners on the
-// 10-year (SRC-022) and 5-year (SRC-024, SRC-025) routes.
+// (SRC-020) and Global Talent (SRC-021), Appendix FM partners on the
+// 10-year (SRC-022) and 5-year (SRC-024, SRC-025) routes, and people with
+// refugee status or humanitarian protection (SRC-023).
 
 const RULE_SET = 'current-law-2026-11';
 
@@ -80,11 +81,30 @@ export const onFamilyPartnerFiveYear = (
   onFamilyPartner(timeline, date) &&
   episodeOn(timeline, date)!.familyPermission === 'PARTNER_FIVE_YEAR';
 
+// Refugee status or humanitarian protection under current law, whichever
+// Earned Settlement protection route the user entered (contracts §14.3).
+const PROTECTION_ROUTES: Route[] = [
+  'CORE_PROTECTION',
+  'PROTECTION_WORK_AND_STUDY',
+  'SAFE_AND_LEGAL',
+  'LEGACY_SAFE_AND_LEGAL',
+];
+
+const isProtection = (e: ImmigrationEpisode) =>
+  e.role === 'MAIN' && PROTECTION_ROUTES.includes(e.route);
+
+/** Main applicant with refugee status or humanitarian protection on `date`. */
+export function onProtection(timeline: PersonTimeline, date: IsoDate) {
+  const current = episodeOn(timeline, date);
+  return current !== undefined && isProtection(current);
+}
+
 // Routes modelled for main applicants only: their dependants are out of scope.
 const MAIN_ONLY_ROUTES: Route[] = [
   'HONG_KONG_BNO',
   'GLOBAL_TALENT',
   'FAMILY_PARTNER_OR_PARENT',
+  ...PROTECTION_ROUTES,
 ];
 
 // A Skilled Worker's dependant: the run of such permissions counts towards
@@ -130,6 +150,7 @@ export const clScope = defineRule(
       { srcId: 'SRC-020', locator: 'HK 62.1' },
       { srcId: 'SRC-021', locator: 'GT 11.1' },
       { srcId: 'SRC-022', locator: 'SETF 1.3' },
+      { srcId: 'SRC-023', locator: 'STP 1.3' },
     ],
     pendingDetails: [],
   },
@@ -152,6 +173,15 @@ export const clScope = defineRule(
         explanation: L(
           '当前持 Global Talent 主申请人许可，按 Appendix Global Talent 与 Appendix Long Residence 评估。',
           'Currently holds Global Talent permission as the main applicant; assessed under Appendix Global Talent and Appendix Long Residence.',
+        ),
+      };
+    }
+    if (onProtection(timeline, simulationDate)) {
+      return {
+        status: 'PASS',
+        explanation: L(
+          '当前以主申请人身份持 refugee status 或 humanitarian protection 的许可，按 Appendix Settlement Protection 与 Appendix Long Residence 评估。',
+          'Currently holds permission with refugee status or humanitarian protection as the main applicant; assessed under Appendix Settlement Protection and Appendix Long Residence.',
         ),
       };
     }
@@ -239,8 +269,8 @@ export const clScope = defineRule(
               'Currently holds Skilled Worker permission as a dependant; not provided whether this is as the principal applicant’s partner or child.',
             )
         : L(
-            '现行规则只建模了 Skilled Worker（主申请人及其 dependent partner / child）、Hong Kong BN(O) 与 Global Talent 主申请人、Appendix FM 伴侣、Long Residence；当前路线不在其中，也不满足 Long Residence 的 10 年，无法判断其他路线的定居条件。',
-            'The current rules are modelled only for Skilled Worker (main applicants and their dependent partners / children), Hong Kong BN(O) and Global Talent main applicants, Appendix FM partners, and Long Residence; the current route is none of these, and the 10 years for Long Residence are not met, so the settlement requirements of other routes cannot be assessed.',
+            '现行规则只建模了 Skilled Worker（主申请人及其 dependent partner / child）、Hong Kong BN(O) 与 Global Talent 主申请人、Appendix FM 伴侣、持 refugee status 或 humanitarian protection 的主申请人、Long Residence；当前路线不在其中，也不满足 Long Residence 的 10 年，无法判断其他路线的定居条件。',
+            'The current rules are modelled only for Skilled Worker (main applicants and their dependent partners / children), Hong Kong BN(O) and Global Talent main applicants, Appendix FM partners, main applicants with refugee status or humanitarian protection, and Long Residence; the current route is none of these, and the 10 years for Long Residence are not met, so the settlement requirements of other routes cannot be assessed.',
           );
     return { status: 'UNKNOWN', explanation };
   },
@@ -951,6 +981,127 @@ export interface SalaryRow {
   skilledWorkerFrom: IsoDate;
   assumptions: string[];
 }
+
+/**
+ * Start of the continuous period with refugee status or humanitarian
+ * protection (STP 3.1) ending on the simulation date, while a protection main
+ * applicant. Appendix Settlement Protection does not refer to Appendix
+ * Continuous Residence, so absences do not restart it (PD-071).
+ */
+export function protectionStart({
+  timeline,
+  simulationDate,
+}: RuleContext): IsoDate | undefined {
+  if (!onProtection(timeline, simulationDate)) return undefined;
+  return continuousRun(timeline, simulationDate, isProtection).episodes[0]
+    .validFrom;
+}
+
+export const clProtectionResidence5Y = defineRule(
+  {
+    id: 'CL-PROTECTION-RESIDENCE-5Y',
+    ruleSetId: RULE_SET,
+    title: '连续 5 年持 refugee status 或 humanitarian protection',
+    titleEn: `${cl.values.protectionQualifyingYears.value} continuous years with refugee status or humanitarian protection`,
+    sources: [
+      { srcId: 'SRC-023', locator: 'STP 1.3' },
+      { srcId: 'SRC-023', locator: 'STP 3.1' },
+    ],
+    pendingDetails: ['PD-071', 'PD-073'],
+  },
+  (ctx) => {
+    const L = textFor(ctx);
+    const years = cl.values.protectionQualifyingYears.value;
+    const start = protectionStart(ctx);
+    if (!start) {
+      return {
+        status: 'FAIL',
+        explanation: L(
+          '当前不是以主申请人身份持 refugee status 或 humanitarian protection 的许可。',
+          'Current permission is not as a main applicant with refugee status or humanitarian protection.',
+        ),
+      };
+    }
+    const assumptions = [
+      L(
+        'STP 1.3 按申请庇护的日期列明许可类别：2022-06-28 前申请的为 refugee 或 humanitarian protection 许可，此后申请的为 refugee permission to stay；本工具不区分 refugee 与 humanitarian protection，按你持有所列许可处理。2022-06-28 及以后申请庇护而获 humanitarian protection 的，STP 1.3(b) 未列明（PD-073）。',
+        'STP 1.3 lists the permission by the date of the asylum application: refugee or humanitarian protection permission for applications before 2022-06-28, and refugee permission to stay for later ones. This tool does not tell refugee status and humanitarian protection apart, and assumes you hold a listed permission. Humanitarian protection following an asylum application made on or after 2022-06-28 is not listed in STP 1.3(b) (PD-073).',
+      ),
+      ...(ctx.timeline.absences.length > 0
+        ? [
+            L(
+              'Appendix Settlement Protection 未引用 Appendix Continuous Residence，也没有规定多长的缺席会中断 STP 3.1 的连续期间；本工具不因缺席重新起算（PD-071）。',
+              'Appendix Settlement Protection does not refer to Appendix Continuous Residence and does not say what absence breaks the continuous period in STP 3.1; this tool does not restart the period for absences (PD-071).',
+            ),
+          ]
+        : []),
+    ];
+    const due = addYears(start, years);
+    return due <= ctx.simulationDate
+      ? {
+          status: 'PASS',
+          explanation: L(
+            `自 ${start} 起在英国连续持 refugee status 或 humanitarian protection，已满 ${years} 年（STP 3.1）。`,
+            `Continuously in the UK with refugee status or humanitarian protection since ${start}: ${years} years completed (STP 3.1).`,
+          ),
+          assumptions,
+        }
+      : {
+          status: 'FAIL',
+          explanation: L(
+            `自 ${start} 起在英国连续持 refugee status 或 humanitarian protection，截至 ${ctx.simulationDate} 满 ${fullYears(start, ctx.simulationDate)} 年；${due} 满 ${years} 年（STP 3.1）。`,
+            `Continuously in the UK with refugee status or humanitarian protection since ${start}: ${fullYearsEn(start, ctx.simulationDate)} by ${ctx.simulationDate}; ${years} years are completed on ${due} (STP 3.1).`,
+          ),
+          assumptions,
+        };
+  },
+);
+
+export const clProtectionStatus = defineRule(
+  {
+    id: 'CL-PROTECTION-STATUS',
+    ruleSetId: RULE_SET,
+    title: '保护身份未被撤销或放弃',
+    titleEn: 'Protection status not revoked or renounced',
+    sources: [
+      { srcId: 'SRC-023', locator: 'STP 4.1' },
+      { srcId: 'SRC-023', locator: 'STP 4.2' },
+      { srcId: 'SRC-023', locator: 'STP 5.2' },
+    ],
+    pendingDetails: [],
+  },
+  (ctx) => {
+    const L = textFor(ctx);
+    const renewal = L(
+      '不满足定居要求、但仍有权享有 refugee status 或 humanitarian protection 时，会再获至少 30 个月的保护许可（STP 5.2）。',
+      'If the settlement requirements are not met but the person is still entitled to refugee status or humanitarian protection, a further period of at least 30 months of protection permission is granted (STP 5.2).',
+    );
+    if (ctx.timeline.protectionStatusRevoked) {
+      return {
+        status: 'FAIL',
+        explanation: L(
+          '申报 refugee status 或 humanitarian protection 已被撤销或已放弃；STP 4.1 要求未被撤销或放弃。',
+          'Refugee status or humanitarian protection declared as revoked or renounced; STP 4.1 requires that it has not been.',
+        ),
+        assumptions: [renewal],
+      };
+    }
+    return {
+      status: 'PASS',
+      explanation: L(
+        '未申报撤销或放弃，按仍持有 refugee status 或 humanitarian protection 处理（STP 4.1）。',
+        'No revocation or renunciation declared, so refugee status or humanitarian protection is taken as still held (STP 4.1).',
+      ),
+      assumptions: [
+        L(
+          '审理定居申请时会做 safe return review（STP 4.2），核查个人情况或原籍国状况是否已变化到可撤销或不续期保护身份，结果无法预判。',
+          'A safe return review is carried out when the settlement application is considered (STP 4.2), checking whether personal circumstances or country conditions have changed so that protection could be revoked or not renewed; its outcome cannot be predicted.',
+        ),
+        renewal,
+      ],
+    };
+  },
+);
 
 const inTable = (rows: { socCode: string }[], soc: string | undefined) =>
   soc !== undefined && rows.some((r) => r.socCode === soc);
@@ -1686,7 +1837,7 @@ export const clEnglish = defineRule(
       { srcId: 'SRC-007', locator: 'EM 5.60' },
       { srcId: 'SRC-014', locator: 'EL 1.1' },
     ],
-    pendingDetails: [],
+    pendingDetails: ['PD-072'],
   },
   ({ timeline, simulationDate, locale }) => {
     const L = textFor({ locale });
@@ -1704,6 +1855,7 @@ export const clEnglish = defineRule(
     const familyTen = onFamilyPartnerTenYear(timeline, simulationDate);
     const familyFive = onFamilyPartnerFiveYear(timeline, simulationDate);
     const family = familyTen || familyFive;
+    const protection = onProtection(timeline, simulationDate);
     const sw = onSkilledWorker(timeline, simulationDate);
     // SW 44.1 covers a dependent partner and a dependent child.
     const partner =
@@ -1751,7 +1903,12 @@ export const clEnglish = defineRule(
                 `（Appendix KoLL 2.2，经 E-ILRP.1.6；${b2.applicationsFrom} ${fromB2 ? '起' : '前'}的申请）`,
                 ` (Appendix KoLL 2.2, through E-ILRP.1.6; applications ${fromB2 ? 'from' : 'before'} ${b2.applicationsFrom})`,
               )
-            : '';
+            : protection
+              ? L(
+                  '（Appendix Settlement Protection 未对定居设英语要求，此等级只适用于 Long Residence 10 年路径，PD-072）',
+                  ' (Appendix Settlement Protection sets no English requirement for settlement; this level applies only to the 10-year Long Residence pathway, PD-072)',
+                )
+              : '';
     if (!required) {
       return {
         status: 'PASS',
@@ -1821,7 +1978,7 @@ export const clKol = defineRule(
       { srcId: 'SRC-015', locator: 'KOL 1.1' },
       { srcId: 'SRC-015', locator: 'KOL 2.1' },
     ],
-    pendingDetails: [],
+    pendingDetails: ['PD-072'],
   },
   ({ timeline, simulationDate, locale }) => {
     const L = textFor({ locale });
@@ -1845,7 +2002,12 @@ export const clKol = defineRule(
                 '（Appendix KoLL 2.3，经 E-ILRP.1.6）',
                 ' (Appendix KoLL 2.3, through E-ILRP.1.6)',
               )
-            : '';
+            : onProtection(timeline, simulationDate)
+              ? L(
+                  '（Appendix Settlement Protection 未设 Life in the UK 要求，此项只适用于 Long Residence 10 年路径，PD-072）',
+                  ' (Appendix Settlement Protection sets no Life in the UK requirement; this applies only to the 10-year Long Residence pathway, PD-072)',
+                )
+              : '';
     const kol = timeline.lifeInTheUk;
     if (!kol) {
       return {

@@ -15,8 +15,10 @@ import {
   globalTalentQualifying,
   hongKongBnoStart,
   longResidenceStart,
+  protectionStart,
   onFamilyPartner,
   onHongKongBno,
+  onProtection,
   onSkilledWorker,
   onSkilledWorkerChild,
   onSkilledWorkerPartner,
@@ -476,8 +478,8 @@ function finishEarnedSettlement(
 
 const clBaseAssumption = (L: Lang) =>
   L(
-    '现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）、Appendix FM 伴侣（10 年路线按 Appendix Settlement Family Life，5 年路线按 Appendix FM）与 Long Residence（Appendix Long Residence）；Part Suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。',
-    'The current rules are modelled only for Skilled Worker main applicants and their dependent partners / children (Appendix Skilled Worker, Appendix Children), Hong Kong BN(O) main applicants (Appendix Hong Kong British National (Overseas)), Global Talent main applicants (Appendix Global Talent), Appendix FM partners (the 10-year route under Appendix Settlement Family Life, the 5-year route under Appendix FM) and Long Residence (Appendix Long Residence); other requirements, such as Part Suitability and the sponsor still being approved (SW 24.1–24.2), are not modelled.',
+    '现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）、Appendix FM 伴侣（10 年路线按 Appendix Settlement Family Life，5 年路线按 Appendix FM）、持 refugee status 或 humanitarian protection 的主申请人（Appendix Settlement Protection）与 Long Residence（Appendix Long Residence）；Part Suitability、STP 2.1 的 suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。',
+    'The current rules are modelled only for Skilled Worker main applicants and their dependent partners / children (Appendix Skilled Worker, Appendix Children), Hong Kong BN(O) main applicants (Appendix Hong Kong British National (Overseas)), Global Talent main applicants (Appendix Global Talent), Appendix FM partners (the 10-year route under Appendix Settlement Family Life, the 5-year route under Appendix FM), main applicants with refugee status or humanitarian protection (Appendix Settlement Protection) and Long Residence (Appendix Long Residence); other requirements, such as Part Suitability, suitability under STP 2.1 and the sponsor still being approved (SW 24.1–24.2), are not modelled.',
   );
 
 function assessCurrentLaw(
@@ -501,6 +503,7 @@ function assessCurrentLaw(
   const family = onFamilyPartner(ctx.timeline, ctx.simulationDate);
   const familyTen = familyTenYearStart(ctx);
   const familyFive = familyFiveYearStart(ctx);
+  const protection = onProtection(ctx.timeline, ctx.simulationDate);
   // In scope as a partner or child only with the principal (CL-SCOPE).
   const partner =
     ctx.principal !== undefined &&
@@ -525,7 +528,9 @@ function assessCurrentLaw(
                   ? familyTen !== undefined || familyFive !== undefined
                   : id === 'CL-FAMILY-FINANCIAL'
                     ? familyFive !== undefined
-                    : true;
+                    : id.startsWith('CL-PROTECTION-')
+                      ? protection
+                      : true;
   const rules = [
     scope,
     ...others
@@ -630,6 +635,17 @@ function assessCurrentLaw(
             },
           ]
         : []),
+    // Appendix Settlement Protection sets no English or Life in the UK
+    // requirement (PD-072).
+    ...(protection
+      ? [
+          {
+            years: cl.values.protectionQualifyingYears.value,
+            start: protectionStart(ctx),
+            rules: pick('CL-PROTECTION-STATUS'),
+          },
+        ]
+      : []),
     ...(partner
       ? [
           {
@@ -685,11 +701,15 @@ function assessCurrentLaw(
   }
   // Projected past the B2 date while assessed under the earlier requirement.
   const b2 = cl.values.skilledWorkerSettlementEnglish.value;
-  // Hong Kong BN(O) stays at B1 (HK 60.1).
-  const hkPathway =
-    hk && decision.pathwayYears === cl.values.hongKongBnoQualifyingYears.value;
+  // Hong Kong BN(O) stays at B1 (HK 60.1); protection has no English
+  // requirement (PD-072).
+  const noB2Pathway =
+    (hk &&
+      decision.pathwayYears === cl.values.hongKongBnoQualifyingYears.value) ||
+    (protection &&
+      decision.pathwayYears === cl.values.protectionQualifyingYears.value);
   if (
-    !hkPathway &&
+    !noB2Pathway &&
     decision.earliestDate &&
     ctx.simulationDate < b2.applicationsFrom &&
     decision.earliestDate >= b2.applicationsFrom

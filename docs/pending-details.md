@@ -183,3 +183,20 @@ dependant 随主申请人定居（SRC-001 Ch.5）时，原文未规定、引擎�
 - 家庭伴侣 10 年路线的 SETF 3.1(e)（基于 Article 8 的 Leave Outside the Rules）：无法与其他 Leave Outside the Rules 区分，不计入；SETF 7.2–7.3（关系真实持续、以当前关系持许可满 1 年）按满足处理。
 - 家庭伴侣 5 年路线的财务要求只按申请日前最近一个完整纳税年度的本人加伴侣收入判断：储蓄（E-LTRP.3.1(b)）、E-LTRP.3.3（伴侣领取特定福利）、Appendix FM-SE 证据规则与住宿要求（E-LTRP.3.4）未建模；过渡门槛按连续伴侣许可的起点近似"首次申请日"；同一伴侣（E-ILRP.1.4、E-LTRP.3.6）与关系真实持续（E-LTRP.1.7–1.10）按满足处理。
 - HC 1691 不覆盖 Appendix Hong Kong BN(O)：已由 SRC-007 EM 5.60 确认（列出升 B2 的 Appendix 中没有它），HK 60.1 一律 B1，不是待定事项。
+
+## 八、现行法律栏扩展二（任务 5.2 新增）
+
+以下条目的出处是现行 Immigration Rules 的 Appendix（SRC-023 Settlement Protection），段号为 Rules 段落号；"原文未提及"指该 Appendix 未作规定。
+
+| ID | 事项 | 原文怎么说 | 出处 | 对引擎的影响 | 预计何时明确 |
+|---|---|---|---|---|---|
+| PD-071 | 难民 5 年"连续期间"如何因缺席中断 | STP 3.1 要求在英国连续至少 5 年持 refugee status 或 humanitarian protection；该 Appendix 没有引用 Appendix Continuous Residence，也没有规定多长的缺席会中断连续期间。 | SRC-023 STP 3.1 | `CL-PROTECTION-RESIDENCE-5Y` 不因缺席重新起算；填了缺席时在假设里说明（PD-071）。 | 原文未提及 |
+| PD-072 | 难民定居的英语与 Life in the UK 要求 | Appendix Settlement Protection 的主申请人定居要求（STP 1.1–STP 5.3）没有英语等级、Appendix English Language、Appendix KOL UK 或 2027-03-26 起 B2 的条款。 | SRC-023 STP 1.1–STP 5.3 | 难民 5 年候选不含 `CL-ENGLISH` / `CL-KOL`；两条规则照常运行但只用于 Long Residence 10 年候选，解释写明 STP 未设要求（PD-072）。不从其他路线照搬。 | 原文未提及 |
+| PD-073 | 2022-06-28 及以后申请庇护而获 humanitarian protection 者的许可类别 | STP 1.3(a) 对 2022-06-28 前的庇护申请列出 refugee 与 humanitarian protection 许可；STP 1.3(b) 对此后的申请只列 refugee permission to stay。 | SRC-023 STP 1.3 | 本工具不区分 refugee 与 humanitarian protection，`CL-PROTECTION-RESIDENCE-5Y` 按持有所列许可处理，在假设里说明（PD-073）。 | 原文未提及 |
+
+本任务另有以下未建模的点。它们是引擎范围的取舍，不是政府未定的细节，所以不设 PD 编号；结果页通过规则的解释或假设说明。
+
+- 难民的 dependant（STP 6.1–STP 10）：`CL-SCOPE` 输出 `UNKNOWN`，解释"只建模该路线的主申请人"（任务 5.4）。
+- STP 2.1 的 suitability：与 Part Suitability 一样未建模，写进现行法律栏的建模范围说明。
+- STP 4.1 持续保护身份按用户申报（`protectionStatusRevoked`，缺省按仍持有）；STP 4.2 的 safe return review 结果无法预判；STP 5.2 不满足定居时再获至少 30 个月保护许可：都写进 `CL-PROTECTION-STATUS` 的假设。
+- 现行法律下不区分 Earned Settlement 的三条保护类路线：`CORE_PROTECTION`、`PROTECTION_WORK_AND_STUDY`、`SAFE_AND_LEGAL`、`LEGACY_SAFE_AND_LEGAL` 的主申请人片段连续计入 STP 3.1；作为 dependant 的时间不计。

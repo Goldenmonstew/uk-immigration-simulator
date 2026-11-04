@@ -1,0 +1,211 @@
+import { fixtures } from '@uk-immigration/policy-data/fixtures';
+import { describe, expect, test } from 'vitest';
+import { evaluate } from '../src/evaluate';
+import {
+  clEnglish,
+  clKol,
+  clProtectionResidence5Y,
+  clProtectionStatus,
+  clScope,
+} from '../src/rules/current-law';
+import type { ImmigrationEpisode, PersonTimeline } from '../src/types';
+import { run, timeline } from './helpers';
+
+// Current-law main applicants added in Phase 5.2 (contracts §14).
+
+const on = (
+  route: ImmigrationEpisode['route'],
+  validFrom: string,
+  extra: Partial<ImmigrationEpisode> = {},
+): ImmigrationEpisode => ({
+  route,
+  role: 'MAIN',
+  validFrom,
+  validTo: '2031-12-31',
+  ...extra,
+});
+
+const currentLaw = (
+  overrides: Partial<PersonTimeline>,
+  simulationDate: string,
+) =>
+  evaluate({ timeline: timeline(overrides), simulationDate }).byRuleSet[
+    'current-law-2026-11'
+  ]!;
+
+const ids = (rules: { id: string }[]) => rules.map((r) => r.id);
+
+describe('refugee status or humanitarian protection (SRC-023)', () => {
+  const refugee = (
+    validFrom: string,
+    extra: Partial<PersonTimeline> = {},
+  ): Partial<PersonTimeline> => ({
+    episodes: [on('CORE_PROTECTION', validFrom)],
+    english: undefined,
+    lifeInTheUk: undefined,
+    asylumSupportRepayment: 'NOT_REQUIRED',
+    ...extra,
+  });
+
+  test('CL-SCOPE: a main applicant is in scope, a dependant is not', () => {
+    expect(run(clScope, refugee('2021-03-01')).explanation).toContain(
+      'Appendix Settlement Protection',
+    );
+    const dependant = run(
+      clScope,
+      refugee('2021-03-01', {
+        episodes: [on('CORE_PROTECTION', '2021-03-01', { role: 'DEPENDANT' })],
+      }),
+    );
+    expect(dependant.status).toBe('UNKNOWN');
+    expect(dependant.explanation).toContain('只建模该路线的主申请人');
+  });
+
+  test('5 years to the day, without English or Life in the UK (STP 3.1, PD-072)', () => {
+    expect(
+      run(clProtectionResidence5Y, refugee('2021-03-01'), '2026-03-01').status,
+    ).toBe('PASS');
+    const result = currentLaw(refugee('2021-03-01'), '2026-03-01');
+    expect(result).toMatchObject({
+      outcome: 'LIKELY_ELIGIBLE',
+      pathwayYears: 5,
+      earliestDate: '2026-03-01',
+    });
+    const english = result.rules.find((r) => r.id === 'CL-ENGLISH')!;
+    expect(english.status).toBe('UNKNOWN');
+    expect(english.explanation).toContain('PD-072');
+    expect(result.rules.find((r) => r.id === 'CL-KOL')!.explanation).toContain(
+      'PD-072',
+    );
+    expect(ids(result.rules)).toEqual([
+      'CL-SCOPE',
+      'CL-PROTECTION-RESIDENCE-5Y',
+      'CL-PROTECTION-STATUS',
+      'CL-ENGLISH',
+      'CL-KOL',
+      'CL-LR-RESIDENCE-10Y',
+    ]);
+  });
+
+  test('a day short: projects 5 years on, with no B2 note after 2027-03-26', () => {
+    const short = run(
+      clProtectionResidence5Y,
+      refugee('2022-06-02'),
+      '2027-06-01',
+    );
+    expect(short.status).toBe('FAIL');
+    expect(short.explanation).toContain('2027-06-02');
+    const result = currentLaw(refugee('2022-06-02'), '2027-06-01');
+    expect(result).toMatchObject({
+      outcome: 'LIKELY_NOT_ELIGIBLE',
+      pathwayYears: 5,
+      earliestDate: '2027-06-02',
+    });
+    expect(result.assumptions.join()).not.toContain('B2');
+  });
+
+  test('protection routes combine; dependant time does not count', () => {
+    const chain = [
+      on('SAFE_AND_LEGAL', '2020-01-01', { validTo: '2021-12-31' }),
+      on('CORE_PROTECTION', '2022-01-01', { validTo: '2022-12-31' }),
+      on('PROTECTION_WORK_AND_STUDY', '2023-01-01'),
+    ];
+    expect(
+      run(
+        clProtectionResidence5Y,
+        refugee('', { episodes: chain }),
+        '2025-01-01',
+      ).explanation,
+    ).toContain('自 2020-01-01 起');
+    const afterDependant = [
+      on('CORE_PROTECTION', '2020-01-01', {
+        role: 'DEPENDANT',
+        validTo: '2021-12-31',
+      }),
+      on('CORE_PROTECTION', '2022-01-01'),
+    ];
+    expect(
+      run(
+        clProtectionResidence5Y,
+        refugee('', { episodes: afterDependant }),
+        '2025-01-01',
+      ).explanation,
+    ).toContain('自 2022-01-01 起');
+  });
+
+  test('absences do not restart the period (PD-071)', () => {
+    const result = run(
+      clProtectionResidence5Y,
+      refugee('2021-03-01', {
+        absences: [{ from: '2022-01-01', to: '2022-12-31' }],
+      }),
+      '2026-03-01',
+    );
+    expect(result.status).toBe('PASS');
+    expect(result.assumptions?.join()).toContain('PD-071');
+    expect(
+      run(
+        clProtectionResidence5Y,
+        refugee('2021-03-01'),
+        '2026-03-01',
+      ).assumptions?.join(),
+    ).not.toContain('PD-071');
+  });
+
+  test('revoked or renounced status fails STP 4.1; Long Residence still counts', () => {
+    const revoked = refugee('2021-03-01', { protectionStatusRevoked: true });
+    expect(run(clProtectionStatus, revoked).status).toBe('FAIL');
+    expect(
+      run(clProtectionStatus, refugee('2021-03-01')).assumptions?.join(),
+    ).toContain('STP 4.2');
+    expect(currentLaw(revoked, '2026-03-01')).toMatchObject({
+      outcome: 'LIKELY_NOT_ELIGIBLE',
+      pathwayYears: 10,
+      earliestDate: '2031-03-01',
+    });
+  });
+
+  test('Long Residence 10 years runs alongside', () => {
+    const episodes = [
+      on('STUDENT', '2015-01-01', { validTo: '2023-12-31' }),
+      on('CORE_PROTECTION', '2024-01-01'),
+    ];
+    const result = currentLaw(
+      refugee('', {
+        episodes,
+        english: { cefrLevel: 'B1' },
+        lifeInTheUk: { passed: true },
+      }),
+      '2026-11-04',
+    );
+    expect(result).toMatchObject({
+      outcome: 'LIKELY_ELIGIBLE',
+      pathwayYears: 10,
+    });
+    expect(
+      run(clEnglish, refugee('', { episodes, english: { cefrLevel: 'A2' } }))
+        .status,
+    ).toBe('FAIL');
+    expect(run(clKol, refugee('', { episodes })).status).toBe('UNKNOWN');
+  });
+
+  test('adult illegal entry does not stop the current-law column', () => {
+    const result = currentLaw(
+      refugee('2021-03-01', {
+        immigrationBreaches: [{ type: 'ILLEGAL_ENTRY', date: '2020-12-01' }],
+      }),
+      '2026-03-01',
+    );
+    expect(result.outcome).toBe('LIKELY_ELIGIBLE');
+  });
+
+  test('fixture: the Earned Settlement column is assessed as Core Protection', () => {
+    const r = evaluate(
+      fixtures.find((f) => f.id === 'CL-REFUGEE-FIVE-YEARS')!.request,
+    );
+    expect(r.shortCircuit).toBeUndefined();
+    expect(r.byRuleSet['earned-settlement-2026-11']?.routeGroup).toBe(
+      'PROTECTION',
+    );
+  });
+});

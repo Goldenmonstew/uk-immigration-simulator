@@ -237,5 +237,12 @@ export const currentLaw2026_11 = {
       value: 2400,
       sources: [{ srcId: 'SRC-024', locator: 'E-LTRP.3.7(a)(iii)' }],
     },
+    // Continuous years in the UK with refugee status or humanitarian
+    // protection. Appendix Settlement Protection sets no English or Life in
+    // the UK requirement (PD-072).
+    protectionQualifyingYears: {
+      value: 5,
+      sources: [{ srcId: 'SRC-023', locator: 'STP 3.1' }],
+    },
   },
 } satisfies ParameterSet;
