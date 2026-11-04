@@ -176,7 +176,11 @@ const ES_DEPENDANT_RULES = [
 ];
 
 // Rules only for protection routes (contracts §11).
-const ES_PROTECTION_ONLY = ['ES-PROTECTION-PATHWAY', 'ES-ASYLUM-SUPPORT'];
+const ES_PROTECTION_ONLY = [
+  'ES-PROTECTION-PATHWAY',
+  'ES-PROTECTION-CONTRIBUTION',
+  'ES-ASYLUM-SUPPORT',
+];
 
 /**
  * What a protection route runs: no earnings, British connection, public
@@ -189,6 +193,9 @@ function protectionRuleIds(route: Route): string[] {
     'ES-BREACH',
     'ES-PUBLIC-FUNDS',
     'ES-PROTECTION-PATHWAY',
+    ...(route === 'PROTECTION_WORK_AND_STUDY'
+      ? ['ES-PROTECTION-CONTRIBUTION']
+      : []),
     ...(route === 'SAFE_AND_LEGAL' ? [] : ['ES-ASYLUM-SUPPORT']),
   ];
 }
@@ -221,7 +228,14 @@ function protectionCandidates(
         ? [
             {
               years: base,
-              rules: [...mandatory, ...pick('ES-BREACH', 'ES-PUBLIC-FUNDS')],
+              rules: [
+                ...mandatory,
+                ...pick(
+                  'ES-BREACH',
+                  'ES-PUBLIC-FUNDS',
+                  'ES-PROTECTION-CONTRIBUTION',
+                ),
+              ],
             },
             { years: fallback, rules: mandatory },
           ]

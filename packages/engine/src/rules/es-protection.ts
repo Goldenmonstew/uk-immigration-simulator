@@ -1,10 +1,11 @@
 import { earnedSettlement2026_11 as es } from '@uk-immigration/policy-data';
 import type { Route, SourceRef } from '@uk-immigration/policy-data';
-import { addYears } from '../dates';
+import { addYears, taxYearsFrom } from '../dates';
 import { episodeOn } from '../residence';
 import { defineRule, textFor } from '../rule';
 import type { Lang } from '../rule';
 import type { PersonTimeline } from '../types';
+import { gbp } from './es-contribution';
 import { isAdultOn } from './es-requirements';
 import { esProtectionRouteOn, esQualifyingResidence } from './es-residence';
 
@@ -240,5 +241,115 @@ export const esAsylumSupport = defineRule(
           ],
         };
     }
+  },
+);
+
+export const esProtectionContribution = defineRule(
+  {
+    id: 'ES-PROTECTION-CONTRIBUTION',
+    ruleSetId: RULE_SET,
+    title: 'Protection Work and Study 的持续贡献',
+    titleEn: 'Sustained contribution on Protection Work and Study',
+    sources: src('p38', 'p47'),
+    pendingDetails: ['PD-030'],
+  },
+  (ctx) => {
+    const { timeline, simulationDate } = ctx;
+    const L = textFor(ctx);
+    const route = esProtectionRouteOn(timeline, simulationDate);
+    if (route !== 'PROTECTION_WORK_AND_STUDY') {
+      return {
+        status: 'PASS',
+        explanation: L(
+          '当前不是 Protection Work and Study，本条不适用。',
+          'The current route is not Protection Work and Study, so this does not apply.',
+        ),
+      };
+    }
+    const activity = episodeOn(timeline, simulationDate)?.sustainedActivity;
+    if (!activity) {
+      return {
+        status: 'UNKNOWN',
+        explanation: L(
+          '未填写转入 Protection Work and Study 所依据的持续活动（工作、教育或培训）。',
+          'Not provided which sustained activity (work, education or training) the move onto Protection Work and Study is based on.',
+        ),
+      };
+    }
+    if (activity !== 'WORK') {
+      return {
+        status: 'UNKNOWN',
+        explanation: L(
+          '原文只给出工作者的 contribution 标准（3 年年收入达 £12,571），没有给出教育或培训者如何证明持续贡献。',
+          'The response only sets the contribution standard for those working (earning £12,571 a year for three years); it does not say how those in education or training show sustained contribution.',
+        ),
+        pendingDetails: ['PD-030'],
+      };
+    }
+    const threshold = v.earningsThresholdMinimum.value;
+    const required = v.protectionWorkQualifyingYears.value;
+    const start = esQualifyingResidence(ctx)!.start;
+    const years = taxYearsFrom(start, simulationDate);
+    const earnings = (taxYear: string) =>
+      timeline.incomeYears.find((i) => i.taxYear === taxYear)?.earnings;
+    const met = years.filter((y) => (earnings(y) ?? 0) >= threshold);
+    const missing = years.filter((y) => earnings(y) === undefined);
+    const window = L(
+      `计入自 ${start} 起的完整 tax year（起点所在 tax year 不计，因年收入无法拆出转入前的部分），截至申请日所在 tax year 之前。`,
+      ` Complete tax years from ${start} count (the tax year containing that date does not, as its earnings cannot be split at the move), up to the tax year before the application date.`,
+    );
+    const assumptions = [
+      L(
+        `原文未定义 3 个 qualifying years 的观察窗口；本工具按"Protection Work and Study 合格期内任意 ${required} 个 tax year"计算（PD-030）。`,
+        `The response does not define the window for the three qualifying years; this tool counts any ${required} tax years in the qualifying period on Protection Work and Study (PD-030).`,
+      ),
+    ];
+    const summary = L(
+      `${years.length} 个完整 tax year 中有 ${met.length} 个年收入达 ${gbp(threshold)}${met.length ? `（${met.join('、')}）` : ''}，需 ${required} 个（p38、p47）。`,
+      `${met.length} of ${years.length} complete tax year${years.length === 1 ? '' : 's'} with earnings of at least ${gbp(threshold)}${met.length ? ` (${met.join(', ')})` : ''}; ${required} are needed (p38, p47).`,
+    );
+    if (met.length >= required) {
+      return {
+        status: 'PASS',
+        explanation: summary + window,
+        assumptions,
+      };
+    }
+    const due = addYears(
+      start,
+      protectionBaseYears(route) + illegalEntryExtraYears(timeline),
+    );
+    if (due > simulationDate) {
+      return {
+        status: 'UNKNOWN',
+        explanation:
+          summary +
+          L(
+            `合格期 ${due} 才满，届时之前仍可达到。`,
+            ` The qualifying period ends on ${due}, so this can still be met by then.`,
+          ) +
+          window,
+        pendingDetails: ['PD-030'],
+        assumptions,
+      };
+    }
+    if (met.length + missing.length >= required) {
+      return {
+        status: 'UNKNOWN',
+        explanation:
+          summary +
+          L(
+            `未填写 ${missing.join('、')} 的收入。`,
+            ` Earnings not provided for ${missing.join(', ')}.`,
+          ) +
+          window,
+        assumptions,
+      };
+    }
+    return {
+      status: 'FAIL',
+      explanation: summary + window,
+      assumptions,
+    };
   },
 );

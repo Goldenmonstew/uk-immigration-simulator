@@ -83,3 +83,14 @@ export function taxYearsBefore(d: IsoDate, count: number): string[] {
     taxYearOf(`${first + i}-${TAX_YEAR_START}`),
   );
 }
+
+/**
+ * The tax years that start on or after `from` and end before the one
+ * containing `d`, oldest first.
+ */
+export function taxYearsFrom(from: IsoDate, d: IsoDate): string[] {
+  const y = Number(taxYearOf(from).slice(0, 4));
+  const first = from === `${y}-${TAX_YEAR_START}` ? y : y + 1;
+  const count = Number(taxYearOf(d).slice(0, 4)) - first;
+  return count > 0 ? taxYearsBefore(d, count) : [];
+}

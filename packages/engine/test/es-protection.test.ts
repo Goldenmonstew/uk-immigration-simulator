@@ -1,7 +1,9 @@
 import { describe, expect, test } from 'vitest';
 import { evaluate } from '../src/evaluate';
+import { taxYearsFrom } from '../src/dates';
 import {
   esAsylumSupport,
+  esProtectionContribution,
   esProtectionPathway,
 } from '../src/rules/es-protection';
 import { esBreach } from '../src/rules/es-requirements';
@@ -338,5 +340,127 @@ describe('ES-ASYLUM-SUPPORT', () => {
       '2047-03-01',
     );
     expect(column.outcome).toBe('INSUFFICIENT_INFORMATION');
+  });
+});
+
+describe('ES-PROTECTION-CONTRIBUTION', () => {
+  const earning = (from: number, to: number, earnings = 20000) =>
+    Array.from({ length: to - from + 1 }, (_, i) => ({
+      taxYear: `${from + i}-${String((from + i + 1) % 100).padStart(2, '0')}`,
+      earnings,
+    }));
+  const work = (
+    overrides: Partial<PersonTimeline>,
+    simulationDate = '2032-01-01',
+  ) =>
+    run(
+      esProtectionContribution,
+      refugee({ episodes: coreThenWork, ...overrides }),
+      simulationDate,
+    );
+
+  test('complete tax years from the move, not the one containing it', () => {
+    expect(taxYearsFrom('2028-03-01', '2032-01-01')).toEqual([
+      '2028-29',
+      '2029-30',
+      '2030-31',
+    ]);
+    // Boundary: a move on 6 April counts that tax year.
+    expect(taxYearsFrom('2028-04-06', '2029-05-01')).toEqual(['2028-29']);
+    expect(taxYearsFrom('2028-04-07', '2029-05-01')).toEqual([]);
+  });
+
+  test('three years at £12,571 pass', () => {
+    const result = work({ incomeYears: earning(2027, 2030) });
+    expect(result.status).toBe('PASS');
+    expect(result.explanation).toContain('2028-29、2029-30、2030-31');
+    expect(result.assumptions?.[0]).toContain('PD-030');
+  });
+
+  test('the threshold is inclusive; one pound less does not count', () => {
+    expect(work({ incomeYears: earning(2028, 2030, 12571) }).status).toBe(
+      'PASS',
+    );
+    const below = work({
+      incomeYears: [
+        ...earning(2028, 2029, 12571),
+        { taxYear: '2030-31', earnings: 12570 },
+      ],
+    });
+    expect(below.status).toBe('UNKNOWN');
+    expect(below.explanation).toContain('有 2 个');
+  });
+
+  test('not enough years yet is unknown until the period ends, then fails', () => {
+    const early = work({ incomeYears: earning(2028, 2028) }, '2030-01-01');
+    expect(early.status).toBe('UNKNOWN');
+    expect(early.pendingDetails).toEqual(['PD-030']);
+    const late = work({ incomeYears: earning(2028, 2037, 5000) }, '2038-03-01');
+    expect(late.status).toBe('FAIL');
+  });
+
+  test('missing earnings after the period are unknown without a pending detail', () => {
+    const result = work({ incomeYears: earning(2028, 2028) }, '2038-03-01');
+    expect(result.status).toBe('UNKNOWN');
+    expect(result.pendingDetails).toBeUndefined();
+  });
+
+  test('education or training is unknown (PD-030); missing activity is unknown', () => {
+    const education = run(
+      esProtectionContribution,
+      refugee({
+        episodes: [
+          coreThenWork[0],
+          { ...coreThenWork[1], sustainedActivity: 'EDUCATION' },
+        ],
+      }),
+      '2032-01-01',
+    );
+    expect(education.pendingDetails).toEqual(['PD-030']);
+    const missing = run(
+      esProtectionContribution,
+      refugee({
+        episodes: [
+          coreThenWork[0],
+          { ...coreThenWork[1], sustainedActivity: undefined },
+        ],
+      }),
+      '2032-01-01',
+    );
+    expect(missing.status).toBe('UNKNOWN');
+    expect(missing.pendingDetails).toBeUndefined();
+  });
+
+  test('p40 Individual B settles 11 years after the grant', () => {
+    const b = {
+      incomeYears: earning(2027, 2037),
+      asylumSupportRepayment: 'REPAID' as const,
+    };
+    const before = es({ episodes: coreThenWork, ...b }, '2030-01-01').column;
+    expect(before.outcome).toBe('LIKELY_NOT_ELIGIBLE');
+    expect(before.pathwayYears).toBe(10);
+    expect(before.earliestDate).toBe('2038-03-01');
+    const on = es({ episodes: coreThenWork, ...b }, '2038-03-01').column;
+    expect(on.outcome).toBe('LIKELY_ELIGIBLE');
+    expect(on.pathwayYears).toBe(10);
+  });
+
+  test('public funds on Protection Work and Study leave 20 years', () => {
+    const { column } = es(
+      {
+        episodes: coreThenWork,
+        incomeYears: earning(2027, 2037),
+        benefits: [
+          {
+            benefitType: 'UNIVERSAL_CREDIT',
+            from: '2029-01-01',
+            to: '2029-06-30',
+          },
+        ],
+      },
+      '2030-01-01',
+    );
+    expect(column.pathwayYears).toBe(20);
+    expect(column.earliestDate).toBe('2048-03-01');
   });
 });
