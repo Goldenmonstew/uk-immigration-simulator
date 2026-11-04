@@ -892,7 +892,10 @@ export const clFamilyFinancial = defineRule(
           `过渡门槛（E-LTRP.3.5、E-LTRP.3.7(a)，${children} 名子女，最高 ${gbp(cl.values.familyPartnerMinimumIncome.value)}）`,
           `the transitional requirement (E-LTRP.3.5, E-LTRP.3.7(a); ${children} ${children === 1 ? 'child' : 'children'}, capped at ${gbp(cl.values.familyPartnerMinimumIncome.value)})`,
         )
-      : L('E-LTRP.3.1(a)', 'E-LTRP.3.1(a)');
+      : L(
+          '一般门槛（E-LTRP.3.1(a)）',
+          'the general requirement (E-LTRP.3.1(a))',
+        );
     const assumptions = [
       L(
         `是否适用过渡门槛按连续伴侣许可的起点是否早于 ${before} 判断（E-LTRP.3.5 看的是首次申请日；获批在此后而申请在此前的，也适用过渡门槛）；子女按"关系"里身份为其他的子女计。储蓄（E-LTRP.3.1(b)）、伴侣领取特定福利（E-LTRP.3.3）与 Appendix FM-SE 的证据规则未建模。`,

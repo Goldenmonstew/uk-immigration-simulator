@@ -270,6 +270,24 @@ export const SAMPLES: Record<string, PersonTimeline> = {
     ],
     relationships: [{ type: 'PARTNER', otherPartyStatus: 'OTHER' }],
   }),
+  // 5-year partner route under the £29,000 rules, combined income below it,
+  // with an absence (PD-070).
+  familyPartnerFiveYear: timeline({
+    episodes: [
+      {
+        route: 'FAMILY_PARTNER_OR_PARENT',
+        role: 'MAIN',
+        validFrom: '2024-06-01',
+        validTo: '2027-11-30',
+        familyPermission: 'PARTNER_FIVE_YEAR',
+      },
+    ],
+    relationships: [{ type: 'PARTNER', otherPartyStatus: 'SETTLED' }],
+    incomeYears: [
+      { taxYear: '2025-26', earnings: 18000, partnerEarnings: 9000 },
+    ],
+    absences: [{ from: '2025-07-01', to: '2025-08-15' }],
+  }),
   student: timeline({
     episodes: [
       {

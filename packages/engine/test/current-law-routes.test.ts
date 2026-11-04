@@ -390,6 +390,16 @@ describe('fixtures: the Earned Settlement column is unchanged', () => {
     );
   });
 
+  test('family partner is assessed as usual', () => {
+    const r = result('CL-FAMILY-PARTNER-FIVE-YEARS');
+    expect(r.shortCircuit).toBeUndefined();
+    expect(
+      r.byRuleSet['earned-settlement-2026-11']?.rules.find(
+        (x) => x.id === 'ES-ROUTE-GROUP',
+      )?.status,
+    ).toBe('PASS');
+  });
+
   test('Global Talent is assessed as usual', () => {
     const r = result('CL-GLOBAL-TALENT-THREE-YEARS');
     expect(r.shortCircuit).toBeUndefined();

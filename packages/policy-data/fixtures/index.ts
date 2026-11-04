@@ -1,4 +1,5 @@
 import type { Fixture } from '../../engine/src/types';
+import { clFamilyPartnerFiveYears } from './cl-family-partner-five-years';
 import { clGlobalTalentThreeYears } from './cl-global-talent-three-years';
 import { clHkbnoFiveYears } from './cl-hkbno-five-years';
 import { esIndividualC } from './es-individual-c-combined-income';
@@ -41,4 +42,5 @@ export const fixtures: Fixture[] = [
   esP45IndividualCCareWorkerAfterCutoff,
   clHkbnoFiveYears,
   clGlobalTalentThreeYears,
+  clFamilyPartnerFiveYears,
 ];
