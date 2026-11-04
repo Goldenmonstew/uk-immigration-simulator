@@ -189,8 +189,22 @@ function assessEarnedSettlement(ctx: RuleContext): SettlementAssessment {
       '原文未规定同时符合过渡安排与标准路径时如何取舍；本结果取满足条件的最短路径，申请人可能可以选择更有利的安排，需咨询受监管顾问。',
     );
   }
+  const decision = decide(candidates, ctx.simulationDate);
+  // Not enough residence yet for the pathway the date was projected from:
+  // ES-RESIDENCE shows that as the failing rule.
+  const shown = decision.projectedFrom
+    ? rules.map((r) =>
+        r.id === 'ES-RESIDENCE'
+          ? {
+              ...r,
+              status: 'FAIL' as const,
+              explanation: `${r.explanation}${decision.pathwayYears} 年路径的居留还不够，${decision.earliestDate} 满 ${decision.pathwayYears} 年。`,
+            }
+          : r,
+      )
+    : rules;
   return {
-    ...toAssessment(decide(candidates, ctx.simulationDate), rules, assumptions),
+    ...toAssessment(decision, shown, assumptions),
     ...(pick('ES-ROUTE-GROUP')[0].status === 'PASS' && {
       routeGroup: groups[0],
     }),

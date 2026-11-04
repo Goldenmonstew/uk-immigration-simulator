@@ -49,6 +49,7 @@ describe('Earned Settlement pathway', () => {
       earliestDate: '2029-02-01',
     });
     expect(a.assumptions.at(-1)).toContain('自 2024-02-01 起持续居留');
+    expect(a.rules.find((r) => r.id === 'ES-RESIDENCE')?.status).toBe('FAIL');
   });
 
   test('residence exactly 5 years on the simulation date qualifies; a day short does not', () => {
