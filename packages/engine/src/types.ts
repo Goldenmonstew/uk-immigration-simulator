@@ -54,6 +54,12 @@ export interface PersonTimeline {
    */
   asylumSupportRepayment?:
     'NOT_REQUIRED' | 'REPAID' | 'ON_PLAN' | 'OUTSTANDING';
+  /**
+   * Current law, protection main applicants: the person's refugee status or
+   * humanitarian protection has been revoked or renounced (Appendix
+   * Settlement Protection STP 4.1). Missing = not revoked or renounced.
+   */
+  protectionStatusRevoked?: boolean;
 }
 
 export interface ImmigrationEpisode {
@@ -111,6 +117,30 @@ export interface ImmigrationEpisode {
    * child (not modelled). Missing = not provided.
    */
   familyPermission?: 'PARTNER_FIVE_YEAR' | 'PARTNER_TEN_YEAR' | 'PARENT';
+  /**
+   * INNOVATOR_FOUNDER MAIN only: the business criteria in Appendix Innovator
+   * Founder INNF 17.1(f)(i)–(vii) the business venture has met, for the
+   * settlement endorsement: INVESTMENT (i), CUSTOMERS (ii), RESEARCH_AND_IP
+   * (iii), REVENUE (iv), EXPORT_REVENUE (v), JOBS (vi), JOBS_WITH_SALARY
+   * (vii). Empty = none met. Missing = not provided.
+   */
+  innovatorSettlementCriteria?: (
+    | 'INVESTMENT'
+    | 'CUSTOMERS'
+    | 'RESEARCH_AND_IP'
+    | 'REVENUE'
+    | 'EXPORT_REVENUE'
+    | 'JOBS'
+    | 'JOBS_WITH_SALARY'
+  )[];
+  /**
+   * FAMILY_AND_PRIVATE_LIFE MAIN only: the basis of the Appendix Private Life
+   * permission, which sets the settlement qualifying period. CHILD = granted
+   * as a child (PL 3.1; or first granted under 18, PL 10.1); YOUNG_ADULT =
+   * granted as a young adult who met the half-life test (PL 4.1); ADULT =
+   * any other grant (PL 5.1). Missing = not provided.
+   */
+  privateLifeRoute?: 'CHILD' | 'YOUNG_ADULT' | 'ADULT';
 }
 
 export interface Absence {
