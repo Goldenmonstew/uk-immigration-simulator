@@ -1,6 +1,7 @@
 import { evaluate } from '@uk-immigration/engine';
 import type {
   IncomeYear,
+  ImmigrationEpisode,
   Locale,
   PersonTimeline,
   SimulationResult,
@@ -121,6 +122,7 @@ type Action =
   | { type: 'restore'; draft: Draft }
   | { type: 'step'; step: number }
   | { type: 'timeline'; patch: Partial<PersonTimeline> }
+  | { type: 'episode'; index: number; patch: Partial<ImmigrationEpisode> }
   | { type: 'screening'; key: ScreeningKey; answer: Screening[ScreeningKey] }
   | { type: 'date'; date: string }
   | { type: 'principal-start' }
@@ -168,6 +170,43 @@ export function draftReducer(state: Draft, action: Action): Draft {
         },
         ...(editingPrincipal && { principalCompleted: false }),
       };
+    case 'episode': {
+      const timeline = activePersonDraft(state).timeline;
+      return draftReducer(state, {
+        type: 'timeline',
+        patch: {
+          episodes: timeline.episodes.map((episode, index) => {
+            if (index !== action.index) return episode;
+            const routeChanged =
+              action.patch.route !== undefined &&
+              action.patch.route !== episode.route;
+            const roleChanged =
+              action.patch.role !== undefined &&
+              action.patch.role !== episode.role;
+            return {
+              ...episode,
+              ...action.patch,
+              ...(routeChanged && {
+                socCode: undefined,
+                salary: undefined,
+                immigrationSalaryList: undefined,
+                resettlementScheme: undefined,
+                sustainedActivity: undefined,
+              }),
+              ...(roleChanged && {
+                dependantOf: undefined,
+                immigrationSalaryList: undefined,
+              }),
+              ...((routeChanged || roleChanged) && {
+                globalTalentEndorsement: undefined,
+                globalTalentCriteria: undefined,
+                familyPermission: undefined,
+              }),
+            };
+          }),
+        },
+      });
+    }
     case 'screening':
       return {
         ...state,

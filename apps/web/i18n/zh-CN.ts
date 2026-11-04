@@ -11,7 +11,7 @@ export const zhCN = {
   'about.currentLaw':
     '现行法律栏依据已登记的 Immigration Rules 当前版本，评估模拟日期下可能适用的定居条件。',
   'about.currentLawScope':
-    '目前只建模 Skilled Worker（含其 dependant）与 Long Residence。其他路线的独立定居条件尚未建模，可能显示“信息不足”；这不表示该路线没有定居路径。',
+    '现行法律栏建模 Skilled Worker（含其 dependant）、Hong Kong BN(O) 与 Global Talent 的主申请人、Appendix FM 伴侣主申请人（5 年 / 10 年路线），以及 Long Residence。其他路线，以及 Hong Kong BN(O)、Global Talent 与 Appendix FM 路线的 dependant，其独立定居条件仍显示“信息不足”；这不表示该路线没有定居路径。',
   'about.reforms':
     '已公布改革栏依据 Earned Settlement 政策，标记为“已公布、未生效”。计算假设该规则集在模拟日期适用，不代表改革已经实施或未来一定按此实施。',
   'about.reformScope':
@@ -95,7 +95,7 @@ export const zhCN = {
   'home.title': '了解可能适用的移民路径',
   'home.intro': '从你的时间线出发，查看可能适用的路径、关键条件与未定事项。',
   'home.scope':
-    '本阶段聚焦 Skilled Worker 的现行 settlement 路径与已公布的 Earned Settlement 改革。其他路线可能需要进一步核实。',
+    '比较现行 settlement 路径与已公布的 Earned Settlement 改革。现行法律栏建模 Skilled Worker（含其 dependant）、Hong Kong BN(O) 与 Global Talent 的主申请人、Appendix FM 伴侣主申请人（5 年 / 10 年路线），以及 Long Residence。其他路线，以及 Hong Kong BN(O)、Global Talent 与 Appendix FM 路线的 dependant，其独立定居条件仍显示“信息不足”。',
   'home.start': '开始模拟',
   'home.before': '开始前',
   'home.prepare':
@@ -251,6 +251,24 @@ export const zhCN = {
   'breaches.required': '请添加至少一条违规记录，或将移民违规经历改为“否”。',
   'episodes.resettlementScheme': '安置 / 担保路线',
   'episodes.sustainedActivity': '在该路线上的持续活动',
+  'episodes.globalTalentEndorsement':
+    '首次 Global Talent 许可依据的背书 / 奖项',
+  'episodes.globalTalentEndorsementHint':
+    '背书机构不在以下选项中时，请保留“不确定”。',
+  'episodes.endorsement.RESEARCH_BODY':
+    '研究机构背书（Royal Society、British Academy、Royal Academy of Engineering 或 UKRI）',
+  'episodes.endorsement.ARTS_COUNCIL_ENGLAND': 'Arts Council England 背书',
+  'episodes.endorsement.TECH_NATION': 'Tech Nation 背书',
+  'episodes.endorsement.PRIZE': 'Prestigious Prizes 所列奖项',
+  'episodes.globalTalentCriteria': '背书标准',
+  'episodes.criteria.EXCEPTIONAL_TALENT': 'exceptional talent',
+  'episodes.criteria.EXCEPTIONAL_PROMISE': 'exceptional promise',
+  'episodes.familyPermission': 'Appendix FM 许可类型',
+  'episodes.familyPermission.PARTNER_FIVE_YEAR': '伴侣，5 年路线',
+  'episodes.familyPermission.PARTNER_TEN_YEAR': '伴侣，10 年路线',
+  'episodes.familyPermission.PARENT': '父母（parent of a child）',
+  'episodes.familyPermissionHint':
+    '请在“家庭关系”步骤填写伴侣身份，并在“收入”步骤填写上一 tax year 的本人与伴侣收入（用于 5 年路线的财务要求）。',
   'benefits.asylumSupportRepayment': '是否需要偿还 asylum support 费用？',
   'episodes.hint': '逐段填写获批的签证有效期。列表为空表示没有签证历史。',
   'episodes.item': '签证片段',

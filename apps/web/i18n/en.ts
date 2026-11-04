@@ -13,7 +13,7 @@ export const en: Record<keyof typeof zhCN, string> = {
   'about.currentLaw':
     'The current law column uses the current version of the Immigration Rules registered in this project to assess potentially relevant settlement conditions on the simulation date.',
   'about.currentLawScope':
-    'It currently models only Skilled Worker (including dependants) and Long Residence. The separate settlement requirements of other routes are not yet modelled and may show insufficient information. This does not mean that those routes have no settlement pathway.',
+    'The current law column models Skilled Worker (including dependants), main applicants on Hong Kong BN(O), Global Talent and Appendix FM partner routes (5-year and 10-year), and Long Residence. The separate settlement requirements of other routes, and dependants on the Hong Kong BN(O), Global Talent and Appendix FM routes, still show insufficient information. This does not mean that those routes have no settlement pathway.',
   'about.reforms':
     'The announced reforms column uses Earned Settlement policy and is labelled “Announced, not in force”. It assumes that the rule set applies on the simulation date. This does not mean the reforms have taken effect or will necessarily take this form.',
   'about.reformScope':
@@ -104,7 +104,7 @@ export const en: Record<keyof typeof zhCN, string> = {
   'home.intro':
     'Use your timeline to explore potentially relevant pathways, key conditions and unresolved details.',
   'home.scope':
-    'This version focuses on current Skilled Worker settlement and the announced Earned Settlement reforms. Other routes may need further review.',
+    'Compare current settlement pathways with the announced Earned Settlement reforms. The current law column models Skilled Worker (including dependants), main applicants on Hong Kong BN(O), Global Talent and Appendix FM partner routes (5-year and 10-year), and Long Residence. The separate settlement requirements of other routes, and dependants on the Hong Kong BN(O), Global Talent and Appendix FM routes, still show insufficient information.',
   'home.start': 'Start simulation',
   'home.before': 'Before you start',
   'home.prepare':
@@ -281,6 +281,25 @@ export const en: Record<keyof typeof zhCN, string> = {
     'Add at least one breach record, or answer no to immigration breaches.',
   'episodes.resettlementScheme': 'Resettlement or sponsorship route',
   'episodes.sustainedActivity': 'Sustained activity on this route',
+  'episodes.globalTalentEndorsement':
+    'Endorsement or prize for your first Global Talent permission',
+  'episodes.globalTalentEndorsementHint':
+    'If your endorsing body is not listed below, leave this as “Not provided / unsure”.',
+  'episodes.endorsement.RESEARCH_BODY':
+    'Research body endorsement (Royal Society, British Academy, Royal Academy of Engineering or UKRI)',
+  'episodes.endorsement.ARTS_COUNCIL_ENGLAND':
+    'Arts Council England endorsement',
+  'episodes.endorsement.TECH_NATION': 'Tech Nation endorsement',
+  'episodes.endorsement.PRIZE': 'A prize listed in Prestigious Prizes',
+  'episodes.globalTalentCriteria': 'Endorsement criteria',
+  'episodes.criteria.EXCEPTIONAL_TALENT': 'exceptional talent',
+  'episodes.criteria.EXCEPTIONAL_PROMISE': 'exceptional promise',
+  'episodes.familyPermission': 'Appendix FM permission type',
+  'episodes.familyPermission.PARTNER_FIVE_YEAR': 'Partner, 5-year route',
+  'episodes.familyPermission.PARTNER_TEN_YEAR': 'Partner, 10-year route',
+  'episodes.familyPermission.PARENT': 'Parent of a child',
+  'episodes.familyPermissionHint':
+    'Enter your partner’s status in the Family relationships step, and your own and your partner’s income for the last completed tax year in the Earnings by tax year step (for the 5-year route’s financial requirement).',
   'benefits.asylumSupportRepayment':
     'Do you need to repay asylum support costs?',
   'result.protectionNotice':
