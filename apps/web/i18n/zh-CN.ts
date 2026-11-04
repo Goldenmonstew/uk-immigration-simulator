@@ -1,5 +1,6 @@
 export const zhCN = {
   'site.about': '方法说明 · About',
+  'site.feedback': '反馈 · Feedback',
   'about.title': '这个模拟器如何工作',
   'about.intro':
     '这是一个按已公布政策推算定居路径的参考与理解工具。你可以调整情景、比较结果，带一点游戏性地了解规则如何影响时间线。',
@@ -32,6 +33,12 @@ export const zhCN = {
     '分享链接包含你填写的全部输入，包括主申请人的信息。获得链接的人可以读取并载入这些输入，因此只发给你信任的人。',
   'about.analyticsPrivacy':
     '站点仅使用 Cloudflare Web Analytics 统计访问，不使用 cookie，也不发送问卷输入或模拟结果。',
+  'about.feedbackTitle': '反馈',
+  'about.feedbackIntro':
+    '如果发现政策理解有误、数字与来源对不上，或页面有问题，都可以通过 GitHub issue 提出。',
+  'about.feedbackLink': '在 GitHub 提交反馈',
+  'about.feedbackPrivacy':
+    'GitHub issue 是公开的，请不要贴分享链接、个人信息或证件细节。',
   'result.print': '打印或保存为 PDF',
   'scenarios.title': '本机保存的情景',
   'scenarios.privacy':

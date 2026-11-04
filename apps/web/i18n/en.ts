@@ -2,6 +2,7 @@ import type { zhCN } from './zh-CN';
 
 export const en: Record<keyof typeof zhCN, string> = {
   'site.about': 'About',
+  'site.feedback': 'Feedback',
   'about.title': 'How this simulator works',
   'about.intro':
     'This is a reference and learning tool that models settlement pathways using published policy. Adjust scenarios and compare outcomes to explore how rules affect a timeline, with a light element of play.',
@@ -34,6 +35,12 @@ export const en: Record<keyof typeof zhCN, string> = {
     'A share link contains all the inputs you entered, including principal applicant information. Anyone with the link can read and load those inputs, so share it only with people you trust.',
   'about.analyticsPrivacy':
     'The site uses only Cloudflare Web Analytics for visitor statistics, without cookies. Questionnaire inputs and simulation results are not sent.',
+  'about.feedbackTitle': 'Feedback',
+  'about.feedbackIntro':
+    'If you find a policy interpretation error, a figure that does not match its source or a page problem, please report it in a GitHub issue.',
+  'about.feedbackLink': 'Give feedback on GitHub',
+  'about.feedbackPrivacy':
+    'GitHub issues are public. Do not post share links, personal information or document details.',
   'result.print': 'Print or save as PDF',
   'scenarios.title': 'Saved scenarios on this device',
   'scenarios.privacy':
