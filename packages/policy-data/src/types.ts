@@ -9,7 +9,16 @@ export interface SourceRef {
   locator: string;
 }
 
-export type RuleSetId = 'current-law-2026-11' | 'earned-settlement-2026-11';
+/**
+ * Every rule set, in the order they were added. The one place to add a rule
+ * set: RULE_SETS, RULES and PARAMETERS are keyed by these ids (contracts §13).
+ */
+export const RULE_SET_IDS = [
+  'current-law-2026-11',
+  'earned-settlement-2026-11',
+] as const;
+
+export type RuleSetId = (typeof RULE_SET_IDS)[number];
 
 export interface Parameter<T> {
   value: T;
@@ -34,6 +43,11 @@ export interface DatedEnglishRequirement {
 /** Declare parameter sets with `satisfies ParameterSet` so value names stay typed. */
 export interface ParameterSet {
   ruleSetId: RuleSetId;
+  /**
+   * The rule set whose values (and their sources) this one carries over by
+   * spreading its `values`; documentation only (contracts §13).
+   */
+  basedOn?: RuleSetId;
   /** Date (YYYY-MM-DD) the values were last checked against their sources. */
   asOf: string;
   values: Record<

@@ -3,7 +3,7 @@ import type { RuleSetId } from '@uk-immigration/policy-data';
 import { assess } from './aggregate';
 import { adultIllegalEntry } from './rules/es-requirements';
 import { episodeOn } from './residence';
-import { esCurrentGroup } from './rules/es-residence';
+import { esCurrentGroup, legacyUkrsArrival } from './rules/es-residence';
 import { textFor } from './rule';
 import type {
   RuleContext,
@@ -69,10 +69,17 @@ function shortCircuitOf(ctx: RuleContext): ShortCircuit | undefined {
   if (group === 'OUTSIDE_FRAMEWORK') {
     return {
       reason: 'OUTSIDE_FRAMEWORK',
-      message: L(
-        '当前路线不在 Earned Settlement 框架内，继续按该群体现有的定居安排（SRC-001 p25–p26）；但强化的犯罪记录与 B2 英语要求仍适用，除非有现有豁免或保障。',
-        'The current route is outside the Earned Settlement framework and keeps the existing settlement arrangements for that group (SRC-001 p25–p26). The strengthened criminality and B2 English requirements still apply, unless an existing exemption or protection applies.',
-      ),
+      // A UK Resettlement Scheme arrival before 2027-04-06 is Legacy Safe and
+      // Legal; its English level is inconsistent (PD-045).
+      message: legacyUkrsArrival(timeline, simulationDate)
+        ? L(
+            '当前路线属 Legacy Safe and Legal Routes（2027-04-06 前经 UK Resettlement Scheme 抵达），不在 Earned Settlement 框架内，继续按该群体现有的定居安排（SRC-001 p25–p26）；强化的犯罪记录要求仍适用。英语等级原文不一致：框架外群体一般须 B2（p25–p26），第 7 章又说 UK Resettlement Scheme 难民只需 A2（p37、p39），见 PD-045。',
+            'The current route is a Legacy Safe and Legal Route (arrival through the UK Resettlement Scheme before 2027-04-06), outside the Earned Settlement framework, and keeps the existing settlement arrangements for that group (SRC-001 p25–p26). The strengthened criminality requirements still apply. The English level is inconsistent: groups outside the framework generally need B2 (p25–p26), while Chapter 7 says UK Resettlement Scheme refugees only need A2 (p37, p39); see PD-045.',
+          )
+        : L(
+            '当前路线不在 Earned Settlement 框架内，继续按该群体现有的定居安排（SRC-001 p25–p26）；但强化的犯罪记录与 B2 英语要求仍适用，除非有现有豁免或保障。',
+            'The current route is outside the Earned Settlement framework and keeps the existing settlement arrangements for that group (SRC-001 p25–p26). The strengthened criminality and B2 English requirements still apply, unless an existing exemption or protection applies.',
+          ),
     };
   }
   return undefined;

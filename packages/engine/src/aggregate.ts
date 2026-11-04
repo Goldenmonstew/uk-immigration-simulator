@@ -10,6 +10,7 @@ import type { Lang } from './rule';
 import { RULES } from './rules';
 import { meetsCefr } from './rules/es-requirements';
 import {
+  ageExempt,
   familyFiveYearStart,
   familyTenYearStart,
   globalTalentQualifying,
@@ -159,6 +160,8 @@ const esBaseAssumption = (L: Lang) =>
     'Earned Settlement has been announced but is not yet in force; it is assessed as if it applied on the date of application. The rules are based on the government response (SRC-001), not on Immigration Rules in force (PD-001). The first rule changes are expected to be laid from December 2026 and take effect in January 2027, with further changes in 2027–2028 (SRC-002 col 593; SRC-003 cols 1423–1424); the actual dates will be set by the Statements of Changes (PD-003).',
   );
 
+// Table 1 (p46), plus asylum support repayment, a minimum requirement for
+// every applicant (p8 note 1).
 const ES_MANDATORY = [
   'ES-CRIMINALITY',
   'ES-DEBT',
@@ -166,6 +169,7 @@ const ES_MANDATORY = [
   'ES-KOL',
   'ES-ROUTE-GROUP',
   'ES-RESIDENCE',
+  'ES-ASYLUM-SUPPORT',
 ];
 
 // A dependant's one pathway: the mandatory requirements (with the exemptions
@@ -186,24 +190,30 @@ const ES_DEPENDANT_RULES = [
 const ES_PROTECTION_ONLY = [
   'ES-PROTECTION-PATHWAY',
   'ES-PROTECTION-CONTRIBUTION',
-  'ES-ASYLUM-SUPPORT',
 ];
 
 /**
+ * Table 2 lists asylum support repayment for Protection Work and Study and
+ * Core Protection only, not for Safe and Legal (PD-068).
+ */
+const protectionMandatory = (route: Route) =>
+  route === 'SAFE_AND_LEGAL'
+    ? ES_MANDATORY.filter((id) => id !== 'ES-ASYLUM-SUPPORT')
+    : ES_MANDATORY;
+
+/**
  * What a protection route runs: no earnings, British connection, public
- * service or transitional rules (Table 2). Table 2 lists asylum support
- * repayment for Protection Work and Study and Core Protection only.
+ * service or transitional rules (Table 2).
  */
 function protectionRuleIds(route: Route): string[] {
   return [
-    ...ES_MANDATORY,
+    ...protectionMandatory(route),
     'ES-BREACH',
     'ES-PUBLIC-FUNDS',
     'ES-PROTECTION-PATHWAY',
     ...(route === 'PROTECTION_WORK_AND_STUDY'
       ? ['ES-PROTECTION-CONTRIBUTION']
       : []),
-    ...(route === 'SAFE_AND_LEGAL' ? [] : ['ES-ASYLUM-SUPPORT']),
   ];
 }
 
@@ -218,9 +228,8 @@ function protectionCandidates(
   ctx: RuleContext,
 ): Candidate[] {
   const mandatory = [
-    ...pick(...ES_MANDATORY),
+    ...pick(...protectionMandatory(route)),
     ...pick('ES-PROTECTION-PATHWAY'),
-    ...(route === 'SAFE_AND_LEGAL' ? [] : pick('ES-ASYLUM-SUPPORT')),
   ];
   const extra = illegalEntryExtraYears(ctx.timeline);
   const base = protectionBaseYears(route) + extra;
@@ -518,19 +527,28 @@ function assessCurrentLaw(ctx: RuleContext): SettlementAssessment {
   ];
   const pick = (...ids: string[]) =>
     ids.map((id) => rules.find((r) => r.id === id)!);
-  // CL-ENGLISH applies the Hong Kong BN(O) level (B1, HK 60.1); Long
-  // Residence needs B2 from 2027-03-26 (LR 13.1(b)).
+  // CL-ENGLISH applies the current route's level (none for Skilled Worker
+  // before 2027-03-26, B1 for Hong Kong BN(O)); the Long Residence candidate
+  // is checked against its own level (LR 13.1).
   const [english] = pick('CL-ENGLISH');
   const lrB2 = cl.values.longResidenceSettlementEnglish.value;
-  const lrEnglishShort =
-    hk &&
-    ctx.simulationDate >= lrB2.applicationsFrom &&
-    english.status === 'PASS' &&
-    ctx.timeline.english !== undefined &&
-    'cefrLevel' in ctx.timeline.english &&
-    !meetsCefr(ctx.timeline.english.cefrLevel, lrB2.cefrLevel);
-  const lrEnglish: RuleOutcome = lrEnglishShort
-    ? { ...english, status: 'FAIL' }
+  const lrFromB2 = ctx.simulationDate >= lrB2.applicationsFrom;
+  const lrRequired = lrFromB2
+    ? lrB2.cefrLevel
+    : cl.values.longResidenceSettlementEnglishBefore.value;
+  const declared = ctx.timeline.english;
+  const lrStatus: RuleOutcome['status'] =
+    ageExempt(ctx.timeline, ctx.simulationDate) ||
+    (declared && 'exempt' in declared)
+      ? 'PASS'
+      : !declared
+        ? 'UNKNOWN'
+        : meetsCefr(declared.cefrLevel, lrRequired)
+          ? 'PASS'
+          : 'FAIL';
+  const lrEnglishDiffers = lrStatus !== english.status;
+  const lrEnglish: RuleOutcome = lrEnglishDiffers
+    ? { ...english, status: lrStatus }
     : english;
   const candidates: Candidate[] = [
     ...(sw
@@ -644,12 +662,18 @@ function assessCurrentLaw(ctx: RuleContext): SettlementAssessment {
         )
       : rules;
   const assumptions = [clBaseAssumption(L)];
-  if (lrEnglishShort) {
+  if (lrEnglishDiffers) {
+    const paragraph = `LR 13.1(${lrFromB2 ? 'b' : 'a'})`;
     assumptions.push(
-      L(
-        `Long Residence 10 年路径自 ${lrB2.applicationsFrom} 起须英语 ${lrB2.cefrLevel}（LR 13.1(b)），当前英语水平不满足；Hong Kong BN(O) 路径仍为 B1（HK 60.1）。`,
-        `The 10-year Long Residence pathway requires English at ${lrB2.cefrLevel} from ${lrB2.applicationsFrom} (LR 13.1(b)), which the current English level does not meet; the Hong Kong BN(O) pathway still requires B1 (HK 60.1).`,
-      ),
+      declared
+        ? L(
+            `Long Residence 10 年路径须英语 ${lrRequired}（${paragraph}），当前英语水平不满足；"定居英语要求"一条按当前路线的等级核对。`,
+            `The 10-year Long Residence pathway requires English at ${lrRequired} (${paragraph}), which the current English level does not meet; the settlement English requirement shown applies the current route’s level.`,
+          )
+        : L(
+            `Long Residence 10 年路径须英语 ${lrRequired}（${paragraph}），未填写英语水平；"定居英语要求"一条按当前路线的等级核对。`,
+            `The 10-year Long Residence pathway requires English at ${lrRequired} (${paragraph}), and no English level has been provided; the settlement English requirement shown applies the current route’s level.`,
+          ),
     );
   }
   // Projected past the B2 date while assessed under the earlier requirement.

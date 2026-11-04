@@ -513,6 +513,26 @@ exports[`CL-FAMILY-PARTNER-FIVE-YEARS default-locale output is unchanged 1`] = `
           "explanation": "成年后无 qualifying immigration breach。"
         },
         {
+          "id": "ES-ASYLUM-SUPPORT",
+          "title": "已偿还 asylum support 或按计划还款",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p8"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p39"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p47"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "未申报 asylum support 的偿还情况，按未领取 asylum support 处理（领过且须偿还的，定居前须已全额偿还或按约定还款计划持续履行，p8 注 1）。"
+        },
+        {
           "id": "ES-TRANSITIONAL-CARE-WORKER",
           "title": "care worker 过渡安排（保留 5 年）",
           "sources": [
@@ -1052,6 +1072,26 @@ exports[`CL-GLOBAL-TALENT-THREE-YEARS default-locale output is unchanged 1`] = `
           "explanation": "成年后无 qualifying immigration breach。"
         },
         {
+          "id": "ES-ASYLUM-SUPPORT",
+          "title": "已偿还 asylum support 或按计划还款",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p8"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p39"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p47"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "未申报 asylum support 的偿还情况，按未领取 asylum support 处理（领过且须偿还的，定居前须已全额偿还或按约定还款计划持续履行，p8 注 1）。"
+        },
+        {
           "id": "ES-TRANSITIONAL-CARE-WORKER",
           "title": "care worker 过渡安排（保留 5 年）",
           "sources": [
@@ -1575,6 +1615,26 @@ exports[`CL-HKBNO-FIVE-YEARS default-locale output is unchanged 1`] = `
           ],
           "status": "PASS",
           "explanation": "成年后无 qualifying immigration breach。"
+        },
+        {
+          "id": "ES-ASYLUM-SUPPORT",
+          "title": "已偿还 asylum support 或按计划还款",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p8"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p39"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p47"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "未申报 asylum support 的偿还情况，按未领取 asylum support 处理（领过且须偿还的，定居前须已全额偿还或按约定还款计划持续履行，p8 注 1）。"
         },
         {
           "id": "ES-TRANSITIONAL-CARE-WORKER",
@@ -2120,6 +2180,26 @@ exports[`ES-OFFICIAL-INDIVIDUAL-C default-locale output is unchanged 1`] = `
           "explanation": "成年后无 qualifying immigration breach。"
         },
         {
+          "id": "ES-ASYLUM-SUPPORT",
+          "title": "已偿还 asylum support 或按计划还款",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p8"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p39"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p47"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "未申报 asylum support 的偿还情况，按未领取 asylum support 处理（领过且须偿还的，定居前须已全额偿还或按约定还款计划持续履行，p8 注 1）。"
+        },
+        {
           "id": "ES-TRANSITIONAL-CARE-WORKER",
           "title": "care worker 过渡安排（保留 5 年）",
           "sources": [
@@ -2630,6 +2710,26 @@ exports[`ES-OFFICIAL-INDIVIDUAL-D default-locale output is unchanged 1`] = `
           ],
           "status": "PASS",
           "explanation": "成年后无 qualifying immigration breach。"
+        },
+        {
+          "id": "ES-ASYLUM-SUPPORT",
+          "title": "已偿还 asylum support 或按计划还款",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p8"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p39"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p47"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "未申报 asylum support 的偿还情况，按未领取 asylum support 处理（领过且须偿还的，定居前须已全额偿还或按约定还款计划持续履行，p8 注 1）。"
         },
         {
           "id": "ES-TRANSITIONAL-CARE-WORKER",
@@ -3173,6 +3273,26 @@ exports[`ES-OFFICIAL-P16-MATERNITY-BEST-YEARS default-locale output is unchanged
           ],
           "status": "PASS",
           "explanation": "成年后无 qualifying immigration breach。"
+        },
+        {
+          "id": "ES-ASYLUM-SUPPORT",
+          "title": "已偿还 asylum support 或按计划还款",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p8"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p39"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p47"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "未申报 asylum support 的偿还情况，按未领取 asylum support 处理（领过且须偿还的，定居前须已全额偿还或按约定还款计划持续履行，p8 注 1）。"
         },
         {
           "id": "ES-TRANSITIONAL-CARE-WORKER",
@@ -3776,6 +3896,26 @@ exports[`ES-OFFICIAL-P19-INDIVIDUAL-A default-locale output is unchanged 1`] = `
           "explanation": "成年后无 qualifying immigration breach。"
         },
         {
+          "id": "ES-ASYLUM-SUPPORT",
+          "title": "已偿还 asylum support 或按计划还款",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p8"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p39"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p47"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "未申报 asylum support 的偿还情况，按未领取 asylum support 处理（领过且须偿还的，定居前须已全额偿还或按约定还款计划持续履行，p8 注 1）。"
+        },
+        {
           "id": "ES-TRANSITIONAL-CARE-WORKER",
           "title": "care worker 过渡安排（保留 5 年）",
           "sources": [
@@ -4314,6 +4454,26 @@ exports[`ES-OFFICIAL-P19-INDIVIDUAL-B default-locale output is unchanged 1`] = `
           "explanation": "成年后无 qualifying immigration breach。"
         },
         {
+          "id": "ES-ASYLUM-SUPPORT",
+          "title": "已偿还 asylum support 或按计划还款",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p8"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p39"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p47"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "未申报 asylum support 的偿还情况，按未领取 asylum support 处理（领过且须偿还的，定居前须已全额偿还或按约定还款计划持续履行，p8 注 1）。"
+        },
+        {
           "id": "ES-TRANSITIONAL-CARE-WORKER",
           "title": "care worker 过渡安排（保留 5 年）",
           "sources": [
@@ -4791,6 +4951,26 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-A default-locale output is unchanged 1`] = `
           ],
           "status": "PASS",
           "explanation": "成年后无 qualifying immigration breach。"
+        },
+        {
+          "id": "ES-ASYLUM-SUPPORT",
+          "title": "已偿还 asylum support 或按计划还款",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p8"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p39"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p47"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "未申报 asylum support 的偿还情况，按未领取 asylum support 处理（领过且须偿还的，定居前须已全额偿还或按约定还款计划持续履行，p8 注 1）。"
         },
         {
           "id": "ES-DEPENDANT-PATHWAY",
@@ -5336,6 +5516,26 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-B default-locale output is unchanged 1`] = `
           "explanation": "成年后无 qualifying immigration breach。"
         },
         {
+          "id": "ES-ASYLUM-SUPPORT",
+          "title": "已偿还 asylum support 或按计划还款",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p8"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p39"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p47"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "未申报 asylum support 的偿还情况，按未领取 asylum support 处理（领过且须偿还的，定居前须已全额偿还或按约定还款计划持续履行，p8 注 1）。"
+        },
+        {
           "id": "ES-TRANSITIONAL-CARE-WORKER",
           "title": "care worker 过渡安排（保留 5 年）",
           "sources": [
@@ -5818,6 +6018,26 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-B-PARTNER default-locale output is unchanged
           "explanation": "成年后无 qualifying immigration breach。"
         },
         {
+          "id": "ES-ASYLUM-SUPPORT",
+          "title": "已偿还 asylum support 或按计划还款",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p8"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p39"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p47"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "未申报 asylum support 的偿还情况，按未领取 asylum support 处理（领过且须偿还的，定居前须已全额偿还或按约定还款计划持续履行，p8 注 1）。"
+        },
+        {
           "id": "ES-DEPENDANT-PATHWAY",
           "title": "随主申请人定居（dependant）",
           "sources": [
@@ -6243,6 +6463,26 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-C default-locale output is unchanged 1`] = `
           "explanation": "成年后无 qualifying immigration breach。"
         },
         {
+          "id": "ES-ASYLUM-SUPPORT",
+          "title": "已偿还 asylum support 或按计划还款",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p8"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p39"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p47"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "未申报 asylum support 的偿还情况，按未领取 asylum support 处理（领过且须偿还的，定居前须已全额偿还或按约定还款计划持续履行，p8 注 1）。"
+        },
+        {
           "id": "ES-DEPENDANT-PATHWAY",
           "title": "随主申请人定居（dependant）",
           "sources": [
@@ -6654,6 +6894,26 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-D default-locale output is unchanged 1`] = `
           ],
           "status": "PASS",
           "explanation": "成年后无 qualifying immigration breach。"
+        },
+        {
+          "id": "ES-ASYLUM-SUPPORT",
+          "title": "已偿还 asylum support 或按计划还款",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p8"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p39"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p47"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "未申报 asylum support 的偿还情况，按未领取 asylum support 处理（领过且须偿还的，定居前须已全额偿还或按约定还款计划持续履行，p8 注 1）。"
         },
         {
           "id": "ES-DEPENDANT-PATHWAY",
@@ -7070,6 +7330,26 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-E default-locale output is unchanged 1`] = `
           ],
           "status": "PASS",
           "explanation": "成年后无 qualifying immigration breach。"
+        },
+        {
+          "id": "ES-ASYLUM-SUPPORT",
+          "title": "已偿还 asylum support 或按计划还款",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p8"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p39"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p47"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "未申报 asylum support 的偿还情况，按未领取 asylum support 处理（领过且须偿还的，定居前须已全额偿还或按约定还款计划持续履行，p8 注 1）。"
         },
         {
           "id": "ES-DEPENDANT-PATHWAY",
@@ -8248,7 +8528,7 @@ exports[`ES-OFFICIAL-P45-INDIVIDUAL-A default-locale output is unchanged 1`] = `
           "explanation": "按 SW 24.3 row D（岗位在 Immigration Salary List 上，且自 2023-04-06 起连续持 Skilled Worker 许可，早于 2024-04-04，且申请日早于 2030-04-04（SW 4.2(b)(ii)）），general salary 门槛 £25,000；当前年薪 £30,000，已达到。",
           "assumptions": [
             "SW 24.3 row E（5 年期含 Tier 2 (General) 下的 STEM 类 SOC 2010 职业）未建模。",
-            "未申报是否在 Immigration Salary List 上；SOC 6135 在清单职业表中，按职业代码推导为在清单上。清单对岗位 / 地区的限制（criteria）未核对，可在问卷里申报覆盖。",
+            "未申报是否在 Immigration Salary List 上；SOC 6135 在清单职业表中，按职业代码推导为在清单上。清单对岗位 / 地区的限制（criteria）未核对，可在问卷里申报覆盖。清单条目的移除日期为 2028-07-22，已按申请日比较。",
             "\\"2024-04-04 前按当时规则获批\\"按连续 Skilled Worker 许可的起始日判断（SW 4.2(b)(ii)）。"
           ]
         },
@@ -8411,7 +8691,7 @@ exports[`ES-OFFICIAL-P45-INDIVIDUAL-A default-locale output is unchanged 1`] = `
         "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）、Appendix FM 伴侣（10 年路线按 Appendix Settlement Family Life，5 年路线按 Appendix FM）与 Long Residence（Appendix Long Residence）；Part Suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
         "连续期合并 SW 21.2 列出的 Skilled Worker、Global Talent、Innovator Founder、T2 Minister of Religion、International Sportsperson、Scale-up 主申请人许可；Representative of an Overseas Business 与 Tier 1 本工具无法填写，不计入；SW 21.2(i) 的等待决定期间未建模。",
         "SW 24.3 row E（5 年期含 Tier 2 (General) 下的 STEM 类 SOC 2010 职业）未建模。",
-        "未申报是否在 Immigration Salary List 上；SOC 6135 在清单职业表中，按职业代码推导为在清单上。清单对岗位 / 地区的限制（criteria）未核对，可在问卷里申报覆盖。",
+        "未申报是否在 Immigration Salary List 上；SOC 6135 在清单职业表中，按职业代码推导为在清单上。清单对岗位 / 地区的限制（criteria）未核对，可在问卷里申报覆盖。清单条目的移除日期为 2028-07-22，已按申请日比较。",
         "\\"2024-04-04 前按当时规则获批\\"按连续 Skilled Worker 许可的起始日判断（SW 4.2(b)(ii)）。",
         "going rate 按每周 37.5 小时的全额年薪比较，未按实际工时折算（SW 14.4）。",
         "连续合法居留计入学生、毕业生等临时路线，不计访问、季节性工作者、乌克兰计划（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。"
@@ -8654,6 +8934,26 @@ exports[`ES-OFFICIAL-P45-INDIVIDUAL-A default-locale output is unchanged 1`] = `
           "explanation": "成年后无 qualifying immigration breach。"
         },
         {
+          "id": "ES-ASYLUM-SUPPORT",
+          "title": "已偿还 asylum support 或按计划还款",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p8"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p39"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p47"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "未申报 asylum support 的偿还情况，按未领取 asylum support 处理（领过且须偿还的，定居前须已全额偿还或按约定还款计划持续履行，p8 注 1）。"
+        },
+        {
           "id": "ES-TRANSITIONAL-CARE-WORKER",
           "title": "care worker 过渡安排（保留 5 年）",
           "sources": [
@@ -8859,7 +9159,7 @@ exports[`ES-OFFICIAL-P45-INDIVIDUAL-B default-locale output is unchanged 1`] = `
           "explanation": "按 SW 24.3 row D（岗位在 Immigration Salary List 上，且自 2023-04-06 起连续持 Skilled Worker 许可，早于 2024-04-04，且申请日早于 2030-04-04（SW 4.2(b)(ii)）），general salary 门槛 £25,000；当前年薪 £20,000，低于此门槛。",
           "assumptions": [
             "SW 24.3 row E（5 年期含 Tier 2 (General) 下的 STEM 类 SOC 2010 职业）未建模。",
-            "未申报是否在 Immigration Salary List 上；SOC 6135 在清单职业表中，按职业代码推导为在清单上。清单对岗位 / 地区的限制（criteria）未核对，可在问卷里申报覆盖。",
+            "未申报是否在 Immigration Salary List 上；SOC 6135 在清单职业表中，按职业代码推导为在清单上。清单对岗位 / 地区的限制（criteria）未核对，可在问卷里申报覆盖。清单条目的移除日期为 2028-07-22，已按申请日比较。",
             "\\"2024-04-04 前按当时规则获批\\"按连续 Skilled Worker 许可的起始日判断（SW 4.2(b)(ii)）。"
           ]
         },
@@ -9022,7 +9322,7 @@ exports[`ES-OFFICIAL-P45-INDIVIDUAL-B default-locale output is unchanged 1`] = `
         "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）、Appendix FM 伴侣（10 年路线按 Appendix Settlement Family Life，5 年路线按 Appendix FM）与 Long Residence（Appendix Long Residence）；Part Suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
         "连续期合并 SW 21.2 列出的 Skilled Worker、Global Talent、Innovator Founder、T2 Minister of Religion、International Sportsperson、Scale-up 主申请人许可；Representative of an Overseas Business 与 Tier 1 本工具无法填写，不计入；SW 21.2(i) 的等待决定期间未建模。",
         "SW 24.3 row E（5 年期含 Tier 2 (General) 下的 STEM 类 SOC 2010 职业）未建模。",
-        "未申报是否在 Immigration Salary List 上；SOC 6135 在清单职业表中，按职业代码推导为在清单上。清单对岗位 / 地区的限制（criteria）未核对，可在问卷里申报覆盖。",
+        "未申报是否在 Immigration Salary List 上；SOC 6135 在清单职业表中，按职业代码推导为在清单上。清单对岗位 / 地区的限制（criteria）未核对，可在问卷里申报覆盖。清单条目的移除日期为 2028-07-22，已按申请日比较。",
         "\\"2024-04-04 前按当时规则获批\\"按连续 Skilled Worker 许可的起始日判断（SW 4.2(b)(ii)）。",
         "going rate 按每周 37.5 小时的全额年薪比较，未按实际工时折算（SW 14.4）。",
         "连续合法居留计入学生、毕业生等临时路线，不计访问、季节性工作者、乌克兰计划（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。",
@@ -9266,6 +9566,26 @@ exports[`ES-OFFICIAL-P45-INDIVIDUAL-B default-locale output is unchanged 1`] = `
           "explanation": "成年后无 qualifying immigration breach。"
         },
         {
+          "id": "ES-ASYLUM-SUPPORT",
+          "title": "已偿还 asylum support 或按计划还款",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p8"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p39"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p47"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "未申报 asylum support 的偿还情况，按未领取 asylum support 处理（领过且须偿还的，定居前须已全额偿还或按约定还款计划持续履行，p8 注 1）。"
+        },
+        {
           "id": "ES-TRANSITIONAL-CARE-WORKER",
           "title": "care worker 过渡安排（保留 5 年）",
           "sources": [
@@ -9374,7 +9694,7 @@ exports[`ES-OFFICIAL-P45-INDIVIDUAL-C default-locale output is unchanged 1`] = `
   "byRuleSet": {
     "current-law-2026-11": {
       "outcome": "LIKELY_ELIGIBLE",
-      "pathwayYears": 5,
+      "pathwayYears": 10,
       "earliestDate": "2035-06-06",
       "rules": [
         {
@@ -9465,11 +9785,11 @@ exports[`ES-OFFICIAL-P45-INDIVIDUAL-C default-locale output is unchanged 1`] = `
               "locator": "Unnumbered introductory paragraph; occupation table; SOC 2020 rows"
             }
           ],
-          "status": "PASS",
-          "explanation": "按 SW 24.3 row D（岗位在 Immigration Salary List 上，且SOC 6135 属 Health and Care ASHE salary job（SW A1.1）），general salary 门槛 £25,000；当前年薪 £30,000，已达到。",
+          "status": "FAIL",
+          "explanation": "按 SW 24.3 row C（SOC 6135 属 Health and Care ASHE salary job（SW A1.1）），general salary 门槛 £31,300；当前年薪 £30,000，低于此门槛。",
           "assumptions": [
             "SW 24.3 row E（5 年期含 Tier 2 (General) 下的 STEM 类 SOC 2010 职业）未建模。",
-            "未申报是否在 Immigration Salary List 上；SOC 6135 在清单职业表中，按职业代码推导为在清单上。清单对岗位 / 地区的限制（criteria）未核对，可在问卷里申报覆盖。",
+            "未申报是否在 Immigration Salary List 上；SOC 6135 的清单条目移除日期为 2028-07-22，早于申请日，按不在清单处理。",
             "SOC 6135 在 SW A1.1 的 Health and Care ASHE salary job 职业列表内，假设雇主属 SW A1.1(a)–(f) 列出的类型。"
           ]
         },
@@ -9499,7 +9819,7 @@ exports[`ES-OFFICIAL-P45-INDIVIDUAL-C default-locale output is unchanged 1`] = `
             }
           ],
           "status": "PASS",
-          "explanation": "按 SW 24.3 row D 查 Appendix Skilled Occupations Table 2aa，SOC 6135（Care workers and home carers）的 going rate 为 £25,000；当前年薪 £30,000，已达到。",
+          "explanation": "按 SW 24.3 row C 查 Appendix Skilled Occupations Table 2aa，SOC 6135（Care workers and home carers）的 going rate 为 £25,000；当前年薪 £30,000，已达到。",
           "assumptions": [
             "going rate 按每周 37.5 小时的全额年薪比较，未按实际工时折算（SW 14.4）。"
           ]
@@ -9632,7 +9952,7 @@ exports[`ES-OFFICIAL-P45-INDIVIDUAL-C default-locale output is unchanged 1`] = `
         "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）、Appendix FM 伴侣（10 年路线按 Appendix Settlement Family Life，5 年路线按 Appendix FM）与 Long Residence（Appendix Long Residence）；Part Suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
         "连续期合并 SW 21.2 列出的 Skilled Worker、Global Talent、Innovator Founder、T2 Minister of Religion、International Sportsperson、Scale-up 主申请人许可；Representative of an Overseas Business 与 Tier 1 本工具无法填写，不计入；SW 21.2(i) 的等待决定期间未建模。",
         "SW 24.3 row E（5 年期含 Tier 2 (General) 下的 STEM 类 SOC 2010 职业）未建模。",
-        "未申报是否在 Immigration Salary List 上；SOC 6135 在清单职业表中，按职业代码推导为在清单上。清单对岗位 / 地区的限制（criteria）未核对，可在问卷里申报覆盖。",
+        "未申报是否在 Immigration Salary List 上；SOC 6135 的清单条目移除日期为 2028-07-22，早于申请日，按不在清单处理。",
         "SOC 6135 在 SW A1.1 的 Health and Care ASHE salary job 职业列表内，假设雇主属 SW A1.1(a)–(f) 列出的类型。",
         "going rate 按每周 37.5 小时的全额年薪比较，未按实际工时折算（SW 14.4）。",
         "连续合法居留计入学生、毕业生等临时路线，不计访问、季节性工作者、乌克兰计划（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。"
@@ -9875,6 +10195,26 @@ exports[`ES-OFFICIAL-P45-INDIVIDUAL-C default-locale output is unchanged 1`] = `
           ],
           "status": "PASS",
           "explanation": "成年后无 qualifying immigration breach。"
+        },
+        {
+          "id": "ES-ASYLUM-SUPPORT",
+          "title": "已偿还 asylum support 或按计划还款",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p8"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p39"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p47"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "未申报 asylum support 的偿还情况，按未领取 asylum support 处理（领过且须偿还的，定居前须已全额偿还或按约定还款计划持续履行，p8 注 1）。"
         },
         {
           "id": "ES-TRANSITIONAL-CARE-WORKER",

@@ -219,15 +219,44 @@ describe('CL-SW-SALARY', () => {
     });
 
     test('not declared, listed occupation: row B, or row D with SW 4.2(b)', () => {
-      const b = at(33400, { socCode: '2112' });
+      const b = at(33400, { socCode: '2112' }, '2026-11-04');
       expect(b.status).toBe('PASS');
       expect(b.explanation).toContain('row B');
       expect(b.assumptions?.join('')).toContain('按职业代码推导');
-      expect(at(33399, { socCode: '2112' }).status).toBe('FAIL');
+      expect(b.assumptions?.join('')).toContain(
+        '清单条目的移除日期为 2026-12-31，已按申请日比较',
+      );
+      expect(at(33399, { socCode: '2112' }, '2026-11-04').status).toBe('FAIL');
       // 6135 is also a Health and Care ASHE salary job (SW 4.2(b)(i)).
-      const d = at(25000, { socCode: '6135' });
+      const d = at(25000, { socCode: '6135' }, '2028-04-01');
       expect(d.status).toBe('PASS');
       expect(d.explanation).toContain('row D');
+      expect(d.explanation).toContain('上，且 SOC 6135 属');
+    });
+
+    test('an entry removed before the date of application no longer counts', () => {
+      // 6135 (removal date 2028-07-22): still on the list on that day.
+      expect(
+        at(25000, { socCode: '6135' }, '2028-07-22').explanation,
+      ).toContain('row D');
+      const after = at(25000, { socCode: '6135' }, '2028-07-23');
+      expect(after.status).toBe('FAIL');
+      expect(after.explanation).toContain('row C');
+      expect(after.assumptions?.join('')).toContain(
+        'SOC 6135 的清单条目移除日期为 2028-07-22，早于申请日，按不在清单处理',
+      );
+      // 2112 (removal date 2026-12-31) on 2027-01-01: row A.
+      const a = at(33400, { socCode: '2112' }, '2027-01-01');
+      expect(a.status).toBe('FAIL');
+      expect(a.explanation).toContain('row A');
+      // A declaration still decides.
+      expect(
+        at(
+          33400,
+          { socCode: '2112', immigrationSalaryList: true },
+          '2027-01-01',
+        ).status,
+      ).toBe('PASS');
     });
 
     test('not declared, occupation not listed: row A', () => {

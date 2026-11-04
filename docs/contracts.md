@@ -100,13 +100,13 @@ What-if、前向推算的结构化假设，都等用到时再加字段，不提�
 
 规则只回答"这一条是否满足"，聚合把它们组合成结论。每个规则集先列出**候选路径**：一组必须全部 `PASS` 的规则 + 年限 + 居留起点。
 
-- Earned Settlement（SRC-001 p46 Table 1）：强制要求 = `ES-CRIMINALITY`、`ES-DEBT`、`ES-ENGLISH-B2`、`ES-KOL`、`ES-ROUTE-GROUP`、`ES-RESIDENCE`。
+- Earned Settlement（SRC-001 p46 Table 1）：强制要求 = `ES-CRIMINALITY`、`ES-DEBT`、`ES-ENGLISH-B2`、`ES-KOL`、`ES-ROUTE-GROUP`、`ES-RESIDENCE`，以及 `ES-ASYLUM-SUPPORT`（p8 注 1 列为所有申请人的最低要求；4.5 起非保护类路线与 dependant 也运行，保护类路线按 §11.4）。
   - 3 年：强制 + `ES-BREACH` + `ES-PUBLIC-FUNDS` + `ES-EARNINGS-3Y`
   - 5 年：强制 + `ES-BREACH` + `ES-PUBLIC-FUNDS` + 以下任一：`ES-EARNINGS-5Y`、`ES-BRITISH-CONNECTION`、`ES-PUBLIC-SERVICE`、`ES-TRANSITIONAL-CARE-WORKER`、`ES-TRANSITIONAL-HEALTH-EDUCATION`（2.5）
   - 10 年：强制 + `ES-BREACH` + `ES-PUBLIC-FUNDS` + `ES-EARNINGS-10Y`
   - 20 年：强制 + `ES-EARNINGS-10Y`（用过 public funds 或有 breach 时只剩这条）
   - 当前为 Family and Private Life 时只有 10 / 20 年（p23）。居留起点都是 `ES-RESIDENCE` 的合格期起点。
-- 现行法律：`CL-SCOPE` 不通过时只输出这一条、结论 `INSUFFICIENT_INFORMATION`。否则候选为 Skilled Worker 5 年（`CL-SW-SALARY`、`CL-SW-GOING-RATE`（2.5）、`CL-ENGLISH`、`CL-KOL`，起点为连续 Skilled Worker 段）与 Long Residence 10 年（`CL-ENGLISH`、`CL-KOL`，起点为连续合法居留段）；居留规则 `CL-SW-RESIDENCE-5Y` / `CL-LR-RESIDENCE-10Y` 只用于展示，年限由起点计算。
+- 现行法律：`CL-SCOPE` 不通过时只输出这一条、结论 `INSUFFICIENT_INFORMATION`。否则候选为 Skilled Worker 5 年（`CL-SW-SALARY`、`CL-SW-GOING-RATE`（2.5）、`CL-ENGLISH`、`CL-KOL`，起点为连续 Skilled Worker 段）与 Long Residence 10 年（`CL-ENGLISH`、`CL-KOL`，起点为连续合法居留段；英语按 LR 13.1 的等级单独核对，与当前路线的等级不同时只改该候选里的状态，`rules[]` 仍只显示按当前路线的一条，差异写进 `assumptions`（4.5））；居留规则 `CL-SW-RESIDENCE-5Y` / `CL-LR-RESIDENCE-10Y` 只用于展示，年限由起点计算。
 
 判定（两个规则集同一套）：
 
@@ -167,7 +167,7 @@ Earned Settlement 栏的 dependant 候选路径（只有一条）：
 
 字段：
 
-- `ImmigrationEpisode.immigrationSalaryList?: boolean`：只对 `SKILLED_WORKER` + `MAIN` 有意义，担保岗位在 Appendix Immigration Salary List 上（SW 24.3 rows B、D 看"最近一次许可"，即申请日当天那段）。缺省 = 否，不输出 `UNKNOWN`，规则在 `assumptions` 里写"未申报 Immigration Salary List，按不在清单处理"。
+- `ImmigrationEpisode.immigrationSalaryList?: boolean`：只对 `SKILLED_WORKER` + `MAIN` 有意义，担保岗位在 Appendix Immigration Salary List 上（SW 24.3 rows B、D 看"最近一次许可"，即申请日当天那段）。缺省 = 否，不输出 `UNKNOWN`，规则在 `assumptions` 里写"未申报 Immigration Salary List，按不在清单处理"。（3.1 起缺省时按 `socCode` 从 SRC-019 推导；4.5 起只计 `removalDate` 不早于申请日的条目，同一 SOC 多条时任一条仍有效即算在清单上。）
 - `PersonTimeline.settled?: { date: IsoDate; route: Route }`：填在**主申请人**的时间线上，表示主申请人已经定居（或已入籍），`date` 为获批日，`route` 为获批时所持许可的路线（SW 39.1(b)）。申请人本人时间线上的 `settled` 不被规则读取。缺省 = 未定居。
 - 不新增 `newEntrant`：SW 24.3 row C / D 引用的 SW 4.2(b) 不是"新入行"定义，而是 options F–J 的适用条件——(i) Health and Care ASHE salary job（SW A1.1），或 (ii) 2024-04-04 前按旧规则获批 Skilled Worker、此后连续持有、申请日早于 2030-04-04。两者都能从现有字段推出（`socCode` + `episodes`），见下。"新入行"只出现在 options E / J（入境 / 续签积分），SW 24.3 不用。
 
@@ -259,7 +259,7 @@ SimulationRequest.locale ──► RuleContext.locale ──► 规则 check：e
 | `ImmigrationEpisode.resettlementScheme?` | `'UK_RESETTLEMENT_SCHEME'` \| `'OTHER_DESIGNATED'` | 经哪条 designated Safe and Legal Route 入境（p37、p47）。`OTHER_DESIGNATED` = 原文"specified resettlement and sponsorship routes"，清单未公布（PD-033），按用户申报处理 | 申请日当天的 `SAFE_AND_LEGAL` 片段 |
 | `ImmigrationEpisode.sustainedActivity?` | `'WORK'` \| `'EDUCATION'` \| `'TRAINING'` | 转入 Protection Work and Study 所依据的持续活动（p38、p47） | 申请日当天的 `PROTECTION_WORK_AND_STUDY` 片段 |
 | `ImmigrationBreach.article31?` | `boolean` | 只对 `ILLEGAL_ENTRY` 有意义：用户声称受 Refugee Convention Article 31 保护（p39、p48）。缺省 = 未声称 | 保护类路线上的成年后非法入境 |
-| `PersonTimeline.asylumSupportRepayment?` | `'NOT_REQUIRED'` \| `'REPAID'` \| `'ON_PLAN'` \| `'OUTSTANDING'` | asylum support 偿还（p8 注 1、p39、p47）。`NOT_REQUIRED` = 未领取或无需偿还；`REPAID` = 已全额偿还；`ON_PLAN` = 按约定还款计划履行中；`OUTSTANDING` = 欠款且未还、未按计划 | 当前为 `PROTECTION_WORK_AND_STUDY` 或 `CORE_PROTECTION` |
+| `PersonTimeline.asylumSupportRepayment?` | `'NOT_REQUIRED'` \| `'REPAID'` \| `'ON_PLAN'` \| `'OUTSTANDING'` | asylum support 偿还（p8 注 1、p39、p47）。`NOT_REQUIRED` = 未领取或无需偿还；`REPAID` = 已全额偿还；`ON_PLAN` = 按约定还款计划履行中；`OUTSTANDING` = 欠款且未还、未按计划 | 当前为 `PROTECTION_WORK_AND_STUDY` 或 `CORE_PROTECTION`；4.5 起有值时任何路线都读取（Safe and Legal 除外，§11.3） |
 
 - 缺省一律 = 用户没提供：读取它的规则输出不带 PD 的 `UNKNOWN`（结论多为 `INSUFFICIENT_INFORMATION`），`article31` 除外（缺省 = 未声称，按加 10 年处理）。
 - 显示名（`policy-data` 导出）：`resettlementSchemeNames`、`sustainedActivityNames`、`asylumSupportRepaymentNames`，形状同 `breachTypeNames`。
@@ -282,13 +282,13 @@ SimulationRequest.locale ──► RuleContext.locale ──► 规则 check：e
 
 ### 11.3 规则
 
-保护类路线的 Earned Settlement 栏只运行：强制要求（`ES-CRIMINALITY`、`ES-DEBT`、`ES-ENGLISH-B2`、`ES-KOL`、`ES-ROUTE-GROUP`、`ES-RESIDENCE`）+ `ES-BREACH` + `ES-PUBLIC-FUNDS` + 下面三条新规则（按路线取用）；`ES-EARNINGS-*`、`ES-BRITISH-CONNECTION`、`ES-PUBLIC-SERVICE`、过渡安排规则不运行、不出现在 `rules[]`。非保护类路线不运行三条新规则，`rules[]` 不变。
+保护类路线的 Earned Settlement 栏只运行：强制要求（`ES-CRIMINALITY`、`ES-DEBT`、`ES-ENGLISH-B2`、`ES-KOL`、`ES-ROUTE-GROUP`、`ES-RESIDENCE`）+ `ES-BREACH` + `ES-PUBLIC-FUNDS` + 下面三条新规则（按路线取用）；`ES-EARNINGS-*`、`ES-BRITISH-CONNECTION`、`ES-PUBLIC-SERVICE`、过渡安排规则不运行、不出现在 `rules[]`。非保护类路线不运行 `ES-PROTECTION-PATHWAY` 与 `ES-PROTECTION-CONTRIBUTION`；`ES-ASYLUM-SUPPORT` 自 4.5 起作为强制要求运行（§7）。
 
 | 规则 | 适用 | 判断 |
 |---|---|---|
 | `ES-PROTECTION-PATHWAY`（新） | 三条保护类路线 | 给出基础年限：Safe and Legal 5、PWS 10、Core Protection 20。成年后 `ILLEGAL_ENTRY`（`article31 !== true`）→ 年限 +10，解释点名 Table 2 对应行（p48）。全部成年后非法入境都 `article31: true` → `UNKNOWN`（PD-032），解释同时给出不适用 Article 31 时的年限与日期。Safe and Legal：`resettlementScheme` 缺省 → `UNKNOWN`；`OTHER_DESIGNATED` → `PASS` + 假设"指定路线清单未公布，按你的申报处理；若为 Community Sponsorship、Mandate Resettlement Scheme 或其前身则属 Legacy Safe and Legal Routes（框架外）"（PD-033）。PWS / Core Protection：`PASS` + 假设"两条路线尚未推出，按所填片段日期计算；推出前已有时间是否及如何计入未定"（PD-029、PD-034、PD-043）。 |
 | `ES-PROTECTION-CONTRIBUTION`（新） | 仅 PWS | `sustainedActivity = 'WORK'`：数 PWS 合格期（`ES-RESIDENCE` 的起点）内**完整的** tax year——起点在合格期起点当天或之后、且在申请日所在 tax year 之前结束；起点所在的那个 tax year 不算（除非合格期恰从 4 月 6 日开始），因为年收入无法拆出转入前的部分。年收入 ≥ £12,571 的年数 ≥ 3 → `PASS`；不足但合格期尚未满 10 年（+10）→ `UNKNOWN`（PD-030，解释写"已有 n 年达标，需 3 年"）；已满仍不足 → `FAIL`。观察窗口原文未定义，按"合格期内任意 3 年"建模并在假设里声明（PD-030）。`EDUCATION` / `TRAINING` → `UNKNOWN`（PD-030）；缺省 → `UNKNOWN`（不带 PD）。 |
-| `ES-ASYLUM-SUPPORT`（新） | PWS、Core Protection | `NOT_REQUIRED` / `REPAID` / `ON_PLAN` → `PASS`；`OUTSTANDING` → `FAIL`；缺省 → `UNKNOWN`（不带 PD）。Safe and Legal 不运行（Table 2 未列，新 PD）。 |
+| `ES-ASYLUM-SUPPORT`（新） | PWS、Core Protection；4.5 起也用于非保护类路线 | `NOT_REQUIRED` / `REPAID` / `ON_PLAN` → `PASS`；`OUTSTANDING` → `FAIL`（任何路线）；缺省 → PWS / Core Protection 为 `UNKNOWN`（不带 PD），其他路线 `PASS`，解释"未申报，按未领取 asylum support 处理"（p8 注 1）。Safe and Legal 不运行（Table 2 未列，PD-068）。 |
 | `ES-ENGLISH-B2`（改） | — | `resettlementScheme = 'UK_RESETTLEMENT_SCHEME'` 的 Safe and Legal → A2（`ukrsEnglishLevel`）；其他一律 B2。推导出的 Legacy UKRS → `UNKNOWN`（PD-045）。解释写明适用等级。规则 ID 不变，标题改为等级中性（"定居英语要求（B2；UKRS 难民 A2）"）。 |
 | `ES-KOL`（改） | — | UKRS 的 Safe and Legal → `PASS`（当前免考），假设"A2 版考试推出后可能改变"（PD-021）；其他不变。 |
 | `ES-PUBLIC-FUNDS`（改） | — | Safe and Legal → `PASS`（豁免，p37、p47）；Core Protection → `PASS`（20 年路径本身不要求，p39）；PWS → 照常评估，用过则只剩 20 年兜底（p39）。弱势群体保障与可不计入的福利未定 → 假设里提 PD-031。 |
@@ -315,7 +315,7 @@ M = 强制要求；P = `ES-PROTECTION-PATHWAY`；+10 = 成年后非法入境且�
 
 - `IMMIGRATION_BREACH`（成年后非法入境）：只在申请日当天的路线**不是**保护类时触发（非保护类路线维持 PD-044 的"不作结论"，两栏都 `REQUIRES_REGULATED_REVIEW`）。保护类路线上不短路，两栏照常评估。
 - `PROTECTION`：取值保留，只在申请日当天是保护类路线上的 `DEPENDANT` 时触发（Chapter 7 与 Table 2 未提难民的 dependant，新 PD）；只影响 Earned Settlement 栏。保护类主申请人不再短路。
-- `OUTSIDE_FRAMEWORK`：不变，另含 11.3 推导出的 Legacy UKRS。
+- `OUTSIDE_FRAMEWORK`：不变，另含 11.3 推导出的 Legacy UKRS；其短路文案不说"B2 英语要求仍适用"，改为写明框架外一般 B2 与第 7 章 UKRS A2 不一致（PD-045）（4.5）。
 - `CRIMINALITY`：不变，优先。
 
 ### 11.6 给 3.5（问卷与结果页）
@@ -455,3 +455,89 @@ HK BN(O) 的英语只有一个等级（HK 60.1 没有按申请日分段），所
 
 - `cl-family-partner-five-years.ts`：`PARTNER_FIVE_YEAR`，伴侣 `BRITISH_CITIZEN`，2021-03-01 起，申请日 2026-03-01（5 年到期当天）；连续段起点早于 2024-04-11 → 过渡门槛 £18,600（无子女），上一 tax year 合并收入达标；英语 B1、KOL 已过 → `LIKELY_ELIGIBLE`、5 年。Earned Settlement 栏照常。随第二步（SRC-024 合并后）加入；第一步用单测覆盖 10 年路线。
 - 问卷：当前片段为 `FAMILY_PARTNER_OR_PARENT` + `MAIN` 时问 `familyPermission`；伴侣路线时提示填写伴侣身份（`relationships`）与上一 tax year 的本人及伴侣收入。
+
+## 13. 规则集版本化（Phase 4.8）
+
+把 `docs/versioning.md` §4 里需要代码支撑的部分定下来：Statement of Changes 落地时只需"加一个规则集 + 参数文件 + 规则差异"。本任务**不新增真实规则集、参数或规则**，机制用测试内的合成规则集证明；现有两栏的输出与 `bilingual` 快照不变。
+
+### 13.1 字段
+
+| 位置 | 字段 | 取值 / 含义 |
+|---|---|---|
+| `policy-data` `types.ts` | `RULE_SET_IDS`（新，常量） | `['current-law-2026-11', 'earned-settlement-2026-11'] as const`，按加入顺序。**加一个规则集 = 在这里加一项**。 |
+| | `RuleSetId`（改） | 由 `RULE_SET_IDS` 推导（`(typeof RULE_SET_IDS)[number]`），不再手写联合类型；定义只在这一处。 |
+| | `ParameterSet.basedOn?: RuleSetId`（新） | 本参数文件的值与来源沿用自哪个版本，只作文档用途，引擎不读。 |
+| `engine` `types.ts` | `RuleSet.effectiveFrom`（改） | `RuleSet` 改为按 `status` 区分的联合：`IN_FORCE_FUTURE_VERSION`（已提交、未生效）时**必填**，为生效日；`CURRENT_LAW` / `ANNOUNCED_NOT_IN_FORCE` 时不能填（`never`）。`evaluate` 不读它，哪两栏显示由 web 决定（13.5）。`effectiveTo` / `supersedes` 不变（仍未使用）。 |
+| | `RuleSetRegistry`（新） | `{ ruleSets: Record<RuleSetId, RuleSet>; rules: Record<RuleSetId, Rule[]> }`：`evaluate` 评估的规则集与各自的规则，键相同。 |
+
+### 13.2 注册方式
+
+- `RULE_SET_IDS` 是唯一入口；下面三张表都是 `Record<RuleSetId, …>`，加了 ID 而漏了哪张，typecheck 会报错：
+  - `RULE_SETS`（engine，`evaluate.ts`）：规则集元数据，web 用它列栏与徽章。
+  - `RULES`（engine，`rules/index.ts`）：各规则集的规则，按执行顺序。
+  - `PARAMETERS`（policy-data，新）：`Record<RuleSetId, ParameterSet>`，各规则集的参数文件；web 用它取各栏的 `asOf`（13.5）。规则仍直接 import 本版本的参数文件，不经 `PARAMETERS`（13.4）。
+- 聚合按 `RuleSet.kind` 选：`LAW` 按现行法律栏的候选路径（§7、§12），`ANNOUNCED` 按 Earned Settlement（§7、§11）；规则取 `registry.rules[id]`，不再写死 ID。短路时 `PROTECTION` / `OUTSIDE_FRAMEWORK` 只停 `kind: 'ANNOUNCED'` 的栏（原来写死 `earned-settlement-2026-11`），`CRIMINALITY` / `IMMIGRATION_BREACH` 停所有栏。新版本若改了候选路径或短路，在它自己的契约小节里写，不在本节预留。
+- `SimulationResult.policyAsOf` 不变（仍为 `earnedSettlement2026_11.asOf`），web 的显示用 13.5 的算法。
+
+### 13.3 测试注入：`evaluate(request, registry?)`
+
+- 签名改为 `evaluate(request: SimulationRequest, registry: RuleSetRegistry = { ruleSets: RULE_SETS, rules: RULES })`。现有调用不传第二个参数，行为不变；`request.ruleSetIds` 缺省时取 `registry.ruleSets` 的全部键，给了时照常过滤；主申请人的递归评估传同一个 `registry`。
+- 合成规则集只在测试里构造：ID 写成 `'current-law-test-future' as RuleSetId`（类型上借用，生产代码与 `RULE_SET_IDS` 不出现它），`registry = { ruleSets: { ...RULE_SETS, [id]: … }, rules: { ...RULES, [id]: … } }`。
+- 不选"可替换的模块级 `RULES`"或 `vi.mock`：显式参数最直接，测试里能在同一个用例中对比"不传 / 传合成 registry"两次结果。
+
+### 13.4 同一规则挂到多个规则集：`withRuleSet(rule, ruleSetId)`
+
+- `rule.ts` 新增 `withRuleSet(rule: Rule, ruleSetId: RuleSetId): Rule`，返回 `meta.ruleSetId` 换成新 ID、`evaluate`（即 check）不变的规则；`defineRule` 不变。沿用的规则用它注册到新规则集，不复制代码；语义变了的规则在新规则集下另写新版本，旧版本不动（`docs/versioning.md` §4.3）。
+- **参数按规则集注入：等真实版本出现再做（同意任务书的倾向）**。理由：
+  1. 没有第二个参数文件，无法测出"同一 check 在不同版本下取到不同值"是对的。
+  2. 现有规则在模块顶层 import `currentLaw2026_11 as cl` / `earnedSettlement2026_11 as es`，引用约数百处。现在改成从 `ctx` 取值，是一次全量重写，却换不来可验证的收益。
+  3. 12 月的 Statement of Changes 是改数字、改段号还是改结构，现在不知道。若主要是新段落与新条件，规则本来就要新写，注入用处有限。
+- 代价：在注入做出来之前，`withRuleSet` 沿用的规则读的仍是 2026-11 的参数。所以新版本里**只要有数字变化的规则，都要另写**，或在那时先做注入。
+- 届时的改法（只记在这里，不实现）：`RuleContext` 加 `values`，由 `evaluate` 按 `PARAMETERS[id]` 填入；规则把 `cl.values.x` 机械替换为 `ctx.values.x`；两个参数文件的值类型须一致（`basedOn` 展开保证同形）。范围：`packages/engine/src/rules/**` 与 `aggregate.ts`，快照应不变。
+
+### 13.5 参数文件的"沿用"写法
+
+```ts
+export const currentLaw2027_01 = {
+  ruleSetId: 'current-law-2027-01',
+  basedOn: 'current-law-2026-11',
+  asOf: '2027-01-05',
+  values: {
+    ...currentLaw2026_11.values,          // 沿用：值与 SRC 定位不变
+    skilledWorkerSettlementSalaryRowA: {  // 覆盖：新值 + 新 SRC 定位
+      value: /* 新 Statement of Changes 的值 */,
+      sources: [{ srcId: 'SRC-0xx', locator: 'SW 24.3' }],
+    },
+  },
+} satisfies ParameterSet;
+```
+
+- 前提：`'current-law-2027-01'` 已加进 `RULE_SET_IDS`。`satisfies ParameterSet` 下逐项覆盖仍保留各值的具体类型。沿用的值不必逐项写"沿用"注释，`basedOn` 说明来源版本（`docs/versioning.md` §4.2 按此改）。
+
+### 13.6 给 astra（web 部分，另做）
+
+- **两栏选择**（`apps/web/lib/policy.ts`，按 `RULE_SET_IDS` 顺序遍历 `RULE_SETS`）：
+  - 左栏：`kind: 'LAW'` 且 `status: 'CURRENT_LAW'` 的那个。
+  - 右栏：有 `status: 'IN_FORCE_FUTURE_VERSION'` 时取它；有多个时取 `effectiveFrom` 最早的。没有时取 `kind: 'ANNOUNCED'` 中最后加入的（`RULE_SET_IDS` 里靠后）。
+  - 评估时 `ruleSetIds` 只传这两个。
+- **徽章文案键**：保留 `policy.<status>`；新增 `policy.IN_FORCE_FUTURE_VERSION.effectiveFrom`，用于 `IN_FORCE_FUTURE_VERSION` 栏，按 web 现有插值写法带日期。
+  - 中文："已立法，{date} 起生效"
+  - 英文："Laid, in force from {date}"
+- **`policyAsOf`**：所显示两栏 `PARAMETERS[id].asOf` 的较晚者。
+- **/policy**：列出 `RULE_SET_IDS` 的全部规则集（含未显示的），写明状态、生效日（若有）与来源。
+
+### 13.7 测试（合成规则集）
+
+`packages/engine/test/versioning.test.ts`：
+
+- 合成规则集 `current-law-test-future`：复用 `RULES['current-law-2026-11']` 的全部规则（经 `withRuleSet`），`kind: 'LAW'`、`status: 'IN_FORCE_FUTURE_VERSION'`、`effectiveFrom: '2027-01-01'`。
+- 对每个 fixture：
+  - 传合成 registry 时出三栏；
+  - 现有两栏与不传 registry 时逐字节相同；
+  - 合成栏与 `current-law-2026-11` 栏相同（同一组规则与参数）。
+- `ruleSetIds: [合成 ID]` 只出这一栏。
+- 合成规则的 `meta.ruleSetId` 都是合成 ID，原规则不变。
+- 所有 fixture 的 `expected.ruleSetId` 都在 `RULE_SET_IDS` 里，且没有合成 ID。
+- `RULE_SETS`、`RULES`、`PARAMETERS` 的键都等于 `RULE_SET_IDS`，`PARAMETERS[id].ruleSetId === id`。
+- `basedOn` 写法：测试内构造一个合成参数集，展开沿用、覆盖一项，断言沿用值与覆盖值都对。
+- `bilingual` 快照不变（合成规则集只在测试里）。

@@ -185,18 +185,22 @@ export const esAsylumSupport = defineRule(
   (ctx) => {
     const { timeline, simulationDate } = ctx;
     const L = textFor(ctx);
+    // A minimum requirement for every applicant (p8 note 1); only PWS and
+    // Core Protection must answer it (Table 2, p47).
     const route = esProtectionRouteOn(timeline, simulationDate);
-    if (route !== 'PROTECTION_WORK_AND_STUDY' && route !== 'CORE_PROTECTION') {
-      return {
-        status: 'PASS',
-        explanation: L(
-          '当前不是 Protection Work and Study 或 Core Protection，本条不适用。',
-          'The current route is neither Protection Work and Study nor Core Protection, so this does not apply.',
-        ),
-      };
-    }
+    const required =
+      route === 'PROTECTION_WORK_AND_STUDY' || route === 'CORE_PROTECTION';
     switch (timeline.asylumSupportRepayment) {
       case undefined:
+        if (!required) {
+          return {
+            status: 'PASS',
+            explanation: L(
+              '未申报 asylum support 的偿还情况，按未领取 asylum support 处理（领过且须偿还的，定居前须已全额偿还或按约定还款计划持续履行，p8 注 1）。',
+              'Repayment of asylum support not declared; treated as no asylum support received (anyone who received asylum support and must repay it needs to have repaid it in full, or be keeping up with an agreed repayment plan, before settlement; p8 note 1).',
+            ),
+          };
+        }
         return {
           status: 'UNKNOWN',
           explanation: L(

@@ -13,7 +13,7 @@ import type {
   ImmigrationEpisode,
   PersonTimeline,
 } from '../src/types';
-import { run, timeline } from './helpers';
+import { run, SIMULATION_DATE, timeline } from './helpers';
 
 const ES = 'earned-settlement-2026-11';
 
@@ -323,7 +323,23 @@ describe('ES-ASYLUM-SUPPORT', () => {
       '2030-01-01',
     );
     expect(column.rules.map((r) => r.id)).not.toContain('ES-ASYLUM-SUPPORT');
-    expect(at('OUTSTANDING', ukrs()).status).toBe('PASS');
+  });
+
+  // p8 note 1: a minimum requirement for every applicant.
+  test('other routes: judged when declared, missing passes', () => {
+    const sw = timeline({ asylumSupportRepayment: 'OUTSTANDING' });
+    expect(run(esAsylumSupport, sw).status).toBe('FAIL');
+    const column = evaluate({ timeline: sw, simulationDate: SIMULATION_DATE })
+      .byRuleSet['earned-settlement-2026-11']!;
+    expect(column.outcome).toBe('LIKELY_NOT_ELIGIBLE');
+    expect(column.pathwayYears).toBeUndefined();
+    const missing = run(esAsylumSupport, timeline());
+    expect(missing.status).toBe('PASS');
+    expect(missing.explanation).toContain('按未领取 asylum support 处理');
+    expect(
+      run(esAsylumSupport, timeline({ asylumSupportRepayment: 'REPAID' }))
+        .status,
+    ).toBe('PASS');
   });
 
   test('outstanding repayment fails every Core Protection pathway', () => {

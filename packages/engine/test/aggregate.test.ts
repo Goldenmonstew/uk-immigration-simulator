@@ -248,6 +248,38 @@ describe('current law', () => {
     expect(a).toMatchObject({ outcome: 'LIKELY_ELIGIBLE', pathwayYears: 10 });
     expect(a.rules.some((r) => r.id.startsWith('CL-SW-'))).toBe(false);
   });
+
+  // 4.2 report §4: Skilled Worker sets no settlement English requirement
+  // before 2027-03-26, but Long Residence alongside needs B1 (LR 13.1(a)).
+  test('Long Residence alongside Skilled Worker checks its own English level', () => {
+    const episodes: ImmigrationEpisode[] = [
+      {
+        route: 'STUDENT',
+        role: 'MAIN',
+        validFrom: '2015-09-01',
+        validTo: '2022-01-31',
+      },
+      sw('2022-02-01', { salary: 20000 }),
+    ];
+    const missing = cl({ episodes, english: undefined });
+    expect(missing.outcome).toBe('INSUFFICIENT_INFORMATION');
+    expect(
+      missing.rules.filter((r) => r.id === 'CL-ENGLISH').map((r) => r.status),
+    ).toEqual(['PASS']);
+    expect(missing.assumptions.join('')).toContain(
+      'Long Residence 10 年路径须英语 B1（LR 13.1(a)），未填写英语水平',
+    );
+    const a2 = cl({ episodes, english: { cefrLevel: 'A2' } });
+    expect(a2.outcome).toBe('LIKELY_NOT_ELIGIBLE');
+    expect(a2.assumptions.join('')).toContain('当前英语水平不满足');
+    expect(cl({ episodes, english: { cefrLevel: 'B1' } })).toMatchObject({
+      outcome: 'LIKELY_ELIGIBLE',
+      pathwayYears: 10,
+    });
+    expect(cl({ episodes, english: { exempt: true } }).outcome).toBe(
+      'LIKELY_ELIGIBLE',
+    );
+  });
 });
 
 describe('dependants', () => {

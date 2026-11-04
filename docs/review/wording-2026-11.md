@@ -382,8 +382,8 @@
 
 待定细节：PD-031、PD-068
 
-- 中：当前不是 Protection Work and Study 或 Core Protection，本条不适用。
-  - EN: The current route is neither Protection Work and Study nor Core Protection, so this does not apply.
+- 中：未申报 asylum support 的偿还情况，按未领取 asylum support 处理（领过且须偿还的，定居前须已全额偿还或按约定还款计划持续履行，p8 注 1）。
+  - EN: Repayment of asylum support not declared; treated as no asylum support received (anyone who received asylum support and must repay it needs to have repaid it in full, or be keeping up with an agreed repayment plan, before settlement; p8 note 1).
 - 中：未填写 asylum support 的偿还情况。领过 asylum support 且须偿还的，定居前须已全额偿还或按约定还款计划持续履行（p8 注 1、p39）。
   - EN: Repayment of asylum support not provided. Anyone who received asylum support and must repay it needs to have repaid it in full, or be keeping up with an agreed repayment plan, before settlement (p8 note 1, p39).
 - 中：须偿还的 asylum support 尚未偿还，也没有按约定的还款计划履行。这是最低要求，不满足即不能定居（p8 注 1、p39、p47）。
@@ -568,8 +568,8 @@
   - EN: Salary for the current Skilled Worker job not provided.
 - 中：按 SW 24.3 row D（岗位在 Immigration Salary List 上，且自 2019-11-01 起连续持 Skilled Worker 许可，早于 2024-04-04，且申请日早于 2030-04-04（SW 4.2(b)(ii)）），general salary 门槛 £25,000；当前年薪 £20,000，低于此门槛。
   - EN: Under SW 24.3 row D (the job is on the Immigration Salary List, and continuous Skilled Worker permission since 2019-11-01, before 2024-04-04, with the application before 2030-04-04 (SW 4.2(b)(ii))), the general salary threshold is £25,000; the current salary of £20,000 is below it.
-- 中：未申报是否在 Immigration Salary List 上；SOC 6135 在清单职业表中，按职业代码推导为在清单上。清单对岗位 / 地区的限制（criteria）未核对，可在问卷里申报覆盖。
-  - EN: Not declared whether the job is on the Immigration Salary List; SOC 6135 is in the list’s occupation table, so the job is derived to be on the list from its occupation code. The list’s job / region restrictions (criteria) are not checked; a declaration in the questionnaire overrides this.
+- 中：未申报是否在 Immigration Salary List 上；SOC 6135 在清单职业表中，按职业代码推导为在清单上。清单对岗位 / 地区的限制（criteria）未核对，可在问卷里申报覆盖。清单条目的移除日期为 2028-07-22，已按申请日比较。
+  - EN: Not declared whether the job is on the Immigration Salary List; SOC 6135 is in the list’s occupation table, so the job is derived to be on the list from its occupation code. The list’s job / region restrictions (criteria) are not checked; a declaration in the questionnaire overrides this. The list entry’s removal date is 2028-07-22, compared with the date of application.
 - 中：当前不是 Skilled Worker 主申请人许可。
   - EN: Current permission is not as a Skilled Worker main applicant.
 - 中：按 SW 24.3 row D（SOC 2461 是 Appendix Skilled Occupations Table 3 的医疗 / 教育职业），general salary 门槛 £25,000；当前年薪 £42,000，已达到。
@@ -580,8 +580,10 @@
   - EN: Under SW 24.3 row D (the job is on the Immigration Salary List, and continuous Skilled Worker permission since 2023-04-06, before 2024-04-04, with the application before 2030-04-04 (SW 4.2(b)(ii))), the general salary threshold is £25,000; the current salary of £30,000 meets it.
 - 中：按 SW 24.3 row D（岗位在 Immigration Salary List 上，且自 2023-04-06 起连续持 Skilled Worker 许可，早于 2024-04-04，且申请日早于 2030-04-04（SW 4.2(b)(ii)）），general salary 门槛 £25,000；当前年薪 £20,000，低于此门槛。
   - EN: Under SW 24.3 row D (the job is on the Immigration Salary List, and continuous Skilled Worker permission since 2023-04-06, before 2024-04-04, with the application before 2030-04-04 (SW 4.2(b)(ii))), the general salary threshold is £25,000; the current salary of £20,000 is below it.
-- 中：按 SW 24.3 row D（岗位在 Immigration Salary List 上，且SOC 6135 属 Health and Care ASHE salary job（SW A1.1）），general salary 门槛 £25,000；当前年薪 £30,000，已达到。
-  - EN: Under SW 24.3 row D (the job is on the Immigration Salary List, and SOC 6135 is a Health and Care ASHE salary job (SW A1.1)), the general salary threshold is £25,000; the current salary of £30,000 meets it.
+- 中：按 SW 24.3 row C（SOC 6135 属 Health and Care ASHE salary job（SW A1.1）），general salary 门槛 £31,300；当前年薪 £30,000，低于此门槛。
+  - EN: Under SW 24.3 row C (SOC 6135 is a Health and Care ASHE salary job (SW A1.1)), the general salary threshold is £31,300; the current salary of £30,000 is below it.
+- 中：未申报是否在 Immigration Salary List 上；SOC 6135 的清单条目移除日期为 2028-07-22，早于申请日，按不在清单处理。
+  - EN: Not declared whether the job is on the Immigration Salary List; the list entry for SOC 6135 has a removal date of 2028-07-22, before the date of application, so the job is treated as not on the list.
 - 中：SOC 6135 在 SW A1.1 的 Health and Care ASHE salary job 职业列表内，假设雇主属 SW A1.1(a)–(f) 列出的类型。
   - EN: SOC 6135 is on the Health and Care ASHE salary job list in SW A1.1; the employer is assumed to be of a type listed in SW A1.1(a)–(f).
 
@@ -605,6 +607,8 @@
   - EN: SOC 2461 is a Table 3 health / education occupation, whose going rate is set by national pay scales (Appendix Skilled Occupations Tables 3–5); this tool has not extracted the pay scales in Tables 4 / 5, so it cannot check them.
 - 中：按 SW 24.3 row D 查 Appendix Skilled Occupations Table 2aa，SOC 6135（Care workers and home carers）的 going rate 为 £25,000；当前年薪 £30,000，已达到。
   - EN: Under SW 24.3 row D, Appendix Skilled Occupations Table 2aa gives a going rate of £25,000 for SOC 6135 (Care workers and home carers); the current salary of £30,000 meets it.
+- 中：按 SW 24.3 row C 查 Appendix Skilled Occupations Table 2aa，SOC 6135（Care workers and home carers）的 going rate 为 £25,000；当前年薪 £30,000，已达到。
+  - EN: Under SW 24.3 row C, Appendix Skilled Occupations Table 2aa gives a going rate of £25,000 for SOC 6135 (Care workers and home carers); the current salary of £30,000 meets it.
 
 ### CL-SW-PARTNER-5Y：Skilled Worker dependent partner 连续 5 年并与主申请人一同定居 / 5 continuous years as a Skilled Worker dependent partner, settling with the principal applicant
 
@@ -838,6 +842,8 @@
 
 - 中：现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）、Appendix FM 伴侣（10 年路线按 Appendix Settlement Family Life，5 年路线按 Appendix FM）与 Long Residence（Appendix Long Residence）；Part Suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。
   - EN: The current rules are modelled only for Skilled Worker main applicants and their dependent partners / children (Appendix Skilled Worker, Appendix Children), Hong Kong BN(O) main applicants (Appendix Hong Kong British National (Overseas)), Global Talent main applicants (Appendix Global Talent), Appendix FM partners (the 10-year route under Appendix Settlement Family Life, the 5-year route under Appendix FM) and Long Residence (Appendix Long Residence); other requirements, such as Part Suitability and the sponsor still being approved (SW 24.1–24.2), are not modelled.
+- 中：Long Residence 10 年路径须英语 B1（LR 13.1(a)），未填写英语水平；"定居英语要求"一条按当前路线的等级核对。
+  - EN: The 10-year Long Residence pathway requires English at B1 (LR 13.1(a)), and no English level has been provided; the settlement English requirement shown applies the current route’s level.
 - 中：最早可申请日期按"自 2022-01-01 起持续居留、收入等状况不变、其余要求届时仍满足"推算，不是对未来的保证。
   - EN: The earliest application date is projected on the basis that residence continues from 2022-01-01, earnings and other circumstances stay the same, and the other requirements are still met then; it is not a guarantee about the future.
 - 中：预计日期在 2027-03-26 之后，届时定居须达到英语 B2（SW 22A.1、LR 13.1(b)）。
@@ -863,7 +869,9 @@
 
 - 中：申报了犯罪记录。Earned Settlement 下成年人的任何犯罪记录都会导致拒绝定居，现行规则下也取决于 Part Suitability 的具体情形；本工具不作结论，请咨询受监管的移民顾问。
   - EN: A criminal record has been declared. Under Earned Settlement any criminal record as an adult leads to refusal of settlement; under the current rules the outcome depends on the circumstances under Part Suitability. This tool does not reach a conclusion: please seek advice from a regulated immigration adviser.
-- 中：当前路线不在 Earned Settlement 框架内，继续按该群体现有的定居安排（SRC-001 p25–p26）；但强化的犯罪记录与 B2 英语要求仍适用，除非有现有豁免或保障。
-  - EN: The current route is outside the Earned Settlement framework and keeps the existing settlement arrangements for that group (SRC-001 p25–p26). The strengthened criminality and B2 English requirements still apply, unless an existing exemption or protection applies.
+- 中：当前路线属 Legacy Safe and Legal Routes（2027-04-06 前经 UK Resettlement Scheme 抵达），不在 Earned Settlement 框架内，继续按该群体现有的定居安排（SRC-001 p25–p26）；强化的犯罪记录要求仍适用。英语等级原文不一致：框架外群体一般须 B2（p25–p26），第 7 章又说 UK Resettlement Scheme 难民只需 A2（p37、p39），见 PD-045。
+  - EN: The current route is a Legacy Safe and Legal Route (arrival through the UK Resettlement Scheme before 2027-04-06), outside the Earned Settlement framework, and keeps the existing settlement arrangements for that group (SRC-001 p25–p26). The strengthened criminality requirements still apply. The English level is inconsistent: groups outside the framework generally need B2 (p25–p26), while Chapter 7 says UK Resettlement Scheme refugees only need A2 (p37, p39); see PD-045.
 - 中：当前以 dependant 身份持保护类路线许可。Earned Settlement 的难民定居路径（SRC-001 Chapter 7、Table 2）没有说明难民的 dependant 如何定居（PD-067），本工具不作结论，请咨询受监管的移民顾问。
   - EN: The current permission is on a protection route as a dependant. The Earned Settlement refugee pathways (SRC-001 Chapter 7, Table 2) do not say how refugees’ dependants settle (PD-067). This tool does not reach a conclusion: please seek advice from a regulated immigration adviser.
+- 中：当前路线不在 Earned Settlement 框架内，继续按该群体现有的定居安排（SRC-001 p25–p26）；但强化的犯罪记录与 B2 英语要求仍适用，除非有现有豁免或保障。
+  - EN: The current route is outside the Earned Settlement framework and keeps the existing settlement arrangements for that group (SRC-001 p25–p26). The strengthened criminality and B2 English requirements still apply, unless an existing exemption or protection applies.
