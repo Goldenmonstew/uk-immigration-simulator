@@ -159,4 +159,4 @@ Earned Settlement 栏的 dependant 候选路径（只有一条）：
 
 现行法律栏：Skilled Worker 主申请人的 dependant partner（有 `principal`）进入 `CL-SCOPE`；`CL-SW-PARTNER-5Y` 判断连续 5 年 dependent partner 许可（SW 42.1、SW 43.1）且主申请人同时或已经定居（SW 39.1），英语与 KOL 按 SW 44.1、SW 45.1。dependent child（SW 41A.1 → Appendix Children）不建模，仍在 `CL-SCOPE` 之外。
 
-短路仍只看 dependant 本人的时间线（本人有犯罪记录照常短路）；主申请人的短路不复制到 `SimulationResult.shortCircuit`，只通过 `ES-DEPENDANT-PATHWAY` 的解释说明。
+短路：先看 dependant 本人的时间线（本人有犯罪记录照常短路，优先）；本人没有短路而主申请人有时，把主申请人的 `shortCircuit` 复制到 dependant 的 `SimulationResult`，`reason` 不变，`message` 前加"主申请人："。栏目影响沿用 §7：`CRIMINALITY` / `IMMIGRATION_BREACH` 两栏都是 `REQUIRES_REGULATED_REVIEW`，`PROTECTION` / `OUTSIDE_FRAMEWORK` 只影响 Earned Settlement 栏。

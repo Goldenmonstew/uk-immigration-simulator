@@ -84,7 +84,14 @@ export function evaluate(request: SimulationRequest): SimulationResult {
         },
       }),
   };
-  const shortCircuit = shortCircuitOf(ctx);
+  // The dependant's own short circuit first, then the principal's.
+  const fromPrincipal = ctx.principal?.result.shortCircuit;
+  const shortCircuit =
+    shortCircuitOf(ctx) ??
+    (fromPrincipal && {
+      ...fromPrincipal,
+      message: `主申请人：${fromPrincipal.message}`,
+    });
   const byRuleSet: SimulationResult['byRuleSet'] = {};
   for (const id of ids) {
     // Protection and outside-framework routes only stop the Earned Settlement
