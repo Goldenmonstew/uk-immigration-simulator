@@ -149,5 +149,30 @@ export const currentLaw2026_11 = {
         { srcId: 'SRC-007', locator: 'EM 5.60' },
       ],
     },
+
+    // Appendix Global Talent, version 2026-08-03. 3 years if endorsed by a
+    // research body, under the exceptional talent criteria by Arts Council
+    // England or Tech Nation, or granted on a prize; 5 years if endorsed under
+    // the exceptional promise criteria by Arts Council England or Tech Nation.
+    globalTalentQualifyingYearsShort: {
+      value: 3,
+      sources: [{ srcId: 'SRC-021', locator: 'GT 11.1' }],
+    },
+    globalTalentQualifyingYearsLong: {
+      value: 5,
+      sources: [{ srcId: 'SRC-021', locator: 'GT 11.2' }],
+    },
+    // B1 before 2027-03-26, B2 from then.
+    globalTalentSettlementEnglishBefore: {
+      value: 'B1',
+      sources: [{ srcId: 'SRC-021', locator: 'GT 13.1(a)' }],
+    },
+    globalTalentSettlementEnglish: {
+      value: { cefrLevel: 'B2', applicationsFrom: '2027-03-26' },
+      sources: [
+        { srcId: 'SRC-021', locator: 'GT 13.1(b)' },
+        { srcId: 'SRC-007', locator: 'EM 5.60' },
+      ],
+    },
   },
 } satisfies ParameterSet;

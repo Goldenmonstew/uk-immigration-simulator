@@ -9,6 +9,7 @@ import { runRule, textFor } from './rule';
 import type { Lang } from './rule';
 import { RULES } from './rules';
 import {
+  globalTalentQualifying,
   hongKongBnoStart,
   longResidenceStart,
   onHongKongBno,
@@ -458,8 +459,8 @@ function finishEarnedSettlement(
 
 const clBaseAssumption = (L: Lang) =>
   L(
-    '现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）与 Long Residence（Appendix Long Residence）；Part Suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。',
-    'The current rules are modelled only for Skilled Worker main applicants and their dependent partners / children (Appendix Skilled Worker, Appendix Children), Hong Kong BN(O) main applicants (Appendix Hong Kong British National (Overseas)) and Long Residence (Appendix Long Residence); other requirements, such as Part Suitability and the sponsor still being approved (SW 24.1–24.2), are not modelled.',
+    '现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）与 Long Residence（Appendix Long Residence）；Part Suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。',
+    'The current rules are modelled only for Skilled Worker main applicants and their dependent partners / children (Appendix Skilled Worker, Appendix Children), Hong Kong BN(O) main applicants (Appendix Hong Kong British National (Overseas)), Global Talent main applicants (Appendix Global Talent) and Long Residence (Appendix Long Residence); other requirements, such as Part Suitability and the sponsor still being approved (SW 24.1–24.2), are not modelled.',
   );
 
 function assessCurrentLaw(ctx: RuleContext): SettlementAssessment {
@@ -476,6 +477,7 @@ function assessCurrentLaw(ctx: RuleContext): SettlementAssessment {
   }
   const sw = onSkilledWorker(ctx.timeline, ctx.simulationDate);
   const hk = onHongKongBno(ctx.timeline, ctx.simulationDate);
+  const gt = globalTalentQualifying(ctx);
   // In scope as a partner or child only with the principal (CL-SCOPE).
   const partner =
     ctx.principal !== undefined &&
@@ -492,7 +494,9 @@ function assessCurrentLaw(ctx: RuleContext): SettlementAssessment {
           ? sw
           : id.startsWith('CL-HKBNO-')
             ? hk
-            : true;
+            : id.startsWith('CL-GT-')
+              ? gt !== undefined
+              : true;
   const rules = [
     scope,
     ...others
@@ -522,6 +526,23 @@ function assessCurrentLaw(ctx: RuleContext): SettlementAssessment {
             years: cl.values.hongKongBnoQualifyingYears.value,
             start: hongKongBnoStart(ctx)?.start,
             rules: pick('CL-ENGLISH', 'CL-KOL'),
+          },
+        ]
+      : []),
+    ...(gt
+      ? [
+          {
+            // Without the endorsement neither the years nor the start are
+            // known, and the UNKNOWN CL-GT-RESIDENCE keeps the outcome
+            // insufficient (contracts §12.4). With it, the years come from
+            // the start like the other residence rules.
+            years:
+              gt.period?.years ??
+              cl.values.globalTalentQualifyingYearsShort.value,
+            start: gt.period && gt.start,
+            rules: gt.period
+              ? pick('CL-ENGLISH', 'CL-KOL')
+              : pick('CL-GT-RESIDENCE', 'CL-ENGLISH', 'CL-KOL'),
           },
         ]
       : []),
@@ -577,8 +598,8 @@ function assessCurrentLaw(ctx: RuleContext): SettlementAssessment {
   ) {
     assumptions.push(
       L(
-        `预计日期在 ${b2.applicationsFrom} 之后，届时定居须达到英语 ${b2.cefrLevel}（SW 22A.1、LR 13.1(b)）。`,
-        `The projected date is on or after ${b2.applicationsFrom}, when settlement requires English at ${b2.cefrLevel} (SW 22A.1, LR 13.1(b)).`,
+        `预计日期在 ${b2.applicationsFrom} 之后，届时定居须达到英语 ${b2.cefrLevel}（${gt ? 'GT 13.1(b)' : 'SW 22A.1'}、LR 13.1(b)）。`,
+        `The projected date is on or after ${b2.applicationsFrom}, when settlement requires English at ${b2.cefrLevel} (${gt ? 'GT 13.1(b)' : 'SW 22A.1'}, LR 13.1(b)).`,
       ),
     );
   }

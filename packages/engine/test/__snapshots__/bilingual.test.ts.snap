@@ -32,6 +32,10 @@ exports[`ES-OFFICIAL-INDIVIDUAL-C default-locale output is unchanged 1`] = `
             {
               "srcId": "SRC-020",
               "locator": "HK 62.1"
+            },
+            {
+              "srcId": "SRC-021",
+              "locator": "GT 11.1"
             }
           ],
           "status": "PASS",
@@ -60,6 +64,10 @@ exports[`ES-OFFICIAL-INDIVIDUAL-C default-locale output is unchanged 1`] = `
             {
               "srcId": "SRC-020",
               "locator": "HK 60.1"
+            },
+            {
+              "srcId": "SRC-021",
+              "locator": "GT 13.1"
             },
             {
               "srcId": "SRC-007",
@@ -92,6 +100,10 @@ exports[`ES-OFFICIAL-INDIVIDUAL-C default-locale output is unchanged 1`] = `
             {
               "srcId": "SRC-020",
               "locator": "HK 61.1"
+            },
+            {
+              "srcId": "SRC-021",
+              "locator": "GT 14.1"
             },
             {
               "srcId": "SRC-015",
@@ -134,7 +146,7 @@ exports[`ES-OFFICIAL-INDIVIDUAL-C default-locale output is unchanged 1`] = `
         }
       ],
       "assumptions": [
-        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）与 Long Residence（Appendix Long Residence）；Part Suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
+        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）与 Long Residence（Appendix Long Residence）；Part Suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
         "连续合法居留计入学生、毕业生等临时路线，不计访问、季节性工作者、乌克兰计划（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。"
       ]
     },
@@ -505,6 +517,10 @@ exports[`ES-OFFICIAL-INDIVIDUAL-D default-locale output is unchanged 1`] = `
             {
               "srcId": "SRC-020",
               "locator": "HK 62.1"
+            },
+            {
+              "srcId": "SRC-021",
+              "locator": "GT 11.1"
             }
           ],
           "status": "PASS",
@@ -533,6 +549,10 @@ exports[`ES-OFFICIAL-INDIVIDUAL-D default-locale output is unchanged 1`] = `
             {
               "srcId": "SRC-020",
               "locator": "HK 60.1"
+            },
+            {
+              "srcId": "SRC-021",
+              "locator": "GT 13.1"
             },
             {
               "srcId": "SRC-007",
@@ -565,6 +585,10 @@ exports[`ES-OFFICIAL-INDIVIDUAL-D default-locale output is unchanged 1`] = `
             {
               "srcId": "SRC-020",
               "locator": "HK 61.1"
+            },
+            {
+              "srcId": "SRC-021",
+              "locator": "GT 14.1"
             },
             {
               "srcId": "SRC-015",
@@ -607,7 +631,7 @@ exports[`ES-OFFICIAL-INDIVIDUAL-D default-locale output is unchanged 1`] = `
         }
       ],
       "assumptions": [
-        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）与 Long Residence（Appendix Long Residence）；Part Suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
+        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）与 Long Residence（Appendix Long Residence）；Part Suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
         "连续合法居留计入学生、毕业生等临时路线，不计访问、季节性工作者、乌克兰计划（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。"
       ]
     },
@@ -984,6 +1008,10 @@ exports[`ES-OFFICIAL-P16-MATERNITY-BEST-YEARS default-locale output is unchanged
             {
               "srcId": "SRC-020",
               "locator": "HK 62.1"
+            },
+            {
+              "srcId": "SRC-021",
+              "locator": "GT 11.1"
             }
           ],
           "status": "PASS",
@@ -1012,6 +1040,10 @@ exports[`ES-OFFICIAL-P16-MATERNITY-BEST-YEARS default-locale output is unchanged
             {
               "srcId": "SRC-020",
               "locator": "HK 60.1"
+            },
+            {
+              "srcId": "SRC-021",
+              "locator": "GT 13.1"
             },
             {
               "srcId": "SRC-007",
@@ -1044,6 +1076,10 @@ exports[`ES-OFFICIAL-P16-MATERNITY-BEST-YEARS default-locale output is unchanged
             {
               "srcId": "SRC-020",
               "locator": "HK 61.1"
+            },
+            {
+              "srcId": "SRC-021",
+              "locator": "GT 14.1"
             },
             {
               "srcId": "SRC-015",
@@ -1086,7 +1122,7 @@ exports[`ES-OFFICIAL-P16-MATERNITY-BEST-YEARS default-locale output is unchanged
         }
       ],
       "assumptions": [
-        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）与 Long Residence（Appendix Long Residence）；Part Suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
+        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）与 Long Residence（Appendix Long Residence）；Part Suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
         "连续合法居留计入学生、毕业生等临时路线，不计访问、季节性工作者、乌克兰计划（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。"
       ]
     },
@@ -1453,6 +1489,10 @@ exports[`ES-OFFICIAL-P19-INDIVIDUAL-A default-locale output is unchanged 1`] = `
             {
               "srcId": "SRC-020",
               "locator": "HK 62.1"
+            },
+            {
+              "srcId": "SRC-021",
+              "locator": "GT 11.1"
             }
           ],
           "status": "PASS",
@@ -1574,6 +1614,10 @@ exports[`ES-OFFICIAL-P19-INDIVIDUAL-A default-locale output is unchanged 1`] = `
               "locator": "HK 60.1"
             },
             {
+              "srcId": "SRC-021",
+              "locator": "GT 13.1"
+            },
+            {
               "srcId": "SRC-007",
               "locator": "EM 5.60"
             },
@@ -1604,6 +1648,10 @@ exports[`ES-OFFICIAL-P19-INDIVIDUAL-A default-locale output is unchanged 1`] = `
             {
               "srcId": "SRC-020",
               "locator": "HK 61.1"
+            },
+            {
+              "srcId": "SRC-021",
+              "locator": "GT 14.1"
             },
             {
               "srcId": "SRC-015",
@@ -1646,7 +1694,7 @@ exports[`ES-OFFICIAL-P19-INDIVIDUAL-A default-locale output is unchanged 1`] = `
         }
       ],
       "assumptions": [
-        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）与 Long Residence（Appendix Long Residence）；Part Suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
+        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）与 Long Residence（Appendix Long Residence）；Part Suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
         "连续期合并 SW 21.2 列出的 Skilled Worker、Global Talent、Innovator Founder、T2 Minister of Religion、International Sportsperson、Scale-up 主申请人许可；Representative of an Overseas Business 与 Tier 1 本工具无法填写，不计入；SW 21.2(i) 的等待决定期间未建模。",
         "SW 24.3 row E（5 年期含 Tier 2 (General) 下的 STEM 类 SOC 2010 职业）未建模。",
         "未申报是否在 Immigration Salary List 上，按不在清单处理。",
@@ -2019,14 +2067,18 @@ exports[`ES-OFFICIAL-P19-INDIVIDUAL-B default-locale output is unchanged 1`] = `
             {
               "srcId": "SRC-020",
               "locator": "HK 62.1"
+            },
+            {
+              "srcId": "SRC-021",
+              "locator": "GT 11.1"
             }
           ],
           "status": "UNKNOWN",
-          "explanation": "现行规则只建模了 Skilled Worker（主申请人及其 dependent partner / child）、Hong Kong BN(O) 主申请人与 Long Residence；当前路线不在其中，也不满足 Long Residence 的 10 年，无法判断其他路线的定居条件。"
+          "explanation": "现行规则只建模了 Skilled Worker（主申请人及其 dependent partner / child）、Hong Kong BN(O) 与 Global Talent 主申请人、Long Residence；当前路线不在其中，也不满足 Long Residence 的 10 年，无法判断其他路线的定居条件。"
         }
       ],
       "assumptions": [
-        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）与 Long Residence（Appendix Long Residence）；Part Suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。"
+        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）与 Long Residence（Appendix Long Residence）；Part Suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。"
       ]
     },
     "earned-settlement-2026-11": {
@@ -2394,6 +2446,10 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-A default-locale output is unchanged 1`] = `
             {
               "srcId": "SRC-020",
               "locator": "HK 62.1"
+            },
+            {
+              "srcId": "SRC-021",
+              "locator": "GT 11.1"
             }
           ],
           "status": "PASS",
@@ -2452,6 +2508,10 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-A default-locale output is unchanged 1`] = `
               "locator": "HK 60.1"
             },
             {
+              "srcId": "SRC-021",
+              "locator": "GT 13.1"
+            },
+            {
               "srcId": "SRC-007",
               "locator": "EM 5.60"
             },
@@ -2482,6 +2542,10 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-A default-locale output is unchanged 1`] = `
             {
               "srcId": "SRC-020",
               "locator": "HK 61.1"
+            },
+            {
+              "srcId": "SRC-021",
+              "locator": "GT 14.1"
             },
             {
               "srcId": "SRC-015",
@@ -2524,7 +2588,7 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-A default-locale output is unchanged 1`] = `
         }
       ],
       "assumptions": [
-        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）与 Long Residence（Appendix Long Residence）；Part Suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
+        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）与 Long Residence（Appendix Long Residence）；Part Suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
         "只计连续的 Skilled Worker dependant 许可，假设整段都是同一主申请人的 dependent partner；Appendix Relationship with Partner（SW 39.3）未核对。",
         "主申请人尚未定居时，只判断与主申请人同时获批（SW 39.1(a)）；若其已定居，须在主申请人信息里填写定居日期与路线（SW 39.1(b)）。",
         "连续合法居留计入学生、毕业生等临时路线，不计访问、季节性工作者、乌克兰计划（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。"
@@ -2777,6 +2841,10 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-B default-locale output is unchanged 1`] = `
             {
               "srcId": "SRC-020",
               "locator": "HK 62.1"
+            },
+            {
+              "srcId": "SRC-021",
+              "locator": "GT 11.1"
             }
           ],
           "status": "PASS",
@@ -2898,6 +2966,10 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-B default-locale output is unchanged 1`] = `
               "locator": "HK 60.1"
             },
             {
+              "srcId": "SRC-021",
+              "locator": "GT 13.1"
+            },
+            {
               "srcId": "SRC-007",
               "locator": "EM 5.60"
             },
@@ -2928,6 +3000,10 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-B default-locale output is unchanged 1`] = `
             {
               "srcId": "SRC-020",
               "locator": "HK 61.1"
+            },
+            {
+              "srcId": "SRC-021",
+              "locator": "GT 14.1"
             },
             {
               "srcId": "SRC-015",
@@ -2970,7 +3046,7 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-B default-locale output is unchanged 1`] = `
         }
       ],
       "assumptions": [
-        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）与 Long Residence（Appendix Long Residence）；Part Suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
+        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）与 Long Residence（Appendix Long Residence）；Part Suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
         "连续期合并 SW 21.2 列出的 Skilled Worker、Global Talent、Innovator Founder、T2 Minister of Religion、International Sportsperson、Scale-up 主申请人许可；Representative of an Overseas Business 与 Tier 1 本工具无法填写，不计入；SW 21.2(i) 的等待决定期间未建模。",
         "SW 24.3 row E（5 年期含 Tier 2 (General) 下的 STEM 类 SOC 2010 职业）未建模。",
         "未申报是否在 Immigration Salary List 上，按不在清单处理。",
@@ -3345,6 +3421,10 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-B-PARTNER default-locale output is unchanged
             {
               "srcId": "SRC-020",
               "locator": "HK 62.1"
+            },
+            {
+              "srcId": "SRC-021",
+              "locator": "GT 11.1"
             }
           ],
           "status": "PASS",
@@ -3403,6 +3483,10 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-B-PARTNER default-locale output is unchanged
               "locator": "HK 60.1"
             },
             {
+              "srcId": "SRC-021",
+              "locator": "GT 13.1"
+            },
+            {
               "srcId": "SRC-007",
               "locator": "EM 5.60"
             },
@@ -3433,6 +3517,10 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-B-PARTNER default-locale output is unchanged
             {
               "srcId": "SRC-020",
               "locator": "HK 61.1"
+            },
+            {
+              "srcId": "SRC-021",
+              "locator": "GT 14.1"
             },
             {
               "srcId": "SRC-015",
@@ -3475,7 +3563,7 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-B-PARTNER default-locale output is unchanged
         }
       ],
       "assumptions": [
-        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）与 Long Residence（Appendix Long Residence）；Part Suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
+        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）与 Long Residence（Appendix Long Residence）；Part Suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
         "预计日期在 2027-03-26 之后，届时定居须达到英语 B2（SW 22A.1、LR 13.1(b)）。",
         "只计连续的 Skilled Worker dependant 许可，假设整段都是同一主申请人的 dependent partner；Appendix Relationship with Partner（SW 39.3）未核对。",
         "主申请人尚未定居时，只判断与主申请人同时获批（SW 39.1(a)）；若其已定居，须在主申请人信息里填写定居日期与路线（SW 39.1(b)）。",
@@ -3735,6 +3823,10 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-C default-locale output is unchanged 1`] = `
             {
               "srcId": "SRC-020",
               "locator": "HK 62.1"
+            },
+            {
+              "srcId": "SRC-021",
+              "locator": "GT 11.1"
             }
           ],
           "status": "PASS",
@@ -3803,6 +3895,10 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-C default-locale output is unchanged 1`] = `
               "locator": "HK 60.1"
             },
             {
+              "srcId": "SRC-021",
+              "locator": "GT 13.1"
+            },
+            {
               "srcId": "SRC-007",
               "locator": "EM 5.60"
             },
@@ -3833,6 +3929,10 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-C default-locale output is unchanged 1`] = `
             {
               "srcId": "SRC-020",
               "locator": "HK 61.1"
+            },
+            {
+              "srcId": "SRC-021",
+              "locator": "GT 14.1"
             },
             {
               "srcId": "SRC-015",
@@ -3875,7 +3975,7 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-C default-locale output is unchanged 1`] = `
         }
       ],
       "assumptions": [
-        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）与 Long Residence（Appendix Long Residence）；Part Suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
+        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）与 Long Residence（Appendix Long Residence）；Part Suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
         "假设子女未 leading an independent life（CHI 1A.1）。",
         "假设子女有符合英国法律的照护与住宿安排（CHI 2.1）。",
         "只看申请日当天的 Skilled Worker dependent child 许可，假设是同一主申请人的子女；另一位家长须同时获批定居、已定居或为英国公民，除非主申请人负唯一抚养责任等（CHI 4.3，经 SW 39.4），本工具未核对。",
@@ -4120,6 +4220,10 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-D default-locale output is unchanged 1`] = `
             {
               "srcId": "SRC-020",
               "locator": "HK 62.1"
+            },
+            {
+              "srcId": "SRC-021",
+              "locator": "GT 11.1"
             }
           ],
           "status": "PASS",
@@ -4187,6 +4291,10 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-D default-locale output is unchanged 1`] = `
               "locator": "HK 60.1"
             },
             {
+              "srcId": "SRC-021",
+              "locator": "GT 13.1"
+            },
+            {
               "srcId": "SRC-007",
               "locator": "EM 5.60"
             },
@@ -4217,6 +4325,10 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-D default-locale output is unchanged 1`] = `
             {
               "srcId": "SRC-020",
               "locator": "HK 61.1"
+            },
+            {
+              "srcId": "SRC-021",
+              "locator": "GT 14.1"
             },
             {
               "srcId": "SRC-015",
@@ -4259,7 +4371,7 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-D default-locale output is unchanged 1`] = `
         }
       ],
       "assumptions": [
-        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）与 Long Residence（Appendix Long Residence）；Part Suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
+        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）与 Long Residence（Appendix Long Residence）；Part Suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
         "假设子女未 leading an independent life（CHI 1A.1）。",
         "只看申请日当天的 Skilled Worker dependent child 许可，假设是同一主申请人的子女；另一位家长须同时获批定居、已定居或为英国公民，除非主申请人负唯一抚养责任等（CHI 4.3，经 SW 39.4），本工具未核对。",
         "主申请人尚未定居时，只判断与主申请人同时获批（SW 39.1(a)）；若其已定居，须在主申请人信息里填写定居日期与路线（SW 39.1(b)）。",
@@ -4500,6 +4612,10 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-E default-locale output is unchanged 1`] = `
             {
               "srcId": "SRC-020",
               "locator": "HK 62.1"
+            },
+            {
+              "srcId": "SRC-021",
+              "locator": "GT 11.1"
             }
           ],
           "status": "PASS",
@@ -4567,6 +4683,10 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-E default-locale output is unchanged 1`] = `
               "locator": "HK 60.1"
             },
             {
+              "srcId": "SRC-021",
+              "locator": "GT 13.1"
+            },
+            {
               "srcId": "SRC-007",
               "locator": "EM 5.60"
             },
@@ -4597,6 +4717,10 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-E default-locale output is unchanged 1`] = `
             {
               "srcId": "SRC-020",
               "locator": "HK 61.1"
+            },
+            {
+              "srcId": "SRC-021",
+              "locator": "GT 14.1"
             },
             {
               "srcId": "SRC-015",
@@ -4639,7 +4763,7 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-E default-locale output is unchanged 1`] = `
         }
       ],
       "assumptions": [
-        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）与 Long Residence（Appendix Long Residence）；Part Suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
+        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）与 Long Residence（Appendix Long Residence）；Part Suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
         "预计日期在 2027-03-26 之后，届时定居须达到英语 B2（SW 22A.1、LR 13.1(b)）。",
         "假设子女未 leading an independent life（CHI 1A.1）。",
         "只看申请日当天的 Skilled Worker dependent child 许可，假设是同一主申请人的子女；另一位家长须同时获批定居、已定居或为英国公民，除非主申请人负唯一抚养责任等（CHI 4.3，经 SW 39.4），本工具未核对。",
@@ -4877,14 +5001,18 @@ exports[`ES-OFFICIAL-P40-INDIVIDUAL-A default-locale output is unchanged 1`] = `
             {
               "srcId": "SRC-020",
               "locator": "HK 62.1"
+            },
+            {
+              "srcId": "SRC-021",
+              "locator": "GT 11.1"
             }
           ],
           "status": "UNKNOWN",
-          "explanation": "现行规则只建模了 Skilled Worker（主申请人及其 dependent partner / child）、Hong Kong BN(O) 主申请人与 Long Residence；当前路线不在其中，也不满足 Long Residence 的 10 年，无法判断其他路线的定居条件。"
+          "explanation": "现行规则只建模了 Skilled Worker（主申请人及其 dependent partner / child）、Hong Kong BN(O) 与 Global Talent 主申请人、Long Residence；当前路线不在其中，也不满足 Long Residence 的 10 年，无法判断其他路线的定居条件。"
         }
       ],
       "assumptions": [
-        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）与 Long Residence（Appendix Long Residence）；Part Suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。"
+        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）与 Long Residence（Appendix Long Residence）；Part Suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。"
       ]
     },
     "earned-settlement-2026-11": {
@@ -5103,14 +5231,18 @@ exports[`ES-OFFICIAL-P40-INDIVIDUAL-B default-locale output is unchanged 1`] = `
             {
               "srcId": "SRC-020",
               "locator": "HK 62.1"
+            },
+            {
+              "srcId": "SRC-021",
+              "locator": "GT 11.1"
             }
           ],
           "status": "UNKNOWN",
-          "explanation": "现行规则只建模了 Skilled Worker（主申请人及其 dependent partner / child）、Hong Kong BN(O) 主申请人与 Long Residence；当前路线不在其中，也不满足 Long Residence 的 10 年，无法判断其他路线的定居条件。"
+          "explanation": "现行规则只建模了 Skilled Worker（主申请人及其 dependent partner / child）、Hong Kong BN(O) 与 Global Talent 主申请人、Long Residence；当前路线不在其中，也不满足 Long Residence 的 10 年，无法判断其他路线的定居条件。"
         }
       ],
       "assumptions": [
-        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）与 Long Residence（Appendix Long Residence）；Part Suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。"
+        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）与 Long Residence（Appendix Long Residence）；Part Suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。"
       ]
     },
     "earned-settlement-2026-11": {
@@ -5369,14 +5501,18 @@ exports[`ES-OFFICIAL-P40-INDIVIDUAL-C default-locale output is unchanged 1`] = `
             {
               "srcId": "SRC-020",
               "locator": "HK 62.1"
+            },
+            {
+              "srcId": "SRC-021",
+              "locator": "GT 11.1"
             }
           ],
           "status": "UNKNOWN",
-          "explanation": "现行规则只建模了 Skilled Worker（主申请人及其 dependent partner / child）、Hong Kong BN(O) 主申请人与 Long Residence；当前路线不在其中，也不满足 Long Residence 的 10 年，无法判断其他路线的定居条件。"
+          "explanation": "现行规则只建模了 Skilled Worker（主申请人及其 dependent partner / child）、Hong Kong BN(O) 与 Global Talent 主申请人、Long Residence；当前路线不在其中，也不满足 Long Residence 的 10 年，无法判断其他路线的定居条件。"
         }
       ],
       "assumptions": [
-        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）与 Long Residence（Appendix Long Residence）；Part Suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。"
+        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）与 Long Residence（Appendix Long Residence）；Part Suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。"
       ]
     },
     "earned-settlement-2026-11": {
@@ -5639,14 +5775,18 @@ exports[`ES-OFFICIAL-P40-INDIVIDUAL-D default-locale output is unchanged 1`] = `
             {
               "srcId": "SRC-020",
               "locator": "HK 62.1"
+            },
+            {
+              "srcId": "SRC-021",
+              "locator": "GT 11.1"
             }
           ],
           "status": "UNKNOWN",
-          "explanation": "现行规则只建模了 Skilled Worker（主申请人及其 dependent partner / child）、Hong Kong BN(O) 主申请人与 Long Residence；当前路线不在其中，也不满足 Long Residence 的 10 年，无法判断其他路线的定居条件。"
+          "explanation": "现行规则只建模了 Skilled Worker（主申请人及其 dependent partner / child）、Hong Kong BN(O) 与 Global Talent 主申请人、Long Residence；当前路线不在其中，也不满足 Long Residence 的 10 年，无法判断其他路线的定居条件。"
         }
       ],
       "assumptions": [
-        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）与 Long Residence（Appendix Long Residence）；Part Suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。"
+        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）与 Long Residence（Appendix Long Residence）；Part Suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。"
       ]
     },
     "earned-settlement-2026-11": {
@@ -5883,6 +6023,10 @@ exports[`ES-OFFICIAL-P45-INDIVIDUAL-A default-locale output is unchanged 1`] = `
             {
               "srcId": "SRC-020",
               "locator": "HK 62.1"
+            },
+            {
+              "srcId": "SRC-021",
+              "locator": "GT 11.1"
             }
           ],
           "status": "PASS",
@@ -6004,6 +6148,10 @@ exports[`ES-OFFICIAL-P45-INDIVIDUAL-A default-locale output is unchanged 1`] = `
               "locator": "HK 60.1"
             },
             {
+              "srcId": "SRC-021",
+              "locator": "GT 13.1"
+            },
+            {
               "srcId": "SRC-007",
               "locator": "EM 5.60"
             },
@@ -6034,6 +6182,10 @@ exports[`ES-OFFICIAL-P45-INDIVIDUAL-A default-locale output is unchanged 1`] = `
             {
               "srcId": "SRC-020",
               "locator": "HK 61.1"
+            },
+            {
+              "srcId": "SRC-021",
+              "locator": "GT 14.1"
             },
             {
               "srcId": "SRC-015",
@@ -6076,7 +6228,7 @@ exports[`ES-OFFICIAL-P45-INDIVIDUAL-A default-locale output is unchanged 1`] = `
         }
       ],
       "assumptions": [
-        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）与 Long Residence（Appendix Long Residence）；Part Suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
+        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）与 Long Residence（Appendix Long Residence）；Part Suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
         "连续期合并 SW 21.2 列出的 Skilled Worker、Global Talent、Innovator Founder、T2 Minister of Religion、International Sportsperson、Scale-up 主申请人许可；Representative of an Overseas Business 与 Tier 1 本工具无法填写，不计入；SW 21.2(i) 的等待决定期间未建模。",
         "SW 24.3 row E（5 年期含 Tier 2 (General) 下的 STEM 类 SOC 2010 职业）未建模。",
         "未申报是否在 Immigration Salary List 上；SOC 6135 在清单职业表中，按职业代码推导为在清单上。清单对岗位 / 地区的限制（criteria）未核对，可在问卷里申报覆盖。",
@@ -6458,6 +6610,10 @@ exports[`ES-OFFICIAL-P45-INDIVIDUAL-B default-locale output is unchanged 1`] = `
             {
               "srcId": "SRC-020",
               "locator": "HK 62.1"
+            },
+            {
+              "srcId": "SRC-021",
+              "locator": "GT 11.1"
             }
           ],
           "status": "PASS",
@@ -6579,6 +6735,10 @@ exports[`ES-OFFICIAL-P45-INDIVIDUAL-B default-locale output is unchanged 1`] = `
               "locator": "HK 60.1"
             },
             {
+              "srcId": "SRC-021",
+              "locator": "GT 13.1"
+            },
+            {
               "srcId": "SRC-007",
               "locator": "EM 5.60"
             },
@@ -6609,6 +6769,10 @@ exports[`ES-OFFICIAL-P45-INDIVIDUAL-B default-locale output is unchanged 1`] = `
             {
               "srcId": "SRC-020",
               "locator": "HK 61.1"
+            },
+            {
+              "srcId": "SRC-021",
+              "locator": "GT 14.1"
             },
             {
               "srcId": "SRC-015",
@@ -6651,7 +6815,7 @@ exports[`ES-OFFICIAL-P45-INDIVIDUAL-B default-locale output is unchanged 1`] = `
         }
       ],
       "assumptions": [
-        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）与 Long Residence（Appendix Long Residence）；Part Suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
+        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）与 Long Residence（Appendix Long Residence）；Part Suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
         "连续期合并 SW 21.2 列出的 Skilled Worker、Global Talent、Innovator Founder、T2 Minister of Religion、International Sportsperson、Scale-up 主申请人许可；Representative of an Overseas Business 与 Tier 1 本工具无法填写，不计入；SW 21.2(i) 的等待决定期间未建模。",
         "SW 24.3 row E（5 年期含 Tier 2 (General) 下的 STEM 类 SOC 2010 职业）未建模。",
         "未申报是否在 Immigration Salary List 上；SOC 6135 在清单职业表中，按职业代码推导为在清单上。清单对岗位 / 地区的限制（criteria）未核对，可在问卷里申报覆盖。",
@@ -7032,6 +7196,10 @@ exports[`ES-OFFICIAL-P45-INDIVIDUAL-C default-locale output is unchanged 1`] = `
             {
               "srcId": "SRC-020",
               "locator": "HK 62.1"
+            },
+            {
+              "srcId": "SRC-021",
+              "locator": "GT 11.1"
             }
           ],
           "status": "PASS",
@@ -7153,6 +7321,10 @@ exports[`ES-OFFICIAL-P45-INDIVIDUAL-C default-locale output is unchanged 1`] = `
               "locator": "HK 60.1"
             },
             {
+              "srcId": "SRC-021",
+              "locator": "GT 13.1"
+            },
+            {
               "srcId": "SRC-007",
               "locator": "EM 5.60"
             },
@@ -7183,6 +7355,10 @@ exports[`ES-OFFICIAL-P45-INDIVIDUAL-C default-locale output is unchanged 1`] = `
             {
               "srcId": "SRC-020",
               "locator": "HK 61.1"
+            },
+            {
+              "srcId": "SRC-021",
+              "locator": "GT 14.1"
             },
             {
               "srcId": "SRC-015",
@@ -7225,7 +7401,7 @@ exports[`ES-OFFICIAL-P45-INDIVIDUAL-C default-locale output is unchanged 1`] = `
         }
       ],
       "assumptions": [
-        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）与 Long Residence（Appendix Long Residence）；Part Suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
+        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人（Appendix Global Talent）与 Long Residence（Appendix Long Residence）；Part Suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
         "连续期合并 SW 21.2 列出的 Skilled Worker、Global Talent、Innovator Founder、T2 Minister of Religion、International Sportsperson、Scale-up 主申请人许可；Representative of an Overseas Business 与 Tier 1 本工具无法填写，不计入；SW 21.2(i) 的等待决定期间未建模。",
         "SW 24.3 row E（5 年期含 Tier 2 (General) 下的 STEM 类 SOC 2010 职业）未建模。",
         "未申报是否在 Immigration Salary List 上；SOC 6135 在清单职业表中，按职业代码推导为在清单上。清单对岗位 / 地区的限制（criteria）未核对，可在问卷里申报覆盖。",

@@ -28,7 +28,7 @@ import type {
 
 // Current Immigration Rules, modelled for Skilled Worker settlement (SRC-004),
 // Long Residence (SRC-005) and the main applicants of Hong Kong BN(O)
-// (SRC-020).
+// (SRC-020) and Global Talent (SRC-021).
 
 const RULE_SET = 'current-law-2026-11';
 
@@ -52,8 +52,11 @@ const onMain = (timeline: PersonTimeline, date: IsoDate, route: Route) => {
 export const onHongKongBno = (timeline: PersonTimeline, date: IsoDate) =>
   onMain(timeline, date, 'HONG_KONG_BNO');
 
+export const onGlobalTalent = (timeline: PersonTimeline, date: IsoDate) =>
+  onMain(timeline, date, 'GLOBAL_TALENT');
+
 // Routes modelled for main applicants only: their dependants are out of scope.
-const MAIN_ONLY_ROUTES: Route[] = ['HONG_KONG_BNO'];
+const MAIN_ONLY_ROUTES: Route[] = ['HONG_KONG_BNO', 'GLOBAL_TALENT'];
 
 // A Skilled Worker's dependant: the run of such permissions counts towards
 // settlement as a dependent partner (SW 42.1).
@@ -96,6 +99,7 @@ export const clScope = defineRule(
       { srcId: 'SRC-004', locator: 'SW 41A.1' },
       { srcId: 'SRC-005', locator: 'LR 11.1' },
       { srcId: 'SRC-020', locator: 'HK 62.1' },
+      { srcId: 'SRC-021', locator: 'GT 11.1' },
     ],
     pendingDetails: [],
   },
@@ -109,6 +113,15 @@ export const clScope = defineRule(
         explanation: L(
           '当前持 Hong Kong BN(O) 主申请人许可（BN(O) Status Holder 或 BN(O) Adult Child），按 Appendix Hong Kong British National (Overseas) 与 Appendix Long Residence 评估。',
           'Currently holds Hong Kong BN(O) permission as the main applicant (BN(O) Status Holder or BN(O) Adult Child); assessed under Appendix Hong Kong British National (Overseas) and Appendix Long Residence.',
+        ),
+      };
+    }
+    if (onGlobalTalent(timeline, simulationDate)) {
+      return {
+        status: 'PASS',
+        explanation: L(
+          '当前持 Global Talent 主申请人许可，按 Appendix Global Talent 与 Appendix Long Residence 评估。',
+          'Currently holds Global Talent permission as the main applicant; assessed under Appendix Global Talent and Appendix Long Residence.',
         ),
       };
     }
@@ -175,8 +188,8 @@ export const clScope = defineRule(
               'Currently holds Skilled Worker permission as a dependant; not provided whether this is as the principal applicant’s partner or child.',
             )
         : L(
-            '现行规则只建模了 Skilled Worker（主申请人及其 dependent partner / child）、Hong Kong BN(O) 主申请人与 Long Residence；当前路线不在其中，也不满足 Long Residence 的 10 年，无法判断其他路线的定居条件。',
-            'The current rules are modelled only for Skilled Worker (main applicants and their dependent partners / children), Hong Kong BN(O) main applicants and Long Residence; the current route is none of these, and the 10 years for Long Residence are not met, so the settlement requirements of other routes cannot be assessed.',
+            '现行规则只建模了 Skilled Worker（主申请人及其 dependent partner / child）、Hong Kong BN(O) 与 Global Talent 主申请人、Long Residence；当前路线不在其中，也不满足 Long Residence 的 10 年，无法判断其他路线的定居条件。',
+            'The current rules are modelled only for Skilled Worker (main applicants and their dependent partners / children), Hong Kong BN(O) and Global Talent main applicants, and Long Residence; the current route is none of these, and the 10 years for Long Residence are not met, so the settlement requirements of other routes cannot be assessed.',
           );
     return { status: 'UNKNOWN', explanation };
   },
@@ -366,6 +379,136 @@ export const clHkbnoResidence5Y = defineRule(
           explanation: L(
             `自 ${start} 起连续持 Hong Kong BN(O) 许可，截至 ${ctx.simulationDate} 满 ${fullYears(start, ctx.simulationDate)} 年；${due} 满 ${years} 年（HK 62.1(b)）。`,
             `Continuous Hong Kong BN(O) permission since ${start}: ${fullYearsEn(start, ctx.simulationDate)} by ${ctx.simulationDate}; ${years} years are completed on ${due} (HK 62.1(b)).`,
+          ),
+          assumptions,
+        };
+  },
+);
+
+/** GT 11.1–11.2: the qualifying period and the paragraph that sets it. */
+function globalTalentPeriod(
+  e: ImmigrationEpisode,
+): { years: number; basis: string } | undefined {
+  const short = cl.values.globalTalentQualifyingYearsShort.value;
+  const long = cl.values.globalTalentQualifyingYearsLong.value;
+  switch (e.globalTalentEndorsement) {
+    case 'RESEARCH_BODY':
+      return { years: short, basis: 'GT 11.1(a)' };
+    case 'PRIZE':
+      return { years: short, basis: 'GT 11.1(c)' };
+    case 'ARTS_COUNCIL_ENGLAND':
+    case 'TECH_NATION':
+      return e.globalTalentCriteria === 'EXCEPTIONAL_TALENT'
+        ? { years: short, basis: 'GT 11.1(b)' }
+        : e.globalTalentCriteria === 'EXCEPTIONAL_PROMISE'
+          ? { years: long, basis: 'GT 11.2' }
+          : undefined;
+    default:
+      return undefined;
+  }
+}
+
+/**
+ * The Global Talent qualifying period, while a main applicant on that route:
+ * years from the endorsement (undefined if not provided), and the start of the
+ * continuous GT 11.3 period (the same routes as SW 21.2) ending on the
+ * simulation date (GT 12.1, CR 3.1).
+ */
+export function globalTalentQualifying({
+  timeline,
+  simulationDate,
+}: RuleContext):
+  { start: IsoDate; period?: { years: number; basis: string } } | undefined {
+  if (!onGlobalTalent(timeline, simulationDate)) return undefined;
+  const { episodes } = continuousRun(
+    timeline,
+    simulationDate,
+    countsForSkilledWorker,
+  );
+  return {
+    start: restartAfterAbsences(
+      episodes[0].validFrom,
+      simulationDate,
+      timeline.absences,
+      CR_3_1,
+    ),
+    period: globalTalentPeriod(episodeOn(timeline, simulationDate)!),
+  };
+}
+
+export const clGtResidence = defineRule(
+  {
+    id: 'CL-GT-RESIDENCE',
+    ruleSetId: RULE_SET,
+    title: 'Global Talent 连续 3 年或 5 年',
+    titleEn: `Global Talent: ${cl.values.globalTalentQualifyingYearsShort.value} or ${cl.values.globalTalentQualifyingYearsLong.value} continuous years`,
+    sources: [
+      { srcId: 'SRC-021', locator: 'GT 11.1' },
+      { srcId: 'SRC-021', locator: 'GT 11.2' },
+      { srcId: 'SRC-021', locator: 'GT 11.3' },
+      { srcId: 'SRC-021', locator: 'GT 12.1' },
+      { srcId: 'SRC-008', locator: 'CR 3.1' },
+    ],
+    pendingDetails: [],
+  },
+  (ctx) => {
+    const L = textFor(ctx);
+    const q = globalTalentQualifying(ctx);
+    if (!q) {
+      return {
+        status: 'FAIL',
+        explanation: L(
+          '当前不是 Global Talent 主申请人许可。',
+          'Current permission is not as a Global Talent main applicant.',
+        ),
+      };
+    }
+    const assumptions = [
+      L(
+        '连续期合并 GT 11.3 列出的 Global Talent、Innovator Founder、Skilled Worker、T2 Minister of Religion、International Sportsperson、Scale-up 主申请人许可；Tier 1 与 Representative of an Overseas Business 本工具无法填写，不计入。',
+        'The continuous period combines main applicant permission on the routes listed in GT 11.3: Global Talent, Innovator Founder, Skilled Worker, T2 Minister of Religion, International Sportsperson and Scale-up. Tier 1 and Representative of an Overseas Business cannot be entered in this tool and are not counted.',
+      ),
+      L(
+        '按背书未被撤回（GT 10.1）、上一段许可期间在背书或奖项领域有收入（GT 10.2）处理，本工具未核对。',
+        'The endorsement is taken as not withdrawn (GT 10.1) and the applicant as having earned money in the field of their endorsement or prize during their last permission (GT 10.2); this tool does not check these.',
+      ),
+      ...(ctx.timeline.absences.length > 0 ? [absenceAssumption(L)] : []),
+    ];
+    const { start, period } = q;
+    const current = episodeOn(ctx.timeline, ctx.simulationDate)!;
+    if (!period) {
+      const body = current.globalTalentEndorsement;
+      return {
+        status: 'UNKNOWN',
+        explanation:
+          body === 'ARTS_COUNCIL_ENGLAND' || body === 'TECH_NATION'
+            ? L(
+                `未填写 ${body === 'TECH_NATION' ? 'Tech Nation' : 'Arts Council England'} 的背书是 exceptional talent 还是 exceptional promise：前者 ${cl.values.globalTalentQualifyingYearsShort.value} 年（GT 11.1(b)），后者 ${cl.values.globalTalentQualifyingYearsLong.value} 年（GT 11.2）。`,
+                `Not provided whether the ${body === 'TECH_NATION' ? 'Tech Nation' : 'Arts Council England'} endorsement was under the exceptional talent or the exceptional promise criteria: ${cl.values.globalTalentQualifyingYearsShort.value} years for the former (GT 11.1(b)), ${cl.values.globalTalentQualifyingYearsLong.value} for the latter (GT 11.2).`,
+              )
+            : L(
+                `未填写首次 Global Talent 许可依据的背书或奖项。GT 11.1–11.2 按背书方规定 ${cl.values.globalTalentQualifyingYearsShort.value} 年或 ${cl.values.globalTalentQualifyingYearsLong.value} 年：Royal Society、British Academy、Royal Academy of Engineering、UKRI、Arts Council England、Tech Nation，或 Appendix Global Talent: Prestigious Prizes 所列奖项。`,
+                `Not provided which endorsement or prize the initial Global Talent permission relied on. GT 11.1–11.2 set ${cl.values.globalTalentQualifyingYearsShort.value} or ${cl.values.globalTalentQualifyingYearsLong.value} years by who endorsed it: the Royal Society, British Academy, Royal Academy of Engineering, UKRI, Arts Council England, Tech Nation, or a prize in Appendix Global Talent: Prestigious Prizes.`,
+              ),
+        assumptions,
+      };
+    }
+    const { years, basis } = period;
+    const due = addYears(start, years);
+    return due <= ctx.simulationDate
+      ? {
+          status: 'PASS',
+          explanation: L(
+            `按 ${basis} 合格期 ${years} 年；自 ${start} 起连续持可计入的许可（GT 11.3），已满 ${years} 年。`,
+            `${years}-year qualifying period under ${basis}; continuous qualifying permission (GT 11.3) since ${start}: ${years} years completed.`,
+          ),
+          assumptions,
+        }
+      : {
+          status: 'FAIL',
+          explanation: L(
+            `按 ${basis} 合格期 ${years} 年；自 ${start} 起连续持可计入的许可（GT 11.3），截至 ${ctx.simulationDate} 满 ${fullYears(start, ctx.simulationDate)} 年；${due} 满 ${years} 年。`,
+            `${years}-year qualifying period under ${basis}; continuous qualifying permission (GT 11.3) since ${start}: ${fullYearsEn(start, ctx.simulationDate)} by ${ctx.simulationDate}; ${years} years are completed on ${due}.`,
           ),
           assumptions,
         };
@@ -1087,6 +1230,7 @@ export const clEnglish = defineRule(
       { srcId: 'SRC-007', locator: 'p24' },
       { srcId: 'SRC-005', locator: 'LR 13.1' },
       { srcId: 'SRC-020', locator: 'HK 60.1' },
+      { srcId: 'SRC-021', locator: 'GT 13.1' },
       { srcId: 'SRC-007', locator: 'EM 5.60' },
       { srcId: 'SRC-014', locator: 'EL 1.1' },
     ],
@@ -1104,31 +1248,41 @@ export const clEnglish = defineRule(
       };
     }
     const hk = onHongKongBno(timeline, simulationDate);
+    const gt = onGlobalTalent(timeline, simulationDate);
+    const sw = onSkilledWorker(timeline, simulationDate);
+    // SW 44.1 covers a dependent partner and a dependent child.
+    const partner =
+      onSkilledWorkerPartner(timeline, simulationDate) ||
+      onSkilledWorkerChild(timeline, simulationDate);
+    const b2 = gt
+      ? cl.values.globalTalentSettlementEnglish.value
+      : sw || partner
+        ? cl.values.skilledWorkerSettlementEnglish.value
+        : cl.values.longResidenceSettlementEnglish.value;
+    const fromB2 = simulationDate >= b2.applicationsFrom;
+    const required = hk
+      ? cl.values.hongKongBnoSettlementEnglish.value
+      : fromB2
+        ? b2.cefrLevel
+        : sw
+          ? undefined
+          : gt
+            ? cl.values.globalTalentSettlementEnglishBefore.value
+            : partner
+              ? cl.values.skilledWorkerDependantSettlementEnglishBefore.value
+              : cl.values.longResidenceSettlementEnglishBefore.value;
     // Which paragraph sets the level, for the new routes' explanations.
     const basis = hk
       ? L(
           '（Appendix Hong Kong BN(O) HK 60.1；HC 1691 的 B2 未覆盖该 Appendix，EM 5.60）',
           ' (Appendix Hong Kong BN(O) HK 60.1; the B2 introduced by HC 1691 does not cover this Appendix, EM 5.60)',
         )
-      : '';
-    const sw = onSkilledWorker(timeline, simulationDate);
-    // SW 44.1 covers a dependent partner and a dependent child.
-    const partner =
-      onSkilledWorkerPartner(timeline, simulationDate) ||
-      onSkilledWorkerChild(timeline, simulationDate);
-    const b2 =
-      sw || partner
-        ? cl.values.skilledWorkerSettlementEnglish.value
-        : cl.values.longResidenceSettlementEnglish.value;
-    const required = hk
-      ? cl.values.hongKongBnoSettlementEnglish.value
-      : simulationDate >= b2.applicationsFrom
-        ? b2.cefrLevel
-        : sw
-          ? undefined
-          : partner
-            ? cl.values.skilledWorkerDependantSettlementEnglishBefore.value
-            : cl.values.longResidenceSettlementEnglishBefore.value;
+      : gt
+        ? L(
+            `（Appendix Global Talent GT 13.1(${fromB2 ? 'b' : 'a'})，${b2.applicationsFrom} ${fromB2 ? '起' : '前'}的申请）`,
+            ` (Appendix Global Talent GT 13.1(${fromB2 ? 'b' : 'a'}), applications ${fromB2 ? 'from' : 'before'} ${b2.applicationsFrom})`,
+          )
+        : '';
     if (!required) {
       return {
         status: 'PASS',
@@ -1174,8 +1328,8 @@ export const clEnglish = defineRule(
       : {
           status: 'FAIL',
           explanation: L(
-            `英语 ${english.cefrLevel}，低于定居要求的 ${required}${hk ? basis : required === b2.cefrLevel ? `（${b2.applicationsFrom} 起的申请）` : ''}。`,
-            `English at ${english.cefrLevel}, below the ${required} required for settlement${hk ? basis : required === b2.cefrLevel ? ` (applications from ${b2.applicationsFrom})` : ''}.`,
+            `英语 ${english.cefrLevel}，低于定居要求的 ${required}${basis || (required === b2.cefrLevel ? `（${b2.applicationsFrom} 起的申请）` : '')}。`,
+            `English at ${english.cefrLevel}, below the ${required} required for settlement${basis || (required === b2.cefrLevel ? ` (applications from ${b2.applicationsFrom})` : '')}.`,
           ),
         };
   },
@@ -1192,6 +1346,7 @@ export const clKol = defineRule(
       { srcId: 'SRC-004', locator: 'SW 45.1' },
       { srcId: 'SRC-005', locator: 'LR 14.1' },
       { srcId: 'SRC-020', locator: 'HK 61.1' },
+      { srcId: 'SRC-021', locator: 'GT 14.1' },
       { srcId: 'SRC-015', locator: 'KOL 1.1' },
       { srcId: 'SRC-015', locator: 'KOL 2.1' },
     ],
@@ -1210,7 +1365,9 @@ export const clKol = defineRule(
     }
     const basis = onHongKongBno(timeline, simulationDate)
       ? L('（HK 61.1）', ' (HK 61.1)')
-      : '';
+      : onGlobalTalent(timeline, simulationDate)
+        ? L('（GT 14.1）', ' (GT 14.1)')
+        : '';
     const kol = timeline.lifeInTheUk;
     if (!kol) {
       return {

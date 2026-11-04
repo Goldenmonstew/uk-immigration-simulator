@@ -2,6 +2,7 @@ import { describe, expect, test } from 'vitest';
 import { evaluate } from '../src/evaluate';
 import {
   clEnglish,
+  clGtResidence,
   clHkbnoResidence5Y,
   clKol,
   clScope,
@@ -121,5 +122,124 @@ describe('Hong Kong BN(O) (SRC-020)', () => {
     expect(
       run(clKol, { ...bno('2021-02-01'), lifeInTheUk: undefined }).status,
     ).toBe('UNKNOWN');
+  });
+});
+
+describe('Global Talent (SRC-021)', () => {
+  const gt = (
+    validFrom: string,
+    extra: Partial<ImmigrationEpisode> = {
+      globalTalentEndorsement: 'ARTS_COUNCIL_ENGLAND',
+      globalTalentCriteria: 'EXCEPTIONAL_TALENT',
+    },
+  ) => ({
+    episodes: [on('GLOBAL_TALENT', validFrom, extra)],
+    english: { cefrLevel: 'B1' as const },
+  });
+
+  test('CL-SCOPE: a main applicant is in scope, a dependant is not', () => {
+    expect(run(clScope, gt('2023-11-04')).status).toBe('PASS');
+    expect(run(clScope, gt('2023-11-04', { role: 'DEPENDANT' })).status).toBe(
+      'UNKNOWN',
+    );
+  });
+
+  test('exceptional talent: 3 years to the day is likely eligible; a day short projects the date', () => {
+    expect(currentLaw(gt('2023-11-04'), '2026-11-04')).toMatchObject({
+      outcome: 'LIKELY_ELIGIBLE',
+      pathwayYears: 3,
+      earliestDate: '2026-11-04',
+    });
+    const short = run(clGtResidence, gt('2023-11-05'), '2026-11-04');
+    expect(short.status).toBe('FAIL');
+    expect(short.explanation).toContain('GT 11.1(b)');
+    expect(currentLaw(gt('2023-11-05'), '2026-11-04')).toMatchObject({
+      outcome: 'LIKELY_NOT_ELIGIBLE',
+      pathwayYears: 3,
+      earliestDate: '2026-11-05',
+    });
+  });
+
+  test('3 years for research bodies and prizes, 5 for exceptional promise (GT 11.1–11.2)', () => {
+    const years = (extra: Partial<ImmigrationEpisode>) =>
+      currentLaw(gt('2021-11-04', extra), '2026-11-04');
+    expect(years({ globalTalentEndorsement: 'RESEARCH_BODY' })).toMatchObject({
+      outcome: 'LIKELY_ELIGIBLE',
+      pathwayYears: 3,
+    });
+    expect(years({ globalTalentEndorsement: 'PRIZE' })).toMatchObject({
+      pathwayYears: 3,
+    });
+    expect(
+      years({
+        globalTalentEndorsement: 'TECH_NATION',
+        globalTalentCriteria: 'EXCEPTIONAL_PROMISE',
+      }),
+    ).toMatchObject({ outcome: 'LIKELY_ELIGIBLE', pathwayYears: 5 });
+    const promise = currentLaw(
+      gt('2023-11-04', {
+        globalTalentEndorsement: 'ARTS_COUNCIL_ENGLAND',
+        globalTalentCriteria: 'EXCEPTIONAL_PROMISE',
+      }),
+      '2026-11-04',
+    );
+    expect(promise).toMatchObject({
+      outcome: 'LIKELY_NOT_ELIGIBLE',
+      pathwayYears: 5,
+      earliestDate: '2028-11-04',
+    });
+    // Projected past 2027-03-26: B2 then (GT 13.1(b)).
+    expect(promise.assumptions.join()).toContain('GT 13.1(b)');
+  });
+
+  test('missing endorsement or criteria is unknown: insufficient information, no pathway', () => {
+    for (const extra of [
+      {},
+      { globalTalentEndorsement: 'TECH_NATION' as const },
+    ]) {
+      const rule = run(clGtResidence, gt('2021-11-04', extra), '2026-11-04');
+      expect(rule.status).toBe('UNKNOWN');
+      expect(rule.pendingDetails ?? []).toEqual([]);
+      const a = currentLaw(gt('2021-11-04', extra), '2026-11-04');
+      expect(a.outcome).toBe('INSUFFICIENT_INFORMATION');
+      expect(a.pathwayYears).toBeUndefined();
+    }
+  });
+
+  test('GT 11.3: Skilled Worker time before Global Talent counts; dependant time does not', () => {
+    const episodes = (role: 'MAIN' | 'DEPENDANT') => [
+      on('SKILLED_WORKER', '2022-01-01', { role, validTo: '2024-12-31' }),
+      on('GLOBAL_TALENT', '2025-01-01', {
+        globalTalentEndorsement: 'RESEARCH_BODY',
+      }),
+    ];
+    expect(
+      run(clGtResidence, { episodes: episodes('MAIN') }, '2026-11-04')
+        .explanation,
+    ).toContain('自 2022-01-01 起');
+    expect(
+      run(clGtResidence, { episodes: episodes('DEPENDANT') }, '2026-11-04')
+        .explanation,
+    ).toContain('自 2025-01-01 起');
+  });
+
+  test('English: B1 before 2027-03-26, B2 from then (GT 13.1)', () => {
+    const before = run(clEnglish, gt('2023-11-04'), '2027-03-25');
+    expect(before.status).toBe('PASS');
+    expect(before.explanation).toContain('GT 13.1(a)');
+    const after = run(clEnglish, gt('2023-11-04'), '2027-03-26');
+    expect(after.status).toBe('FAIL');
+    expect(after.explanation).toContain('GT 13.1(b)');
+    expect(
+      run(
+        clEnglish,
+        { ...gt('2023-11-04'), english: { cefrLevel: 'B2' } },
+        '2027-03-26',
+      ).status,
+    ).toBe('PASS');
+  });
+
+  test('Life in the UK: GT 14.1', () => {
+    expect(run(clKol, gt('2023-11-04')).explanation).toContain('GT 14.1');
   });
 });

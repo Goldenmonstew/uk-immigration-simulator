@@ -379,7 +379,7 @@ HK BN(O) 的英语只有一个等级（HK 60.1 没有按申请日分段），所
 | `GLOBAL_TALENT` + `MAIN` | `CL-GT-RESIDENCE` + `CL-ENGLISH` + `CL-KOL` | 3 或 5（按 12.3）；`CL-GT-RESIDENCE` 为 `UNKNOWN` 时不给起点 | `CL-GT-RESIDENCE` 的起点 |
 | 两者 | Long Residence 10 年候选照常并列 | 10 | 不变 |
 
-- `CL-HKBNO-RESIDENCE-5Y` 与 `CL-SW-RESIDENCE-5Y` 一样只用于展示，年限由起点计算。`CL-GT-RESIDENCE` 进候选，是为了背书未填时让结论落到 `INSUFFICIENT_INFORMATION`（§7 判定第 2 条：起点未知且 `UNKNOWN` 不带 PD），不按 3 年或 5 年猜。
+- `CL-HKBNO-RESIDENCE-5Y` 与 `CL-SW-RESIDENCE-5Y` 一样只用于展示，年限由起点计算。`CL-GT-RESIDENCE` 只在 `UNKNOWN`（背书未填）时进候选，让结论落到 `INSUFFICIENT_INFORMATION`（§7 判定第 2 条：起点未知且 `UNKNOWN` 不带 PD），不按 3 年或 5 年猜；年限已知时与其他居留规则一样只用于展示（否则未满期的 `FAIL` 会让候选失败、无法投影到期日）。
 - 判定（§7 的 1–3 条）不变：满期且英语、KOL 都 `PASS` → `LIKELY_ELIGIBLE`；未满期 → `LIKELY_NOT_ELIGIBLE` 投影到期日。
 - 聚合里"投影日期在 2027-03-26 之后、届时须 B2"的假设只对 Skilled Worker、Global Talent 与 Long Residence 加；HK BN(O) 5 年路径不加（HK 60.1 没有 B2）。
 - `clBaseAssumption` 的建模范围说明补上 HK BN(O) 与 Global Talent 的主申请人。
