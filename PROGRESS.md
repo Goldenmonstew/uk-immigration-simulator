@@ -27,6 +27,7 @@
 | 21 | 2.5 brief：现行法律补全（SW 21.2 合并、SW 24.3 五行 + CL-SW-GOING-RATE、CL-SW-CHILD 与 SRC-018、SW 39.1(b)）与剩余过渡安排（§2.2 医疗 / 教育、§2.3 续签说明）；契约先行；待用户确认派发 | docs/tasks/2.5-current-law-completion.md |
 | 22 | 合并 2.7 + 2.8 分享链接与英文文案、语言切换（astra）：Draft base64url 编入 /result#s=、剪贴板失败回退手动复制、载入分享情景写回草稿；en.ts 补齐到同键集（类型强制）、LocaleProvider 页头切换并持久化、校验错误存翻译 key；Fable 复跑 gate（web 55）并用浏览器走查（剪贴板被拒 → 手动复制、清空存储后用链接还原同一结果、坏链接空状态、English 覆盖结果 / 问卷 / What-if 且导航后保持、375px、网络只有静态请求）；两部分合为一个 commit；main 上 gate 全过 | apps/web/**, docs/tasks/reports/2.7-share-link-and-en.md |
 | 23 | 2.4 brief：家庭问卷（dependantOf、主申请人子流程、主申请人评估折叠）+ 政策页 /policy（规则集、参数、规则、变更日志、来源）+ 修 English 下导航标题回中文；待用户确认派发 | docs/tasks/2.4-family-and-policy-page.md |
+| 24 | 派发 2.5（Opus 会话 current-law-2-5，契约先行）与 2.4（astra，`.worktrees/astra-family-policy`，分支 `codex/astra-family-policy-2.4`，xhigh） | PROGRESS.md |
 
 ### 当前状态
 
@@ -39,7 +40,7 @@
 - 页码约定与 Codex 启动参数不变。
 - Phase 2 规划已写入 `docs/tasks/phase-2-plan.md`：Wave 1 = 2.1 What-if（astra）、2.2 dependant 与家庭建模（Opus，契约先行）、2.3 Cloudflare Pages 部署 + 政策变更日志数据（sol）；Wave 2 = 2.4 家庭问卷 + 政策页（astra）、2.5 现行法律补全与剩余过渡安排（Opus）；2.6 going rate、2.7 分享链接可选。
 - 待用户决定：是否建 GitHub 远端（目前无 remote）；IAA 复核安排在绑定正式域名前；可选项取舍。
-- Phase 2 进行中（2026-11-04）：2.1、2.2、2.3、2.6、2.7+2.8 已合并，没有在跑的任务。2.5（Opus）与 2.4（astra）的 brief 都已写好，等用户确认派发；2.9 等 2.5 之后。`.worktrees/` 为空。
+- Phase 2 进行中（2026-11-04）：2.1、2.2、2.3、2.6、2.7+2.8 已合并。在跑：2.5 Opus 会话 current-law-2-5（第一个 commit 只做契约，等 Fable 评审后继续）；2.4 astra 在 `.worktrees/astra-family-policy`（分支 `codex/astra-family-policy-2.4`，日志 scratchpad `astra-2.4*`）。2.9 等 2.5 之后。
 - 已知小项：English 下客户端导航时 document.title 回到中文（2.4 §C 修）。
 - 2.2 报告留下的后续：现行法律栏子女定居需登记 Appendix Children（新 SRC）；主申请人已定居（SW 39.1(b)）需新契约字段；后到伴侣最低收入的 7 年中 5 年窗口（PD-056）——都留 2.5 评审。
 - 待派发：2.4 家庭问卷 + 政策页（astra，等 2.2 与 2.7 合并）；2.5 现行法律补全（Opus，等 2.2、2.6 合并，含 CL-SW-GOING-RATE）；2.9 引擎双语解释（Opus，等 2.5，契约先行）。
