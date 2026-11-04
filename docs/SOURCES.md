@@ -33,6 +33,10 @@
 | SRC-017 | LAW | Immigration Rules: Appendix Skilled Occupations（版本 2025-11-11，HC 1333；SOC 2020 职业及 going rates） | https://www.gov.uk/guidance/immigration-rules/immigration-rules-appendix-skilled-occupations | 2025-11-11 | 2026-11-04 | `policy-sources/2025-11-11-immigration-rules-appendix-skilled-occupations.html`（sha256 `80e31318ea53831fff90635abc64a4d8ca5eaef574bef66421045410b12818c7`） | archived |
 | SRC-018 | LAW | Immigration Rules: Appendix Children（版本 2025-11-11，HC 1333；dependent child 的 age CHI 1.1–1.2、independent life CHI 1A.1、care CHI 2.1、settlement 关系要求 CHI 4.1–4.3；SW 39.4、SW 41A.1 引用） | https://www.gov.uk/guidance/immigration-rules/immigration-rules-appendix-children | 2025-11-11 | 2026-11-04 | `policy-sources/2025-11-11-immigration-rules-appendix-children.html`（sha256 `51c9aece25bec6a58af8149dd4ab8292a0e87f10538c092e9a89bedad749338f`） | archived |
 | SRC-019 | LAW | Immigration Rules: Appendix Immigration Salary List（版本 2025-11-11，HC 1333；SOC 2020 职业、进一步条件、适用国家与 removal date） | https://www.gov.uk/guidance/immigration-rules/immigration-rules-appendix-immigration-salary-list | 2025-11-11 | 2026-11-04 | `policy-sources/2025-11-11-immigration-rules-appendix-immigration-salary-list.html`（sha256 `eae72b67984b14187821976ca618e81008755e6cab99266bec8dbf002b8c883a`） | archived |
+| SRC-020 | LAW | Immigration Rules: Appendix Hong Kong British National (Overseas)（版本 2026-10-08，HC 584；settlement 见 HK 55.1–HK 64.2） | https://www.gov.uk/guidance/immigration-rules/immigration-rules-appendix-hong-kong-british-national-overseas | 2026-10-08 | 2026-11-04 | `policy-sources/2026-10-08-immigration-rules-appendix-hong-kong-british-national-overseas.html`（sha256 `1dce2a9adfeb1b87d449df1e0ec47ff4578c0e29eae579649366bd94bf67381e`） | archived |
+| SRC-021 | LAW | Immigration Rules: Appendix Global Talent（版本 2026-08-03，HC 259；主申请人 settlement 见 GT 8.1–GT 15.2） | https://www.gov.uk/guidance/immigration-rules/immigration-rules-appendix-global-talent | 2026-08-03 | 2026-11-04 | `policy-sources/2026-08-03-immigration-rules-appendix-global-talent.html`（sha256 `680309baff0dc7e8e6f46eb2e0b6cd042e07f65fa3d0e7f13af8d99c24a6c08d`） | archived |
+| SRC-022 | LAW | Immigration Rules: Appendix Settlement Family Life（版本 2026-08-03，HC 259；partner / parent 的 10 年 settlement 见 SETF 1.1–SETF 9.5） | https://www.gov.uk/guidance/immigration-rules/immigration-rules-appendix-settlement-family-life | 2026-08-03 | 2026-11-04 | `policy-sources/2026-08-03-immigration-rules-appendix-settlement-family-life.html`（sha256 `c0d43e0daca75e7ce0fae936f3559e44858dfd2ae25049719fda5718dbbebddf`） | archived |
+| SRC-023 | LAW | Immigration Rules: Appendix Settlement Protection（版本 2026-04-08，HC 1691；主申请人 settlement 见 STP 1.1–STP 5.3） | https://www.gov.uk/guidance/immigration-rules/immigration-rules-appendix-settlement-protection | 2026-04-08 | 2026-11-04 | `policy-sources/2026-04-08-immigration-rules-appendix-settlement-protection.html`（sha256 `3ce467778ba7539b5fc59bb1e4e9aabeb5b7505db5a194ceabd74cb6bd965482`） | archived |
 
 ## 登记备注（按 SRC）
 
@@ -188,3 +192,46 @@
 - **表格列**：`SOC 2020 occupation code and any further criteria` 同单元格包含四位代码、职业名及 “–” 后的 further criteria；`Included on the Immigration Salary List in:` 实际跨 England / Scotland / Wales / Northern Ireland 四个国家列，单元格原文为 `Yes` 或 `-`；末列为 `Removal date`。本任务数据中的 `nations` 按原表顺序组合值为 `Yes` 的国家名；`criteria` 保留原文措辞（包括 “all jobs”、Note 与后续段落），仅归一化 HTML 换行与空白，不解释条件。
 - **行数口径**：唯一表格的 `<tbody>` 共 26 行，其中第 1 行是国家子表头，实际为 25 条职业。按原顺序保留职业行，不按 SOC 去重。1212、2111、5235 仅 Scotland，其余行列四国；removal date 原文为 `31 December 2026`，6135 / 6136 为 `22 July 2028`。这些日期与国家范围均见对应 SOC 行。
 - **SRC-017 Table 3a 补充（任务 3.1）**：上文任务 2.6 的“本次未提取”是历史范围；现已从 SRC-017 同一快照脚本提取 8 行国家薪级职业的 SOC 2020 代码与职业名，保留原 `sources` / `occupations` 结构；不提取薪级金额。Table 3a 引言标为 RQF 3–5，适用限制仍以原表引言为准。
+
+## SRC-020 常用定位
+
+- 版本：[GOV.UK Content API 变更记录](https://www.gov.uk/api/content/guidance/immigration-rules/immigration-rules-appendix-hong-kong-british-national-overseas) 最近一条为 2026-10-08（Statement of Changes HC 584），与[手册变更记录](https://www.gov.uk/guidance/immigration-rules/updates) 中该 Appendix 的最近一条一致；`public_updated_at` 与快照的 `govuk:public-updated-at` 同为 `2026-10-08T07:31:23+01:00`，不取手册头部的 2026-10-29。
+- **最近一次许可**：HK 55.2(d)（持有或最近持有 Hong Kong BN(O) route 许可）；HK 62.1(a)（最近一次获批许可须为 Hong Kong BN(O) route）。
+- **Suitability**：HK 56.1–HK 56.2（Part Suitability、移民法违规与 immigration bail 及其例外）。
+- **合格期 / 家庭成员**：HK 62.1(b)（Hong Kong BN(O) route 的 settlement 共用连续 5 年可定居路线许可要求，申请日未满 18 岁除外）；未编号引言区分 BN(O) Status Holder 与 BN(O) Adult Child，BN(O) Household Child 的关系及 household 定义见 HK 15.1–HK 15.3，未另列家庭成员的不同 settlement 合格期。
+- **连续居留**：HK 63.1（HK 62.1 的期间须符合 Appendix Continuous Residence）。
+- **英语**：HK 60.1（除非豁免，口语与听力至少 CEFR B1）；HK 60.2（引用 Appendix English Language）；本 Appendix 快照未列 2027-03-26 起改 B2 的条款。
+- **KOL**：HK 61.1（申请日已满 18 岁且未满 65 岁须符合 Appendix KOL UK）。
+
+## SRC-021 常用定位
+
+- 版本：[GOV.UK Content API 变更记录](https://www.gov.uk/api/content/guidance/immigration-rules/immigration-rules-appendix-global-talent) 最近一条为 2026-08-03（Statement of Changes HC 259），与[手册变更记录](https://www.gov.uk/guidance/immigration-rules/updates) 中该 Appendix 的最近一条一致；`public_updated_at` 与快照的 `govuk:public-updated-at` 同为 `2026-08-03T09:59:24+01:00`，不取手册头部的 2026-10-29。
+- **最近一次许可 / Suitability**：GT 8.3（持有或最近获批 Global Talent route 许可）；GT 9.1–GT 9.2（Part Suitability、移民法违规与 immigration bail 及其例外）。
+- **3 年合格期**：GT 11.1(a)（Royal Society、British Academy、Royal Academy of Engineering 或 UKRI 背书）；GT 11.1(b)（Arts Council England 或 Tech Nation 的 exceptional talent 背书）；GT 11.1(c)（首次申请使用 Appendix Global Talent: Prestigious Prizes 所列奖项）。
+- **5 年合格期**：GT 11.2（Arts Council England 或 Tech Nation 的 exceptional promise 背书）。
+- **可计入路线 / 连续居留**：GT 11.3(a)–(h)（列明可组合计入的非 dependant 许可路线）；GT 12.1（引用 Appendix Continuous Residence）。
+- **背书 / 收入**：GT 10.1（首次申请使用的背书不得被撤回）；GT 10.2(a)–(b)（最近一次许可期间在英国取得与奖项或背书领域相关的收入）。
+- **英语**：GT 13.1(a)–(b)（除非豁免，申请日早于 2027-03-26 为口语与听力至少 CEFR B1，自该日起为 B2）；GT 13.2（引用 Appendix English Language）。
+- **KOL**：GT 14.1（引用 Appendix KOL UK）。
+
+## SRC-022 常用定位
+
+- 版本：[GOV.UK Content API 变更记录](https://www.gov.uk/api/content/guidance/immigration-rules/immigration-rules-appendix-settlement-family-life) 最近一条为 2026-08-03（Statement of Changes HC 259），与[手册变更记录](https://www.gov.uk/guidance/immigration-rules/updates) 中该 Appendix 的最近一条一致；`public_updated_at` 与快照的 `govuk:public-updated-at` 同为 `2026-08-03T11:06:52+01:00`，不取手册头部的 2026-10-29。
+- **最近一次许可**：SETF 1.3（持有或最近获批 Appendix FM 的 partner / parent 许可）。
+- **Suitability**：SETF 2.1–SETF 2.7（Part Suitability、特定事由后的居留要求、移民法违规与 immigration bail）。
+- **10 年合格期**：SETF 3.1(a)–(e)（连续 10 年及可组合计入的 family / private life 许可）；SETF 3.2(a)–(b)（补计其他可定居路线期间的条件，包括至少 1 年 Appendix FM 的 partner / parent 许可）。
+- **5 年 / 10 年路线与财务定位边界**：未编号引言及 SETF 3.1–SETF 3.2 仅列本 Appendix 的 10 年路线；SETF 2.3–SETF 2.4 所列 5 年为 suitability 事由后的期间，本快照没有独立 5 年 settlement 路线或 financial requirement 段，不能据此定位另一条路线或财务门槛。
+- **连续居留**：SETF 4.1（合格期须符合 Appendix Continuous Residence）。
+- **英语**：SETF 5.1(a)–(b)（除非豁免，申请日早于 2027-03-26 为口语与听力至少 CEFR B1，自该日起为 B2）；SETF 5.2（引用 Appendix English Language）；dependent child 对应 SETF 15.1–SETF 15.2。
+- **KOL**：SETF 6.1（除非豁免，引用 Appendix KOL UK）；dependent child 对应 SETF 16.1。
+- **Partner 关系**：SETF 7.1(a)–(c)（伴侣为在英 British citizen、已定居者或同时申请 settlement 者）；SETF 7.2（Appendix Relationship with Partner）；SETF 7.3（以与当前伴侣的关系获批许可至少 1 年）。
+
+## SRC-023 常用定位
+
+- 版本：[GOV.UK Content API 变更记录](https://www.gov.uk/api/content/guidance/immigration-rules/immigration-rules-appendix-settlement-protection) 最近一条为 2026-04-08（Statement of Changes HC 1691），与[手册变更记录](https://www.gov.uk/guidance/immigration-rules/updates) 中该 Appendix 的最近一条一致；`public_updated_at` 与快照的 `govuk:public-updated-at` 同为 `2026-04-08T08:02:26+01:00`，不取手册头部的 2026-10-29。
+- **最近一次保护许可**：STP 1.3(a)–(b)（按 asylum application 日期列明持有或最近获批的 refugee / humanitarian protection 许可类别）。
+- **Suitability**：STP 2.1(a)–(g)（本 Appendix 自列的 criminality、conduct 与 public good 拒绝事由）。
+- **合格期 / 连续期间**：STP 3.1(a)–(b)（在英国连续至少 5 年持 refugee status 或 humanitarian protection）；本 Appendix 未引用 Appendix Continuous Residence。
+- **持续保护身份**：STP 4.1（保护身份未被撤销或放弃）；STP 4.2（safe return review 及其指向的撤销 / 不续期条款）。
+- **保护许可与 settlement 的衔接**：STP 5.1（满足 suitability 与 eligibility 则授予 settlement）；STP 5.2（未满足 settlement 但仍有权享有保护身份时，继续给予至少 30 个月许可）；本 Appendix 未列首次保护许可的授予年限。
+- **英语 / KOL**：本 Appendix 快照未列英语等级、Appendix English Language、Appendix KOL UK 或 2027-03-26 起 B2 的条款，无相应段号可登记。
