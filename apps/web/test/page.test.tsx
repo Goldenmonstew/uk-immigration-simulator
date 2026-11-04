@@ -90,16 +90,16 @@ test('a frontend short circuit without assessments shows only advice', () => {
 });
 
 test.each([
-  ['HONG_KONG_BNO', 'OUTSIDE_FRAMEWORK'],
-  ['CORE_PROTECTION', 'PROTECTION'],
+  ['HONG_KONG_BNO', 'MAIN', 'OUTSIDE_FRAMEWORK'],
+  ['CORE_PROTECTION', 'DEPENDANT', 'PROTECTION'],
 ] as const)(
-  'engine short circuit for %s retains both assessment columns',
-  (route, reason) => {
+  'engine short circuit for %s (%s) retains both assessment columns',
+  (route, role, reason) => {
     const draft = createDraft();
     draft.simulationDate = '2026-11-04';
     draft.timeline.dateOfBirth = '1991-08-19';
     draft.timeline.episodes = [
-      { route, role: 'MAIN', validFrom: '2025-01-01', validTo: '2031-01-01' },
+      { route, role, validFrom: '2025-01-01', validTo: '2031-01-01' },
     ];
     const result = runSimulation(draft);
     expect(result.shortCircuit?.reason).toBe(reason);
