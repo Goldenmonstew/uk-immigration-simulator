@@ -21,14 +21,13 @@ export const steps = [
   // Append to preserve the step numbers in version 1 drafts.
   'principal',
 ] as const;
-export const shortCircuitKeys = [
-  'criminality',
-  'breach',
-  'protection',
-] as const;
-export type ScreeningKey = (typeof shortCircuitKeys)[number] | 'debt';
-export const screeningKeys: ScreeningKey[] = [...shortCircuitKeys, 'debt'];
-export type Screening = Record<ScreeningKey, '' | 'yes' | 'no'>;
+export const shortCircuitKeys = ['criminality'] as const;
+export const screeningKeys = ['criminality', 'breach', 'debt'] as const;
+export type ScreeningKey = (typeof screeningKeys)[number];
+export type Screening = Record<ScreeningKey, '' | 'yes' | 'no'> & {
+  // Version 1 drafts may retain this obsolete answer; it is ignored.
+  protection?: '' | 'yes' | 'no';
+};
 
 export interface Draft {
   version: 1;
@@ -47,20 +46,20 @@ export const emptyScreening = (): Screening => ({
   criminality: '',
   breach: '',
   debt: '',
-  protection: '',
 });
 
+export function currentEpisode(draft: Draft) {
+  return draft.timeline.episodes
+    .filter(
+      (episode) =>
+        episode.validFrom <= draft.simulationDate &&
+        draft.simulationDate <= episode.validTo,
+    )
+    .sort((a, b) => (a.validFrom < b.validFrom ? 1 : -1))[0];
+}
+
 export function needsPrincipal(draft: Draft): boolean {
-  return (
-    draft.timeline.episodes
-      .filter(
-        (episode) =>
-          episode.validFrom <= draft.simulationDate &&
-          draft.simulationDate <= episode.validTo,
-      )
-      .sort((a, b) => (a.validFrom < b.validFrom ? 1 : -1))[0]?.role ===
-    'DEPENDANT'
-  );
+  return currentEpisode(draft)?.role === 'DEPENDANT';
 }
 
 export function activePersonDraft(draft: Draft): Draft {
@@ -177,6 +176,13 @@ export function draftReducer(state: Draft, action: Action): Draft {
           ...(editingPrincipal ? state.principalScreening : state.screening),
           [action.key]: action.answer,
         },
+        ...(action.key === 'breach' &&
+          action.answer === 'no' && {
+            [editingPrincipal ? 'principal' : 'timeline']: {
+              ...(editingPrincipal ? state.principal : state.timeline),
+              immigrationBreaches: [],
+            },
+          }),
         ...(editingPrincipal && { principalCompleted: false }),
       };
     case 'date': {
@@ -223,18 +229,12 @@ export function runSimulation(
     shortCircuitKeys.find((key) => draft.principalScreening?.[key] === 'yes');
   const risk = applicantRisk || principalRisk;
   if (risk) {
-    // The screening contract has no event dates or protection-history field.
-    // Do not fabricate CriminalEvent / ImmigrationBreach / episode entries.
-    const reasons = {
-      criminality: 'CRIMINALITY',
-      breach: 'IMMIGRATION_BREACH',
-      protection: 'PROTECTION',
-    } as const;
+    // The screening does not collect details needed for CriminalEvent entries.
     return {
       policyAsOf,
       byRuleSet: {},
       shortCircuit: {
-        reason: reasons[risk],
+        reason: 'CRIMINALITY',
         message: `${!applicantRisk && principalRisk ? t('principal.prefix', locale) : ''}${t('screening.message', locale)}`,
       },
     };
@@ -331,6 +331,13 @@ export function validateStep(draft: Draft): Errors {
     case 1:
       for (const key of screeningKeys)
         if (!draft.screening[key]) errors[key] = 'error.required';
+      if (draft.screening.breach === 'yes') {
+        if (!timeline.immigrationBreaches.length)
+          errors.breaches = 'breaches.required';
+        timeline.immigrationBreaches.forEach((breach, i) =>
+          date(`breach-${i}-date`, breach.date),
+        );
+      }
       break;
     case 2:
       timeline.episodes.forEach((episode, i) => {

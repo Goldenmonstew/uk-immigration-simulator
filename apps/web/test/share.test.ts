@@ -1,4 +1,9 @@
 import { expect, test } from 'vitest';
+import type {
+  ImmigrationBreach,
+  ImmigrationEpisode,
+  PersonTimeline,
+} from '@uk-immigration/engine';
 import { createDraft, runSimulation } from '../lib/questionnaire';
 import { decodeDraft, encodeDraft } from '../lib/share';
 import { applyWhatIf, initialWhatIf } from '../lib/whatif';
@@ -126,4 +131,85 @@ test('share input rejects malformed ISL and settlement fields', () => {
     expect(
       decode({ ...draft.timeline, episodes: [{ immigrationSalaryList }] }),
     ).toBeUndefined();
+});
+
+test('sharing accepts optional protection fields on both timelines without changing draft version', () => {
+  const draft = createDraft();
+  const cases: {
+    resettlementScheme?: ImmigrationEpisode['resettlementScheme'];
+    sustainedActivity?: ImmigrationEpisode['sustainedActivity'];
+    asylumSupportRepayment?: PersonTimeline['asylumSupportRepayment'];
+    article31?: ImmigrationBreach['article31'];
+  }[] = [
+    {},
+    {
+      resettlementScheme: 'UK_RESETTLEMENT_SCHEME',
+      sustainedActivity: 'WORK',
+      asylumSupportRepayment: 'REPAID',
+      article31: true,
+    },
+    {
+      resettlementScheme: 'OTHER_DESIGNATED',
+      sustainedActivity: 'EDUCATION',
+      asylumSupportRepayment: 'ON_PLAN',
+      article31: false,
+    },
+    { sustainedActivity: 'TRAINING', asylumSupportRepayment: 'OUTSTANDING' },
+    { asylumSupportRepayment: 'NOT_REQUIRED' },
+  ];
+  for (const {
+    resettlementScheme,
+    sustainedActivity,
+    asylumSupportRepayment,
+    article31,
+  } of cases) {
+    draft.timeline.episodes = [
+      {
+        route: 'SAFE_AND_LEGAL',
+        role: 'MAIN',
+        validFrom: '2027-06-01',
+        validTo: '2028-05-31',
+        resettlementScheme,
+      },
+      {
+        route: 'PROTECTION_WORK_AND_STUDY',
+        role: 'MAIN',
+        validFrom: '2028-06-01',
+        validTo: '2038-06-01',
+        sustainedActivity,
+      },
+    ];
+    draft.timeline.asylumSupportRepayment = asylumSupportRepayment;
+    draft.timeline.immigrationBreaches = [
+      { type: 'ILLEGAL_ENTRY', date: '2027-05-01', article31 },
+    ];
+    draft.principal = structuredClone(draft.timeline);
+    expect(decodeDraft(encodeDraft(draft))).toEqual(
+      JSON.parse(JSON.stringify(draft)),
+    );
+  }
+  expect(draft.version).toBe(1);
+});
+
+test('sharing rejects malformed new protection fields at the input boundary', () => {
+  const draft = createDraft();
+  for (const patch of [
+    { episodes: [{ resettlementScheme: 'UNKNOWN' }] },
+    { episodes: [{ sustainedActivity: null }] },
+    { immigrationBreaches: [{ article31: 'yes' }] },
+    { asylumSupportRepayment: true },
+  ]) {
+    for (const key of ['timeline', 'principal']) {
+      expect(
+        decodeDraft(
+          btoa(
+            JSON.stringify({
+              ...draft,
+              [key]: { ...draft.timeline, ...patch },
+            }),
+          ),
+        ),
+      ).toBeUndefined();
+    }
+  }
 });

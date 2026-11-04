@@ -1,9 +1,11 @@
 'use client';
 
 import type { SimulationResult } from '@uk-immigration/engine';
+import { ROUTE_GROUPS } from '@uk-immigration/policy-data';
 import { useTranslation } from '../i18n/locale';
 import { routeGroupNames } from '../i18n/routes';
 import { ruleSets } from '../lib/policy';
+import { currentEpisode, type Draft } from '../lib/questionnaire';
 import { sourceUrls } from '../lib/sources';
 import { PolicyStatus } from './policy-status';
 import site from '../app/site.module.css';
@@ -27,11 +29,17 @@ function Advice() {
 export function ResultView({
   result,
   mock = false,
+  draft,
 }: {
   result: SimulationResult;
   mock?: boolean;
+  draft?: Draft;
 }) {
   const { t } = useTranslation();
+  const episode = draft && currentEpisode(draft);
+  const protection =
+    episode &&
+    ROUTE_GROUPS[episode.route].some((group) => group === 'PROTECTION');
   return (
     <>
       <PolicyStatus asOf={result.policyAsOf} />
@@ -56,6 +64,11 @@ export function ResultView({
           <p className={`${site.notice} ${site.warning}`}>
             {t('policy.hypothesis')}
           </p>
+          {protection && (
+            <p className={`${site.notice} ${site.warning}`}>
+              {t('result.protectionNotice')}
+            </p>
+          )}
           <AssessmentColumns result={result} />
           <Advice />
           <p className={`${site.muted} ${site.noPrint}`}>

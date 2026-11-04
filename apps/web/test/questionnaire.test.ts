@@ -245,7 +245,7 @@ test('field validation rejects missing screening, reversed dates and invalid amo
   const draft = createDraft();
   expect(validateStep(draft)).toHaveProperty('dob');
   draft.step = 1;
-  expect(Object.keys(validateStep(draft))).toHaveLength(4);
+  expect(Object.keys(validateStep(draft))).toHaveLength(3);
   draft.step = 2;
   draft.timeline.episodes = [
     {
