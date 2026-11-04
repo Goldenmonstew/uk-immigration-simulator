@@ -74,7 +74,7 @@
   - EN: The current route, Student, is a temporary route and does not count towards settlement; time starts to count only after switching to a counting route.
 - 中：当前路线"家庭伴侣或父母"属核心许可 / 英国联系分组，计入定居。
   - EN: The current route, Family Partner or Parent, is in the Core permission / British connection groups and counts towards settlement.
-- 中：当前路线"家庭与私人生活"属家庭与私人生活分组，计入定居。Family and Private Life 路线只能走 10 年或 20 年路径。
+- 中：当前路线"家庭与私人生活"属家庭与私人生活分组，计入定居。家庭与私人生活路线只能走 10 年或 20 年路径。
   - EN: The current route, Family and Private Life, is in the Family and Private Life group and counts towards settlement. Family and Private Life routes can only use the 10 or 20-year pathways.
 
 ### ES-RESIDENCE：计入定居的连续居留 / Continuous residence counting towards settlement

@@ -109,7 +109,7 @@ export const esRouteGroup = defineRule(
         ) +
         (groups.includes('FAMILY_AND_PRIVATE_LIFE')
           ? L(
-              'Family and Private Life 路线只能走 10 年或 20 年路径。',
+              `${nameIn(L, routeGroupNames.FAMILY_AND_PRIVATE_LIFE)}路线只能走 10 年或 20 年路径。`,
               ' Family and Private Life routes can only use the 10 or 20-year pathways.',
             )
           : ''),

@@ -661,7 +661,7 @@ exports[`ES-OFFICIAL-INDIVIDUAL-D default-locale output is unchanged 1`] = `
             }
           ],
           "status": "PASS",
-          "explanation": "当前路线\\"家庭与私人生活\\"属家庭与私人生活分组，计入定居。Family and Private Life 路线只能走 10 年或 20 年路径。"
+          "explanation": "当前路线\\"家庭与私人生活\\"属家庭与私人生活分组，计入定居。家庭与私人生活路线只能走 10 年或 20 年路径。"
         },
         {
           "id": "ES-RESIDENCE",
