@@ -10,7 +10,9 @@ import { RULES } from './rules';
 import {
   longResidenceStart,
   onSkilledWorker,
+  onSkilledWorkerChild,
   onSkilledWorkerPartner,
+  skilledWorkerChildStart,
   skilledWorkerPartnerStart,
   skilledWorkerStart,
 } from './rules/current-law';
@@ -294,7 +296,7 @@ function assessEarnedSettlement(ctx: RuleContext): SettlementAssessment {
 }
 
 const CL_BASE_ASSUMPTION =
-  '现行规则只建模 Skilled Worker 主申请人及其 dependent partner（Appendix Skilled Worker）与 Long Residence（Appendix Long Residence）；Part Suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。';
+  '现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）与 Long Residence（Appendix Long Residence）；Part Suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。';
 
 function assessCurrentLaw(ctx: RuleContext): SettlementAssessment {
   const [scopeRule, ...others] = RULES['current-law-2026-11'];
@@ -307,12 +309,19 @@ function assessCurrentLaw(ctx: RuleContext): SettlementAssessment {
     );
   }
   const sw = onSkilledWorker(ctx.timeline, ctx.simulationDate);
-  // In scope as a partner only with the principal (CL-SCOPE).
+  // In scope as a partner or child only with the principal (CL-SCOPE).
   const partner =
     ctx.principal !== undefined &&
     onSkilledWorkerPartner(ctx.timeline, ctx.simulationDate);
+  const child =
+    ctx.principal !== undefined &&
+    onSkilledWorkerChild(ctx.timeline, ctx.simulationDate);
   const runs = (id: string) =>
-    id === 'CL-SW-PARTNER-5Y' ? partner : !id.startsWith('CL-SW-') || sw;
+    id === 'CL-SW-PARTNER-5Y'
+      ? partner
+      : id === 'CL-SW-CHILD'
+        ? child
+        : !id.startsWith('CL-SW-') || sw;
   const rules = [
     scope,
     ...others
@@ -345,6 +354,15 @@ function assessCurrentLaw(ctx: RuleContext): SettlementAssessment {
           },
         ]
       : []),
+    ...(child
+      ? [
+          {
+            years: cl.values.skilledWorkerQualifyingYears.value,
+            start: skilledWorkerChildStart(ctx),
+            rules: pick('CL-SW-CHILD', 'CL-ENGLISH', 'CL-KOL'),
+          },
+        ]
+      : []),
     {
       years: cl.values.longResidenceQualifyingYears.value,
       start: longResidenceStart(ctx),
@@ -353,11 +371,11 @@ function assessCurrentLaw(ctx: RuleContext): SettlementAssessment {
   ];
   const decision = decide(candidates, ctx.simulationDate);
   const shown =
-    partner &&
+    (partner || child) &&
     decision.pathwayYears === cl.values.skilledWorkerQualifyingYears.value
       ? showProjected(
           rules,
-          'CL-SW-PARTNER-5Y',
+          partner ? 'CL-SW-PARTNER-5Y' : 'CL-SW-CHILD',
           decision,
           `截至 ${ctx.simulationDate} 尚未满期。`,
         )

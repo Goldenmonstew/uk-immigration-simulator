@@ -157,7 +157,7 @@ Earned Settlement 栏的 dependant 候选路径（只有一条）：
 
 年龄分支：是否满 18 岁按申请日（`simulationDate`）；25 岁按家庭首次符合资格日（PD-060）。
 
-现行法律栏：Skilled Worker 主申请人的 dependent partner（当前 episode `SKILLED_WORKER` + `DEPENDANT` + `dependantOf = 'PARTNER'`，且有 `principal`）进入 `CL-SCOPE`。候选路径 = `CL-SW-PARTNER-5Y` + `CL-ENGLISH` + `CL-KOL`，5 年，起点 = max(伴侣连续 dependant 许可的起点, 主申请人连续 Skilled Worker 期的起点)，即不早于主申请人满 5 年（SW 39.1(a)、SW 42.1、SW 43.1）；没有薪资要求；英语 2027-03-26 前 B1、此后 B2（SW 44.1），KOL 按 SW 45.1。主申请人该栏没有 Skilled Worker 5 年路径（`pathwayYears` 不是 5）时：其结论为 `LIKELY_NOT_ELIGIBLE` → `FAIL`，否则 `UNKNOWN`。Long Residence 候选照常。主申请人已定居（SW 39.1(b)）不建模；dependent child（SW 41A.1 → Appendix Children）不建模，仍在 `CL-SCOPE` 之外。
+现行法律栏：Skilled Worker 主申请人的 dependent partner（当前 episode `SKILLED_WORKER` + `DEPENDANT` + `dependantOf = 'PARTNER'`，且有 `principal`）进入 `CL-SCOPE`。候选路径 = `CL-SW-PARTNER-5Y` + `CL-ENGLISH` + `CL-KOL`，5 年，起点 = max(伴侣连续 dependant 许可的起点, 主申请人连续 Skilled Worker 期的起点)，即不早于主申请人满 5 年（SW 39.1(a)、SW 42.1、SW 43.1）；没有薪资要求；英语 2027-03-26 前 B1、此后 B2（SW 44.1），KOL 按 SW 45.1。主申请人该栏没有 Skilled Worker 5 年路径（`pathwayYears` 不是 5）时：其结论为 `LIKELY_NOT_ELIGIBLE` → `FAIL`，否则 `UNKNOWN`。Long Residence 候选照常。dependent child 与主申请人已定居（SW 39.1(b)）见 §9（Phase 2.5）。
 
 短路：先看 dependant 本人的时间线（本人有犯罪记录照常短路，优先）；本人没有短路而主申请人有时，把主申请人的 `shortCircuit` 复制到 dependant 的 `SimulationResult`，`reason` 不变，`message` 前加"主申请人："。栏目影响沿用 §7：`CRIMINALITY` / `IMMIGRATION_BREACH` 两栏都是 `REQUIRES_REGULATED_REVIEW`，`PROTECTION` / `OUTSIDE_FRAMEWORK` 只影响 Earned Settlement 栏。
 

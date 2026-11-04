@@ -15,6 +15,7 @@ import type {
   IsoDate,
   PersonTimeline,
   RuleContext,
+  RuleResult,
 } from '../types';
 
 // Current Immigration Rules, modelled for Skilled Worker settlement (SRC-004)
@@ -50,6 +51,18 @@ export function onSkilledWorkerPartner(
   );
 }
 
+export function onSkilledWorkerChild(
+  timeline: PersonTimeline,
+  date: IsoDate,
+): boolean {
+  const current = episodeOn(timeline, date);
+  return (
+    current !== undefined &&
+    isSkilledWorkerDependant(current) &&
+    current.dependantOf === 'PARENT'
+  );
+}
+
 export const clScope = defineRule(
   {
     id: 'CL-SCOPE',
@@ -80,6 +93,14 @@ export const clScope = defineRule(
           '当前持 Skilled Worker 的 dependent partner 许可，按 Appendix Skilled Worker 的伴侣定居要求（SW 38–SW 46）与 Appendix Long Residence 评估。',
       };
     }
+    const child = onSkilledWorkerChild(timeline, simulationDate);
+    if (child && ctx.principal) {
+      return {
+        status: 'PASS',
+        explanation:
+          '当前持 Skilled Worker 的 dependent child 许可，按 Appendix Skilled Worker 的子女定居要求（SW 38–SW 46、Appendix Children）与 Appendix Long Residence 评估。',
+      };
+    }
     if (longResidenceMet(ctx)) {
       return {
         status: 'PASS',
@@ -90,12 +111,10 @@ export const clScope = defineRule(
     const current = episodeOn(timeline, simulationDate);
     const explanation =
       current && isSkilledWorkerDependant(current)
-        ? partner
-          ? '当前持 Skilled Worker 的 dependent partner 许可；填写主申请人信息后可按 SW 38–SW 46 判断。'
-          : current.dependantOf === 'PARENT'
-            ? 'Skilled Worker 的 dependent child 定居要求在 Appendix Children（SW 41A.1），本工具尚未建模；也不满足 Long Residence 的 10 年。'
-            : '当前持 Skilled Worker 的 dependant 许可，未填写是作为主申请人的伴侣还是子女随行。'
-        : '现行规则只建模了 Skilled Worker（主申请人及其 dependent partner）与 Long Residence；当前路线不在其中，也不满足 Long Residence 的 10 年，无法判断其他路线的定居条件。';
+        ? partner || child
+          ? `当前持 Skilled Worker 的 dependent ${partner ? 'partner' : 'child'} 许可；填写主申请人信息后可按 SW 38–SW 46 判断。`
+          : '当前持 Skilled Worker 的 dependant 许可，未填写是作为主申请人的伴侣还是子女随行。'
+        : '现行规则只建模了 Skilled Worker（主申请人及其 dependent partner / child）与 Long Residence；当前路线不在其中，也不满足 Long Residence 的 10 年，无法判断其他路线的定居条件。';
     return { status: 'UNKNOWN', explanation };
   },
 );
@@ -448,6 +467,59 @@ export const clSwGoingRate = defineRule(
 );
 
 /**
+ * The start of P's Skilled Worker period when P has a 5-year Skilled Worker
+ * pathway in this column, so the dependant can settle at the same time as P
+ * (SW 39.1(a)).
+ */
+function principalSkilledWorkerStart({
+  simulationDate,
+  principal,
+}: RuleContext): IsoDate | undefined {
+  if (!principal) return undefined;
+  const start = skilledWorkerStart({
+    timeline: principal.timeline,
+    simulationDate,
+  });
+  return start &&
+    principal.result.byRuleSet[RULE_SET]?.pathwayYears ===
+      cl.values.skilledWorkerQualifyingYears.value
+    ? start
+    : undefined;
+}
+
+/** Why a dependant cannot settle with P under SW 39.1(a). */
+function withoutPrincipalPathway(
+  { simulationDate, principal }: RuleContext,
+  who: string,
+  assumptions: string[],
+): Omit<RuleResult, 'sources'> {
+  const principalOnSw = skilledWorkerStart({
+    timeline: principal!.timeline,
+    simulationDate,
+  });
+  if (!principalOnSw) {
+    return {
+      status: 'UNKNOWN',
+      explanation:
+        '主申请人当前不是 Skilled Worker 主申请人许可；若其已作为 Skilled Worker 定居（SW 39.1(b)），本工具未建模。',
+      assumptions,
+    };
+  }
+  return principal!.result.byRuleSet[RULE_SET]?.outcome ===
+    'LIKELY_NOT_ELIGIBLE'
+    ? {
+        status: 'FAIL',
+        explanation: `主申请人目前不能作为 Skilled Worker 定居，${who} 不能按 SW 39.1(a) 随其定居。`,
+        assumptions,
+      }
+    : {
+        status: 'UNKNOWN',
+        explanation: '主申请人的信息不足以判断其能否作为 Skilled Worker 定居。',
+        assumptions,
+      };
+}
+
+/**
  * The start the dependent partner can apply 5 years after: their own
  * continuous dependant period (SW 42.1, SW 43.1), but not before P completes
  * the Skilled Worker period (SW 39.1(a)). Undefined unless P has a Skilled
@@ -456,19 +528,9 @@ export const clSwGoingRate = defineRule(
 export function skilledWorkerPartnerStart(
   ctx: RuleContext,
 ): IsoDate | undefined {
-  const { timeline, simulationDate, principal } = ctx;
-  if (!principal || !onSkilledWorkerPartner(timeline, simulationDate)) {
-    return undefined;
-  }
-  const assessment = principal.result.byRuleSet[RULE_SET];
-  const principalStart = skilledWorkerStart({
-    timeline: principal.timeline,
-    simulationDate,
-  });
-  if (
-    !principalStart ||
-    assessment?.pathwayYears !== cl.values.skilledWorkerQualifyingYears.value
-  ) {
+  const { timeline, simulationDate } = ctx;
+  const principalStart = principalSkilledWorkerStart(ctx);
+  if (!principalStart || !onSkilledWorkerPartner(timeline, simulationDate)) {
     return undefined;
   }
   const { episodes } = continuousRun(
@@ -520,36 +582,71 @@ export const clSwPartner5Y = defineRule(
     ];
     const start = skilledWorkerPartnerStart(ctx);
     if (!start) {
-      const principalOnSw = skilledWorkerStart({
-        timeline: principal.timeline,
-        simulationDate,
-      });
-      const outcome = principal.result.byRuleSet[RULE_SET]?.outcome;
-      if (!principalOnSw) {
-        return {
-          status: 'UNKNOWN',
-          explanation:
-            '主申请人当前不是 Skilled Worker 主申请人许可；若其已作为 Skilled Worker 定居（SW 39.1(b)），本工具未建模。',
-          assumptions,
-        };
-      }
-      return outcome === 'LIKELY_NOT_ELIGIBLE'
-        ? {
-            status: 'FAIL',
-            explanation:
-              '主申请人目前不能作为 Skilled Worker 定居，dependent partner 不能按 SW 39.1(a) 随其定居。',
-            assumptions,
-          }
-        : {
-            status: 'UNKNOWN',
-            explanation:
-              '主申请人的信息不足以判断其能否作为 Skilled Worker 定居。',
-            assumptions,
-          };
+      return withoutPrincipalPathway(ctx, 'dependent partner', assumptions);
     }
     return {
       status: 'PASS',
       explanation: `与主申请人一同定居：dependent partner 许可与主申请人的 Skilled Worker 期都满 ${years} 年后，${addYears(start, years)} 起可申请（SW 39.1(a)、SW 42.1）。`,
+      assumptions,
+    };
+  },
+);
+
+/** The start P's 5 years run from; the child settles with P (SW 39.1(a)). */
+export function skilledWorkerChildStart(ctx: RuleContext): IsoDate | undefined {
+  return onSkilledWorkerChild(ctx.timeline, ctx.simulationDate)
+    ? principalSkilledWorkerStart(ctx)
+    : undefined;
+}
+
+export const clSwChild = defineRule(
+  {
+    id: 'CL-SW-CHILD',
+    ruleSetId: RULE_SET,
+    title: 'Skilled Worker dependent child 与主申请人一同定居',
+    sources: [
+      { srcId: 'SRC-004', locator: 'SW 39.1' },
+      { srcId: 'SRC-004', locator: 'SW 41A.1' },
+      { srcId: 'SRC-018', locator: 'CHI 1.1' },
+      { srcId: 'SRC-018', locator: 'CHI 1.2' },
+      { srcId: 'SRC-018', locator: 'CHI 1A.1' },
+      { srcId: 'SRC-018', locator: 'CHI 2.1' },
+    ],
+    pendingDetails: [],
+  },
+  (ctx) => {
+    const { timeline, simulationDate, principal } = ctx;
+    if (!onSkilledWorkerChild(timeline, simulationDate)) {
+      return {
+        status: 'FAIL',
+        explanation: '当前不是 Skilled Worker 的 dependent child 许可。',
+      };
+    }
+    if (!principal) {
+      return {
+        status: 'UNKNOWN',
+        explanation: '填写主申请人信息后可判断。',
+      };
+    }
+    const minor =
+      fullYears(timeline.dateOfBirth, simulationDate) <
+      cl.values.settlementMinorAge.value;
+    const assumptions = [
+      '假设子女未 leading an independent life（CHI 1A.1）。',
+      ...(minor ? ['假设子女有符合英国法律的照护与住宿安排（CHI 2.1）。'] : []),
+      '只看申请日当天的 Skilled Worker dependent child 许可，假设是同一主申请人的子女；另一位家长须同时获批定居、已定居或为英国公民，除非主申请人负唯一抚养责任等（CHI 4.3，经 SW 39.4），本工具未核对。',
+      '主申请人已经定居的情形（SW 39.1(b)）未建模，只判断与主申请人同时获批（SW 39.1(a)）。',
+    ];
+    const start = skilledWorkerChildStart(ctx);
+    if (!start) {
+      return withoutPrincipalPathway(ctx, 'dependent child', assumptions);
+    }
+    const age = minor
+      ? `申请日未满 ${cl.values.settlementMinorAge.value} 岁（CHI 1.1）`
+      : `申请日已满 ${cl.values.settlementMinorAge.value} 岁，但当前持有的是 dependent child 许可（CHI 1.2(a)）`;
+    return {
+      status: 'PASS',
+      explanation: `${age}；随主申请人定居：主申请人的 Skilled Worker 期 ${addYears(start, cl.values.skilledWorkerQualifyingYears.value)} 满 ${cl.values.skilledWorkerQualifyingYears.value} 年，届时可一同申请（SW 39.1(a)、SW 41A.1）；子女本人没有居留年限要求。`,
       assumptions,
     };
   },
@@ -585,7 +682,10 @@ export const clEnglish = defineRule(
       };
     }
     const sw = onSkilledWorker(timeline, simulationDate);
-    const partner = onSkilledWorkerPartner(timeline, simulationDate);
+    // SW 44.1 covers a dependent partner and a dependent child.
+    const partner =
+      onSkilledWorkerPartner(timeline, simulationDate) ||
+      onSkilledWorkerChild(timeline, simulationDate);
     const b2 =
       sw || partner
         ? cl.values.skilledWorkerSettlementEnglish.value
