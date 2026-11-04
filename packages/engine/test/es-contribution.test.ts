@@ -5,6 +5,7 @@ import {
   esEarnings3Y,
   esEarnings5Y,
   esPublicFunds,
+  esPublicService,
 } from '../src/rules/es-contribution';
 import type { ImmigrationEpisode, IncomeYear } from '../src/types';
 import { run } from './helpers';
@@ -202,5 +203,51 @@ describe('ES-PUBLIC-FUNDS', () => {
     });
     expect(unlisted.status).toBe('UNKNOWN');
     expect(unlisted.pendingDetails).toEqual(['PD-013']);
+  });
+});
+
+describe('ES-PUBLIC-SERVICE', () => {
+  const job = (
+    socCode: string,
+    validFrom: string,
+    validTo: string,
+  ): ImmigrationEpisode => ({
+    route: 'SKILLED_WORKER',
+    role: 'MAIN',
+    validFrom,
+    validTo,
+    socCode,
+    salary: 35000,
+  });
+
+  test('nurse for 5 years passes', () => {
+    expect(
+      run(esPublicService, {
+        episodes: [job('2231', '2021-11-04', '2027-01-31')],
+      }).status,
+    ).toBe('PASS');
+  });
+
+  test('nurse since the start of qualifying residence passes before 5 years', () => {
+    const result = run(esPublicService, {
+      episodes: [job('2461', '2023-03-01', '2028-01-31')],
+    });
+    expect(result.status).toBe('PASS');
+    expect(result.explanation).toContain('Social workers');
+  });
+
+  test('switched into a nursing job during qualifying residence is unknown (PD-012)', () => {
+    const result = run(esPublicService, {
+      episodes: [
+        job('2136', '2020-01-01', '2023-12-31'),
+        job('2231', '2024-01-01', '2028-01-31'),
+      ],
+    });
+    expect(result.status).toBe('UNKNOWN');
+    expect(result.pendingDetails).toEqual(['PD-012']);
+  });
+
+  test('a job outside Annex C fails', () => {
+    expect(run(esPublicService).status).toBe('FAIL');
   });
 });

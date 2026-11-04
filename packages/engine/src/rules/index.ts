@@ -13,6 +13,7 @@ import {
   esEarnings3Y,
   esEarnings5Y,
   esPublicFunds,
+  esPublicService,
 } from './es-contribution';
 import { esResidence, esRouteGroup } from './es-residence';
 import { esTransitionalCareWorker } from './es-transitional';
@@ -33,6 +34,7 @@ export const RULES: Record<RuleSetId, Rule[]> = {
     esPublicFunds,
     esBreach,
     esTransitionalCareWorker,
+    esPublicService,
   ],
   'current-law-2026-11': [],
 };

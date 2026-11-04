@@ -1,4 +1,5 @@
 import {
+  annexCOccupations,
   earnedSettlement2026_11 as es,
   publicFundsBenefits,
 } from '@uk-immigration/policy-data';
@@ -8,10 +9,11 @@ import type {
   SourceRef,
 } from '@uk-immigration/policy-data';
 import { addDays, addYears, taxYearsBefore } from '../dates';
-import { episodeOn } from '../residence';
+import { continuousRun, episodeOn } from '../residence';
 import { defineRule } from '../rule';
-import type { RuleContext } from '../types';
+import type { ImmigrationEpisode, RuleContext } from '../types';
 import { ageExemptOn } from './es-requirements';
+import { esQualifyingResidence } from './es-residence';
 
 // Contribution: earnings, British connection, public funds and public service
 // (SRC-001 Chapter 2, p14–p19; Table 1 p46).
@@ -281,6 +283,58 @@ export const esPublicFunds = defineRule(
       status: 'PASS',
       explanation: `申请前 ${years} 年内未领取 public funds。${ignoredNote}`,
       assumptions,
+    };
+  },
+);
+
+const inAnnexC = (e: ImmigrationEpisode) =>
+  annexCOccupations.occupations.some((o) => o.socCode === e.socCode);
+
+export const esPublicService = defineRule(
+  {
+    id: 'ES-PUBLIC-SERVICE',
+    ruleSetId: RULE_SET,
+    title: '公共服务职业满 5 年（5 年路径）',
+    sources: [
+      { srcId: 'SRC-001', locator: 'p16' },
+      { srcId: 'SRC-001', locator: 'p46 fn 17' },
+      ...annexCOccupations.sources,
+    ],
+    pendingDetails: ['PD-012'],
+  },
+  (ctx) => {
+    const { timeline, simulationDate } = ctx;
+    const current = episodeOn(timeline, simulationDate);
+    if (!current || !inAnnexC(current)) {
+      return {
+        status: 'FAIL',
+        explanation:
+          '当前工作不在 Annex C 公共服务职业表中，不走这条 5 年路径。',
+      };
+    }
+    const title = annexCOccupations.occupations.find(
+      (o) => o.socCode === current.socCode,
+    )?.title;
+    const since = continuousRun(timeline, simulationDate, inAnnexC).episodes[0]
+      .validFrom;
+    const years = es.values.pathwayYears5.value;
+    if (addYears(since, years) <= simulationDate) {
+      return {
+        status: 'PASS',
+        explanation: `自 ${since} 起连续从事 Annex C 公共服务职业（${title}），已满 ${years} 年。`,
+      };
+    }
+    const residence = esQualifyingResidence(ctx);
+    if (residence && since <= residence.start) {
+      return {
+        status: 'PASS',
+        explanation: `整个合格期（自 ${residence.start} 起）都在 Annex C 公共服务职业（${title}），可走 5 年路径。`,
+      };
+    }
+    return {
+      status: 'UNKNOWN',
+      explanation: `合格期中途才转入 Annex C 公共服务职业（${title}，自 ${since} 起），原文未说明换入合格职业前的年份如何计算。`,
+      pendingDetails: ['PD-012'],
     };
   },
 );
