@@ -3,11 +3,16 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import type { SimulationResult } from '@uk-immigration/engine';
-import { ResultView } from '../../components/result-view';
+import { PrincipalAssessment, ResultView } from '../../components/result-view';
 import { ShareLink } from '../../components/share-link';
 import { useTranslation } from '../../i18n/locale';
 import { mockResults } from '../../lib/mock-results';
-import { type Draft, runSimulation } from '../../lib/questionnaire';
+import {
+  type Draft,
+  needsPrincipal,
+  runPrincipalSimulation,
+  runSimulation,
+} from '../../lib/questionnaire';
 import { decodeDraft } from '../../lib/share';
 import {
   draftStorage,
@@ -62,6 +67,9 @@ export default function ResultPage() {
     return () => window.removeEventListener('hashchange', load);
   }, []);
 
+  const principalResult =
+    draft && needsPrincipal(draft) ? runPrincipalSimulation(draft) : undefined;
+
   return (
     <main id="main" className={styles.main}>
       {!ready ? (
@@ -75,6 +83,7 @@ export default function ResultPage() {
           )}
           {draft && <ShareLink draft={draft} />}
           <ResultView result={result} mock={mock} />
+          {principalResult && <PrincipalAssessment result={principalResult} />}
           <div className={styles.actions}>
             {!result.shortCircuit && (
               <Link className={styles.secondary} href="/whatif">

@@ -17,6 +17,8 @@ export const steps = [
   'relationships',
   'english',
   'date',
+  // Append to preserve the step numbers in version 1 drafts.
+  'principal',
 ] as const;
 export const shortCircuitKeys = [
   'criminality',
@@ -34,6 +36,46 @@ export interface Draft {
   simulationDate: string;
   screening: Screening;
   timeline: PersonTimeline;
+  principal?: PersonTimeline;
+  principalScreening?: Screening;
+  principalStep?: number;
+  principalCompleted?: boolean;
+}
+
+export const emptyScreening = (): Screening => ({
+  criminality: '',
+  breach: '',
+  debt: '',
+  protection: '',
+});
+
+export function needsPrincipal(draft: Draft): boolean {
+  return (
+    draft.timeline.episodes
+      .filter(
+        (episode) =>
+          episode.validFrom <= draft.simulationDate &&
+          draft.simulationDate <= episode.validTo,
+      )
+      .sort((a, b) => (a.validFrom < b.validFrom ? 1 : -1))[0]?.role ===
+    'DEPENDANT'
+  );
+}
+
+export function activePersonDraft(draft: Draft): Draft {
+  return draft.principalStep === undefined
+    ? draft
+    : {
+        ...draft,
+        step: draft.principalStep,
+        timeline: draft.principal!,
+        screening: draft.principalScreening!,
+      };
+}
+
+export function stepSequence(draft: Draft): number[] {
+  if (draft.principalStep !== undefined) return [0, 1, 2, 3, 4, 5, 6, 7];
+  return [0, 1, 2, ...(needsPrincipal(draft) ? [9] : []), 3, 4, 5, 6, 7, 8];
 }
 
 export function today(): string {
@@ -58,7 +100,7 @@ export function createDraft(): Draft {
     step: 0,
     completed: false,
     simulationDate,
-    screening: { criminality: '', breach: '', debt: '', protection: '' },
+    screening: emptyScreening(),
     timeline: {
       dateOfBirth: '',
       nationality: '',
@@ -80,37 +122,76 @@ type Action =
   | { type: 'step'; step: number }
   | { type: 'timeline'; patch: Partial<PersonTimeline> }
   | { type: 'screening'; key: ScreeningKey; answer: Screening[ScreeningKey] }
-  | { type: 'date'; date: string };
+  | { type: 'date'; date: string }
+  | { type: 'principal-start' }
+  | { type: 'principal-return'; completed?: boolean };
 
 export function draftReducer(state: Draft, action: Action): Draft {
+  const editingPrincipal = state.principalStep !== undefined;
   switch (action.type) {
     case 'restore':
       return action.draft;
     case 'step':
-      return { ...state, step: action.step };
+      return {
+        ...state,
+        [editingPrincipal ? 'principalStep' : 'step']: action.step,
+      };
+    case 'principal-start':
+      return {
+        ...state,
+        completed: false,
+        principalStep: 0,
+        principal:
+          state.principal ??
+          draftReducer(createDraft(), {
+            type: 'date',
+            date: state.simulationDate,
+          }).timeline,
+        principalScreening: state.principalScreening ?? emptyScreening(),
+      };
+    case 'principal-return':
+      return {
+        ...state,
+        principalStep: undefined,
+        principalCompleted: action.completed ?? state.principalCompleted,
+      };
     case 'timeline':
       return {
         ...state,
         completed: false,
-        timeline: { ...state.timeline, ...action.patch },
+        [editingPrincipal ? 'principal' : 'timeline']: {
+          ...(editingPrincipal ? state.principal : state.timeline),
+          ...action.patch,
+        },
+        ...(editingPrincipal && { principalCompleted: false }),
       };
     case 'screening':
       return {
         ...state,
         completed: false,
-        screening: { ...state.screening, [action.key]: action.answer },
+        [editingPrincipal ? 'principalScreening' : 'screening']: {
+          ...(editingPrincipal ? state.principalScreening : state.screening),
+          [action.key]: action.answer,
+        },
+        ...(editingPrincipal && { principalCompleted: false }),
       };
     case 'date': {
-      const incomeYears = [...state.timeline.incomeYears];
-      for (const taxYear of taxYearsBefore(action.date)) {
-        if (!incomeYears.some((row) => row.taxYear === taxYear))
-          incomeYears.push({ taxYear });
-      }
+      const withIncomeWindow = (timeline: PersonTimeline) => {
+        const incomeYears = [...timeline.incomeYears];
+        for (const taxYear of taxYearsBefore(action.date)) {
+          if (!incomeYears.some((row) => row.taxYear === taxYear))
+            incomeYears.push({ taxYear });
+        }
+        return { ...timeline, incomeYears };
+      };
       return {
         ...state,
         completed: false,
         simulationDate: action.date,
-        timeline: { ...state.timeline, incomeYears },
+        timeline: withIncomeWindow(state.timeline),
+        ...(state.principal && {
+          principal: withIncomeWindow(state.principal),
+        }),
       };
     }
   }
@@ -126,7 +207,14 @@ export function visibleIncomeYears(draft: Draft): IncomeYear[] {
 }
 
 export function runSimulation(draft: Draft): SimulationResult {
-  const risk = shortCircuitKeys.find((key) => draft.screening[key] === 'yes');
+  const applicantRisk = shortCircuitKeys.find(
+    (key) => draft.screening[key] === 'yes',
+  );
+  const principalRisk =
+    needsPrincipal(draft) &&
+    draft.principal &&
+    shortCircuitKeys.find((key) => draft.principalScreening?.[key] === 'yes');
+  const risk = applicantRisk || principalRisk;
   if (risk) {
     // The screening contract has no event dates or protection-history field.
     // Do not fabricate CriminalEvent / ImmigrationBreach / episode entries.
@@ -138,7 +226,10 @@ export function runSimulation(draft: Draft): SimulationResult {
     return {
       policyAsOf,
       byRuleSet: {},
-      shortCircuit: { reason: reasons[risk], message: t('screening.message') },
+      shortCircuit: {
+        reason: reasons[risk],
+        message: `${!applicantRisk && principalRisk ? t('principal.prefix') : ''}${t('screening.message')}`,
+      },
     };
   }
   return evaluate({
@@ -148,6 +239,36 @@ export function runSimulation(draft: Draft): SimulationResult {
       incomeYears: visibleIncomeYears(draft),
       governmentDebt: { outstanding: draft.screening.debt === 'yes' },
     },
+    ...(draft.principal && {
+      principal: {
+        ...draft.principal,
+        incomeYears: visibleIncomeYears({
+          ...draft,
+          timeline: draft.principal,
+        }),
+        ...(draft.principalScreening?.debt && {
+          governmentDebt: {
+            outstanding: draft.principalScreening.debt === 'yes',
+          },
+        }),
+      },
+    }),
+  });
+}
+
+export function runPrincipalSimulation(
+  draft: Draft,
+): SimulationResult | undefined {
+  if (!draft.principal) return undefined;
+  return runSimulation({
+    ...draft,
+    timeline: draft.principal,
+    screening: draft.principalScreening ?? {
+      ...emptyScreening(),
+      debt: draft.principal.governmentDebt?.outstanding ? 'yes' : 'no',
+    },
+    principal: undefined,
+    principalScreening: undefined,
   });
 }
 
@@ -200,6 +321,8 @@ export function validateStep(draft: Draft): Errors {
     case 2:
       timeline.episodes.forEach((episode, i) => {
         range(`episode-${i}`, episode.validFrom, episode.validTo);
+        if (episode.role === 'DEPENDANT' && !episode.dependantOf)
+          errors[`episode-${i}-dependantOf`] = 'error.required';
         if (episode.route === 'SKILLED_WORKER') {
           if (episode.socCode && !/^\d{4}$/.test(episode.socCode))
             errors[`episode-${i}-soc`] = 'error.soc';
@@ -230,6 +353,9 @@ export function validateStep(draft: Draft): Errors {
         timeline.dateOfBirth > draft.simulationDate
       )
         errors.simulationDate = 'error.dob';
+      break;
+    case 9:
+      if (!draft.principalCompleted) errors.principal = 'principal.required';
       break;
   }
   return errors;

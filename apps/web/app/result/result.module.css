@@ -104,3 +104,14 @@
     padding: 20px;
   }
 }
+
+.principal {
+  margin-top: 32px;
+  border-top: 1px solid #b1b4b6;
+  padding-top: 24px;
+}
+.principal > summary {
+  cursor: pointer;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
