@@ -39,6 +39,7 @@
 | 33 | 首次部署：用户授权 wrangler OAuth（Fable 代点 Authorize），`pages project create --force` 建 uk-immigration-simulator，直传 49 个文件到 https://uk-immigration-simulator.pages.dev（浏览器核对首页、/simulate、/policy/ 归一、404、/whatif），在后台绑定自定义域名 wanruncong.uk（CNAME @ 自动添加，几分钟后状态 Active / SSL enabled；check-host.net 从 40 余个节点访问 https://wanruncong.uk/ 全部 200）；本机当前网络（Tailscale / 10.239 DNS）对该域名 DNS 负缓存且 TLS 被重置，不能作为验收依据；deploy.md 补 `--force` 说明与项目名 | docs/deploy.md, PROGRESS.md |
 | 34 | 建 GitHub 远端：私有仓库 https://github.com/Goldenmonstew/uk-immigration-simulator（gh，SSH），main 已推送；仓库变量 CF_PAGES_PROJECT 已设；首个 CI run 触发，Deploy run 因尚无 Cloudflare secrets 先取消 | PROGRESS.md |
 | 35 | 自动部署打通：仓库 secrets CLOUDFLARE_ACCOUNT_ID（Fable 设）与 CLOUDFLARE_API_TOKEN（用户创建 Pages: Edit、一年期 token 并自行粘贴），重跑 Deploy 工作流成功（59 秒，上传并发布到生产）；用户曾把 token 贴进对话，建议用后撤销重建 | PROGRESS.md |
+| 36 | Phase 3 规划：docs/tasks/phase-3-plan.md（Wave 1：3.1 sol ISL / Table 3a / 来源核对脚本，3.2 Opus 可读名 / ISL 推导 / 文案收尾 / IAA 复核导出，3.3 astra 打印 / 多情景 / PWA / 细节；Wave 2 难民路径待用户决定） | docs/tasks/phase-3-plan.md, PROGRESS.md |
 
 ### 当前状态
 
@@ -51,4 +52,4 @@
 - 文案小项：英文 "1 full years" 单复数；解释里的枚举码（SKILLED_WORKER、CORE_PERMISSION 等）要可读名需显示名表（Phase 3 候选）。
 - 已定口径、页码约定与 Codex 启动参数不变；验收时只看 gate 日志里的 `GATE EXIT` 行，不看后台任务的退出码。
 - 用户授权（2026-11-04）：每次验收合并到 main 后自动 `git push origin main`，不再逐次确认；push 后 GitHub Actions 自动跑 CI 与部署（secrets 就绪后）。
-- 下一步：用户决定先部署试用还是规划 Phase 3。
+- 下一步：Phase 3 规划已写（`docs/tasks/phase-3-plan.md`），等用户确认 Wave 1 派发与 §4 三项决定。
