@@ -5,7 +5,7 @@
 | 日期 | 2026-11-04 |
 | 作者 | Fable 5.1（统筹 / 验收） |
 | 输入 | `docs/research/2026-11-03-deep-research-report.md`（研究报告，归档自 ~/Downloads，内容未改动） |
-| 原文核对 | `policy-sources/2026-11-02-cp1707-a-fairer-pathway-to-settlement-government-response.pdf`（官方回应文件 CP 1707，60 页）。本文所有 `p<N>` 指该 PDF 的页码，对应 `docs/SOURCES.md` 的 SRC-001 |
+| 原文核对 | `policy-sources/2026-11-02-cp1707-a-fairer-pathway-to-settlement-government-response.pdf`（官方回应文件 CP 1707，62 页）。本文所有 `p<N>` 指该 PDF 的物理页序（封面为 p1，与 `pdftotext -f N -l N` 一致）；2026-11-04 修正：此前按换页符计数漏了空白 p3，p3 以后的页码已全部 +1。对应 `docs/SOURCES.md` 的 SRC-001 |
 | 状态 | 草案。§9 的决定项由用户确认后，本文作为各编码 agent 的任务依据 |
 
 ## 1. 现状
@@ -36,7 +36,7 @@
 1. 政策三态 `CURRENT_LAW` / `ANNOUNCED_NOT_IN_FORCE` / `IN_FORCE_FUTURE_VERSION`；每个结果都标明"截至哪天、依据哪个版本"。
 2. 数据模型围绕个人时间线（签证片段、缺席、收入年度、福利片段、家庭关系），不是当前状态快照。
 3. `visa_eligibility` 与 `settlement_eligibility` 分开计算，两套门槛不混用。
-4. 门槛参数化：£12,571 / £50,271 / £125,141 与所得税门槛挂钩，会随税制变动（p14 原文确认）。
+4. 门槛参数化：£12,571 / £50,271 / £125,141 与所得税门槛挂钩，会随税制变动（p15 原文确认）。
 5. 决策输出六态 + 满足 / 未满足 / 未知规则 + 假设 + 官方来源，而不是一个布尔值。
 6. LLM 只做 policy intelligence（发现变化、提议规则改动），不进运行时引擎；上线前经人工法律 review 与回归测试。
 
@@ -54,40 +54,41 @@
 
 | 断言 | 原文位置 |
 |---|---|
-| CP 1707《A Fairer Pathway to Settlement: Government Response to the Consultation》2026-11 发布 | p1–p3 |
-| 3 年：£125,141，申请前 4 年中 3 年；5 年：£50,271，5 年中 3 年；10 年：£12,571，7 年中 5 年 | p15；Table 1 p45 |
-| 门槛与所得税门槛联动 | p14 |
-| 家庭合并门槛 £25,142（个人的两倍，随 NI 门槛变动）；只能一方依赖另一方收入 | p16 |
-| 收入要求豁免：儿童、65 岁以上、身心状况 | p14 |
-| Long Residence 关闭；Student / Graduate 等临时路线时间不计入 | p22–p23 |
-| 3/5/10 年路径要求申请前 5 年未使用 specified public funds，否则 20 年；先沿用现有 public funds 定义，纳入范围与豁免实施前另行公布 | p17 |
-| 成年人在英有犯罪记录即拒绝，含 fines、cautions、community sentences、conditional discharge 等；海外定罪在英构成犯罪的视同 | p11 |
-| 成年人的 qualifying immigration breach（逾期、违反许可条件、申请中欺骗、妨碍移民管制）→ 20 年路径，不因高收入抵消 | p12 |
-| BN(O) 保留 5 年，但仍需满足强化的犯罪记录与 B2 要求 | p24 |
-| Highest Talent Group 范围待 MAC 审查 | p45 注 16 |
-| 公共服务（医疗、教育国家薪级岗位）5 年路径；岗位清单在 Annex C | p15；p45 注 17 |
-| 实施前政府还会发布技术 / 操作指引与完整影响评估 | p9；p53 |
-| Skilled Worker 一般门槛 £41,700（2025-07-22 起）| 多家二手来源一致；Rules 原文待登记（SRC-004） |
-| 首批规则 2026-12 提交、2027 年陆续实施 | 多家二手来源一致；来自议会陈述，不在 PDF 内（SRC-002/003 待登记） |
+| CP 1707《A Fairer Pathway to Settlement: Government Response to the Consultation》2026-11 发布 | p1–p4 |
+| 3 年：£125,141，申请前 4 年中 3 年；5 年：£50,271，5 年中 3 年；10 年：£12,571，7 年中 5 年 | p16；Table 1 p46 |
+| 门槛与所得税门槛联动 | p15 |
+| 家庭合并门槛 £25,142（个人的两倍，随 NI 门槛变动）；只能一方依赖另一方收入 | p17 |
+| 收入要求豁免：儿童、65 岁以上、身心状况 | p15 |
+| Long Residence 关闭；Student / Graduate 等临时路线时间不计入 | p23–p24 |
+| 3/5/10 年路径要求申请前 5 年未使用 specified public funds，否则 20 年；先沿用现有 public funds 定义，纳入范围与豁免实施前另行公布 | p18 |
+| 成年人在英有犯罪记录即拒绝，含 fines、cautions、community sentences、conditional discharge 等；海外定罪在英构成犯罪的视同 | p12 |
+| 成年人的 qualifying immigration breach（逾期、违反许可条件、申请中欺骗、妨碍移民管制）→ 20 年路径，不因高收入抵消 | p13 |
+| BN(O) 保留 5 年，但仍需满足强化的犯罪记录与 B2 要求 | p25 |
+| Highest Talent Group 范围待 MAC 审查 | p46 注 16 |
+| 公共服务（医疗、教育国家薪级岗位）5 年路径；岗位清单在 Annex C | p16；p46 注 17 |
+| 实施前政府还会发布技术 / 操作指引与完整影响评估 | p10；p54 |
+| Skilled Worker 一般门槛 £41,700 且须达 going rate（2025-07-22 起）| SRC-004 SW 4.2 Option A（入境 / 续签）、SW 24.3 row A（settlement）；Appendix 版本 2026-10-08（HC 584） |
+| 首批规则 2026-12 提交、2027 年陆续实施 | SRC-002 HC Deb vol 792 col 593（12 月起提交、2027 年内实施）；SRC-003 HL Deb vol 860 cols 1423–1424（12 月开始、2027-01 生效、2027–2028 继续）。两院精度不同，均出自问答而非陈述正文；生效日以 Statement of Changes 为准，之前引擎输出 `UNKNOWN` |
 
 ### 3.2 报告遗漏或需修正的
 
 | 项目 | 原文 | 对产品的影响 |
 |---|---|---|
-| 不计入路线的完整清单：Visit、Student、Global Business Mobility、Temporary Worker、Youth Mobility、Seasonal Worker、Overseas Domestic Worker、Graduate 与 HPI、Ukraine 各 scheme；LOTR 待政府另行决定 | p23 | 报告只提 Student / Graduate；引擎需要完整的路线分类表 |
-| core permission 与 high talent permission 的精确定义：core = Tier 2 Minister of Religion、Skilled Worker、UK Ancestry、Global Talent、Scale-up、Innovator Founder、International Sportsperson、Family Partner、Family Partner/Parent（不含 Article 8）、Stateless；high talent = Skilled Worker、Global Talent、Scale-up、Innovator Founder、International Sportsperson；Global Talent / Innovator Founder 走 3/5 年时最近一次许可必须就是该路线 | p22 注 9、10 | 路线归类不能靠常识，要按注脚建表；Skilled Worker 同属两者 |
-| Family and Private Life 路线不能走 3 / 5 年，只能 10 / 20；但 British citizen 的伴侣 / 父母 / 子女与 UK Ancestry 属 British connection，可走 5 年 | p17；p22 | 报告把"Family"笼统归为 British connection；引擎要区分 Appendix FM 伴侣（British connection）与 private life / Article 8 |
-| 保护类 / 人权类路线时间不能与工作 / 家庭路线时间合并；切换时新路径重新起算 | p24 | 时间线引擎需要"路线组切换重置"规则，报告没有 |
-| 10 年路径的收入要求文内有两种表述：p14 "至少 3 年达到 £12,571"，p15 与 Table 1 "7 年中 5 年" | p14、p15、p45 | 典型 PENDING_DETAIL；引擎以 Table 1 为准并在输出中声明假设 |
-| 15 年路径取消；RQF6 以下岗位走 10 年并可凭贡献加速 | p40–p41 | 报告表格已无 15 年，但没说明咨询版到回应版的变化 |
-| 过渡安排：无一般豁免；申请按决定日有效的 Rules 审理（p40）。一次性针对性安排：2025-05 白皮书发布前进入或转入 care worker 路线者保留 5 年（£25,000 薪资、担保、雇佣条件），不达标者可再获 5 年 Health and Care 签证；RQF6 以下国家薪级医疗 / 教育岗位（白皮书前入境）保留 5 年；2024-04 前 Skilled Worker 群体可按原条件续签至 2035；2027-02-01 起失去担保的 care worker 有 120 + 60 天窗口 | p40–p44 | 报告只提一句；这是已在英用户的第一个问题，必须建模 |
-| 框架外群体：Afghan schemes、Legacy Safe and Legal routes、Windrush、Armed Forces（4 年）、丧偶伴侣、UASC、local authority care 儿童、在英长大的青年、家暴受害者 | p24–p25 | 引擎至少要能识别并短路到"框架外，按现行安排" |
-| 难民三条路径（Safe and Legal 5 年 / Protection Work and Study 10 年 / Core Protection 20 年；非法入境加 10 年） | p37–p39；Table 2 p46 | MVP 不做，但路线枚举里要有，走短路分支 |
-| B2 英语据称经 HC 1691 于 2027-03-26 起适用于 settlement | 单一二手来源，待核对（SRC-007） | 若属实，是一个现成的 `IN_FORCE_FUTURE_VERSION` 测试用例 |
+| 不计入路线的完整清单：Visit、Student、Global Business Mobility、Temporary Worker、Youth Mobility、Seasonal Worker、Overseas Domestic Worker、Graduate 与 HPI、Ukraine 各 scheme；LOTR 待政府另行决定 | p24 | 报告只提 Student / Graduate；引擎需要完整的路线分类表 |
+| core permission 与 high talent permission 的精确定义：core = Tier 2 Minister of Religion、Skilled Worker、UK Ancestry、Global Talent、Scale-up、Innovator Founder、International Sportsperson、Family Partner、Family Partner/Parent（不含 Article 8）、Stateless；high talent = Skilled Worker、Global Talent、Scale-up、Innovator Founder、International Sportsperson；Global Talent / Innovator Founder 走 3/5 年时最近一次许可必须就是该路线 | p23 注 9、10 | 路线归类不能靠常识，要按注脚建表；Skilled Worker 同属两者 |
+| Family and Private Life 路线不能走 3 / 5 年，只能 10 / 20；但 British citizen 的伴侣 / 父母 / 子女与 UK Ancestry 属 British connection，可走 5 年 | p18；p23 | 报告把"Family"笼统归为 British connection；引擎要区分 Appendix FM 伴侣（British connection）与 private life / Article 8 |
+| 保护类 / 人权类路线时间不能与工作 / 家庭路线时间合并；切换时新路径重新起算 | p25 | 时间线引擎需要"路线组切换重置"规则，报告没有 |
+| 10 年路径的收入要求文内有两种表述：p15 "至少 3 年达到 £12,571"，p16 与 Table 1 "7 年中 5 年" | p15、p16、p46 | 典型 PENDING_DETAIL；引擎以 Table 1 为准并在输出中声明假设 |
+| 15 年路径取消；RQF6 以下岗位走 10 年并可凭贡献加速 | p41–p42 | 报告表格已无 15 年，但没说明咨询版到回应版的变化 |
+| 过渡安排：无一般豁免；申请按决定日有效的 Rules 审理（p41）。一次性针对性安排：2025-05 白皮书发布前进入或转入 care worker 路线者保留 5 年（£25,000 薪资、担保、雇佣条件），不达标者可再获 5 年 Health and Care 签证；RQF6 以下国家薪级医疗 / 教育岗位（白皮书前入境）保留 5 年；2024-04 前 Skilled Worker 群体可按原条件续签至 2035；2027-02-01 起失去担保的 care worker 有 120 + 60 天窗口 | p41–p45 | 报告只提一句；这是已在英用户的第一个问题，必须建模 |
+| 框架外群体：Afghan schemes、Legacy Safe and Legal routes、Windrush、Armed Forces（4 年）、丧偶伴侣、UASC、local authority care 儿童、在英长大的青年、家暴受害者 | p25–p26 | 引擎至少要能识别并短路到"框架外，按现行安排" |
+| 难民三条路径（Safe and Legal 5 年 / Protection Work and Study 10 年 / Core Protection 20 年；非法入境加 10 年） | p38–p40；Table 2 p47 | MVP 不做，但路线枚举里要有，走短路分支 |
+| B2 英语：HC 1691 已于 2026-03-26 写入 Rules，条文按申请日是否 ≥ 2027-03-26 区分 B1 / B2，覆盖 14 个 Appendix（Skilled Worker 为 SW 22A.1） | SRC-007 APP SW5、EM 5.60–5.62；SRC-004 SW 22A.1 | 已证实。它是 `CURRENT_LAW` 内按申请日分支的现成测试用例，而不是未来版本 |
+| 2024-04-04 前进入 Skilled Worker 的群体：现行 SW 4.2(b)(ii) 允许申请日早于 2030-04-04 时用较低门槛；CP 1707 宣布延长到 2035 | SRC-004 SW 4.2；SRC-001 p44 | 现成的 `CURRENT_LAW`（2030）vs `ANNOUNCED_NOT_IN_FORCE`（2035）对照用例 |
 
 ## 4. 报告本身的问题
 
-1. **引用不可用**。全文 57 处引用是研究工具内部标记（30 个来源 ID），没有一个真实 URL 或页码。对一个"每条规则都要溯源到官方段落"的产品，这是第一个必须补的洞。§3 已把最关键的一份文件按页核对；其余来源在 `docs/SOURCES.md` 登记为 todo，并附了引用 ID 到来源的推断映射。
+1. **引用不可用**。全文 57 处引用是研究工具内部标记（30 个来源 ID），没有一个真实 URL 或页码。对一个"每条规则都要溯源到官方段落"的产品，这是第一个必须补的洞。§3 已把最关键的一份文件按页核对；其余来源已由任务 0.3 全部登记（SRC-001–SRC-016，快照 + sha256），30 个引用 ID 逐条核对（27 个确定、3 个无法确认），见 `docs/SOURCES.md`。
 2. **无版本元数据**。报告没有日期、版本、"截至"声明，而产品恰恰要求所有政策陈述带时间戳。已按 2026-11-03 快照归档。
 3. **路线分类过粗**（§3.2 前四行）。按报告的表建规则会把 private life 路线错误地放进 5 年路径。
 4. **YAML 规则 DSL 的建议在工程上站不住**，见 §5 第 7 条。
@@ -98,7 +99,7 @@
 
 1. **MVP 再收窄为垂直切片（MVP-0）**。报告 MVP 把 7 条路线一起做，意味着规则引擎、解释层、来源层三者都没验证就开始铺规则。建议 MVP-0 只做：Skilled Worker 现行 5 年路径 + Earned Settlement 3/5/10/20 年收入计数 + public funds 基础分支 + 过渡安排判断 + 结果页（双栏 + Why + 来源 + 政策版本标注）。端到端跑通后，其他路线以"规则包"形式逐条加入，每条带 fixtures。
 2. **建"政府未定事项登记表"（`docs/pending-details.md`）**。qualifying earnings 的定义（含不含奖金、自雇利润、以何种证据）、specified public funds 的最终清单与豁免、过渡安排细则、Highest Talent Group 范围、LOTR 处理、10 年路径"3 年 vs 7 中 5"的口径、实施日期——这些在引擎里必须输出 `UNKNOWN` 并声明假设，不能由 agent 猜。登记表是规则作者和验收者共用的清单，每条带 `p<N>` 出处。
-3. **过渡安排要建模**。用户最关心"我适用旧规则还是新规则"。引擎要能对"入境日期 + 路线 + 是否 2025-05 白皮书前 + 申请日期"输出 `POLICY_NOT_YET_IN_FORCE` 或具体的过渡结论，并引用 p40 "按决定日有效的 Rules 审理"的原则。
+3. **过渡安排要建模**。用户最关心"我适用旧规则还是新规则"。引擎要能对"入境日期 + 路线 + 是否 2025-05 白皮书前 + 申请日期"输出 `POLICY_NOT_YET_IN_FORCE` 或具体的过渡结论，并引用 p41 "按决定日有效的 Rules 审理"的原则。
 4. **定目标用户与首发语言**。报告中文写就，UI 示例中英混杂。先定：以华人用户为主（中文 UI，法律术语保留英文原文）还是英文站。无论哪种，从第一天用 i18n key，不硬编码文案。
 5. **多年收入历史的录入交互**是最难的输入（tax year 对齐、多雇主、产假年份、自雇）。报告只给了数据结构，没有交互设计。MVP-0 用最简方案：按 tax year 填年收入，不确定可留空，留空年份按"未达门槛"保守处理并在假设里注明。
 
@@ -115,10 +116,10 @@
      docs/                  本文、SOURCES.md、pending-details.md、决策记录
    ```
 
-7. **规则用 TS 函数 + 强制元数据，而不是 YAML DSL**。报告的 YAML 示例只能表达 `count_years`；连续居留（缺席窗口）、路线切换序列与重置（p24）、伴侣联动、豁免覆盖、前向推算都表达不了，自研 DSL 本身就是一个项目。参数化（门槛随税制调整）用 JSON 参数文件即可满足。每条规则强制元数据头 `id / ruleset / status / effective_from / sources[] / pending_details[]`，由 schema 校验；缺来源的规则 CI 直接拒绝。
+7. **规则用 TS 函数 + 强制元数据，而不是 YAML DSL**。报告的 YAML 示例只能表达 `count_years`；连续居留（缺席窗口）、路线切换序列与重置（p25）、伴侣联动、豁免覆盖、前向推算都表达不了，自研 DSL 本身就是一个项目。参数化（门槛随税制调整）用 JSON 参数文件即可满足。每条规则强制元数据头 `id / ruleset / status / effective_from / sources[] / pending_details[]`，由 schema 校验；缺来源的规则 CI 直接拒绝。
 8. **`earliestPossibleDate` 是前向推算求解器**，不是布尔判断。它要对未来做假设（收入不变、持续居留、路线不变），每个假设必须写进 `assumptions[]` 并在 UI 展示。报告没有讨论这一层，但它是双栏结果和 What-if 的基础。
 9. **规则集版本模型**要区分法律版本（Immigration Rules 的 point-in-time）与政策版本（已公布框架）：`RuleSet { id, kind: LAW | ANNOUNCED, effective_from, effective_to, supersedes, sources[] }`，引擎按 `simulation_date` 选取。
-10. **黄金案例（golden fixtures）是验收主工具**。格式：YAML 场景 + 预期结果（outcome、路径年限、最早日期、必须出现的 failed / unknown 规则）。官方文件里的示例全部转成 fixture：Individual A–D（p18）、产假案例（p15）、过渡安排 Individual A–C（p44）、难民案例（p39）。CI 跑全部 fixtures，验收时我只看 fixtures 与 diff。
+10. **黄金案例（golden fixtures）是验收主工具**。格式：YAML 场景 + 预期结果（outcome、路径年限、最早日期、必须出现的 failed / unknown 规则）。官方文件里的示例全部转成 fixture：Individual A–D（p19）、产假案例（p16）、过渡安排 Individual A–C（p45）、难民案例（p40）。CI 跑全部 fixtures，验收时我只看 fixtures 与 diff。
 11. **MVP 不要后端**。浏览器本地计算 + URL / localStorage 保存情景，无账号、无数据库、无用户数据上传。报告路线图的第三阶段（保存、通知）明确推后，隐私风险也降到最低。
 
 ### P2 法律合规
