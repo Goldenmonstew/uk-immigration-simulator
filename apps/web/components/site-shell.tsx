@@ -48,6 +48,17 @@ export function SiteShell({ children }: { children: ReactNode }) {
       {children}
       <footer className={styles.footer}>
         <p>{t('site.footer')}</p>
+        <p className={styles.footerLinks}>
+          <Link href="/policy">{t('site.policy')}</Link>
+          <Link href="/about">{t('site.about')}</Link>
+          <a
+            href="https://github.com/Goldenmonstew/uk-immigration-simulator/issues/new?template=feedback.md"
+            target="_blank"
+            rel="noreferrer"
+          >
+            {t('site.feedback')}
+          </a>
+        </p>
       </footer>
     </>
   );

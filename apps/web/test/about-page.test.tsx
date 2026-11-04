@@ -12,7 +12,7 @@ import { policyAsOf, ruleSets } from '../lib/policy';
 import { createDraft, runSimulation } from '../lib/questionnaire';
 
 test.each(['zh-CN', 'en'] as const)(
-  'about renders its method, policy data and privacy in %s',
+  'about renders its method, policy data, privacy and feedback in %s',
   (locale) => {
     const html = renderToStaticMarkup(
       <LocaleContext value={{ locale, setLocale: () => {} }}>
@@ -33,6 +33,9 @@ test.each(['zh-CN', 'en'] as const)(
       'about.localPrivacy',
       'about.sharePrivacy',
       'about.analyticsPrivacy',
+      'about.feedbackTitle',
+      'about.feedbackIntro',
+      'about.feedbackPrivacy',
     ] as const)
       expect(html).toContain(t(key, locale));
     expect(html).toContain(`dateTime="${policyAsOf}">${policyAsOf}</time>`);
@@ -46,7 +49,20 @@ test.each(['zh-CN', 'en'] as const)(
     expect(renderToStaticMarkup(<PolicyPage />)).toContain(
       'id="rules-heading"',
     );
-    expect(html).not.toMatch(/mailto:|github\.com.*issues/);
+    const feedbackUrl =
+      'https://github.com/Goldenmonstew/uk-immigration-simulator/issues/new?template=feedback.md';
+    const feedbackSection = html.match(
+      /<section[^>]*aria-labelledby="about-feedback"[^>]*>[\s\S]*?<\/section>/,
+    )?.[0];
+    expect(feedbackSection).toContain(
+      `<a href="${feedbackUrl}" target="_blank" rel="noreferrer">${t('about.feedbackLink', locale)}</a>`,
+    );
+    const footer = html.match(/<footer[\s\S]*?<\/footer>/)?.[0];
+    expect(footer).toContain(
+      `<a href="${feedbackUrl}" target="_blank" rel="noreferrer">${t('site.feedback', locale)}</a>`,
+    );
+    expect(footer).toContain(`href="/policy">${t('site.policy', locale)}</a>`);
+    expect(footer).toContain(`href="/about">${t('site.about', locale)}</a>`);
     if (locale === 'en') expect(html).not.toMatch(/[\u3400-\u9fff：、（）]/);
   },
 );
@@ -77,6 +93,7 @@ test.each(['zh-CN', 'en'] as const)(
       );
       expect(html).toContain(t('home.disclaimer', locale));
       expect(html).toContain(`<a href="/about">${t('about.link', locale)}</a>`);
+      expect(html).not.toContain('github.com/Goldenmonstew');
     }
   },
 );
