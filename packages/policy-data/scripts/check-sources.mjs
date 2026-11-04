@@ -32,6 +32,13 @@ function normalizedBody(html) {
     .trim();
 }
 
+function hansardBody(json) {
+  return JSON.parse(json)
+    .Items.filter((item) => item.ItemType === 'Contribution')
+    .map((item) => item.Value)
+    .join('\n');
+}
+
 for (const row of primarySources.match(/^\| SRC-\d+ \|.*$/gm)) {
   const columns = row.split('|').map((column) => column.trim());
   const id = columns[1];
@@ -65,18 +72,22 @@ for (const row of primarySources.match(/^\| SRC-\d+ \|.*$/gm)) {
         counts.dynamic++;
         console.log(`${label}: dynamic (动态列表，不计入 changed)`);
       } else if (
-        url.startsWith('https://www.gov.uk/') &&
-        snapshot.endsWith('.html')
+        (url.startsWith('https://www.gov.uk/') && snapshot.endsWith('.html')) ||
+        (url.startsWith('https://hansard-api.parliament.uk/') &&
+          snapshot.endsWith('.json'))
       ) {
+        const normalize = snapshot.endsWith('.json')
+          ? hansardBody
+          : normalizedBody;
         const local = sha256(
-          normalizedBody(
+          normalize(
             readFileSync(
               new URL(`../../../${snapshot}`, import.meta.url),
               'utf8',
             ),
           ),
         );
-        const remote = sha256(normalizedBody(bytes.toString('utf8')));
+        const remote = sha256(normalize(bytes.toString('utf8')));
         if (local === remote) {
           counts.unchanged++;
           const reason =
