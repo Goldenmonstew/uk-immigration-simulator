@@ -1,5 +1,10 @@
 import { describe, expect, test } from 'vitest';
-import { clScope, clSwResidence5Y, clSwSalary } from '../src/rules/current-law';
+import {
+  clEnglish,
+  clScope,
+  clSwResidence5Y,
+  clSwSalary,
+} from '../src/rules/current-law';
 import type { ImmigrationEpisode } from '../src/types';
 import { run } from './helpers';
 
@@ -84,5 +89,48 @@ describe('CL-SW-SALARY', () => {
 
   test('missing salary is unknown', () => {
     expect(at(undefined)).toBe('UNKNOWN');
+  });
+});
+
+describe('CL-ENGLISH', () => {
+  const b1 = { english: { cefrLevel: 'B1' as const } };
+
+  test('Skilled Worker: no settlement English before 2027-03-26, B2 from then', () => {
+    expect(run(clEnglish, { english: undefined }, '2027-03-25').status).toBe(
+      'PASS',
+    );
+    expect(run(clEnglish, b1, '2027-03-26').status).toBe('FAIL');
+    expect(run(clEnglish, {}, '2027-03-26').status).toBe('PASS');
+    expect(run(clEnglish, { english: undefined }, '2027-03-26').status).toBe(
+      'UNKNOWN',
+    );
+  });
+
+  test('Long Residence: B1 before 2027-03-26, B2 from then', () => {
+    const lr = {
+      ...b1,
+      episodes: [
+        episode({
+          route: 'STUDENT',
+          validFrom: '2015-01-01',
+          validTo: '2028-01-01',
+        }),
+      ],
+    };
+    expect(run(clEnglish, lr, '2027-03-25').status).toBe('PASS');
+    expect(run(clEnglish, lr, '2027-03-26').status).toBe('FAIL');
+    expect(
+      run(clEnglish, { ...lr, english: { cefrLevel: 'A2' } }, '2027-03-25')
+        .status,
+    ).toBe('FAIL');
+  });
+
+  test('exempt at 65, not at 64', () => {
+    expect(
+      run(clEnglish, { ...b1, dateOfBirth: '1962-03-26' }, '2027-03-26').status,
+    ).toBe('PASS');
+    expect(
+      run(clEnglish, { ...b1, dateOfBirth: '1962-03-27' }, '2027-03-26').status,
+    ).toBe('FAIL');
   });
 });
