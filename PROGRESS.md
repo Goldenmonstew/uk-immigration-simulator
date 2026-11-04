@@ -29,6 +29,8 @@
 | 23 | 2.4 brief：家庭问卷（dependantOf、主申请人子流程、主申请人评估折叠）+ 政策页 /policy（规则集、参数、规则、变更日志、来源）+ 修 English 下导航标题回中文；待用户确认派发 | docs/tasks/2.4-family-and-policy-page.md |
 | 24 | 派发 2.5（Opus 会话 current-law-2-5，契约先行）与 2.4（astra，`.worktrees/astra-family-policy`，分支 `codex/astra-family-policy-2.4`，xhigh） | PROGRESS.md |
 | 25 | 合并 2.4 家庭问卷与政策页（astra，四个 commit）：dependantOf 必填、主申请人子流程（八步、共用模拟日期、带前缀短路）、结果页折叠的主申请人评估、/policy 政策依据页（规则集 / 参数 / 规则 / 变更日志 / 来源，全部由导出派生）、路由切换标题修复；Fable 复跑 gate（web 69），浏览器真实走完主申请人子流程（p31 A 两栏 LIKELY_ELIGIBLE / 5、B 变体 2028-04-06、主申请人筛查前缀短路、政策页计数一致、English 无中文残留、375px）；Fable 加英文标题 / 日志译文缺失回退两处；main 上 gate 全过 | apps/web/**, docs/tasks/reports/2.4-family-and-policy-page.md |
+| 26 | 合并 2.5 现行法律补全（Opus，10 个 commit）：契约（immigrationSalaryList、settled、SW 24.3 各行参数）、CL-SW-RESIDENCE-5Y 合并 SW 21.2 路线、CL-SW-SALARY 按 SW 24.3 选行、CL-SW-GOING-RATE（Table 1 / 1a / 2 / 2aa / 2a 查表）、SRC-018 Appendix Children 登记与 CL-SW-CHILD、SW 39.1(b) 主申请人已定居、ES-TRANSITIONAL-HEALTH-EDUCATION（Table 3a）、前 2024-04 群体假设、PD-063；Fable 评审契约（接受不加 newEntrant 等四处修正）、独立复跑 gate（engine 200）、通读规则与聚合、核对 SRC-018 sha256；main 上 gate 全过 | packages/engine/**, packages/policy-data/src/**, policy-sources/2025-11-11-immigration-rules-appendix-children.html, docs/SOURCES.md, docs/contracts.md, docs/pending-details.md, docs/tasks/reports/2.5-current-law-completion.md |
+| 27 | 2.9 brief：引擎双语解释（locale 参数、RuleMeta.titleEn、变更日志双语，契约先行），附 2.10 web 收尾要点；待用户确认派发 | docs/tasks/2.9-engine-bilingual.md |
 
 ### 当前状态
 
@@ -41,7 +43,8 @@
 - 页码约定与 Codex 启动参数不变。
 - Phase 2 规划已写入 `docs/tasks/phase-2-plan.md`：Wave 1 = 2.1 What-if（astra）、2.2 dependant 与家庭建模（Opus，契约先行）、2.3 Cloudflare Pages 部署 + 政策变更日志数据（sol）；Wave 2 = 2.4 家庭问卷 + 政策页（astra）、2.5 现行法律补全与剩余过渡安排（Opus）；2.6 going rate、2.7 分享链接可选。
 - 待用户决定：是否建 GitHub 远端（目前无 remote）；IAA 复核安排在绑定正式域名前；可选项取舍。
-- Phase 2 进行中（2026-11-04）：2.1、2.2、2.3、2.4、2.6、2.7+2.8 已合并。在跑：2.5 Opus 会话 current-law-2-5（分支 `claude/current-law-2-5-7f348b`，契约 79283dd 已评审通过，正在写规则）。2.9 等 2.5 之后；`.worktrees/` 为空。
+- Phase 2 进行中（2026-11-04）：2.1–2.8 全部合并，没有在跑的任务；`.worktrees/` 为空。2.9（Opus 引擎双语）brief 已写好等用户确认派发；之后 2.10（astra：带 locale 调引擎、删 `i18n/policy.ts`、问卷加 ISL 与主申请人已定居输入、修整页刷新标题）。
+- 2.5 报告留下的后续：p31 主申请人 fixture 可补 SOC（否则其现行法律栏为信息不足）；登记 Appendix Immigration Salary List（care worker £25,000 走 row D 需要）；PD-040 可按 SW 4.2(b)(ii) 部分关闭；提取 SRC-017 Table 4 / 5（row D 的国家薪级）。均列 Phase 3 候选。
 - 2.9 brief 要点：引擎 `locale` 参数与双语文案；合并后删除 web 的 `i18n/policy.ts` 手写英文映射；顺手修整页刷新时英文标题回中文（Next 静态 metadata 覆盖 LocaleProvider）。
 - Phase 3 候选新增：提取 SRC-017 Table 4 / 5 国家薪级明细（2.5 的 Row D 目前为不带 PD 的 UNKNOWN）。
 - 已知小项：已选英文时整页刷新标题仍为中文（站内导航已修，2.4）。
