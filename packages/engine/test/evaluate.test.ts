@@ -9,11 +9,8 @@ describe.each(fixtures)('$id', (fixture) => {
     const assessment = result.byRuleSet[fixture.expected.ruleSetId];
     expect(assessment).toMatchObject({
       outcome: expect.any(String),
-      satisfied: expect.any(Array),
-      failed: expect.any(Array),
-      unknown: expect.any(Array),
+      rules: expect.any(Array),
       assumptions: expect.any(Array),
-      sources: expect.any(Array),
     });
   });
 

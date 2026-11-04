@@ -22,6 +22,13 @@ export interface PersonTimeline {
   relationships: Relationship[];
   /** Missing = not provided. */
   english?: EnglishEvidence;
+  /** Life in the UK test. Missing = not provided. */
+  lifeInTheUk?: { passed: true } | { exempt: true };
+  /**
+   * Physical or mental condition that exempts the minimum earnings
+   * requirement (SRC-001 p15). Age exemptions are derived from dateOfBirth.
+   */
+  earningsExemptHealth?: boolean;
   // Coarse fields that only need to trigger a short circuit or the 20-year
   // pathway; details go to regulated advice.
   criminalRecord: CriminalEvent[];
@@ -147,17 +154,21 @@ export type DecisionOutcome =
   | 'POLICY_NOT_YET_IN_FORCE'
   | 'REQUIRES_REGULATED_REVIEW';
 
+/** One rule's outcome for this person; the UI's "Why?" comes from these. */
+export interface RuleOutcome extends RuleResult {
+  id: RuleId;
+  title: string;
+}
+
 export interface SettlementAssessment {
   outcome: DecisionOutcome;
   /** Earned Settlement rule sets only; current law has no route groups. */
   routeGroup?: RouteGroup;
   pathwayYears?: number;
   earliestDate?: IsoDate;
-  satisfied: RuleId[];
-  failed: RuleId[];
-  unknown: RuleId[];
+  /** Every rule that ran, in order, with explanation and sources. */
+  rules: RuleOutcome[];
   assumptions: string[];
-  sources: SourceRef[];
 }
 
 export interface SimulationResult {

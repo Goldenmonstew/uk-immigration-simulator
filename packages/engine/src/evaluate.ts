@@ -29,11 +29,8 @@ export function evaluate(request: SimulationRequest): SimulationResult {
   for (const id of ids) {
     const assessment: SettlementAssessment = {
       outcome: 'INSUFFICIENT_INFORMATION',
-      satisfied: [],
-      failed: [],
-      unknown: [],
+      rules: [],
       assumptions: [],
-      sources: [],
     };
     byRuleSet[id] = assessment;
   }
