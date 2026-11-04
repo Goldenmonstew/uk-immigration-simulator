@@ -1,0 +1,97 @@
+.layout,
+.comparisons {
+  display: grid;
+  gap: 24px;
+  align-items: start;
+  min-width: 0;
+}
+.controls {
+  min-width: 0;
+}
+.field {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+.field label,
+.income legend {
+  font-weight: 700;
+}
+.field input,
+.field select {
+  width: 100%;
+  min-height: 44px;
+  padding: 8px;
+  border: 2px solid #0b0c0c;
+  background: #fff;
+}
+.field input[type='range'] {
+  padding: 0;
+  accent-color: #1d70b8;
+}
+.income {
+  min-width: 0;
+  margin: 0 0 24px;
+  padding: 16px;
+  border: 1px solid #b1b4b6;
+}
+.checkbox {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 16px;
+  cursor: pointer;
+}
+.checkbox input {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  margin: 3px 0 0;
+  accent-color: #00703c;
+}
+.hint,
+.ruleMeta {
+  font-size: 0.95rem;
+  color: #505a5f;
+}
+.hint {
+  margin: 12px 0 0;
+}
+.income .hint + .field {
+  margin-top: 16px;
+}
+.presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.presets button {
+  padding: 8px 10px;
+  font-size: 1rem;
+}
+.direction {
+  margin: 20px 0 0;
+  font-size: 0.95rem;
+  color: #505a5f;
+}
+.change {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  gap: 8px;
+  align-items: baseline;
+  font-size: 1rem;
+}
+.error {
+  color: #d4351c;
+}
+@media (min-width: 768px) {
+  .layout {
+    grid-template-columns: 280px minmax(0, 1fr);
+    gap: 32px;
+  }
+}
+@media (min-width: 1100px) {
+  .comparisons {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

@@ -35,6 +35,11 @@ export default function ResultPage() {
         <>
           <ResultView result={result} mock={mock} />
           <div className={styles.actions}>
+            {!result.shortCircuit && (
+              <Link className={styles.secondary} href="/whatif">
+                {t('whatif.title')}
+              </Link>
+            )}
             <Link className={styles.button} href="/simulate">
               {t('result.edit')}
             </Link>
