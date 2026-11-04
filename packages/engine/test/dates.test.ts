@@ -4,6 +4,7 @@ import {
   addYears,
   daysBetween,
   fullYears,
+  fullYearsEn,
   overlapDays,
   taxYearOf,
   taxYearsBefore,
@@ -30,6 +31,12 @@ describe('dates', () => {
   test('fullYears turns on the anniversary', () => {
     expect(fullYears('1961-11-04', '2026-11-03')).toBe(64);
     expect(fullYears('1961-11-04', '2026-11-04')).toBe(65);
+  });
+
+  test('fullYearsEn picks singular or plural', () => {
+    expect(fullYearsEn('2025-11-04', '2026-11-04')).toBe('1 full year');
+    expect(fullYearsEn('2025-11-05', '2026-11-04')).toBe('0 full years');
+    expect(fullYearsEn('2023-11-04', '2026-11-04')).toBe('3 full years');
   });
 
   test('tax years start on 6 April', () => {

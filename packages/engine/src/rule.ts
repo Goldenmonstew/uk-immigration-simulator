@@ -1,3 +1,4 @@
+import type { DisplayName } from '@uk-immigration/policy-data';
 import type {
   Locale,
   Rule,
@@ -15,6 +16,11 @@ export type Lang = (zh: string, en: string) => string;
 
 export function textFor({ locale }: { locale?: Locale }): Lang {
   return (zh, en) => (locale === 'en' ? en : zh);
+}
+
+/** A display name (route, route group, breach type) in the locale. */
+export function nameIn(L: Lang, name: DisplayName): string {
+  return L(name['zh-CN'], name.en);
 }
 
 /** A rule whose results cite `meta.sources` unless the check says otherwise. */

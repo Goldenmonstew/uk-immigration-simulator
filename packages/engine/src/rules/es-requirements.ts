@@ -1,7 +1,10 @@
-import { earnedSettlement2026_11 as es } from '@uk-immigration/policy-data';
+import {
+  breachTypeNames,
+  earnedSettlement2026_11 as es,
+} from '@uk-immigration/policy-data';
 import { fullYears } from '../dates';
 import { episodeOn } from '../residence';
-import { defineRule, textFor } from '../rule';
+import { defineRule, nameIn, textFor } from '../rule';
 import type { Lang } from '../rule';
 import type { CefrLevel } from '@uk-immigration/policy-data';
 import type { IsoDate, PersonTimeline } from '../types';
@@ -299,11 +302,14 @@ export const esBreach = defineRule(
       };
     }
     if (adult.length > 0) {
+      const types = [...new Set(adult.map((b) => b.type))].map((t) =>
+        nameIn(L, breachTypeNames[t]),
+      );
       return {
         status: 'FAIL',
         explanation: L(
-          `成年后有 qualifying immigration breach（${[...new Set(adult.map((b) => b.type))].join('、')}），不论收入多高都进入 20 年路径。${minorNote}`,
-          `Qualifying immigration breach as an adult (${[...new Set(adult.map((b) => b.type))].join(', ')}): the 20-year pathway applies however high the earnings.${minorNote}`,
+          `成年后有 qualifying immigration breach（${types.join('、')}），不论收入多高都进入 20 年路径。${minorNote}`,
+          `Qualifying immigration breach as an adult (${types.join(', ')}): the 20-year pathway applies however high the earnings.${minorNote}`,
         ),
         assumptions: [
           L(

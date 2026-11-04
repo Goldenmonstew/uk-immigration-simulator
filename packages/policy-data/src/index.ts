@@ -29,3 +29,9 @@ export { healthAndCareAsheOccupations } from './data/occupations';
 export { healthEducationTransitionalExamples } from './data/occupations';
 export { immigrationSalaryListOccupations } from './data/immigration-salary-list';
 export type { ImmigrationSalaryListEntry } from './data/immigration-salary-list';
+export {
+  breachTypeNames,
+  routeGroupNames,
+  routeNames,
+} from './data/display-names';
+export type { DisplayName } from './data/display-names';

@@ -8,7 +8,8 @@
     "build": "tsc -p tsconfig.build.json",
     "test": "vitest run",
     "lint": "eslint .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "export:wording": "EXPORT_WORDING=1 vitest run test/export-wording.test.ts"
   },
   "dependencies": {
     "@uk-immigration/policy-data": "workspace:*"

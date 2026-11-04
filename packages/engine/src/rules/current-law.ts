@@ -2,16 +2,18 @@ import {
   currentLaw2026_11 as cl,
   goingRates,
   healthAndCareAsheOccupations,
+  immigrationSalaryListOccupations,
   nationalPayScaleOccupations,
+  routeNames,
 } from '@uk-immigration/policy-data';
-import { addYears, fullYears } from '../dates';
+import { addYears, fullYears, fullYearsEn } from '../dates';
 import {
   continuousRun,
   episodeOn,
   restartAfterAbsences,
   settledBy,
 } from '../residence';
-import { defineRule, textFor } from '../rule';
+import { defineRule, nameIn, textFor } from '../rule';
 import type { Lang } from '../rule';
 import { gbp } from './es-contribution';
 import { meetsCefr } from './es-requirements';
@@ -241,7 +243,7 @@ export const clSwResidence5Y = defineRule(
           status: 'FAIL',
           explanation: L(
             `自 ${start} 起连续持可计入 Skilled Worker 定居的许可（SW 21.2），截至 ${ctx.simulationDate} 满 ${fullYears(start, ctx.simulationDate)} 年；${due} 满 ${years} 年。`,
-            `Continuous permission counting towards Skilled Worker settlement (SW 21.2) since ${start}: ${fullYears(start, ctx.simulationDate)} full years by ${ctx.simulationDate}; ${years} years are completed on ${due}.`,
+            `Continuous permission counting towards Skilled Worker settlement (SW 21.2) since ${start}: ${fullYearsEn(start, ctx.simulationDate)} by ${ctx.simulationDate}; ${years} years are completed on ${due}.`,
           ),
           assumptions,
         };
@@ -287,7 +289,11 @@ export function settlementSalaryRow({
   const pre2024 =
     skilledWorkerFrom < v.skilledWorkerPre2024RulesBefore.value &&
     simulationDate < v.skilledWorkerPre2024ApplicationsBefore.value;
-  const isl = current.immigrationSalaryList === true;
+  // Declared answer first; otherwise derived from the SOC code (SRC-019).
+  const islDerived =
+    current.immigrationSalaryList === undefined &&
+    inTable(immigrationSalaryListOccupations.entries, soc);
+  const isl = current.immigrationSalaryList ?? islDerived;
   const pre2024Reason = L(
     `自 ${skilledWorkerFrom} 起连续持 Skilled Worker 许可，早于 ${v.skilledWorkerPre2024RulesBefore.value}，且申请日早于 ${v.skilledWorkerPre2024ApplicationsBefore.value}（SW 4.2(b)(ii)）`,
     `continuous Skilled Worker permission since ${skilledWorkerFrom}, before ${v.skilledWorkerPre2024RulesBefore.value}, with the application before ${v.skilledWorkerPre2024ApplicationsBefore.value} (SW 4.2(b)(ii))`,
@@ -302,14 +308,21 @@ export function settlementSalaryRow({
       'SW 24.3 row E（5 年期含 Tier 2 (General) 下的 STEM 类 SOC 2010 职业）未建模。',
       'SW 24.3 row E (a 5-year period including STEM occupations under SOC 2010 on Tier 2 (General)) is not modelled.',
     ),
-    ...(current.immigrationSalaryList === undefined
+    ...(islDerived
       ? [
           L(
-            '未申报是否在 Immigration Salary List 上，按不在清单处理。',
-            'Not declared whether the job is on the Immigration Salary List; treated as not on the list.',
+            `未申报是否在 Immigration Salary List 上；SOC ${soc} 在清单职业表中，按职业代码推导为在清单上。清单对岗位 / 地区的限制（criteria）未核对，可在问卷里申报覆盖。`,
+            `Not declared whether the job is on the Immigration Salary List; SOC ${soc} is in the list’s occupation table, so the job is derived to be on the list from its occupation code. The list’s job / region restrictions (criteria) are not checked; a declaration in the questionnaire overrides this.`,
           ),
         ]
-      : []),
+      : current.immigrationSalaryList === undefined
+        ? [
+            L(
+              '未申报是否在 Immigration Salary List 上，按不在清单处理。',
+              'Not declared whether the job is on the Immigration Salary List; treated as not on the list.',
+            ),
+          ]
+        : []),
     ...(ashe && !pre2024
       ? [
           L(
@@ -394,6 +407,7 @@ export const clSwSalary = defineRule(
       { srcId: 'SRC-004', locator: 'SW 4.2(b)' },
       { srcId: 'SRC-004', locator: 'SW A1.1' },
       { srcId: 'SRC-017', locator: 'Table 3' },
+      immigrationSalaryListOccupations.source,
     ],
     pendingDetails: [],
   },
@@ -485,6 +499,7 @@ export const clSwGoingRate = defineRule(
       { srcId: 'SRC-004', locator: 'SW 6.1' },
       { srcId: 'SRC-004', locator: 'SW 14.4' },
       goingRates.source,
+      immigrationSalaryListOccupations.source,
     ],
     pendingDetails: [],
   },
@@ -1153,10 +1168,11 @@ export const clLrResidence10Y = defineRule(
     const L = textFor(ctx);
     const years = cl.values.longResidenceQualifyingYears.value;
     const start = longResidenceStart(ctx);
+    const rn = (r: Route) => nameIn(L, routeNames[r]);
     const assumptions = [
       L(
-        `连续合法居留计入 Student、Graduate 等临时路线，不计 ${LR_EXCLUDED.join('、')}（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。`,
-        `Continuous lawful residence includes temporary routes such as Student and Graduate, but not ${LR_EXCLUDED.join(', ')} (LR 11.1(a)); periods that do not count under LR 11.2 (immigration bail and similar) and the 12-month requirement in LR 11.3 are not modelled.`,
+        `连续合法居留计入${rn('STUDENT')}、${rn('GRADUATE')}等临时路线，不计${LR_EXCLUDED.map(rn).join('、')}（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。`,
+        `Continuous lawful residence includes temporary routes such as ${rn('STUDENT')} and ${rn('GRADUATE')}, but not ${LR_EXCLUDED.map(rn).join(', ')} (LR 11.1(a)); periods that do not count under LR 11.2 (immigration bail and similar) and the 12-month requirement in LR 11.3 are not modelled.`,
       ),
       ...(ctx.timeline.absences.length > 0
         ? [
@@ -1191,7 +1207,7 @@ export const clLrResidence10Y = defineRule(
           status: 'FAIL',
           explanation: L(
             `自 ${start} 起连续合法居留，截至 ${ctx.simulationDate} 满 ${fullYears(start, ctx.simulationDate)} 年；${due} 满 ${years} 年。`,
-            `Continuous lawful residence since ${start}: ${fullYears(start, ctx.simulationDate)} full years by ${ctx.simulationDate}; ${years} years are completed on ${due}.`,
+            `Continuous lawful residence since ${start}: ${fullYearsEn(start, ctx.simulationDate)} by ${ctx.simulationDate}; ${years} years are completed on ${due}.`,
           ),
           assumptions,
         };

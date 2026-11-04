@@ -51,6 +51,12 @@ export function fullYears(from: IsoDate, to: IsoDate): number {
   return ty - fy - (tm < fm || (tm === fm && td < fd) ? 1 : 0);
 }
 
+/** English text for fullYears: "1 full year", "3 full years". */
+export function fullYearsEn(from: IsoDate, to: IsoDate): string {
+  const n = fullYears(from, to);
+  return `${n} full year${n === 1 ? '' : 's'}`;
+}
+
 /** Days of [aFrom, aTo] inside [bFrom, bTo], both inclusive. */
 export function overlapDays(
   aFrom: IsoDate,

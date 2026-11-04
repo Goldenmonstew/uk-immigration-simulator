@@ -5,7 +5,7 @@ import { evaluate } from '../src/evaluate';
 import { runRule } from '../src/rule';
 import { RULES } from '../src/rules';
 import type { RuleOutcome, SimulationResult } from '../src/types';
-import { SIMULATION_DATE, timeline } from './helpers';
+import { SAMPLES, SIMULATION_DATE } from './helpers';
 
 // Recorded before the English texts were added: the default locale's output
 // must stay byte-for-byte the same.
@@ -47,57 +47,7 @@ describe("locale: 'en'", () => {
     expectEnglishResult(evaluate({ ...fixture.request, locale: 'en' }));
   });
 
-  // Sample contexts that send the rules down their PASS, FAIL and UNKNOWN
-  // branches.
-  const samples = {
-    default: timeline(),
-    missing: timeline({
-      english: undefined,
-      lifeInTheUk: undefined,
-      governmentDebt: undefined,
-      incomeYears: [],
-      episodes: timeline().episodes.map((e) => ({
-        ...e,
-        socCode: undefined,
-        salary: undefined,
-      })),
-    }),
-    adverse: timeline({
-      english: { cefrLevel: 'B1' },
-      governmentDebt: { outstanding: true },
-      immigrationBreaches: [{ type: 'OVERSTAYING', date: '2021-01-01' }],
-      benefits: [
-        {
-          benefitType: 'UNIVERSAL_CREDIT',
-          from: '2023-01-01',
-          to: '2023-06-30',
-        },
-        { benefitType: 'UNLISTED_BENEFIT', from: '2024-01-01' },
-      ],
-      absences: [{ from: '2021-01-01', to: '2021-12-31' }],
-      incomeYears: [{ taxYear: '2025-26', earnings: 10000 }],
-    }),
-    criminality: timeline({ criminalRecord: [{ date: '2020-01-01' }] }),
-    careWorker: timeline({
-      episodes: timeline().episodes.map((e) => ({
-        ...e,
-        socCode: '6135',
-        salary: 20000,
-      })),
-    }),
-    student: timeline({
-      episodes: [
-        {
-          route: 'STUDENT',
-          role: 'MAIN',
-          validFrom: '2024-09-01',
-          validTo: '2027-09-01',
-        },
-      ],
-    }),
-  };
-
-  test.each(Object.entries(samples))('sample %s', (_, sample) => {
+  test.each(Object.entries(SAMPLES))('sample %s', (_, sample) => {
     const ctx = { timeline: sample, simulationDate: SIMULATION_DATE };
     for (const rule of RULE_LIST) {
       expectEnglishOutcome(runRule(rule, { ...ctx, locale: 'en' }));

@@ -190,11 +190,13 @@ describe('CL-SW-SALARY', () => {
     expect(pre('2024-04-04').status).toBe('FAIL');
     // SW 4.2(b)(ii) stops applying from 2030-04-04.
     expect(pre('2024-04-03', '2030-04-04').status).toBe('FAIL');
-    const care = at(31300, { socCode: '6135' });
+    // 6135 is also on the Immigration Salary List; declared off it here.
+    const careOffList = { socCode: '6135', immigrationSalaryList: false };
+    const care = at(31300, careOffList);
     expect(care.status).toBe('PASS');
     expect(care.explanation).toContain('Health and Care ASHE');
     expect(care.assumptions?.join('')).toContain('SW A1.1(a)–(f)');
-    expect(at(31299, { socCode: '6135' }).status).toBe('FAIL');
+    expect(at(31299, careOffList).status).toBe('FAIL');
   });
 
   test('row D: a Table 3 occupation, or Immigration Salary List with SW 4.2(b)', () => {
@@ -205,6 +207,35 @@ describe('CL-SW-SALARY', () => {
     expect(at(25000, islCare).explanation).toContain('row D');
     // Immigration Salary List alone is row B.
     expect(at(25000, { immigrationSalaryList: true }).status).toBe('FAIL');
+  });
+
+  describe('Immigration Salary List derived from the SOC code (SRC-019)', () => {
+    // SOC 2112 (Biological scientists, all jobs) is on the list; 2136 is not.
+    test('declared false overrides a listed occupation: row A', () => {
+      const r = at(33400, { socCode: '2112', immigrationSalaryList: false });
+      expect(r.status).toBe('FAIL');
+      expect(r.explanation).toContain('row A');
+      expect(r.assumptions?.join('')).not.toContain('推导');
+    });
+
+    test('not declared, listed occupation: row B, or row D with SW 4.2(b)', () => {
+      const b = at(33400, { socCode: '2112' });
+      expect(b.status).toBe('PASS');
+      expect(b.explanation).toContain('row B');
+      expect(b.assumptions?.join('')).toContain('按职业代码推导');
+      expect(at(33399, { socCode: '2112' }).status).toBe('FAIL');
+      // 6135 is also a Health and Care ASHE salary job (SW 4.2(b)(i)).
+      const d = at(25000, { socCode: '6135' });
+      expect(d.status).toBe('PASS');
+      expect(d.explanation).toContain('row D');
+    });
+
+    test('not declared, occupation not listed: row A', () => {
+      const r = at(41699, { socCode: '2136' });
+      expect(r.status).toBe('FAIL');
+      expect(r.explanation).toContain('row A');
+      expect(r.assumptions?.join('')).toContain('按不在清单处理');
+    });
   });
 
   test('missing salary is unknown; missing SOC is unknown only below the row', () => {
