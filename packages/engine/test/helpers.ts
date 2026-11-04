@@ -80,3 +80,55 @@ export function asDependant(
     dependantOf,
   }));
 }
+
+/**
+ * Sample timelines that send the rules down their PASS, FAIL and UNKNOWN
+ * branches (bilingual and wording-export tests).
+ */
+export const SAMPLES: Record<string, PersonTimeline> = {
+  default: timeline(),
+  missing: timeline({
+    english: undefined,
+    lifeInTheUk: undefined,
+    governmentDebt: undefined,
+    incomeYears: [],
+    episodes: timeline().episodes.map((e) => ({
+      ...e,
+      socCode: undefined,
+      salary: undefined,
+    })),
+  }),
+  adverse: timeline({
+    english: { cefrLevel: 'B1' },
+    governmentDebt: { outstanding: true },
+    immigrationBreaches: [{ type: 'OVERSTAYING', date: '2021-01-01' }],
+    benefits: [
+      {
+        benefitType: 'UNIVERSAL_CREDIT',
+        from: '2023-01-01',
+        to: '2023-06-30',
+      },
+      { benefitType: 'UNLISTED_BENEFIT', from: '2024-01-01' },
+    ],
+    absences: [{ from: '2021-01-01', to: '2021-12-31' }],
+    incomeYears: [{ taxYear: '2025-26', earnings: 10000 }],
+  }),
+  criminality: timeline({ criminalRecord: [{ date: '2020-01-01' }] }),
+  careWorker: timeline({
+    episodes: timeline().episodes.map((e) => ({
+      ...e,
+      socCode: '6135',
+      salary: 20000,
+    })),
+  }),
+  student: timeline({
+    episodes: [
+      {
+        route: 'STUDENT',
+        role: 'MAIN',
+        validFrom: '2024-09-01',
+        validTo: '2027-09-01',
+      },
+    ],
+  }),
+};
