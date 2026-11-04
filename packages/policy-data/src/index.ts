@@ -30,8 +30,11 @@ export { healthEducationTransitionalExamples } from './data/occupations';
 export { immigrationSalaryListOccupations } from './data/immigration-salary-list';
 export type { ImmigrationSalaryListEntry } from './data/immigration-salary-list';
 export {
+  asylumSupportRepaymentNames,
   breachTypeNames,
+  resettlementSchemeNames,
   routeGroupNames,
   routeNames,
+  sustainedActivityNames,
 } from './data/display-names';
 export type { DisplayName } from './data/display-names';

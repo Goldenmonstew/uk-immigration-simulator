@@ -94,7 +94,7 @@ export const esIndividualC: Fixture = {
 
 ## 6. 不在 MVP-0 契约里
 
-难民路径细节、What-if、前向推算的结构化假设，都等用到时再加字段，不提前预留。
+What-if、前向推算的结构化假设，都等用到时再加字段，不提前预留。难民路径见 §11（Phase 3.4）。
 
 ## 7. 路径聚合（`packages/engine/src/aggregate.ts`）
 
@@ -114,7 +114,7 @@ export const esIndividualC: Fixture = {
 2. 否则，有候选居留已满（或起点未知）且只有 `UNKNOWN`、没有 `FAIL` → 这些 `UNKNOWN` 都带 `pendingDetails` 时 `POTENTIALLY_ELIGIBLE`，`pathwayYears` 取该候选；否则 `INSUFFICIENT_INFORMATION`，不给 `pathwayYears`。两种都不给 `earliestDate`。
 3. 否则 `LIKELY_NOT_ELIGIBLE`；若还有未 `FAIL` 的候选，取起点 + 年限最早的一条给出 `pathwayYears` 与 `earliestDate`，并加假设"持续居留、收入等状况不变"。强制要求 `FAIL` 时所有候选都失败，不给年限与日期。
 
-短路（`SimulationResult.shortCircuit`）：`CRIMINALITY`（任何犯罪记录）与 `IMMIGRATION_BREACH`（成年后非法入境）让两栏都是 `REQUIRES_REGULATED_REVIEW`；`PROTECTION` 与 `OUTSIDE_FRAMEWORK`（当前路线）只让 Earned Settlement 一栏是 `REQUIRES_REGULATED_REVIEW`，现行法律照常评估。短路时规则照常运行、出现在 `rules` 里，但该栏不给 `pathwayYears` / `earliestDate`。
+短路（`SimulationResult.shortCircuit`）：`CRIMINALITY`（任何犯罪记录）与 `IMMIGRATION_BREACH`（成年后非法入境）让两栏都是 `REQUIRES_REGULATED_REVIEW`；`PROTECTION` 与 `OUTSIDE_FRAMEWORK`（当前路线）只让 Earned Settlement 一栏是 `REQUIRES_REGULATED_REVIEW`，现行法律照常评估。短路时规则照常运行、出现在 `rules` 里，但该栏不给 `pathwayYears` / `earliestDate`。保护类路线的短路自 Phase 3.4 起按 §11.5。
 
 ## 8. 家庭（Phase 2.2）
 
@@ -247,3 +247,83 @@ SimulationRequest.locale ──► RuleContext.locale ──► 规则 check：e
 - 英文文案：法律术语保留原文（Skilled Worker、public funds、settlement、Life in the UK），引用用原文段号（SW 24.3、p29），金额 `£50,271`，日期 ISO（YYYY-MM-DD）。
 - `SettlementAssessment.assumptions` 的去重逻辑不变（按所选语言的字符串去重）。
 - `RuleOutcome.id`、`status`、`sources`、`pendingDetails` 与 locale 无关；fixtures 用默认 locale，结论不变。
+
+## 11. 难民路径（Phase 3.4）
+
+依据 SRC-001 Chapter 7（p36–p40，案例 p40）与 Table 2（p47–p48）。只新增可选字段，已有字段与取值不变；`Route`、`RouteGroup`、`role` 不改。`SettlementAssessment` 不加字段：依据写在 `rules[]` 的解释与 `assumptions` 里。现行法律栏不变（`CL-SCOPE` 仍只建模 Skilled Worker 与 Long Residence）。
+
+### 11.1 字段
+
+| 字段 | 取值 | 含义 | 何时读取 |
+|---|---|---|---|
+| `ImmigrationEpisode.resettlementScheme?` | `'UK_RESETTLEMENT_SCHEME'` \| `'OTHER_DESIGNATED'` | 经哪条 designated Safe and Legal Route 入境（p37、p47）。`OTHER_DESIGNATED` = 原文"specified resettlement and sponsorship routes"，清单未公布（PD-033），按用户申报处理 | 申请日当天的 `SAFE_AND_LEGAL` 片段 |
+| `ImmigrationEpisode.sustainedActivity?` | `'WORK'` \| `'EDUCATION'` \| `'TRAINING'` | 转入 Protection Work and Study 所依据的持续活动（p38、p47） | 申请日当天的 `PROTECTION_WORK_AND_STUDY` 片段 |
+| `ImmigrationBreach.article31?` | `boolean` | 只对 `ILLEGAL_ENTRY` 有意义：用户声称受 Refugee Convention Article 31 保护（p39、p48）。缺省 = 未声称 | 保护类路线上的成年后非法入境 |
+| `PersonTimeline.asylumSupportRepayment?` | `'NOT_REQUIRED'` \| `'REPAID'` \| `'ON_PLAN'` \| `'OUTSTANDING'` | asylum support 偿还（p8 注 1、p39、p47）。`NOT_REQUIRED` = 未领取或无需偿还；`REPAID` = 已全额偿还；`ON_PLAN` = 按约定还款计划履行中；`OUTSTANDING` = 欠款且未还、未按计划 | 当前为 `PROTECTION_WORK_AND_STUDY` 或 `CORE_PROTECTION` |
+
+- 缺省一律 = 用户没提供：读取它的规则输出不带 PD 的 `UNKNOWN`（结论多为 `INSUFFICIENT_INFORMATION`），`article31` 除外（缺省 = 未声称，按加 10 年处理）。
+- 显示名（`policy-data` 导出）：`resettlementSchemeNames`、`sustainedActivityNames`、`asylumSupportRepaymentNames`，形状同 `breachTypeNames`。
+- 推出前的时间：Core Protection / Protection Work and Study 尚未推出（PD-034）。用户按"获保护之日起为 `CORE_PROTECTION`、转入工作 / 学习之日起为 `PROTECTION_WORK_AND_STUDY`"填写片段；现有难民许可（2026-03-02 前申请庇护者，p38 注 14）也按 `CORE_PROTECTION` 自获保护之日起填。引擎按片段起止日计算，见 11.3。
+
+### 11.2 参数（`earnedSettlement2026_11.values`）
+
+| 名称 | 值 | 来源（SRC-001 物理页） |
+|---|---|---|
+| `protectionPathwayYearsSafeAndLegal` | 5 | p37、p40、p47 |
+| `protectionPathwayYearsWorkAndStudy` | 10 | p38、p40、p47 |
+| `protectionPathwayYearsCore` | 20 | p38、p40、p47 |
+| `illegalEntryAdditionalYears` | 10 | p38、p39、p48 |
+| `protectionWorkQualifyingYears` | 3 | p38、p47 |
+| `ukrsEnglishLevel` | `'A2'` | p21 注 7–8、p37、p39、p47 |
+| `legacySafeAndLegalArrivalsBefore` | `'2027-04-06'` | p26 注 13 |
+
+- 工作者的年收入门槛复用 `earningsThresholdMinimum`（£12,571），来源补 p38、p47。
+- 用过 public funds 或有其他 breach 时的 20 年兜底复用 `pathwayYears20`，来源补 p39（"a settlement pathway less than 20 years"）。
+
+### 11.3 规则
+
+保护类路线的 Earned Settlement 栏只运行：强制要求（`ES-CRIMINALITY`、`ES-DEBT`、`ES-ENGLISH-B2`、`ES-KOL`、`ES-ROUTE-GROUP`、`ES-RESIDENCE`）+ `ES-BREACH` + `ES-PUBLIC-FUNDS` + 下面三条新规则（按路线取用）；`ES-EARNINGS-*`、`ES-BRITISH-CONNECTION`、`ES-PUBLIC-SERVICE`、过渡安排规则不运行、不出现在 `rules[]`。非保护类路线不运行三条新规则，`rules[]` 不变。
+
+| 规则 | 适用 | 判断 |
+|---|---|---|
+| `ES-PROTECTION-PATHWAY`（新） | 三条保护类路线 | 给出基础年限：Safe and Legal 5、PWS 10、Core Protection 20。成年后 `ILLEGAL_ENTRY`（`article31 !== true`）→ 年限 +10，解释点名 Table 2 对应行（p48）。全部成年后非法入境都 `article31: true` → `UNKNOWN`（PD-032），解释同时给出不适用 Article 31 时的年限与日期。Safe and Legal：`resettlementScheme` 缺省 → `UNKNOWN`；`OTHER_DESIGNATED` → `PASS` + 假设"指定路线清单未公布，按你的申报处理；若为 Community Sponsorship、Mandate Resettlement Scheme 或其前身则属 Legacy Safe and Legal Routes（框架外）"（PD-033）。PWS / Core Protection：`PASS` + 假设"两条路线尚未推出，按所填片段日期计算；推出前已有时间是否及如何计入未定"（PD-029、PD-034、PD-043）。 |
+| `ES-PROTECTION-CONTRIBUTION`（新） | 仅 PWS | `sustainedActivity = 'WORK'`：数 PWS 合格期（`ES-RESIDENCE` 的起点）内**完整的** tax year——起点在合格期起点当天或之后、且在申请日所在 tax year 之前结束；起点所在的那个 tax year 不算（除非合格期恰从 4 月 6 日开始），因为年收入无法拆出转入前的部分。年收入 ≥ £12,571 的年数 ≥ 3 → `PASS`；不足但合格期尚未满 10 年（+10）→ `UNKNOWN`（PD-030，解释写"已有 n 年达标，需 3 年"）；已满仍不足 → `FAIL`。观察窗口原文未定义，按"合格期内任意 3 年"建模并在假设里声明（PD-030）。`EDUCATION` / `TRAINING` → `UNKNOWN`（PD-030）；缺省 → `UNKNOWN`（不带 PD）。 |
+| `ES-ASYLUM-SUPPORT`（新） | PWS、Core Protection | `NOT_REQUIRED` / `REPAID` / `ON_PLAN` → `PASS`；`OUTSTANDING` → `FAIL`；缺省 → `UNKNOWN`（不带 PD）。Safe and Legal 不运行（Table 2 未列，新 PD）。 |
+| `ES-ENGLISH-B2`（改） | — | `resettlementScheme = 'UK_RESETTLEMENT_SCHEME'` 的 Safe and Legal → A2（`ukrsEnglishLevel`）；其他一律 B2。解释写明适用等级。规则 ID 不变。 |
+| `ES-KOL`（改） | — | UKRS 的 Safe and Legal → `PASS`（当前免考），假设"A2 版考试推出后可能改变"（PD-021）；其他不变。 |
+| `ES-PUBLIC-FUNDS`（改） | — | Safe and Legal → `PASS`（豁免，p37、p47）；Core Protection → `PASS`（20 年路径本身不要求，p39）；PWS → 照常评估，用过则只剩 20 年兜底（p39）。弱势群体保障与可不计入的福利未定 → 假设里提 PD-031。 |
+| `ES-BREACH`（改） | — | 当前为保护类路线时，`ILLEGAL_ENTRY` 不计入（由 `ES-PROTECTION-PATHWAY` 的 +10 处理）；其他类型的成年后 breach 照常 `FAIL`、进 20 年兜底（p13、p46 "apply to all"；Table 2 未提，新 PD）。非保护类路线不变（成年后非法入境仍 `UNKNOWN` + PD-044 并短路）。 |
+| `ES-ROUTE-GROUP`（改） | — | 保护类路线 → `PASS`，解释写明属保护类分组、走 Table 2 路径。UKRS 且连续 `SAFE_AND_LEGAL` 段的起点早于 `legacySafeAndLegalArrivalsBefore` → 推导为 Legacy Safe and Legal Routes，按 `LEGACY_SAFE_AND_LEGAL` 处理：`UNKNOWN`（框架外）+ 短路 `OUTSIDE_FRAMEWORK`，假设提 PD-045；`rules[]` 与其他框架外路线相同。 |
+| `ES-RESIDENCE`（改） | — | 保护类路线的合格期 = **同一条**保护类路线的连续片段（原来按"保护类"整体连续）：Core Protection → PWS 在转入日重新起算（p38；p40 Individual B）；当前为 Core Protection 而之前紧接的是 PWS（回切）→ `UNKNOWN`（原文未提，新 PD）。起点仍经 `restartAfterAbsences`。 |
+
+### 11.4 候选路径（§7 的补充）
+
+M = 强制要求；P = `ES-PROTECTION-PATHWAY`；+10 = 成年后非法入境且未声称 Article 31。起点都是 `ES-RESIDENCE` 的合格期起点。
+
+| 当前路线 | 候选 | 年限 |
+|---|---|---|
+| `SAFE_AND_LEGAL` | M + P + `ES-BREACH` | 5（+10） |
+| | M + P（有其他 breach 时，p13） | 20（+10） |
+| `PROTECTION_WORK_AND_STUDY` | M + P + `ES-BREACH` + `ES-PUBLIC-FUNDS` + `ES-PROTECTION-CONTRIBUTION` + `ES-ASYLUM-SUPPORT` | 10（+10） |
+| | M + P + `ES-ASYLUM-SUPPORT`（用过 public funds 或有其他 breach 时，p39） | 20（+10） |
+| `CORE_PROTECTION` | M + P + `ES-ASYLUM-SUPPORT` | 20（+10） |
+
+- Article 31 声称时 P 为 `UNKNOWN`，候选年限按基础年限（不加 10）：未满期 → `LIKELY_NOT_ELIGIBLE` 投影到基础年限的日期；满期 → `POTENTIALLY_ELIGIBLE`。加 10 年的读法写在 P 的解释里。
+- 判定（§7 的 1–3 条）不变；`routeGroup` 输出 `PROTECTION`。
+
+### 11.5 短路（替换 §7 中关于 `PROTECTION` 与非法入境的部分）
+
+- `IMMIGRATION_BREACH`（成年后非法入境）：只在申请日当天的路线**不是**保护类时触发（非保护类路线维持 PD-044 的"不作结论"，两栏都 `REQUIRES_REGULATED_REVIEW`）。保护类路线上不短路，两栏照常评估。
+- `PROTECTION`：取值保留，只在申请日当天是保护类路线上的 `DEPENDANT` 时触发（Chapter 7 与 Table 2 未提难民的 dependant，新 PD）；只影响 Earned Settlement 栏。保护类主申请人不再短路。
+- `OUTSIDE_FRAMEWORK`：不变，另含 11.3 推导出的 Legacy UKRS。
+- `CRIMINALITY`：不变，优先。
+
+### 11.6 给 3.5（问卷与结果页）
+
+- 当前片段为 `SAFE_AND_LEGAL` 时问 `resettlementScheme`；为 `PROTECTION_WORK_AND_STUDY` 时问 `sustainedActivity`（`WORK` 时收入按 tax year 照常填 `incomeYears`）；当前为 PWS 或 Core Protection 时问 `asylumSupportRepayment`；违规里选了 `ILLEGAL_ENTRY` 时问 `article31`。
+- "寻求受监管建议"提示：Earned Settlement 栏 `routeGroup === 'PROTECTION'`（或当前片段路线属 `PROTECTION` 分组）时显示，文案由 web 自己的 i18n 提供；引擎另在 `assumptions` 里带一句同义提示。
+- `ES-ENGLISH-B2` 的 ID 与标题不变，实际等级（A2 / B2）看解释。
+
+### 11.7 fixtures
+
+`packages/policy-data/fixtures/` 新增 p40 Individual A–D 四个（日期为补充事实，文件头注明）：A（UKRS 2027-06-01 抵达、A2、用过 Universal Credit；2032-06-01 → `LIKELY_ELIGIBLE`、5 年）；B（2027-03-01 Core Protection → 2028-03-01 PWS；2030-01-01 → `LIKELY_NOT_ELIGIBLE`、10 年、2038-03-01）；C（同 B，成年后 2026-08-10 非法入境 → 20 年、2048-03-01）；D（同 C 但一直 Core Protection → 30 年、2057-03-01）。原有 fixture 的状态 / 年限 / 日期不变。

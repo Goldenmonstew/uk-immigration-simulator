@@ -106,3 +106,36 @@ export const breachTypeNames = {
   },
   ILLEGAL_ENTRY: { 'zh-CN': '非法入境', en: 'Illegal entry' },
 } satisfies Record<string, DisplayName>;
+
+// Keys match ImmigrationEpisode['resettlementScheme'] in the engine.
+export const resettlementSchemeNames = {
+  UK_RESETTLEMENT_SCHEME: {
+    'zh-CN': '英国安置计划',
+    en: 'UK Resettlement Scheme',
+  },
+  OTHER_DESIGNATED: {
+    'zh-CN': '其他指定的安置或担保路线',
+    en: 'Other designated resettlement or sponsorship route',
+  },
+} satisfies Record<string, DisplayName>;
+
+// Keys match ImmigrationEpisode['sustainedActivity'] in the engine.
+export const sustainedActivityNames = {
+  WORK: { 'zh-CN': '工作', en: 'Work' },
+  EDUCATION: { 'zh-CN': '教育', en: 'Education' },
+  TRAINING: { 'zh-CN': '培训', en: 'Training' },
+} satisfies Record<string, DisplayName>;
+
+// Keys match PersonTimeline['asylumSupportRepayment'] in the engine.
+export const asylumSupportRepaymentNames = {
+  NOT_REQUIRED: {
+    'zh-CN': '未领取或无需偿还',
+    en: 'Not received, or not required to repay',
+  },
+  REPAID: { 'zh-CN': '已全额偿还', en: 'Repaid in full' },
+  ON_PLAN: {
+    'zh-CN': '按约定还款计划偿还中',
+    en: 'Keeping up with an agreed repayment plan',
+  },
+  OUTSTANDING: { 'zh-CN': '未偿还', en: 'Outstanding' },
+} satisfies Record<string, DisplayName>;
