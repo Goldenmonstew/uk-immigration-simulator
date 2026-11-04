@@ -4,6 +4,7 @@ import {
   clKol,
   clLrResidence10Y,
   clScope,
+  clSwGoingRate,
   clSwResidence5Y,
   clSwSalary,
 } from '../src/rules/current-law';
@@ -209,6 +210,99 @@ describe('CL-SW-SALARY', () => {
     expect(at(undefined).status).toBe('UNKNOWN');
     expect(at(30000, { socCode: undefined }).status).toBe('UNKNOWN');
     expect(at(41700, { socCode: undefined }).status).toBe('PASS');
+  });
+});
+
+describe('CL-SW-GOING-RATE', () => {
+  const at = (
+    extra: Partial<ImmigrationEpisode> = {},
+    validFrom = '2025-03-01',
+    simulationDate = '2030-03-01',
+  ) =>
+    run(
+      clSwGoingRate,
+      {
+        episodes: [
+          episode({
+            validFrom,
+            validTo: '2030-12-31',
+            socCode: '2136',
+            salary: 55000,
+            ...extra,
+          }),
+        ],
+      },
+      simulationDate,
+    );
+
+  test('row A from 2025: SOC 2136 at £55,000 passes Table 1 (£41,200); SOC 1111 (£88,100) fails', () => {
+    const pass = at();
+    expect(pass.status).toBe('PASS');
+    expect(pass.explanation).toContain('Table 1');
+    expect(pass.explanation).toContain('£41,200');
+    expect(pass.assumptions?.join('')).toContain('37.5');
+    const fail = at({ socCode: '1111' });
+    expect(fail.status).toBe('FAIL');
+    expect(fail.explanation).toContain('£88,100');
+    const full = (socCode: string) =>
+      evaluate({
+        timeline: timeline({
+          episodes: [
+            episode({
+              validFrom: '2025-03-01',
+              validTo: '2030-12-31',
+              socCode,
+              salary: 55000,
+            }),
+          ],
+        }),
+        simulationDate: '2030-03-01',
+      }).byRuleSet['current-law-2026-11']!;
+    expect(full('2136').outcome).toBe('LIKELY_ELIGIBLE');
+    expect(full('1111').outcome).toBe('LIKELY_NOT_ELIGIBLE');
+  });
+
+  test('the going rate itself passes, a pound below fails', () => {
+    expect(at({ salary: 41200 }).status).toBe('PASS');
+    expect(at({ salary: 41199 }).status).toBe('FAIL');
+  });
+
+  test('missing or unlisted SOC is unknown', () => {
+    const missing = at({ socCode: undefined });
+    expect(missing.status).toBe('UNKNOWN');
+    expect(missing.pendingDetails).toBeUndefined();
+    expect(at({ socCode: '9999' }).status).toBe('UNKNOWN');
+  });
+
+  test('row C uses Table 2 (SOC 2136 £34,500), then Table 2a with a same-sponsor assumption', () => {
+    const c = run(clSwGoingRate, {
+      episodes: [episode({ socCode: '2136', salary: 34500 })],
+    });
+    expect(c.status).toBe('PASS');
+    expect(c.explanation).toContain('row C');
+    expect(c.explanation).toContain('Table 2，');
+    const t2a = run(clSwGoingRate, {
+      episodes: [episode({ socCode: '3214', salary: 31299 })],
+    });
+    expect(t2a.status).toBe('FAIL');
+    expect(t2a.explanation).toContain('Table 2a');
+    expect(t2a.assumptions?.join('')).toContain('同一 sponsor');
+  });
+
+  test('Table 1a only before 2025-07-22; a later start is unknown', () => {
+    const before = at({ socCode: '1150', salary: 45000 }, '2025-07-21');
+    expect(before.status).toBe('PASS');
+    expect(before.explanation).toContain('Table 1a');
+    const after = at({ socCode: '1150', salary: 45000 }, '2025-07-22');
+    expect(after.status).toBe('UNKNOWN');
+    expect(after.explanation).toContain('2025-07-22');
+  });
+
+  test('row D Table 3 occupation is unknown without a pending detail', () => {
+    const nurse = at({ socCode: '2231', salary: 40000 });
+    expect(nurse.status).toBe('UNKNOWN');
+    expect(nurse.explanation).toContain('Table 4 / 5');
+    expect(nurse.pendingDetails).toBeUndefined();
   });
 });
 

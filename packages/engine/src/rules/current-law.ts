@@ -1,5 +1,6 @@
 import {
   currentLaw2026_11 as cl,
+  goingRates,
   healthAndCareAsheOccupations,
   nationalPayScaleOccupations,
 } from '@uk-immigration/policy-data';
@@ -8,7 +9,7 @@ import { continuousRun, episodeOn, restartAfterAbsences } from '../residence';
 import { defineRule } from '../rule';
 import { gbp } from './es-contribution';
 import { meetsCefr } from './es-requirements';
-import type { Route } from '@uk-immigration/policy-data';
+import type { GoingRate, Route } from '@uk-immigration/policy-data';
 import type {
   ImmigrationEpisode,
   IsoDate,
@@ -336,6 +337,111 @@ export const clSwSalary = defineRule(
       : {
           status: 'FAIL',
           explanation: `${which}；当前年薪 ${gbp(salary)}，低于此门槛。`,
+          assumptions,
+        };
+  },
+);
+
+// Going-rate tables for each SW 24.3 row, in lookup order (row D's Table 3
+// occupations use the national pay scales in Tables 3–5, not extracted).
+const GOING_RATE_TABLES: Record<SalaryRow['row'], GoingRate['table'][]> = {
+  A: ['1', '1a'],
+  B: ['1', '1a'],
+  C: ['2', '2aa', '2a'],
+  D: ['2', '2aa', '2a'],
+};
+
+/** Additional tables only cover those first granted before a date (SW 6.1). */
+function grantedBefore(table: GoingRate['table']): IsoDate | undefined {
+  if (table === '1a' || table === '2aa') {
+    return cl.values.skilledWorkerPre2025RulesBefore.value;
+  }
+  return table === '2a'
+    ? cl.values.skilledWorkerPre2024RulesBefore.value
+    : undefined;
+}
+
+export const clSwGoingRate = defineRule(
+  {
+    id: 'CL-SW-GOING-RATE',
+    ruleSetId: RULE_SET,
+    title: 'Skilled Worker 定居薪资（going rate）',
+    sources: [
+      { srcId: 'SRC-004', locator: 'SW 24.3' },
+      { srcId: 'SRC-004', locator: 'SW 6.1' },
+      { srcId: 'SRC-004', locator: 'SW 14.4' },
+      goingRates.source,
+    ],
+    pendingDetails: [],
+  },
+  (ctx) => {
+    const row = settlementSalaryRow(ctx);
+    if (!row) {
+      return {
+        status: 'FAIL',
+        explanation: '当前不是 Skilled Worker 主申请人许可。',
+      };
+    }
+    const { socCode, salary } = episodeOn(ctx.timeline, ctx.simulationDate)!;
+    const assumptions = [
+      'going rate 按每周 37.5 小时的全额年薪比较，未按实际工时折算（SW 14.4）。',
+    ];
+    if (socCode === undefined) {
+      return {
+        status: 'UNKNOWN',
+        explanation:
+          '未填写当前 Skilled Worker 工作的 SOC 2020 职业代码，无法查 going rate。',
+        assumptions,
+      };
+    }
+    if (row.row === 'D' && inTable(nationalPayScaleOccupations.rows, socCode)) {
+      return {
+        status: 'UNKNOWN',
+        explanation: `SOC ${socCode} 是 Table 3 医疗 / 教育职业，going rate 按国家薪级（Appendix Skilled Occupations Table 3–5）确定；Table 4 / 5 的薪级本工具未提取，无法核对。`,
+        assumptions,
+      };
+    }
+    if (salary === undefined) {
+      return {
+        status: 'UNKNOWN',
+        explanation: '未填写当前 Skilled Worker 工作的年薪。',
+        assumptions,
+      };
+    }
+    const tables = GOING_RATE_TABLES[row.row];
+    const found = tables.flatMap((table) =>
+      goingRates.rows.filter((r) => r.table === table && r.socCode === socCode),
+    );
+    const rate = found.find((r) => {
+      const before = grantedBefore(r.table);
+      return before === undefined || row.skilledWorkerFrom < before;
+    });
+    const tableNames = tables.map((t) => `Table ${t}`).join(' / ');
+    if (!rate) {
+      return {
+        status: 'UNKNOWN',
+        explanation:
+          found.length > 0
+            ? `SOC ${socCode} 只在 Table ${found[0].table}，该表只适用于 ${grantedBefore(found[0].table)} 前获批并连续持有 Skilled Worker 许可者；与所填的起始日 ${row.skilledWorkerFrom} 不符，请核对职业代码与许可记录。`
+            : `SOC ${socCode} 不在 SW 24.3 row ${row.row} 适用的 ${tableNames} 中，无法确定 going rate。`,
+        assumptions,
+      };
+    }
+    if (rate.table === '2a') {
+      assumptions.push(
+        'Table 2a 还要求为同一 sponsor 工作（SW 6.1(f)），本工具未核对。',
+      );
+    }
+    const which = `按 SW 24.3 row ${row.row} 查 Appendix Skilled Occupations Table ${rate.table}，SOC ${socCode}（${rate.title}）的 going rate 为 ${gbp(rate.goingRate)}`;
+    return salary >= rate.goingRate
+      ? {
+          status: 'PASS',
+          explanation: `${which}；当前年薪 ${gbp(salary)}，已达到。`,
+          assumptions,
+        }
+      : {
+          status: 'FAIL',
+          explanation: `${which}；当前年薪 ${gbp(salary)}，低于 going rate。`,
           assumptions,
         };
   },

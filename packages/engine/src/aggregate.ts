@@ -327,7 +327,12 @@ function assessCurrentLaw(ctx: RuleContext): SettlementAssessment {
           {
             years: cl.values.skilledWorkerQualifyingYears.value,
             start: skilledWorkerStart(ctx),
-            rules: pick('CL-SW-SALARY', 'CL-ENGLISH', 'CL-KOL'),
+            rules: pick(
+              'CL-SW-SALARY',
+              'CL-SW-GOING-RATE',
+              'CL-ENGLISH',
+              'CL-KOL',
+            ),
           },
         ]
       : []),
