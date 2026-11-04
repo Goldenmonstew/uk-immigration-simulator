@@ -2,11 +2,11 @@ import { earnedSettlement2026_11 as es } from '@uk-immigration/policy-data';
 import type { RouteGroup } from '@uk-immigration/policy-data';
 import { addYears, fullYears } from '../dates';
 import { episodeOn, settledBy } from '../residence';
-import { defineRule } from '../rule';
+import { defineRule, textFor } from '../rule';
 import type { IsoDate, RuleContext, SettlementAssessment } from '../types';
 import { esPublicFunds, gbp } from './es-contribution';
 import {
-  CHILD_DEPENDANT_ASSUMPTION,
+  childDependantAssumption,
   esBreach,
   isAdultOn,
 } from './es-requirements';
@@ -192,7 +192,7 @@ export const esDependantPathway = defineRule(
       }
       if (isAdultOn(timeline, simulationDate)) {
         explanation = `${es.values.adultAge.value} 至 ${es.values.independentAge.value - 1} 岁保留 child-dependant 身份，随家庭定居（主申请人 ${years} 年路径，${familyEligible} 满期）；须满足成人强制要求（犯罪记录、政府债务、B2 英语、Life in the UK），不需个人收入。`;
-        assumptions.push(CHILD_DEPENDANT_ASSUMPTION);
+        assumptions.push(childDependantAssumption(textFor(ctx)));
       } else {
         explanation = `未满 ${es.values.adultAge.value} 岁的子女随父母定居（主申请人 ${years} 年路径，${familyEligible} 满期）；豁免收入、政府债务、英语与 Life in the UK，只须满足 suitability 与犯罪记录要求。`;
       }

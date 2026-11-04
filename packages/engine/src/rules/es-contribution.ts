@@ -10,11 +10,11 @@ import type {
 } from '@uk-immigration/policy-data';
 import { addDays, addYears, taxYearsBefore } from '../dates';
 import { continuousRun, episodeOn } from '../residence';
-import { defineRule } from '../rule';
+import { defineRule, textFor } from '../rule';
 import type { ImmigrationEpisode, RuleContext } from '../types';
 import {
   ageExemptOn,
-  CHILD_DEPENDANT_ASSUMPTION,
+  childDependantAssumption,
   childDependantOn,
 } from './es-requirements';
 import { esQualifyingResidence } from './es-residence';
@@ -150,7 +150,7 @@ export const esEarnings10Y = defineRule(
         explanation:
           '保留 child-dependant 身份的成年子女随家庭定居，不需满足个人收入要求。',
         sources: [{ srcId: 'SRC-001', locator: 'p30' }],
-        assumptions: [CHILD_DEPENDANT_ASSUMPTION],
+        assumptions: [childDependantAssumption(textFor(ctx))],
       };
     }
     if (timeline.earningsExemptHealth) {
