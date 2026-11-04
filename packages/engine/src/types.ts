@@ -35,6 +35,12 @@ export interface PersonTimeline {
   immigrationBreaches: ImmigrationBreach[];
   /** Missing = not provided. */
   governmentDebt?: GovernmentDebt;
+  /**
+   * Principal timelines only: the principal already holds settlement (or
+   * became a British citizen), granted on `date` from permission on `route`
+   * (SW 39.1(b)). Missing = not settled.
+   */
+  settled?: { date: IsoDate; route: Route };
 }
 
 export interface ImmigrationEpisode {
@@ -51,6 +57,11 @@ export interface ImmigrationEpisode {
    * (this person is a child dependant). Missing = not provided.
    */
   dependantOf?: 'PARTNER' | 'PARENT';
+  /**
+   * SKILLED_WORKER MAIN only: the sponsored job is on Appendix Immigration
+   * Salary List (SW 24.3 rows B, D). Missing = no.
+   */
+  immigrationSalaryList?: boolean;
 }
 
 export interface Absence {
