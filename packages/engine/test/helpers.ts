@@ -1,5 +1,6 @@
 import { runRule } from '../src/rule';
 import type {
+  ImmigrationEpisode,
   PersonTimeline,
   Rule,
   RuleContext,
@@ -65,4 +66,17 @@ export function run(
 ): RuleOutcome {
   const ctx: RuleContext = { timeline: timeline(overrides), simulationDate };
   return runRule(rule, ctx);
+}
+
+/** The default timeline's permissions, held as the principal's dependant. */
+export function asDependant(
+  dependantOf: ImmigrationEpisode['dependantOf'] = 'PARTNER',
+): ImmigrationEpisode[] {
+  return timeline().episodes.map(({ route, validFrom, validTo }) => ({
+    route,
+    role: 'DEPENDANT',
+    validFrom,
+    validTo,
+    dependantOf,
+  }));
 }
