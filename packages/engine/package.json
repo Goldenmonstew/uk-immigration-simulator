@@ -9,5 +9,8 @@
     "test": "vitest run",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@uk-immigration/policy-data": "workspace:*"
   }
 }
