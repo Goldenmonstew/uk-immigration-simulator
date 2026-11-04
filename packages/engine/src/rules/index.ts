@@ -15,6 +15,7 @@ import {
   esPublicFunds,
 } from './es-contribution';
 import { esResidence, esRouteGroup } from './es-residence';
+import { esTransitionalCareWorker } from './es-transitional';
 
 /** Every rule, by rule set, in evaluation order. */
 export const RULES: Record<RuleSetId, Rule[]> = {
@@ -31,6 +32,7 @@ export const RULES: Record<RuleSetId, Rule[]> = {
     esBritishConnection,
     esPublicFunds,
     esBreach,
+    esTransitionalCareWorker,
   ],
   'current-law-2026-11': [],
 };
