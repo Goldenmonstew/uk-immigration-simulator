@@ -1,9 +1,11 @@
 'use client';
 
+import Link from 'next/link';
 import type { SimulationResult } from '@uk-immigration/engine';
 import { ROUTE_GROUPS } from '@uk-immigration/policy-data';
 import { useTranslation } from '../i18n/locale';
-import { routeGroupNames } from '../i18n/routes';
+import { punct } from '../i18n/punctuation';
+import { routeGroupNames, routeLabel } from '../i18n/routes';
 import { ruleSets } from '../lib/policy';
 import { currentEpisode, type Draft } from '../lib/questionnaire';
 import { sourceUrls } from '../lib/sources';
@@ -71,11 +73,11 @@ export function ResultView({
           )}
           <AssessmentColumns result={result} />
           <Advice />
-          <p className={`${site.muted} ${site.noPrint}`}>
-            {t('home.disclaimer')}
-          </p>
         </>
       )}
+      <p className={`${site.muted} ${site.noPrint}`}>
+        {t('home.disclaimer')} <Link href="/about">{t('about.link')}</Link>
+      </p>
     </>
   );
 }
@@ -88,6 +90,7 @@ export function AssessmentColumns({
   idPrefix?: string;
 }) {
   const { t, locale } = useTranslation();
+  const p = punct(locale);
   return (
     <div className={styles.columns}>
       {ruleSets.map((ruleSet) => {
@@ -123,7 +126,12 @@ export function AssessmentColumns({
                   {assessment.routeGroup && (
                     <div>
                       <dt>{t('result.routeGroup')}</dt>
-                      <dd>{routeGroupNames[assessment.routeGroup][locale]}</dd>
+                      <dd>
+                        {routeLabel(
+                          routeGroupNames[assessment.routeGroup],
+                          locale,
+                        )}
+                      </dd>
                     </div>
                   )}
                   <div>
@@ -158,7 +166,10 @@ export function AssessmentColumns({
                     return (
                       <section key={status} className={styles.group}>
                         <h4>
-                          {t(`result.${status}`)}（{rules.length}）
+                          {t(`result.${status}`)}
+                          {p.openParen}
+                          {rules.length}
+                          {p.closeParen}
                         </h4>
                         {!rules.length ? (
                           <p className={site.muted}>
@@ -197,8 +208,9 @@ export function AssessmentColumns({
                                 </div>
                                 {!!rule.pendingDetails?.length && (
                                   <p className={site.badge}>
-                                    {t('result.pendingDetails')}：
-                                    {rule.pendingDetails.join('、')}
+                                    {t('result.pendingDetails')}
+                                    {p.colon}
+                                    {rule.pendingDetails.join(p.list)}
                                   </p>
                                 )}
                               </li>
@@ -212,8 +224,11 @@ export function AssessmentColumns({
                 {assessment.assumptions.length ? (
                   <details>
                     <summary>
-                      {t('result.assumptions')}（{assessment.assumptions.length}{' '}
-                      {t('result.assumptionCount')}）
+                      {t('result.assumptions')}
+                      {p.openParen}
+                      {assessment.assumptions.length}{' '}
+                      {t('result.assumptionCount')}
+                      {p.closeParen}
                     </summary>
                     <ul className={styles.assumptions}>
                       {assessment.assumptions.map((assumption, i) => (

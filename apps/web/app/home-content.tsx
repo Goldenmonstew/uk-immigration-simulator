@@ -29,7 +29,9 @@ export default function Home() {
         </section>
         <section className={styles.section}>
           <h2>{t('home.disclaimerTitle')}</h2>
-          <p>{t('home.disclaimer')}</p>
+          <p>
+            {t('home.disclaimer')} <Link href="/about">{t('about.link')}</Link>
+          </p>
           {locale === 'zh-CN' && (
             <p lang="en" className={styles.muted}>
               {t('home.disclaimerEnglish')}

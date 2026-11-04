@@ -1,6 +1,7 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 import { expect, test, vi } from 'vitest';
 import * as engine from '@uk-immigration/engine';
+import * as policyData from '@uk-immigration/policy-data';
 import { esP31IndividualAPartnerArrivesTogether as together } from '../../../packages/policy-data/fixtures/es-p31-individual-a-partner-arrives-together';
 import Home from '../app/page';
 import { PrincipalAssessment, ResultView } from '../components/result-view';
@@ -8,7 +9,7 @@ import { SiteShell } from '../components/site-shell';
 import { WhatIfView } from '../components/whatif-lab';
 import { t } from '../i18n';
 import { LocaleContext } from '../i18n/locale';
-import { routeNames, routeGroupNames } from '../i18n/routes';
+import { routeNames, routeGroupNames, routeLabel } from '../i18n/routes';
 import {
   createDraft,
   runPrincipalSimulation,
@@ -25,14 +26,20 @@ const familyDraft = () => ({
 const cjk = /[\u3400-\u9fff]/;
 
 test('all route and group labels preserve bilingual Chinese and English-only English', () => {
+  expect(routeNames).toBe(policyData.routeNames);
+  expect(routeGroupNames).toBe(policyData.routeGroupNames);
   for (const names of [
     ...Object.values(routeNames),
     ...Object.values(routeGroupNames),
   ]) {
     expect(names['zh-CN']).toMatch(cjk);
-    expect(names['zh-CN']).toContain(` · ${names.en}`);
+    expect(routeLabel(names, 'zh-CN')).toBe(`${names['zh-CN']} · ${names.en}`);
+    expect(routeLabel(names, 'en')).toBe(names.en);
     expect(names.en).not.toMatch(cjk);
   }
+  expect(
+    routeLabel({ 'zh-CN': '中文 · English', en: 'English' }, 'zh-CN'),
+  ).toBe('中文 · English');
   const render = (locale: 'zh-CN' | 'en') =>
     renderToStaticMarkup(
       <LocaleContext value={{ locale, setLocale: () => {} }}>
@@ -100,6 +107,8 @@ test('locale renders the shell title, engine result, principal and What-if expla
     );
   const chinese = render('zh-CN');
   const english = render('en');
+  expect(english).not.toMatch(cjk);
+  expect(english).not.toMatch(/[：、（）]/);
   for (const key of [
     'site.name',
     'home.title',
@@ -142,6 +151,7 @@ test('locale renders the shell title, engine result, principal and What-if expla
   );
   expect(whatIf).toContain('ES-ENGLISH');
   expect(whatIf).not.toMatch(cjk);
+  expect(whatIf).not.toMatch(/[：、（）]/);
 });
 
 test('a remembered result is only reused for its original locale', () => {

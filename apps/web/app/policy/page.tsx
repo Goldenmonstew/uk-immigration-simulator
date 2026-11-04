@@ -8,6 +8,7 @@ import {
 } from '@uk-immigration/policy-data';
 import type { ParameterSet, SourceRef } from '@uk-immigration/policy-data';
 import { useTranslation } from '../../i18n/locale';
+import { punct } from '../../i18n/punctuation';
 import { ruleSets } from '../../lib/policy';
 import { sourceUrls } from '../../lib/sources';
 import site from '../site.module.css';
@@ -61,6 +62,7 @@ function ParameterValue({
 
 export default function PolicyPage() {
   const { t, locale } = useTranslation();
+  const p = punct(locale);
   return (
     <main id="main" className={site.main}>
       <h1>{t('policyPage.title')}</h1>
@@ -136,8 +138,9 @@ export default function PolicyPage() {
                   <Sources sources={meta.sources} />
                   {!!meta.pendingDetails?.length && (
                     <p className={site.muted}>
-                      {t('result.pendingDetails')}:{' '}
-                      {meta.pendingDetails.join(', ')}
+                      {t('result.pendingDetails')}
+                      {p.colon}
+                      {meta.pendingDetails.join(p.list)}
                     </p>
                   )}
                 </li>

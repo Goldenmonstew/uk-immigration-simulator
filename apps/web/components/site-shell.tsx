@@ -17,8 +17,9 @@ export function SiteShell({ children }: { children: ReactNode }) {
         <div className={styles.headerInner}>
           <Link href="/">{t('site.name')}</Link>
           <span>{t('site.englishName')}</span>
-          <nav aria-label={t('site.navigation')}>
+          <nav className={styles.navigation} aria-label={t('site.navigation')}>
             <Link href="/policy">{t('site.policy')}</Link>
+            <Link href="/about">{t('site.about')}</Link>
           </nav>
           <div
             className={styles.languages}

@@ -11,6 +11,7 @@ import {
   earnedSettlement2026_11,
 } from '@uk-immigration/policy-data';
 import { useTranslation } from '../i18n/locale';
+import { punct } from '../i18n/punctuation';
 import { ruleSets } from '../lib/policy';
 import {
   type Draft,
@@ -46,7 +47,8 @@ function Comparison({
   before: SettlementAssessment;
   after: SettlementAssessment;
 }) {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
+  const p = punct(locale);
   const diff = diffAssessment(before, after);
   const years = (assessment: SettlementAssessment) =>
     assessment.pathwayYears === undefined
@@ -89,7 +91,10 @@ function Comparison({
           aria-label={t(`whatif.${group}`)}
         >
           <h3>
-            {t(`whatif.${group}`)}（{diff[group].length}）
+            {t(`whatif.${group}`)}
+            {p.openParen}
+            {diff[group].length}
+            {p.closeParen}
           </h3>
           {!diff[group].length ? (
             <p className={site.muted}>{t('result.noGroupRules')}</p>
@@ -115,8 +120,10 @@ function Comparison({
       {after.assumptions.length ? (
         <details>
           <summary>
-            {t('result.assumptions')}（{after.assumptions.length}{' '}
-            {t('result.assumptionCount')}）
+            {t('result.assumptions')}
+            {p.openParen}
+            {after.assumptions.length} {t('result.assumptionCount')}
+            {p.closeParen}
           </summary>
           <ul className={resultStyles.assumptions}>
             {after.assumptions.map((assumption, index) => (
@@ -142,6 +149,7 @@ function WhatIfLab({
   before: SimulationResult;
 }) {
   const { t, locale } = useTranslation();
+  const p = punct(locale);
   const [whatIf, setWhatIf] = useState(() => initialWhatIf(draft));
   const update = (patch: Partial<WhatIf>) =>
     setWhatIf((current) => ({ ...current, ...patch }));
@@ -234,13 +242,16 @@ function WhatIfLab({
                   })
                 }
               />
+              <label htmlFor="whatif-income-slider">
+                {t('whatif.incomeSlider')}
+              </label>
               <input
+                id="whatif-income-slider"
                 type="range"
                 min="0"
                 max={maxIncome}
                 step="500"
                 disabled={!whatIf.incomeEnabled}
-                aria-label={t('whatif.incomeSlider')}
                 value={whatIf.earnings ?? 0}
                 onChange={(event) =>
                   update({ earnings: event.target.valueAsNumber })
@@ -271,10 +282,11 @@ function WhatIfLab({
               ))}
             </div>
             <p className={styles.hint}>
-              {t('date.incomeWindow')}：
+              {t('date.incomeWindow')}
+              {p.colon}
               {visibleIncomeYears(afterDraft)
                 .map((row) => row.taxYear)
-                .join('、')}
+                .join(p.list)}
             </p>
           </fieldset>
           <div className={styles.field}>

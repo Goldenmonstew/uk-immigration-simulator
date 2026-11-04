@@ -1,8 +1,8 @@
 /* global self, caches, fetch, URL, Response */
 
 const CACHE_PREFIX = 'uk-immigration-pwa-';
-const CACHE_NAME = `${CACHE_PREFIX}2026-11-04-v1`;
-const PAGES = ['/', '/simulate', '/result', '/whatif', '/policy'];
+const CACHE_NAME = `${CACHE_PREFIX}2026-11-04-v2`;
+const PAGES = ['/', '/simulate', '/result', '/whatif', '/policy', '/about'];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
