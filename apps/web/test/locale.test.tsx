@@ -8,6 +8,7 @@ import { SiteShell } from '../components/site-shell';
 import { WhatIfView } from '../components/whatif-lab';
 import { t } from '../i18n';
 import { LocaleContext } from '../i18n/locale';
+import { routeNames, routeGroupNames } from '../i18n/routes';
 import {
   createDraft,
   runPrincipalSimulation,
@@ -22,6 +23,28 @@ const familyDraft = () => ({
   completed: true,
 });
 const cjk = /[\u3400-\u9fff]/;
+
+test('all route and group labels preserve bilingual Chinese and English-only English', () => {
+  for (const names of [
+    ...Object.values(routeNames),
+    ...Object.values(routeGroupNames),
+  ]) {
+    expect(names['zh-CN']).toMatch(cjk);
+    expect(names['zh-CN']).toContain(` · ${names.en}`);
+    expect(names.en).not.toMatch(cjk);
+  }
+  const render = (locale: 'zh-CN' | 'en') =>
+    renderToStaticMarkup(
+      <LocaleContext value={{ locale, setLocale: () => {} }}>
+        <ResultView result={runSimulation(familyDraft(), locale)} />
+      </LocaleContext>,
+    );
+  expect(render('zh-CN')).toContain(routeGroupNames.CORE_PERMISSION['zh-CN']);
+  expect(render('en')).toContain(
+    `<dd>${routeGroupNames.CORE_PERMISSION.en}</dd>`,
+  );
+  expect(render('en')).not.toContain(routeGroupNames.CORE_PERMISSION['zh-CN']);
+});
 
 function expectEnglish(result: engine.SimulationResult) {
   expect(Object.values(result.byRuleSet).length).toBeGreaterThan(0);

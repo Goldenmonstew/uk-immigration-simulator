@@ -130,8 +130,11 @@ type Action =
 export function draftReducer(state: Draft, action: Action): Draft {
   const editingPrincipal = state.principalStep !== undefined;
   switch (action.type) {
-    case 'restore':
-      return action.draft;
+    case 'restore': {
+      if (!action.draft.completed) return action.draft;
+      const restored = { ...action.draft, principalStep: undefined };
+      return { ...restored, step: stepSequence(restored).at(-1)! };
+    }
     case 'step':
       return {
         ...state,

@@ -84,9 +84,7 @@ export default function SimulatePage() {
     if (stored.draft)
       dispatch({
         type: 'restore',
-        draft: stored.draft.completed
-          ? { ...stored.draft, step: 0, principalStep: undefined }
-          : stored.draft,
+        draft: stored.draft,
       });
     setStorageAvailable(stored.available);
     setReady(true);
@@ -334,7 +332,7 @@ export default function SimulatePage() {
                               {Object.entries(routeNames).map(
                                 ([route, name]) => (
                                   <option key={route} value={route}>
-                                    {name}
+                                    {name[locale]}
                                   </option>
                                 ),
                               )}
@@ -419,7 +417,7 @@ export default function SimulatePage() {
                           >
                             {Object.entries(routeNames).map(([route, name]) => (
                               <option key={route} value={route}>
-                                {name}
+                                {name[locale]}
                               </option>
                             ))}
                           </select>

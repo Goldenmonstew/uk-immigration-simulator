@@ -199,6 +199,9 @@
 .section {
   margin-top: 40px;
 }
+.printOnly {
+  display: none;
+}
 .footer {
   background: #f3f2f1;
   border-top: 1px solid #b1b4b6;
@@ -222,5 +225,49 @@
   }
   .policy {
     margin-bottom: 28px;
+  }
+}
+
+@media print {
+  .body {
+    font-size: 11pt;
+    color: #000;
+    background: #fff;
+  }
+  .header,
+  .footer,
+  .skip,
+  .noPrint,
+  .body button,
+  .body nav {
+    display: none !important;
+  }
+  .printOnly {
+    display: block;
+    margin-bottom: 20px;
+    font-size: 10pt;
+  }
+  .main {
+    max-width: none;
+    padding: 0;
+    min-height: 0;
+  }
+  .body a {
+    color: inherit;
+    text-decoration: none;
+  }
+  .body a[href]::after {
+    content: none !important;
+  }
+  .body h1,
+  .body h2,
+  .body h3,
+  .body h4,
+  .body summary {
+    break-after: avoid;
+  }
+  .body p {
+    orphans: 3;
+    widows: 3;
   }
 }

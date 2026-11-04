@@ -58,7 +58,9 @@ export function ResultView({
           </p>
           <AssessmentColumns result={result} />
           <Advice />
-          <p className={site.muted}>{t('home.disclaimer')}</p>
+          <p className={`${site.muted} ${site.noPrint}`}>
+            {t('home.disclaimer')}
+          </p>
         </>
       )}
     </>
@@ -72,7 +74,7 @@ export function AssessmentColumns({
   result: SimulationResult;
   idPrefix?: string;
 }) {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   return (
     <div className={styles.columns}>
       {ruleSets.map((ruleSet) => {
@@ -108,7 +110,7 @@ export function AssessmentColumns({
                   {assessment.routeGroup && (
                     <div>
                       <dt>{t('result.routeGroup')}</dt>
-                      <dd>{routeGroupNames[assessment.routeGroup]}</dd>
+                      <dd>{routeGroupNames[assessment.routeGroup][locale]}</dd>
                     </div>
                   )}
                   <div>

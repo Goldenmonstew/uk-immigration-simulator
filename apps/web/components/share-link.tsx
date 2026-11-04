@@ -24,7 +24,10 @@ export function ShareLink({ draft }: { draft: Draft }) {
     }
   };
   return (
-    <section className={styles.share} aria-label={t('share.copy')}>
+    <section
+      className={`${styles.share} ${site.noPrint}`}
+      aria-label={t('share.copy')}
+    >
       <div className={styles.row}>
         <button type="button" className={site.secondary} onClick={copy}>
           {t('share.copy')}

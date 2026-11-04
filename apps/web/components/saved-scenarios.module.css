@@ -1,0 +1,46 @@
+.save {
+  margin: 24px 0;
+}
+.save label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 700;
+}
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.save input {
+  flex: 1 1 200px;
+  padding: 10px;
+  border: 2px solid #0b0c0c;
+}
+.list {
+  list-style: none;
+  padding: 0;
+}
+.card {
+  border: 1px solid #b1b4b6;
+  padding: 20px;
+  margin-top: 20px;
+}
+.card h3 {
+  margin-bottom: 8px;
+}
+.summaries {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+.summaries dt {
+  font-weight: 700;
+}
+.summaries dd {
+  margin: 4px 0 0;
+}
+@media (max-width: 600px) {
+  .summaries {
+    grid-template-columns: 1fr;
+  }
+}
