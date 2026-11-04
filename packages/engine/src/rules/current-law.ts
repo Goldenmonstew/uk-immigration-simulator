@@ -642,7 +642,7 @@ export const clFamilyResidence = defineRule(
     const rn = (r: Route) => nameIn(L, routeNames[r]);
     const assumptions = [
       L(
-        `连续期合并 SETF 3.1 列出的${rn('FAMILY_PARTNER_OR_PARENT')}与${rn('FAMILY_AND_PRIVATE_LIFE')}许可；各段按与当前许可同属 10 年路线计算。`,
+        `连续期合并 SETF 3.1 列出的${rn('FAMILY_PARTNER_OR_PARENT')}、${rn('FAMILY_AND_PRIVATE_LIFE')}两类许可；各段按与当前许可同属 10 年路线计算。`,
         `The continuous period combines the ${rn('FAMILY_PARTNER_OR_PARENT')} and ${rn('FAMILY_AND_PRIVATE_LIFE')} permissions listed in SETF 3.1; each period is taken to be on the 10-year route like the current permission.`,
       ),
       ...(before?.route === 'LEAVE_OUTSIDE_THE_RULES'

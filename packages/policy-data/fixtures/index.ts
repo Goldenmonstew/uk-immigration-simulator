@@ -1,4 +1,6 @@
 import type { Fixture } from '../../engine/src/types';
+import { clGlobalTalentThreeYears } from './cl-global-talent-three-years';
+import { clHkbnoFiveYears } from './cl-hkbno-five-years';
 import { esIndividualC } from './es-individual-c-combined-income';
 import { esIndividualD } from './es-individual-d-public-funds';
 import { esP16MaternityBestYears } from './es-p16-maternity-best-years';
@@ -37,4 +39,6 @@ export const fixtures: Fixture[] = [
   esP45IndividualACareWorkerEligible,
   esP45IndividualBCareWorkerIneligible,
   esP45IndividualCCareWorkerAfterCutoff,
+  clHkbnoFiveYears,
+  clGlobalTalentThreeYears,
 ];

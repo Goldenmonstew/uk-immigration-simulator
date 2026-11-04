@@ -1,3 +1,4 @@
+import { fixtures } from '@uk-immigration/policy-data/fixtures';
 import { describe, expect, test } from 'vitest';
 import { evaluate } from '../src/evaluate';
 import {
@@ -356,5 +357,28 @@ describe('family partner, 10-year route (SRC-022)', () => {
     expect(after.status).toBe('FAIL');
     expect(after.explanation).toContain('SETF 5.1(b)');
     expect(run(clKol, partner('2016-11-04')).explanation).toContain('SETF 6.1');
+  });
+});
+
+describe('fixtures: the Earned Settlement column is unchanged', () => {
+  const result = (id: string) =>
+    evaluate(fixtures.find((f) => f.id === id)!.request);
+
+  test('Hong Kong BN(O) short-circuits as outside the framework', () => {
+    const r = result('CL-HKBNO-FIVE-YEARS');
+    expect(r.shortCircuit?.reason).toBe('OUTSIDE_FRAMEWORK');
+    expect(r.byRuleSet['earned-settlement-2026-11']?.outcome).toBe(
+      'REQUIRES_REGULATED_REVIEW',
+    );
+  });
+
+  test('Global Talent is assessed as usual', () => {
+    const r = result('CL-GLOBAL-TALENT-THREE-YEARS');
+    expect(r.shortCircuit).toBeUndefined();
+    expect(
+      r.byRuleSet['earned-settlement-2026-11']?.rules.find(
+        (x) => x.id === 'ES-ROUTE-GROUP',
+      )?.status,
+    ).toBe('PASS');
   });
 });
