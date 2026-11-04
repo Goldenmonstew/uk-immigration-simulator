@@ -80,6 +80,20 @@ export default function AboutContent() {
           <p>{t('about.sharePrivacy')}</p>
           <p>{t('about.analyticsPrivacy')}</p>
         </section>
+        <section className={site.section} aria-labelledby="about-feedback">
+          <h2 id="about-feedback">{t('about.feedbackTitle')}</h2>
+          <p>{t('about.feedbackIntro')}</p>
+          <p>
+            <a
+              href="https://github.com/Goldenmonstew/uk-immigration-simulator/issues/new?template=feedback.md"
+              target="_blank"
+              rel="noreferrer"
+            >
+              {t('about.feedbackLink')}
+            </a>
+          </p>
+          <p className={site.notice}>{t('about.feedbackPrivacy')}</p>
+        </section>
       </div>
     </main>
   );

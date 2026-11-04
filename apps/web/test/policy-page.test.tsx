@@ -60,7 +60,7 @@ test('policy page enumerates the exported rule sets, parameters, rules, changelo
       .sort()
       .reverse(),
   );
-  expect(html).not.toMatch(/href="[^"]+\.md/);
+  expect(html).not.toMatch(/href="[^"?#]+\.md(?:[?#"])/);
 });
 
 test('policy page translates all metadata and UI in English, with readable parameter shapes', () => {

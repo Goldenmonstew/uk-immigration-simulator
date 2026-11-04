@@ -225,6 +225,15 @@
   font-size: 1rem;
   color: #505a5f;
 }
+.footer .footerLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  margin-top: 12px;
+}
+.footerLinks a {
+  white-space: nowrap;
+}
 @media (max-width: 600px) {
   .main {
     padding: 28px 20px 48px;
