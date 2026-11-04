@@ -332,9 +332,9 @@ PD-064（PWS → Core Protection 回切）、PD-065（保护类路线上的其�
 
 `packages/policy-data/fixtures/` 新增 p40 Individual A–D 四个（日期为补充事实，文件头注明）：A（UKRS 2027-06-01 抵达、A2、用过 Universal Credit；2032-06-01 → `LIKELY_ELIGIBLE`、5 年）；B（2027-03-01 Core Protection → 2028-03-01 PWS；2030-01-01 → `LIKELY_NOT_ELIGIBLE`、10 年、2038-03-01）；C（同 B，成年后 2026-08-10 非法入境 → 20 年、2048-03-01）；D（同 C 但一直 Core Protection → 30 年、2057-03-01）。原有 fixture 的状态 / 年限 / 日期不变。
 
-## 12. 现行法律栏：HK BN(O) 与 Global Talent（Phase 4.2）
+## 12. 现行法律栏：HK BN(O)、Global Talent 与家庭伴侣（Phase 4.2）
 
-把 Hong Kong BN(O) 与 Global Talent 两条路线的**主申请人**纳入现行法律栏。只新增可选字段，已有字段与取值不变；`SettlementAssessment` 不加字段。Earned Settlement 栏不变（HK BN(O) 仍 `OUTSIDE_FRAMEWORK` 短路，Global Talent 仍按核心许可 / 高人才评估）。
+把 Hong Kong BN(O) 与 Global Talent 两条路线的**主申请人**纳入现行法律栏（12.1–12.7）；家庭伴侣主申请人见 12.8（范围变更后追加）。只新增可选字段，已有字段与取值不变；`SettlementAssessment` 不加字段。Earned Settlement 栏不变（HK BN(O) 仍 `OUTSIDE_FRAMEWORK` 短路，Global Talent 仍按核心许可 / 高人才评估）。
 
 段号按 gov.uk 现行文本（Appendix Hong Kong British National (Overseas) 2026-10-08 版、Appendix Global Talent 2026-08-03 版）预写，**以 4.1 登记的 SRC-020 / SRC-021 快照为准**；4.1 合并前代码与参数里的 `sources` 写 `{ srcId: 'SRC-020' | 'SRC-021', locator: '待 4.1' }`，不引用未登记的 SRC。
 
@@ -399,3 +399,59 @@ HK BN(O) 的英语只有一个等级（HK 60.1 没有按申请日分段），所
 ### 12.7 fixtures
 
 `packages/policy-data/fixtures/` 新增两个自拟 fixture（文件头注明事实依据为规则条款，不是官方案例）：`cl-hkbno-five-years.ts`（2021-02-01 起持 `HONG_KONG_BNO` 主申请人许可，申请日 2026-02-01 → 现行法律栏 `LIKELY_ELIGIBLE`、5 年；Earned Settlement 栏 `OUTSIDE_FRAMEWORK` 短路）；`cl-global-talent-three-years.ts`（`ARTS_COUNCIL_ENGLAND` + `EXCEPTIONAL_TALENT`，3 年到期当天 → `LIKELY_ELIGIBLE`、3 年；Earned Settlement 栏照常）。原有 fixture 的状态 / 年限 / 日期不变。
+
+### 12.8 家庭伴侣主申请人（范围变更后追加）
+
+**来源结构**（与任务书的假定不同，需先定来源）：Appendix Settlement Family Life（SRC-022，gov.uk 现行版 2026-08-03）**只有 10 年路线**（SETF 1–SETF 17），且没有财务要求。**5 年路线在 Appendix FM**：合格期 E-ILRP.1.3（"5 years (60 months)"）、伴侣身份 E-LTRP.1.2、财务 E-LTRP.3.1–3.8（经 E-ILRP.1.3(1A) 适用于定居）、英语与 KOL 经 E-ILRP.1.6 引 **Appendix KoLL**（KoLL 2.2 的 B1 / B2 按 2027-03-26 分段，HC 1691 EM 5.60 列有 Appendix KoLL）。Appendix FM 与 Appendix KoLL 目前都没有登记（SRC-015 是 Appendix KOL UK，不是 KoLL）。下表这两项写"待登记"；它们登记前，5 年路线的规则不写，或只写 10 年路线。
+
+#### 字段
+
+| 字段 | 取值 | 含义 | 何时读取 |
+|---|---|---|---|
+| `ImmigrationEpisode.familyPermission?` | `'PARTNER_FIVE_YEAR'` \| `'PARTNER_TEN_YEAR'` \| `'PARENT'` | Appendix FM 许可的类型：5 年路线伴侣（D-ECP.1.1 / D-LTRP.1.1）、10 年路线伴侣、parent of a child | 申请日当天的 `FAMILY_PARTNER_OR_PARENT` + `MAIN` 片段 |
+
+- 用一个字段同时区分"伴侣 / 父母"和"5 年 / 10 年"，不从 `relationships` 推断是伴侣还是父母：父母路线的申请人也可能有 `PARTNER` 关系。
+- 缺省 → `CL-FAMILY-RESIDENCE` 为不带 PD 的 `UNKNOWN`（结论"信息不足"）。`PARENT` → `CL-SCOPE` 为 `UNKNOWN`，解释写"父母路线未建模"（Long Residence 已满 10 年时照常 `PASS`）。
+- 复用现有字段：伴侣身份用 `relationships` 里 `type = 'PARTNER'` 的 `otherPartyStatus`；收入用 `incomeYears` 的 `earnings` + `partnerEarnings`；子女数用 `relationships` 里 `type = 'CHILD'` 且 `otherPartyStatus = 'OTHER'` 的条数（E-LTRP.3.7 的"child"不含 British citizen 与 settled）。
+
+#### 参数（`currentLaw2026_11.values`）
+
+| 名称 | 值 | 来源（预期段号） |
+|---|---|---|
+| `familyPartnerQualifyingYearsFive` | 5 | Appendix FM E-ILRP.1.3（待登记） |
+| `familyPartnerQualifyingYearsTen` | 10 | SRC-022 SETF 3.1 |
+| `familyPartnerMinimumIncome` | 29,000 | Appendix FM E-LTRP.3.1(a)、E-LTRP.3.8（待登记） |
+| `familyPartnerTransitionalBefore` | `'2024-04-11'` | Appendix FM E-LTRP.3.5 |
+| `familyPartnerTransitionalIncome` | 18,600 | Appendix FM E-LTRP.3.7(a)(i) |
+| `familyPartnerTransitionalFirstChild` | 3,800 | Appendix FM E-LTRP.3.7(a)(ii) |
+| `familyPartnerTransitionalAdditionalChild` | 2,400 | Appendix FM E-LTRP.3.7(a)(iii) |
+| `familyPartnerSettlementEnglishBefore` | `'B1'` | SRC-022 SETF 5.1(a)；Appendix KoLL 2.2（待登记） |
+| `familyPartnerSettlementEnglish` | `{ cefrLevel: 'B2', applicationsFrom: '2027-03-26' }` | SRC-022 SETF 5.1(b)；Appendix KoLL 2.2；SRC-007 EM 5.60 |
+
+#### 规则
+
+| 规则 | 适用 | 判断 |
+|---|---|---|
+| `CL-SCOPE`（改） | — | 当前 `FAMILY_PARTNER_OR_PARENT` + `MAIN` 且 `familyPermission` 不是 `PARENT` → `PASS`（缺省也进入，由下一条给 `UNKNOWN`）；`PARENT` → `UNKNOWN`（见上）；该路线的 `DEPENDANT` → `UNKNOWN`，同 12.3。 |
+| `CL-FAMILY-RESIDENCE`（新） | 当前 `FAMILY_PARTNER_OR_PARENT` + `MAIN` | `PARTNER_FIVE_YEAR`：起点 = 申请日所在的连续 `FAMILY_PARTNER_OR_PARENT` + `MAIN` 段起点，满 5 年（E-ILRP.1.3）；fiancé(e) 时间不计（E-ILRP.1.3(2)，本工具无此取值）、同一伴侣（E-ILRP.1.4）按满足假设。`PARTNER_TEN_YEAR`：起点 = 由 `FAMILY_PARTNER_OR_PARENT`（任意 `role`，SETF 3.1(a)(d)）与 `FAMILY_AND_PRIVATE_LIFE`（SETF 3.1(c)）组成的连续段起点，满 10 年；SETF 3.1(e) 的 Article 8 Leave Outside the Rules 无法区分，不计；SETF 3.2（合并其他可定居路线）不建模，紧接之前有其他路线时加假设（与 HK 62.1(b) 同一个新 PD）。两者都经 `restartAfterAbsences`（CR 3.1；SETF 4.1）。满期 `PASS`，未满 `FAIL` 写到期日；`familyPermission` 缺省 → `UNKNOWN`（不带 PD）。片段内各段按与当前片段同一类许可假设。 |
+| `CL-FAMILY-RELATIONSHIP`（新） | 同上 | `relationships` 里有 `PARTNER` 且 `otherPartyStatus` 为 `BRITISH_CITIZEN` 或 `SETTLED` → `PASS`（E-LTRP.1.2(a)(b)；SETF 7.1(a)(b)）；为 `OTHER` → `UNKNOWN`（不带 PD；10 年路线另有 SETF 7.1(c)"同时申请定居"，5 年路线 E-LTRP.1.2(c)–(f) 在定居阶段不能用）；没有 `PARTNER` → `UNKNOWN`（不带 PD）。关系真实且持续（Appendix Relationship with Partner、SETF 7.3 的 1 年）按满足假设。 |
+| `CL-FAMILY-FINANCIAL`（新） | 当前为 `PARTNER_FIVE_YEAR` | 门槛：连续段起点 < 2024-04-11 → 过渡门槛 £18,600 + 首个子女 £3,800 + 其后每个 £2,400，最高 £29,000（E-LTRP.3.5–3.8）；否则 £29,000（E-LTRP.3.1(a)）。收入 = 申请日前最近一个完整 tax year（`taxYearsBefore(simulationDate, 1)`）的 `earnings` + `partnerEarnings`（E-LTRP.3.2(a)(b)）。≥ 门槛 → `PASS`；< 门槛 → `FAIL`；该年 `earnings` 与 `partnerEarnings` 都缺 → `UNKNOWN`（不带 PD）。储蓄（E-LTRP.3.1(b)）、E-LTRP.3.3（伴侣领特定福利）、Appendix FM-SE 证据规则不建模，写进假设；"首次申请"按获批日近似（获批在 2024-04-11 后而申请在此前的情形写进假设）。10 年路线不运行（SETF 没有财务要求）。 |
+| `CL-ENGLISH`（改） | — | 当前家庭伴侣 → 申请日 < 2027-03-26 为 B1，此后 B2（SETF 5.1；5 年路线 KoLL 2.2）。 |
+| `CL-KOL`（改） | — | 判断不变；来源补 SETF 6.1（Appendix KOL UK）与 KoLL 2.3（5 年路线）。 |
+
+#### 候选路径
+
+| `familyPermission` | 候选 | 年限 | 起点 |
+|---|---|---|---|
+| `PARTNER_FIVE_YEAR` | `CL-FAMILY-RESIDENCE` + `CL-FAMILY-RELATIONSHIP` + `CL-FAMILY-FINANCIAL` + `CL-ENGLISH` + `CL-KOL` | 5 | `CL-FAMILY-RESIDENCE` 的起点 |
+| `PARTNER_TEN_YEAR` | `CL-FAMILY-RESIDENCE` + `CL-FAMILY-RELATIONSHIP` + `CL-ENGLISH` + `CL-KOL` | 10 | 同上 |
+| 缺省 | `CL-FAMILY-RESIDENCE`（`UNKNOWN`） | —（不给起点） | — |
+| 都有 | Long Residence 10 年候选照常并列 | 10 | 不变 |
+
+- `CL-FAMILY-RESIDENCE` 进候选，理由同 `CL-GT-RESIDENCE`（12.4）。"投影到 2027-03-26 后须 B2"的假设对家庭伴侣也加。
+- 新 PD（登记到"现行法律栏扩展（任务 4.2）"）：HK 62.1(b) / SETF 3.2 的"可定居路线"合并（同一条）；家庭伴侣的储蓄与 E-LTRP.3.3 不建模属引擎假设，不另设 PD。
+
+#### fixture 与给 4.6
+
+- `cl-family-partner-five-years.ts`：`PARTNER_FIVE_YEAR`，伴侣 `BRITISH_CITIZEN`，2021-03-01 起，申请日 2026-03-01（5 年到期当天）；连续段起点早于 2024-04-11 → 过渡门槛 £18,600（无子女），上一 tax year 合并收入达标；英语 B1、KOL 已过 → `LIKELY_ELIGIBLE`、5 年。Earned Settlement 栏照常。
+- 问卷：当前片段为 `FAMILY_PARTNER_OR_PARENT` + `MAIN` 时问 `familyPermission`；伴侣路线时提示填写伴侣身份（`relationships`）与上一 tax year 的本人及伴侣收入。
