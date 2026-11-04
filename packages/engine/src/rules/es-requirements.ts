@@ -5,6 +5,7 @@ import {
 import { fullYears } from '../dates';
 import { episodeOn } from '../residence';
 import { defineRule, nameIn, textFor } from '../rule';
+import { esProtectionRouteOn } from './es-residence';
 import type { Lang } from '../rule';
 import type { CefrLevel } from '@uk-immigration/policy-data';
 import type { IsoDate, PersonTimeline } from '../types';
@@ -277,21 +278,34 @@ export const esBreach = defineRule(
     title: '成年后无 qualifying immigration breach',
     titleEn: 'No qualifying immigration breach as an adult',
     sources: [{ srcId: 'SRC-001', locator: 'p13' }],
-    pendingDetails: ['PD-015', 'PD-016', 'PD-044'],
+    pendingDetails: ['PD-015', 'PD-016', 'PD-044', 'PD-065'],
   },
-  ({ timeline, locale }) => {
+  ({ timeline, simulationDate, locale }) => {
     const L = textFor({ locale });
-    const adult = timeline.immigrationBreaches.filter((b) =>
-      isAdultOn(timeline, b.date),
+    // On a protection route illegal entry adds 10 years instead
+    // (ES-PROTECTION-PATHWAY, Table 2 p48), so it is not a breach here.
+    const protection = esProtectionRouteOn(timeline, simulationDate);
+    const adult = timeline.immigrationBreaches.filter(
+      (b) =>
+        isAdultOn(timeline, b.date) &&
+        !(protection && b.type === 'ILLEGAL_ENTRY'),
     );
-    const minorNote =
-      adult.length < timeline.immigrationBreaches.length
+    const minorNote = timeline.immigrationBreaches.some(
+      (b) => !isAdultOn(timeline, b.date),
+    )
+      ? L(
+          `未满 ${es.values.adultAge.value} 岁时的违规不计入（p13）。`,
+          ` Breaches before age ${es.values.adultAge.value} do not count (p13).`,
+        )
+      : '';
+    const illegalNote =
+      protection && adultIllegalEntry(timeline)
         ? L(
-            `未满 ${es.values.adultAge.value} 岁时的违规不计入（p13）。`,
-            ` Breaches before age ${es.values.adultAge.value} do not count (p13).`,
+            '成年后非法入境在保护类路线上按 Table 2 额外加 10 年，见"难民定居路径与年限"，不在此计入。',
+            ' On a protection route illegal entry as an adult adds 10 years under Table 2 (see the refugee settlement pathway) and is not counted here.',
           )
         : '';
-    if (adultIllegalEntry(timeline)) {
+    if (adultIllegalEntry(timeline) && !protection) {
       return {
         status: 'UNKNOWN',
         explanation: L(
@@ -308,22 +322,30 @@ export const esBreach = defineRule(
       return {
         status: 'FAIL',
         explanation: L(
-          `成年后有 qualifying immigration breach（${types.join('、')}），不论收入多高都进入 20 年路径。${minorNote}`,
-          `Qualifying immigration breach as an adult (${types.join(', ')}): the 20-year pathway applies however high the earnings.${minorNote}`,
+          `成年后有 qualifying immigration breach（${types.join('、')}），不论收入多高都进入 20 年路径。${minorNote}${illegalNote}`,
+          `Qualifying immigration breach as an adult (${types.join(', ')}): the 20-year pathway applies however high the earnings.${minorNote}${illegalNote}`,
         ),
         assumptions: [
           L(
             '20 年按在 qualifying route 上的连续居留计算，违规不设时效（PD-016）。',
             'The 20 years count continuous residence on a qualifying route; breaches do not expire (PD-016).',
           ),
+          ...(protection
+            ? [
+                L(
+                  'Table 2 只规定非法入境的后果；其他 qualifying breach 按第 1 章与 Table 1"所有路径适用"进入 20 年路径（叠加非法入境的 10 年），自当前保护类路线的合格期起点起算（PD-065）。',
+                  'Table 2 only sets out the consequence of illegal entry; other qualifying breaches lead to the 20-year pathway under Chapter 1 and Table 1 (“apply to all”), plus 10 years for any illegal entry, counted from the start of the qualifying period on the current protection route (PD-065).',
+                ),
+              ]
+            : []),
         ],
       };
     }
     return {
       status: 'PASS',
       explanation: L(
-        `成年后无 qualifying immigration breach。${minorNote}`,
-        `No qualifying immigration breach as an adult.${minorNote}`,
+        `成年后无 qualifying immigration breach。${minorNote}${illegalNote}`,
+        `No qualifying immigration breach as an adult.${minorNote}${illegalNote}`,
       ),
     };
   },

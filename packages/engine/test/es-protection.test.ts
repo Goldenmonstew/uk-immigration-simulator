@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'vitest';
 import { evaluate } from '../src/evaluate';
 import { esProtectionPathway } from '../src/rules/es-protection';
+import { esBreach } from '../src/rules/es-requirements';
 import type {
   ImmigrationBreach,
   ImmigrationEpisode,
@@ -210,5 +211,70 @@ describe('protection pathways in evaluate', () => {
     expect(r.byRuleSet['current-law-2026-11']?.outcome).not.toBe(
       'REQUIRES_REGULATED_REVIEW',
     );
+  });
+});
+
+describe('ES-BREACH on protection routes', () => {
+  test('illegal entry is left to the pathway', () => {
+    const result = run(
+      esBreach,
+      refugee({ episodes: [core], immigrationBreaches: illegalEntry() }),
+      '2030-01-01',
+    );
+    expect(result.status).toBe('PASS');
+    expect(result.explanation).toContain('Table 2');
+    expect(result.explanation).not.toContain('未满');
+  });
+
+  test('another adult breach still fails, with PD-065', () => {
+    const result = run(
+      esBreach,
+      refugee({
+        episodes: coreThenWork,
+        immigrationBreaches: [
+          ...illegalEntry(),
+          { type: 'OVERSTAYING', date: '2025-01-01' },
+        ],
+      }),
+      '2030-01-01',
+    );
+    expect(result.status).toBe('FAIL');
+    expect(result.assumptions?.join()).toContain('PD-065');
+  });
+
+  test('Protection Work and Study with another breach falls back to 20 (+10) years', () => {
+    const { column } = es(
+      {
+        episodes: coreThenWork,
+        immigrationBreaches: [
+          ...illegalEntry(),
+          { type: 'DECEPTION', date: '2029-01-01' },
+        ],
+      },
+      '2030-01-01',
+    );
+    expect(column.pathwayYears).toBe(30);
+    expect(column.earliestDate).toBe('2058-03-01');
+  });
+
+  test('Safe and Legal with a breach falls back to 20 years', () => {
+    const { column } = es(
+      {
+        episodes: ukrs(),
+        immigrationBreaches: [{ type: 'OVERSTAYING', date: '2029-01-01' }],
+      },
+      '2030-01-01',
+    );
+    expect(column.pathwayYears).toBe(20);
+    expect(column.earliestDate).toBe('2047-06-01');
+  });
+
+  test('illegal entry on Protection Work and Study gives 20 years (p40 Individual C)', () => {
+    const { column } = es(
+      { episodes: coreThenWork, immigrationBreaches: illegalEntry() },
+      '2030-01-01',
+    );
+    expect(column.pathwayYears).toBe(20);
+    expect(column.earliestDate).toBe('2048-03-01');
   });
 });
