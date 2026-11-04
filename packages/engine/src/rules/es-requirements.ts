@@ -47,8 +47,7 @@ export const esCriminality = defineRule(
     }
     return {
       status: 'UNKNOWN',
-      explanation:
-        '申报的犯罪记录都发生在 18 岁以前。原文对未成年时的犯罪保留酌情拒绝的空间，需由受监管顾问判断。',
+      explanation: `申报的犯罪记录都发生在 ${es.values.adultAge.value} 岁以前。原文对未成年时的犯罪保留酌情拒绝的空间，需由受监管顾问判断。`,
       pendingDetails: ['PD-017'],
     };
   },
@@ -100,7 +99,7 @@ export const esEnglishB2 = defineRule(
     if (ageExemptOn(timeline, simulationDate)) {
       return {
         status: 'PASS',
-        explanation: `申请日未满 18 岁或已满 65 岁，豁免英语要求。`,
+        explanation: `申请日未满 ${es.values.adultAge.value} 岁或已满 ${es.values.exemptionAge.value} 岁，豁免英语要求。`,
       };
     }
     const english = timeline.english;
@@ -141,7 +140,7 @@ export const esKol = defineRule(
     if (ageExemptOn(timeline, simulationDate)) {
       return {
         status: 'PASS',
-        explanation: '申请日未满 18 岁或已满 65 岁，豁免 Life in the UK 考试。',
+        explanation: `申请日未满 ${es.values.adultAge.value} 岁或已满 ${es.values.exemptionAge.value} 岁，豁免 Life in the UK 考试。`,
       };
     }
     const kol = timeline.lifeInTheUk;
@@ -182,7 +181,7 @@ export const esBreach = defineRule(
     );
     const minorNote =
       adult.length < timeline.immigrationBreaches.length
-        ? '未满 18 岁时的违规不计入（p13）。'
+        ? `未满 ${es.values.adultAge.value} 岁时的违规不计入（p13）。`
         : '';
     if (adultIllegalEntry(timeline)) {
       return {

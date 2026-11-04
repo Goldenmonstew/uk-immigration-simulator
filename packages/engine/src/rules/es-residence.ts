@@ -239,12 +239,12 @@ export const esResidence = defineRule(
     }
     if (start > run.episodes[0].validFrom) {
       notes.push(
-        `有缺席在任意 12 个月内超过 ${cl.values.continuousResidenceMaxAbsenceDays.value} 天，连续居留中断，自 ${start} 重新起算。`,
+        `有缺席在任意 ${cl.values.continuousResidenceWindowMonths.value} 个月内超过 ${cl.values.continuousResidenceMaxAbsenceDays.value} 天，连续居留中断，自 ${start} 重新起算。`,
       );
     }
     if (timeline.absences.length > 0) {
       assumptions.push(
-        `Earned Settlement 的缺席口径未公布，假设沿用现行 Appendix Continuous Residence CR 3.1（任意 12 个月不超过 ${cl.values.continuousResidenceMaxAbsenceDays.value} 天，出境与入境当日都计入缺席）（PD-054）。`,
+        `Earned Settlement 的缺席口径未公布，假设沿用现行 Appendix Continuous Residence CR 3.1（任意 ${cl.values.continuousResidenceWindowMonths.value} 个月不超过 ${cl.values.continuousResidenceMaxAbsenceDays.value} 天，出境与入境当日都计入缺席）（PD-054）。`,
       );
     }
     return {

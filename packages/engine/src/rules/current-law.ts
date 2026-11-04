@@ -189,7 +189,7 @@ export const clEnglish = defineRule(
     if (ageExempt(timeline, simulationDate)) {
       return {
         status: 'PASS',
-        explanation: '申请日未满 18 岁或已满 65 岁，豁免英语要求。',
+        explanation: `申请日未满 ${cl.values.settlementMinorAge.value} 岁或已满 ${cl.values.settlementExemptionAge.value} 岁，豁免英语要求。`,
       };
     }
     const sw = onSkilledWorker(timeline, simulationDate);
@@ -251,7 +251,7 @@ export const clKol = defineRule(
     if (ageExempt(timeline, simulationDate)) {
       return {
         status: 'PASS',
-        explanation: '申请日未满 18 岁或已满 65 岁，豁免 Life in the UK 考试。',
+        explanation: `申请日未满 ${cl.values.settlementMinorAge.value} 岁或已满 ${cl.values.settlementExemptionAge.value} 岁，豁免 Life in the UK 考试。`,
       };
     }
     const kol = timeline.lifeInTheUk;

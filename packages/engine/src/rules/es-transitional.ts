@@ -9,6 +9,10 @@ import { gbp } from './es-contribution';
 
 // One-off transitional arrangements (SRC-001 Chapter 8, p41–p45).
 
+const CARE_CODES = careWorkerOccupations.occupations
+  .map((o) => o.socCode)
+  .join(' / ');
+
 const isCareWorker = (e: ImmigrationEpisode) =>
   e.route === 'SKILLED_WORKER' &&
   careWorkerOccupations.occupations.some((o) => o.socCode === e.socCode);
@@ -31,15 +35,14 @@ export const esTransitionalCareWorker = defineRule(
     if (!current || !isCareWorker(current)) {
       return {
         status: 'FAIL',
-        explanation:
-          '当前不是 care worker（SOC 2020 6135 / 6136）的 Skilled Worker 签证，不适用 care worker 过渡安排。',
+        explanation: `当前不是 care worker（SOC 2020 ${CARE_CODES}）的 Skilled Worker 签证，不适用 care worker 过渡安排。`,
       };
     }
     const cutoff = es.values.whitePaperPublished.value;
     const entered = continuousRun(timeline, simulationDate, isCareWorker)
       .episodes[0].validFrom;
     const assumptions = [
-      `截止点取 Immigration White Paper 的发布日 ${cutoff}（PD-035）；"进入或转入该路线"按这段连续 care worker 许可的起始日判断，职业按 SOC 2020 6135 / 6136 认定（PD-036）。`,
+      `截止点取 Immigration White Paper 的发布日 ${cutoff}（PD-035）；"进入或转入该路线"按这段连续 care worker 许可的起始日判断，职业按 SOC 2020 ${CARE_CODES} 认定（PD-036）。`,
     ];
     if (entered >= cutoff) {
       return timeline.episodes.some(

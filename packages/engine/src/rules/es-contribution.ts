@@ -92,7 +92,7 @@ const EARNINGS_SOURCES: SourceRef[] = [
 
 export const esEarnings3Y = earningsRule(
   'ES-EARNINGS-3Y',
-  '3 年路径收入：4 年中 3 年达到 £125,141',
+  `3 年路径收入：${es.values.bestYears3Year.value.window} 年中 ${es.values.bestYears3Year.value.required} 年达到 ${gbp(es.values.earningsThreshold3Year.value)}`,
   es.values.earningsThreshold3Year.value,
   es.values.bestYears3Year.value,
   EARNINGS_SOURCES,
@@ -101,7 +101,7 @@ export const esEarnings3Y = earningsRule(
 
 export const esEarnings5Y = earningsRule(
   'ES-EARNINGS-5Y',
-  '5 年路径收入：5 年中 3 年达到 £50,271',
+  `5 年路径收入：${es.values.bestYears5Year.value.window} 年中 ${es.values.bestYears5Year.value.required} 年达到 ${gbp(es.values.earningsThreshold5Year.value)}`,
   es.values.earningsThreshold5Year.value,
   es.values.bestYears5Year.value,
   EARNINGS_SOURCES,
@@ -112,7 +112,7 @@ export const esEarnings10Y = defineRule(
   {
     id: 'ES-EARNINGS-10Y',
     ruleSetId: RULE_SET,
-    title: '最低收入：7 年中 5 年达到 £12,571（或家庭合计 £25,142）',
+    title: `最低收入：${es.values.bestYears10Year.value.window} 年中 ${es.values.bestYears10Year.value.required} 年达到 ${gbp(es.values.earningsThresholdMinimum.value)}（或家庭合计 ${gbp(es.values.householdEarningsThreshold.value)}）`,
     sources: [...EARNINGS_SOURCES, { srcId: 'SRC-001', locator: 'p17' }],
     pendingDetails: [
       'PD-005',
@@ -130,7 +130,7 @@ export const esEarnings10Y = defineRule(
     if (ageExemptOn(timeline, simulationDate)) {
       return {
         status: 'PASS',
-        explanation: '申请日未满 18 岁或已满 65 岁，豁免最低收入要求。',
+        explanation: `申请日未满 ${es.values.adultAge.value} 岁或已满 ${es.values.exemptionAge.value} 岁，豁免最低收入要求。`,
       };
     }
     if (timeline.earningsExemptHealth) {
