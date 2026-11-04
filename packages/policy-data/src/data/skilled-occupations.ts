@@ -14,7 +14,8 @@ import type { SourceRef } from '../types';
 // Titles exclude subsequent eligibility notes; consult the source for restrictions.
 // Table 3's "Going rate (annual)" contains national pay scales or Table 4 / 5
 // references; retain codes and titles only, including separate regional rows.
-// Equivalent SOC 2010 columns, Table 3a and Tables 4 / 5 / 6 are not extracted.
+// Table 3a retains codes and titles for the additional national pay scale jobs.
+// Equivalent SOC 2010 columns and Tables 4 / 5 / 6 are not extracted.
 
 export interface GoingRate {
   /** Four-digit SOC 2020 occupation code. */
@@ -3508,6 +3509,48 @@ export const nationalPayScaleOccupations: {
     {
       socCode: '2461',
       title: 'Social workers',
+    },
+  ],
+};
+
+/** Table 3a national pay scale occupations skilled to RQF levels 3–5. */
+export const nationalPayScaleBelowRqf6Occupations: {
+  sources: SourceRef[];
+  occupations: { socCode: string; title: string }[];
+} = {
+  sources: [{ srcId: 'SRC-017', locator: 'Table 3a' }],
+  occupations: [
+    {
+      socCode: '3213',
+      title: 'Medical and dental technicians',
+    },
+    {
+      socCode: '3219',
+      title: 'Health associate professionals not elsewhere classified',
+    },
+    {
+      socCode: '3231',
+      title: 'Higher level teaching assistants',
+    },
+    {
+      socCode: '6112',
+      title: 'Teaching assistants',
+    },
+    {
+      socCode: '6113',
+      title: 'Educational support assistants',
+    },
+    {
+      socCode: '6131',
+      title: 'Nursing auxiliaries and assistants',
+    },
+    {
+      socCode: '6132',
+      title: 'Ambulance staff (excluding paramedics)',
+    },
+    {
+      socCode: '6133',
+      title: 'Dental nurses',
     },
   ],
 };
