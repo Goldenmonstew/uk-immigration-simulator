@@ -160,6 +160,24 @@ function cl(
   ]!;
 }
 
+describe('Earned Settlement: pre April 2024 Skilled Worker cohort (p44)', () => {
+  const es = (validFrom: string) =>
+    evaluate({
+      timeline: timeline({ episodes: [sw(validFrom)] }),
+      simulationDate: SIMULATION_DATE,
+    }).byRuleSet['earned-settlement-2026-11']!;
+
+  test('a Skilled Worker since before 2024-04-04 gets the renewal note, with the pathway unchanged', () => {
+    const a = es('2024-04-03');
+    expect(a.assumptions.join('')).toContain('2035');
+    expect(a.pathwayYears).toBe(es('2024-04-04').pathwayYears);
+  });
+
+  test('from 2024-04-04 there is no note', () => {
+    expect(es('2024-04-04').assumptions.join('')).not.toContain('2035');
+  });
+});
+
 describe('current law', () => {
   test('Skilled Worker for 7 years on £60,000 qualifies after 5 years', () => {
     expect(cl({})).toMatchObject({

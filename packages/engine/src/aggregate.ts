@@ -4,7 +4,7 @@ import {
 } from '@uk-immigration/policy-data';
 import type { RuleSetId } from '@uk-immigration/policy-data';
 import { addYears } from './dates';
-import { episodeOn } from './residence';
+import { continuousRun, episodeOn } from './residence';
 import { runRule } from './rule';
 import { RULES } from './rules';
 import {
@@ -285,6 +285,20 @@ function assessEarnedSettlement(ctx: RuleContext): SettlementAssessment {
   ) {
     assumptions.push(
       '原文未规定同时符合过渡安排与标准路径时如何取舍；本结果取满足条件的最短路径，申请人可能可以选择更有利的安排，需咨询受监管顾问。',
+    );
+  }
+  // Pre April 2024 cohort (p44): no change to the pathway, only a note.
+  const skilledWorkerFrom = continuousRun(
+    ctx.timeline,
+    ctx.simulationDate,
+    (e) => e.route === 'SKILLED_WORKER' && e.role === 'MAIN',
+  ).episodes[0]?.validFrom;
+  if (
+    skilledWorkerFrom &&
+    skilledWorkerFrom < v.preApril2024CohortBefore.value
+  ) {
+    assumptions.push(
+      `自 ${skilledWorkerFrom} 起连续持 Skilled Worker 许可，早于 ${v.preApril2024CohortBefore.value}，属"2024 年 4 月前群体"：可按现有薪资条件续签至 2035 年（p44，具体日期未定，PD-040）；本工具按标准路径计算定居年限。`,
     );
   }
   const decision = decide(candidates, ctx.simulationDate);
