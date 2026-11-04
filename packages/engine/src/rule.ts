@@ -1,4 +1,4 @@
-import type { DisplayName } from '@uk-immigration/policy-data';
+import type { DisplayName, RuleSetId } from '@uk-immigration/policy-data';
 import type {
   Locale,
   Rule,
@@ -32,6 +32,11 @@ export function defineRule(
     meta,
     evaluate: (ctx) => ({ sources: meta.sources, ...check(ctx) }),
   };
+}
+
+/** The same rule registered to another rule set: only `meta.ruleSetId` changes. */
+export function withRuleSet(rule: Rule, ruleSetId: RuleSetId): Rule {
+  return { ...rule, meta: { ...rule.meta, ruleSetId } };
 }
 
 export function runRule(rule: Rule, ctx: RuleContext): RuleOutcome {

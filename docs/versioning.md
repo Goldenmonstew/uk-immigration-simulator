@@ -1,13 +1,13 @@
 # 规则集版本化流程（任务 4.7，2026-11-04）
 
-Statement of Changes 落地时怎么把新规则引入引擎而不弄乱旧结论。只写流程与约定，不预先实现任何版本切换代码（用户决定：等 12 月的 Statement of Changes 真正提交后再开实现任务）。
+Statement of Changes 落地时怎么把新规则引入引擎而不弄乱旧结论。只写流程与约定，不预先实现任何版本切换代码（用户决定：等 12 月的 Statement of Changes 真正提交后再开实现任务）。任务 4.8 已实现其中需要代码支撑的机制（`RULE_SET_IDS`、`effectiveFrom`、`withRuleSet`、`PARAMETERS`、`basedOn`、`evaluate` 的 `registry` 参数），没有新增真实规则集，见 `docs/contracts.md` §13。
 
 ## 1. 现状
 
-- 两个规则集：`current-law-2026-11`（`kind: 'LAW'`、`status: 'CURRENT_LAW'`）与 `earned-settlement-2026-11`（`kind: 'ANNOUNCED'`、`status: 'ANNOUNCED_NOT_IN_FORCE'`），定义在 `packages/engine/src/evaluate.ts` 的 `RULE_SETS`，ID 的类型在 `packages/policy-data/src/types.ts` 的 `RuleSetId`。
+- 两个规则集：`current-law-2026-11`（`kind: 'LAW'`、`status: 'CURRENT_LAW'`）与 `earned-settlement-2026-11`（`kind: 'ANNOUNCED'`、`status: 'ANNOUNCED_NOT_IN_FORCE'`），定义在 `packages/engine/src/evaluate.ts` 的 `RULE_SETS`；ID 的唯一入口是 `packages/policy-data/src/types.ts` 的 `RULE_SET_IDS`（`RuleSetId` 由它推导），`RULE_SETS`、`RULES`、`PARAMETERS` 都按它建键（4.8）。
 - 每个规则集一个参数文件（`packages/policy-data/src/parameters/<rule-set-id>.ts`，`ruleSetId` + `asOf` + `values`，每个值带 `SRC-xxx` 定位），规则在 `meta.ruleSetId` 上归属规则集，fixtures 的 `expected.ruleSetId` 指明断言哪一栏。
 - web 的 `apps/web/lib/policy.ts` 把 `RULE_SETS` 的全部值当作结果页的栏，`policyAsOf` 取 `earnedSettlement2026_11.asOf`；结果页两栏的标题与徽章来自 `kind` / `status`。
-- `RuleSet.status` 已预留 `'IN_FORCE_FUTURE_VERSION'`（已立法、未生效）。
+- `RuleSet.status` 已预留 `'IN_FORCE_FUTURE_VERSION'`（已立法、未生效），此时 `effectiveFrom` 必填（4.8）。
 - 时间表（SRC-002 / SRC-003）：Immigration Rules 的修改自 2026-12 起分批提交（laid），2027-01 起陆续生效，2027–2028 还有后续批次；具体生效日以届时的 Statement of Changes 为准，在它出现前引擎把生效日视为 `UNKNOWN`。
 
 ## 2. 触发与发现
@@ -24,17 +24,17 @@ Statement of Changes 落地时怎么把新规则引入引擎而不弄乱旧结�
 
 ## 4. 新规则集（Opus，契约先行）
 
-1. 命名：`<kind>-<生效年月>`。规则**生效**后进入现行法律：`current-law-2027-01`；只是**提交但未生效**：仍用 `current-law-2026-11` 作现行法律，另建 `current-law-2027-01` 并标 `status: 'IN_FORCE_FUTURE_VERSION'`（`sources` 里写生效日）；Earned Settlement 中**尚未立法**的部分保留在 `earned-settlement-2026-11`（或按新政策文件升版为 `earned-settlement-<年月>`）。同一时刻 `RULE_SETS` 里可以有三个规则集。
-2. `RuleSetId` 加新成员；新参数文件从旧文件复制后逐项核对来源，改动的值换成新 SRC 定位，没变的值保留原定位并在注释里写"沿用 <旧版本>"；`asOf` 为核对日。
-3. 规则：按规则集一份。没有变化的规则**不复制代码**——规则工厂（`defineRule`）接受 `ruleSetId`，同一 check 函数可注册到两个规则集，只有参数与来源不同；语义变了的规则在新规则集下写新版本，旧版本不动。契约（`docs/contracts.md` 新一节）先列：哪些规则沿用、哪些新写、候选路径表有无变化、短路有无变化。
+1. 命名：`<kind>-<生效年月>`。规则**生效**后进入现行法律：`current-law-2027-01`；只是**提交但未生效**：仍用 `current-law-2026-11` 作现行法律，另建 `current-law-2027-01` 并标 `status: 'IN_FORCE_FUTURE_VERSION'`（`effectiveFrom` 写生效日，必填）；Earned Settlement 中**尚未立法**的部分保留在 `earned-settlement-2026-11`（或按新政策文件升版为 `earned-settlement-<年月>`）。同一时刻 `RULE_SETS` 里可以有三个规则集。
+2. `RULE_SET_IDS` 加一项（`RULE_SETS`、`RULES`、`PARAMETERS` 漏加会 typecheck 报错）。新参数文件写 `basedOn: '<旧版本>'`，用 `...旧参数.values` 展开沿用，逐项核对来源后只覆盖改动的值并换成新 SRC 定位；`asOf` 为核对日（写法见 `docs/contracts.md` §13.5）。
+3. 规则：按规则集一份。没有变化的规则**不复制代码**——用 `withRuleSet(rule, '<新 ID>')` 注册到新规则集，check 不变。注意：规则仍直接 import 本版本参数，**参数按规则集注入尚未实现**（等真实版本出现再做，改法见 `docs/contracts.md` §13.4），在那之前沿用的规则读的是旧参数，数字有变化的规则要另写新版本。语义变了的规则在新规则集下写新版本，旧版本不动。聚合按 `RuleSet.kind` 选（`LAW` 按现行法律、`ANNOUNCED` 按 Earned Settlement）；候选路径或短路有变化时在契约里写。测试可用 `evaluate(request, registry)` 注入未注册的规则集。契约（`docs/contracts.md` 新一节）先列：哪些规则沿用、哪些新写、候选路径表有无变化、短路有无变化。
 4. fixtures：旧 fixtures 的 `expected.ruleSetId` 指向旧规则集，继续通过；新规则集按官方案例或自拟各加 fixture；`bilingual.test.ts` 的快照按规则集分节。
 5. `docs/pending-details.md`：被新规则解决的 PD 标"已关闭（<SRC>）"，不删行；新出现的未定事项照常登记。
 6. 全文案导出（`pnpm --filter @uk-immigration/engine export:wording`）按规则集分节重新生成。
 
 ## 5. web（astra）
 
-1. 结果页仍只显示**两栏**：`kind: 'LAW'` 且 `status: 'CURRENT_LAW'` 的那个，和"用户关心的下一版"——有 `IN_FORCE_FUTURE_VERSION` 时显示它（徽章"已立法，YYYY-MM-DD 起生效"），否则显示最新的 `ANNOUNCED`。选择逻辑放在 `apps/web/lib/policy.ts`，不改引擎。
-2. `policyAsOf` 改为所显示两栏 `asOf` 的较晚者；/policy 页列出全部规则集（含未显示的），标明状态与来源。
+1. 结果页仍只显示**两栏**：`kind: 'LAW'` 且 `status: 'CURRENT_LAW'` 的那个，和"用户关心的下一版"——有 `IN_FORCE_FUTURE_VERSION` 时显示它（多个时取 `effectiveFrom` 最早的；徽章"已立法，YYYY-MM-DD 起生效"，键 `policy.IN_FORCE_FUTURE_VERSION.effectiveFrom`），否则显示最新的 `ANNOUNCED`（`RULE_SET_IDS` 里靠后的）。选择逻辑放在 `apps/web/lib/policy.ts`，不改引擎；评估时 `ruleSetIds` 只传这两个（`docs/contracts.md` §13.6）。
+2. `policyAsOf` 改为所显示两栏 `PARAMETERS[id].asOf` 的较晚者；/policy 页列出全部规则集（含未显示的），标明状态与来源。
 3. What-if 与本机情景不需要改：它们按当前显示的两栏重算。
 4. 旧规则集被移除时（见 §6），分享链接与本机情景里只有输入、没有规则集 ID，不受影响。
 

@@ -5,9 +5,11 @@ import { adultIllegalEntry } from './rules/es-requirements';
 import { episodeOn } from './residence';
 import { esCurrentGroup, legacyUkrsArrival } from './rules/es-residence';
 import { textFor } from './rule';
+import { RULES } from './rules';
 import type {
   RuleContext,
   RuleSet,
+  RuleSetRegistry,
   SimulationRequest,
   SimulationResult,
 } from './types';
@@ -85,8 +87,13 @@ function shortCircuitOf(ctx: RuleContext): ShortCircuit | undefined {
   return undefined;
 }
 
-export function evaluate(request: SimulationRequest): SimulationResult {
-  const ids = request.ruleSetIds ?? (Object.keys(RULE_SETS) as RuleSetId[]);
+/** `registry` defaults to the production rule sets; tests pass their own (contracts §13.3). */
+export function evaluate(
+  request: SimulationRequest,
+  registry: RuleSetRegistry = { ruleSets: RULE_SETS, rules: RULES },
+): SimulationResult {
+  const ids =
+    request.ruleSetIds ?? (Object.keys(registry.ruleSets) as RuleSetId[]);
   const { timeline, simulationDate, principal, locale } = request;
   const ctx: RuleContext = {
     timeline,
@@ -98,12 +105,15 @@ export function evaluate(request: SimulationRequest): SimulationResult {
       episodeOn(timeline, simulationDate)?.role === 'DEPENDANT' && {
         principal: {
           timeline: principal,
-          result: evaluate({
-            timeline: principal,
-            simulationDate,
-            ruleSetIds: ids,
-            locale,
-          }),
+          result: evaluate(
+            {
+              timeline: principal,
+              simulationDate,
+              ruleSetIds: ids,
+              locale,
+            },
+            registry,
+          ),
         },
       }),
   };
@@ -120,14 +130,15 @@ export function evaluate(request: SimulationRequest): SimulationResult {
     });
   const byRuleSet: SimulationResult['byRuleSet'] = {};
   for (const id of ids) {
+    const { kind } = registry.ruleSets[id];
     // Protection dependants and outside-framework routes only stop the Earned
-    // Settlement column; current law is still assessed.
+    // Settlement (announced) columns; current law is still assessed.
     const stopped =
       shortCircuit &&
-      (id === 'earned-settlement-2026-11' ||
+      (kind === 'ANNOUNCED' ||
         shortCircuit.reason === 'CRIMINALITY' ||
         shortCircuit.reason === 'IMMIGRATION_BREACH');
-    const assessment = assess(id, ctx);
+    const assessment = assess(kind, registry.rules[id], ctx);
     if (stopped) {
       delete assessment.pathwayYears;
       delete assessment.earliestDate;
