@@ -18,6 +18,32 @@ function text(value) {
     .trim();
 }
 
+function isoDate(value) {
+  const match = value.match(/^(\d{1,2}) ([A-Za-z]+) (\d{4})$/);
+  const months = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ];
+  if (!match) return value;
+  const month = months.indexOf(match[2]) + 1;
+  if (!month) return value;
+  const iso = `${match[3]}-${String(month).padStart(2, '0')}-${match[1].padStart(2, '0')}`;
+  const date = new Date(`${iso}T00:00:00Z`);
+  return Number.isNaN(date.getTime()) || date.toISOString().slice(0, 10) !== iso
+    ? value
+    : iso;
+}
+
 const [countryHeaders, ...rows] = [
   ...body.matchAll(/<tr\b[^>]*>([\s\S]*?)<\/tr>/g),
 ].map((row) =>
@@ -39,7 +65,7 @@ const entries = rows.map((cells) => {
     .filter((_, index) => cells[index + 1] === 'Yes')
     .join(', ')
     .replace(/, ([^,]+)$/, ' and $1');
-  const removalDate = cells.at(-1);
+  const removalDate = isoDate(cells.at(-1));
   return {
     socCode: occupation[1],
     title,
@@ -60,6 +86,9 @@ const renderedEntries = entries
       ...Object.entries(entry).map(([key, value]) => {
         const literal = quote(value);
         const line = `      ${key}: ${literal},`;
+        if (key === 'removalDate' && !/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+          return `      // Unparsed removal date; preserved verbatim from SRC-019.\n${line}`;
+        }
         return line.length > 80 ? `      ${key}:\n        ${literal},` : line;
       }),
       '    },',
@@ -83,7 +112,7 @@ export interface ImmigrationSalaryListEntry {
   criteria?: string;
   /** Included nations, in the original country-header order. */
   nations: string;
-  /** Removal date in the source wording, when present. */
+  /** ISO date (YYYY-MM-DD), when present; unparsed source dates are annotated. */
   removalDate?: string;
 }
 
