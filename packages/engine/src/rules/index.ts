@@ -5,6 +5,7 @@ import {
   clKol,
   clLrResidence10Y,
   clScope,
+  clSwPartner5Y,
   clSwResidence5Y,
   clSwSalary,
 } from './current-law';
@@ -50,6 +51,7 @@ export const RULES: Record<RuleSetId, Rule[]> = {
     clScope,
     clSwResidence5Y,
     clSwSalary,
+    clSwPartner5Y,
     clEnglish,
     clKol,
     clLrResidence10Y,

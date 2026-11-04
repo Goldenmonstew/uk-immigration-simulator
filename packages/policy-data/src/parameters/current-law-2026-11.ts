@@ -78,12 +78,19 @@ export const currentLaw2026_11 = {
     },
     // Settlement applications made on or after this date need B2 English
     // unless exempt (inserted by HC 1691).
+    // Also for a Skilled Worker's dependent partner or child (SW 44.1(b)).
     skilledWorkerSettlementEnglish: {
       value: { cefrLevel: 'B2', applicationsFrom: '2027-03-26' },
       sources: [
         { srcId: 'SRC-004', locator: 'SW 22A.1' },
+        { srcId: 'SRC-004', locator: 'SW 44.1(b)' },
         { srcId: 'SRC-007', locator: 'p24' },
       ],
+    },
+    // A Skilled Worker's dependent partner or child applying before that date.
+    skilledWorkerDependantSettlementEnglishBefore: {
+      value: 'B1',
+      sources: [{ srcId: 'SRC-004', locator: 'SW 44.1(a)' }],
     },
   },
 } satisfies ParameterSet;

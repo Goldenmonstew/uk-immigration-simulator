@@ -10,6 +10,8 @@ import { RULES } from './rules';
 import {
   longResidenceStart,
   onSkilledWorker,
+  onSkilledWorkerPartner,
+  skilledWorkerPartnerStart,
   skilledWorkerStart,
 } from './rules/current-law';
 import { esDependantSettlement } from './rules/es-dependant';
@@ -292,7 +294,7 @@ function assessEarnedSettlement(ctx: RuleContext): SettlementAssessment {
 }
 
 const CL_BASE_ASSUMPTION =
-  '现行规则只建模 Skilled Worker 主申请人（Appendix Skilled Worker）与 Long Residence（Appendix Long Residence）；Part Suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。';
+  '现行规则只建模 Skilled Worker 主申请人及其 dependent partner（Appendix Skilled Worker）与 Long Residence（Appendix Long Residence）；Part Suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。';
 
 function assessCurrentLaw(ctx: RuleContext): SettlementAssessment {
   const [scopeRule, ...others] = RULES['current-law-2026-11'];
@@ -305,10 +307,16 @@ function assessCurrentLaw(ctx: RuleContext): SettlementAssessment {
     );
   }
   const sw = onSkilledWorker(ctx.timeline, ctx.simulationDate);
+  // In scope as a partner only with the principal (CL-SCOPE).
+  const partner =
+    ctx.principal !== undefined &&
+    onSkilledWorkerPartner(ctx.timeline, ctx.simulationDate);
+  const runs = (id: string) =>
+    id === 'CL-SW-PARTNER-5Y' ? partner : !id.startsWith('CL-SW-') || sw;
   const rules = [
     scope,
     ...others
-      .filter((rule) => sw || !rule.meta.id.startsWith('CL-SW-'))
+      .filter((rule) => runs(rule.meta.id))
       .map((rule) => runRule(rule, ctx)),
   ];
   const pick = (...ids: string[]) =>
@@ -323,6 +331,15 @@ function assessCurrentLaw(ctx: RuleContext): SettlementAssessment {
           },
         ]
       : []),
+    ...(partner
+      ? [
+          {
+            years: cl.values.skilledWorkerQualifyingYears.value,
+            start: skilledWorkerPartnerStart(ctx),
+            rules: pick('CL-SW-PARTNER-5Y', 'CL-ENGLISH', 'CL-KOL'),
+          },
+        ]
+      : []),
     {
       years: cl.values.longResidenceQualifyingYears.value,
       start: longResidenceStart(ctx),
@@ -330,6 +347,16 @@ function assessCurrentLaw(ctx: RuleContext): SettlementAssessment {
     },
   ];
   const decision = decide(candidates, ctx.simulationDate);
+  const shown =
+    partner &&
+    decision.pathwayYears === cl.values.skilledWorkerQualifyingYears.value
+      ? showProjected(
+          rules,
+          'CL-SW-PARTNER-5Y',
+          decision,
+          `截至 ${ctx.simulationDate} 尚未满期。`,
+        )
+      : rules;
   const assumptions = [CL_BASE_ASSUMPTION];
   // Projected past the B2 date while assessed under the earlier requirement.
   const b2 = cl.values.skilledWorkerSettlementEnglish.value;
@@ -342,7 +369,7 @@ function assessCurrentLaw(ctx: RuleContext): SettlementAssessment {
       `预计日期在 ${b2.applicationsFrom} 之后，届时定居须达到英语 ${b2.cefrLevel}（SW 22A.1、LR 13.1(b)）。`,
     );
   }
-  return toAssessment(decision, rules, assumptions);
+  return toAssessment(decision, shown, assumptions);
 }
 
 export function assess(id: RuleSetId, ctx: RuleContext): SettlementAssessment {

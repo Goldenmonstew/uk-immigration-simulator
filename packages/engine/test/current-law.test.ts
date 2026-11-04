@@ -7,8 +7,13 @@ import {
   clSwResidence5Y,
   clSwSalary,
 } from '../src/rules/current-law';
-import type { ImmigrationEpisode } from '../src/types';
-import { run } from './helpers';
+import { evaluate } from '../src/evaluate';
+import type {
+  ImmigrationEpisode,
+  PersonTimeline,
+  SettlementAssessment,
+} from '../src/types';
+import { asDependant, run, SIMULATION_DATE, timeline } from './helpers';
 
 const episode = (
   extra: Partial<ImmigrationEpisode> = {},
@@ -221,5 +226,114 @@ describe('CL-LR-RESIDENCE-10Y', () => {
     expect(
       run(clScope, { episodes: [student('2020-09-01', '2027-01-31')] }).status,
     ).toBe('UNKNOWN');
+  });
+});
+
+describe('Skilled Worker dependent partner (SW 38–SW 46)', () => {
+  // The default timeline is the principal: Skilled Worker since 2019-11-01.
+  const partnerFrom = (validFrom: string): ImmigrationEpisode[] => [
+    {
+      route: 'SKILLED_WORKER',
+      role: 'DEPENDANT',
+      validFrom,
+      validTo: '2027-10-31',
+      dependantOf: 'PARTNER',
+    },
+  ];
+  const cl = (
+    dependant: Partial<PersonTimeline>,
+    principal: Partial<PersonTimeline> | null = {},
+    simulationDate = SIMULATION_DATE,
+  ) =>
+    evaluate({
+      timeline: timeline(dependant),
+      simulationDate,
+      ...(principal && { principal: timeline(principal) }),
+    }).byRuleSet['current-law-2026-11']!;
+  const statusOf = (a: SettlementAssessment, id: string) =>
+    a.rules.find((r) => r.id === id)?.status;
+
+  test('CL-SCOPE: a partner is in scope only with the principal; a child is not modelled', () => {
+    expect(statusOf(cl({ episodes: asDependant('PARTNER') }), 'CL-SCOPE')).toBe(
+      'PASS',
+    );
+    const alone = cl({ episodes: asDependant('PARTNER') }, null);
+    expect(alone.outcome).toBe('INSUFFICIENT_INFORMATION');
+    expect(alone.rules[0].explanation).toContain('填写主申请人信息');
+    const child = cl({ episodes: asDependant('PARENT') });
+    expect(child.outcome).toBe('INSUFFICIENT_INFORMATION');
+    expect(child.rules[0].explanation).toContain('Appendix Children');
+  });
+
+  test('arriving with the principal settles with them, with no income requirement', () => {
+    const a = cl({ episodes: asDependant('PARTNER'), incomeYears: [] });
+    expect(a).toMatchObject({
+      outcome: 'LIKELY_ELIGIBLE',
+      pathwayYears: 5,
+      earliestDate: SIMULATION_DATE,
+    });
+    expect(statusOf(a, 'CL-SW-PARTNER-5Y')).toBe('PASS');
+    expect(a.rules.some((r) => r.id === 'CL-SW-SALARY')).toBe(false);
+  });
+
+  test('5 years as a dependent partner to the day qualifies; a day short projects the date', () => {
+    expect(cl({ episodes: partnerFrom('2021-11-04') }).outcome).toBe(
+      'LIKELY_ELIGIBLE',
+    );
+    const short = cl({ episodes: partnerFrom('2021-11-05') });
+    expect(short).toMatchObject({
+      outcome: 'LIKELY_NOT_ELIGIBLE',
+      pathwayYears: 5,
+      earliestDate: '2026-11-05',
+    });
+    expect(statusOf(short, 'CL-SW-PARTNER-5Y')).toBe('FAIL');
+  });
+
+  test('not before the principal completes the Skilled Worker period (SW 39.1(a))', () => {
+    const recent = [
+      episode({ validFrom: '2024-02-01', validTo: '2029-12-31' }),
+    ];
+    expect(
+      cl({ episodes: partnerFrom('2024-02-01') }, { episodes: recent }),
+    ).toMatchObject({
+      outcome: 'LIKELY_NOT_ELIGIBLE',
+      earliestDate: '2029-02-01',
+    });
+  });
+
+  test('a principal who cannot settle as a Skilled Worker fails the partner', () => {
+    const a = cl(
+      { episodes: asDependant('PARTNER') },
+      { english: { cefrLevel: 'B1' } },
+      '2027-04-01',
+    );
+    expect(statusOf(a, 'CL-SW-PARTNER-5Y')).toBe('FAIL');
+    expect(a.outcome).toBe('LIKELY_NOT_ELIGIBLE');
+  });
+
+  test('a principal with missing input or not on Skilled Worker leaves it unknown', () => {
+    const missing = cl(
+      { episodes: asDependant('PARTNER') },
+      { episodes: [episode({ salary: undefined })] },
+    );
+    expect(statusOf(missing, 'CL-SW-PARTNER-5Y')).toBe('UNKNOWN');
+    expect(missing.outcome).toBe('INSUFFICIENT_INFORMATION');
+    const other = cl(
+      { episodes: asDependant('PARTNER') },
+      { episodes: [episode({ route: 'GLOBAL_TALENT' })] },
+    );
+    expect(
+      other.rules.find((r) => r.id === 'CL-SW-PARTNER-5Y')?.explanation,
+    ).toContain('SW 39.1(b)');
+  });
+
+  test('English: B1 before 2027-03-26, B2 from then (SW 44.1)', () => {
+    const partner = { episodes: asDependant('PARTNER') };
+    const b1 = { ...partner, english: { cefrLevel: 'B1' as const } };
+    const a2 = { ...partner, english: { cefrLevel: 'A2' as const } };
+    expect(run(clEnglish, b1, '2027-03-25').status).toBe('PASS');
+    expect(run(clEnglish, a2, '2027-03-25').status).toBe('FAIL');
+    expect(run(clEnglish, b1, '2027-03-26').status).toBe('FAIL');
+    expect(run(clEnglish, partner, '2027-03-26').status).toBe('PASS');
   });
 });
