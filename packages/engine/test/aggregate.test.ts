@@ -95,10 +95,13 @@ describe('Earned Settlement pathway', () => {
     });
   });
 
-  test('missing input gives INSUFFICIENT_INFORMATION', () => {
-    expect(es({ lifeInTheUk: undefined }).outcome).toBe(
-      'INSUFFICIENT_INFORMATION',
-    );
+  test('missing input gives INSUFFICIENT_INFORMATION without a pathway', () => {
+    const noKol = es({ lifeInTheUk: undefined });
+    expect(noKol.outcome).toBe('INSUFFICIENT_INFORMATION');
+    expect(noKol.pathwayYears).toBeUndefined();
+    const noIncome = es({ incomeYears: [] });
+    expect(noIncome.outcome).toBe('INSUFFICIENT_INFORMATION');
+    expect(noIncome.pathwayYears).toBeUndefined();
     expect(es({ episodes: [] }).outcome).toBe('INSUFFICIENT_INFORMATION');
   });
 

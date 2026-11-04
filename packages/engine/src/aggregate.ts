@@ -49,8 +49,8 @@ const dueOf = (c: Candidate) => c.start && addYears(c.start, c.years);
 /**
  * - Some candidate passes with enough residence → LIKELY_ELIGIBLE (shortest).
  * - Otherwise some candidate with enough residence (or unknown residence) is
- *   only UNKNOWN → POTENTIALLY_ELIGIBLE if every unknown is a pending detail,
- *   else INSUFFICIENT_INFORMATION.
+ *   only UNKNOWN → POTENTIALLY_ELIGIBLE (with that pathway) if every unknown
+ *   is a pending detail, else INSUFFICIENT_INFORMATION (no pathway).
  * - Otherwise LIKELY_NOT_ELIGIBLE, with the earliest date of the candidates
  *   that have not failed, assuming circumstances stay the same.
  */
@@ -79,12 +79,10 @@ function decide(candidates: Candidate[], simulationDate: IsoDate): Decision {
     const unknown = maybe.flatMap((c) =>
       c.rules.filter((r) => r.status === 'UNKNOWN'),
     );
-    return {
-      outcome: unknown.every((r) => r.pendingDetails?.length)
-        ? 'POTENTIALLY_ELIGIBLE'
-        : 'INSUFFICIENT_INFORMATION',
-      pathwayYears: maybe[0].years,
-    };
+    // A pathway is only shown when the user has given everything they can.
+    return unknown.every((r) => r.pendingDetails?.length)
+      ? { outcome: 'POTENTIALLY_ELIGIBLE', pathwayYears: maybe[0].years }
+      : { outcome: 'INSUFFICIENT_INFORMATION' };
   }
 
   const next = candidates
