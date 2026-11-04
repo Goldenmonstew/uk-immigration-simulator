@@ -224,3 +224,45 @@ describe('ES-DEPENDANT-PATHWAY: children', () => {
     );
   });
 });
+
+describe('ES-DEPENDANT-PATHWAY: settled principal (PD-063)', () => {
+  const settledPrincipal = {
+    episodes: [
+      {
+        route: 'SKILLED_WORKER' as const,
+        role: 'MAIN' as const,
+        validFrom: '2019-11-01',
+        validTo: '2025-05-31',
+        socCode: '2136',
+        salary: 60000,
+      },
+    ],
+    settled: { date: '2025-06-01', route: 'SKILLED_WORKER' as const },
+  };
+
+  test('a principal who has already settled leaves the dependant potentially eligible, with no pathway', () => {
+    const a = es(PARTNER, settledPrincipal);
+    expect(pathwayOf(a)).toMatchObject({
+      status: 'UNKNOWN',
+      pendingDetails: ['PD-063'],
+    });
+    expect(a.outcome).toBe('POTENTIALLY_ELIGIBLE');
+    expect(a.pathwayYears).toBeUndefined();
+    expect(a.earliestDate).toBeUndefined();
+  });
+
+  test('missing input of their own still makes it insufficient', () => {
+    expect(
+      es({ ...PARTNER, english: undefined }, settledPrincipal).outcome,
+    ).toBe('INSUFFICIENT_INFORMATION');
+  });
+
+  test('a settlement date after the simulation date is ignored', () => {
+    const later = {
+      ...settledPrincipal,
+      episodes: [{ ...settledPrincipal.episodes[0], validTo: '2027-10-31' }],
+      settled: { date: '2026-11-05', route: 'SKILLED_WORKER' as const },
+    };
+    expect(pathwayOf(es(PARTNER, later)).status).toBe('PASS');
+  });
+});

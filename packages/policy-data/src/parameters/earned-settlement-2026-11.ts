@@ -125,6 +125,18 @@ export const earnedSettlement2026_11 = {
       ],
     },
 
+    // "Pre April 2024 cohort" (p44): workers already on the Skilled Worker
+    // route when the 2024 salary thresholds rose. p44 gives no date; it is
+    // taken from the current rules' transitional option (SW 4.2(b)(ii), whose
+    // 2030 sunset p44 mentions) (PD-040).
+    preApril2024CohortBefore: {
+      value: '2024-04-04',
+      sources: [
+        { srcId: 'SRC-001', locator: 'p44' },
+        { srcId: 'SRC-004', locator: 'SW 4.2(b)(ii)' },
+      ],
+    },
+
     // Qualifying residence in years for each pathway.
     pathwayYears3: {
       value: 3,

@@ -81,3 +81,70 @@ export const careWorkerOccupations: {
     { socCode: '6136', title: 'Senior care workers' },
   ],
 };
+
+// "Health and Care ASHE salary job" (SW A1.1): a job in one of these codes
+// with one of the employers listed in SW A1.1(a)–(f), which is not modelled.
+export const healthAndCareAsheOccupations: {
+  sources: SourceRef[];
+  occupations: Occupation[];
+} = {
+  sources: [{ srcId: 'SRC-004', locator: 'SW A1.1' }],
+  occupations: [
+    {
+      socCode: '1171',
+      title: 'Health services and public health managers and directors',
+    },
+    { socCode: '1231', title: 'Health care practice managers' },
+    {
+      socCode: '1232',
+      title: 'Residential, day and domiciliary care managers and proprietors',
+    },
+    { socCode: '2113', title: 'Biochemists and biomedical scientists' },
+    { socCode: '2114', title: 'Physical scientists' },
+    { socCode: '3111', title: 'Laboratory technicians' },
+    { socCode: '3211', title: 'Dispensing opticians' },
+    { socCode: '3212', title: 'Pharmaceutical technicians' },
+    { socCode: '6135', title: 'Care workers and home carers' },
+    { socCode: '6136', title: 'Senior care workers' },
+  ],
+};
+
+// Health and education occupations below RQF 6 with going rates on national
+// pay scales: Appendix Skilled Occupations Table 3a ("skilled to RQF level
+// 3-5"). Table 3 holds the RQF 6+ ones.
+export const nationalPayScaleBelowRqf6Occupations: {
+  sources: SourceRef[];
+  occupations: Occupation[];
+} = {
+  sources: [{ srcId: 'SRC-017', locator: 'Table 3a' }],
+  occupations: [
+    { socCode: '3213', title: 'Medical and dental technicians' },
+    {
+      socCode: '3219',
+      title: 'Health associate professionals not elsewhere classified',
+    },
+    { socCode: '3231', title: 'Higher level teaching assistants' },
+    { socCode: '6112', title: 'Teaching assistants' },
+    { socCode: '6113', title: 'Educational support assistants' },
+    { socCode: '6131', title: 'Nursing auxiliaries and assistants' },
+    { socCode: '6132', title: 'Ambulance staff (excluding paramedics)' },
+    { socCode: '6133', title: 'Dental nurses' },
+  ],
+};
+
+// The examples SRC-001 p44 names for the below-RQF 6 health and education
+// transitional arrangement ("nursing auxiliaries and teaching assistants"),
+// coded by the same titles in Table 3a. The full list is not given (PD-038).
+export const healthEducationTransitionalExamples: {
+  sources: SourceRef[];
+  occupations: Occupation[];
+} = {
+  sources: [
+    { srcId: 'SRC-001', locator: 'p44' },
+    { srcId: 'SRC-017', locator: 'Table 3a' },
+  ],
+  occupations: [
+    { socCode: '6131', title: 'Nursing auxiliaries and assistants' },
+    { socCode: '6112', title: 'Teaching assistants' },
+  ],
+};

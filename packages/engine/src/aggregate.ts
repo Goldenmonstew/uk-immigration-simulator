@@ -4,13 +4,15 @@ import {
 } from '@uk-immigration/policy-data';
 import type { RuleSetId } from '@uk-immigration/policy-data';
 import { addYears } from './dates';
-import { episodeOn } from './residence';
+import { continuousRun, episodeOn } from './residence';
 import { runRule } from './rule';
 import { RULES } from './rules';
 import {
   longResidenceStart,
   onSkilledWorker,
+  onSkilledWorkerChild,
   onSkilledWorkerPartner,
+  skilledWorkerChildStart,
   skilledWorkerPartnerStart,
   skilledWorkerStart,
 } from './rules/current-law';
@@ -188,11 +190,14 @@ function assessDependant(
   const pathway = rules.filter((r) => ES_DEPENDANT_PATHWAY.includes(r.id));
   const settlement = esDependantSettlement(ctx);
   if (!settlement) {
+    const unknown = pathway.filter((r) => r.status === 'UNKNOWN');
     return toAssessment(
       {
         outcome: pathway.some((r) => r.status === 'FAIL')
           ? 'LIKELY_NOT_ELIGIBLE'
-          : 'INSUFFICIENT_INFORMATION',
+          : unknown.every((r) => r.pendingDetails?.length)
+            ? 'POTENTIALLY_ELIGIBLE'
+            : 'INSUFFICIENT_INFORMATION',
       },
       rules,
       assumptions,
@@ -241,6 +246,7 @@ function assessEarnedSettlement(ctx: RuleContext): SettlementAssessment {
     'ES-BRITISH-CONNECTION',
     'ES-PUBLIC-SERVICE',
     'ES-TRANSITIONAL-CARE-WORKER',
+    'ES-TRANSITIONAL-HEALTH-EDUCATION',
   ];
   const start = esQualifyingResidence(ctx)?.start;
   const groups = current ? groupsOf(current.route) : [];
@@ -271,9 +277,28 @@ function assessEarnedSettlement(ctx: RuleContext): SettlementAssessment {
   ].map((c) => ({ ...c, start }));
 
   const assumptions = [ES_BASE_ASSUMPTION];
-  if (pick('ES-TRANSITIONAL-CARE-WORKER')[0].status === 'PASS') {
+  if (
+    pick(
+      'ES-TRANSITIONAL-CARE-WORKER',
+      'ES-TRANSITIONAL-HEALTH-EDUCATION',
+    ).some((r) => r.status === 'PASS')
+  ) {
     assumptions.push(
       '原文未规定同时符合过渡安排与标准路径时如何取舍；本结果取满足条件的最短路径，申请人可能可以选择更有利的安排，需咨询受监管顾问。',
+    );
+  }
+  // Pre April 2024 cohort (p44): no change to the pathway, only a note.
+  const skilledWorkerFrom = continuousRun(
+    ctx.timeline,
+    ctx.simulationDate,
+    (e) => e.route === 'SKILLED_WORKER' && e.role === 'MAIN',
+  ).episodes[0]?.validFrom;
+  if (
+    skilledWorkerFrom &&
+    skilledWorkerFrom < v.preApril2024CohortBefore.value
+  ) {
+    assumptions.push(
+      `自 ${skilledWorkerFrom} 起连续持 Skilled Worker 许可，早于 ${v.preApril2024CohortBefore.value}，属"2024 年 4 月前群体"：可按现有薪资条件续签至 2035 年（p44，具体日期未定，PD-040）；本工具按标准路径计算定居年限。`,
     );
   }
   const decision = decide(candidates, ctx.simulationDate);
@@ -294,7 +319,7 @@ function assessEarnedSettlement(ctx: RuleContext): SettlementAssessment {
 }
 
 const CL_BASE_ASSUMPTION =
-  '现行规则只建模 Skilled Worker 主申请人及其 dependent partner（Appendix Skilled Worker）与 Long Residence（Appendix Long Residence）；Part Suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。';
+  '现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）与 Long Residence（Appendix Long Residence）；Part Suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。';
 
 function assessCurrentLaw(ctx: RuleContext): SettlementAssessment {
   const [scopeRule, ...others] = RULES['current-law-2026-11'];
@@ -307,12 +332,19 @@ function assessCurrentLaw(ctx: RuleContext): SettlementAssessment {
     );
   }
   const sw = onSkilledWorker(ctx.timeline, ctx.simulationDate);
-  // In scope as a partner only with the principal (CL-SCOPE).
+  // In scope as a partner or child only with the principal (CL-SCOPE).
   const partner =
     ctx.principal !== undefined &&
     onSkilledWorkerPartner(ctx.timeline, ctx.simulationDate);
+  const child =
+    ctx.principal !== undefined &&
+    onSkilledWorkerChild(ctx.timeline, ctx.simulationDate);
   const runs = (id: string) =>
-    id === 'CL-SW-PARTNER-5Y' ? partner : !id.startsWith('CL-SW-') || sw;
+    id === 'CL-SW-PARTNER-5Y'
+      ? partner
+      : id === 'CL-SW-CHILD'
+        ? child
+        : !id.startsWith('CL-SW-') || sw;
   const rules = [
     scope,
     ...others
@@ -327,7 +359,12 @@ function assessCurrentLaw(ctx: RuleContext): SettlementAssessment {
           {
             years: cl.values.skilledWorkerQualifyingYears.value,
             start: skilledWorkerStart(ctx),
-            rules: pick('CL-SW-SALARY', 'CL-ENGLISH', 'CL-KOL'),
+            rules: pick(
+              'CL-SW-SALARY',
+              'CL-SW-GOING-RATE',
+              'CL-ENGLISH',
+              'CL-KOL',
+            ),
           },
         ]
       : []),
@@ -340,6 +377,15 @@ function assessCurrentLaw(ctx: RuleContext): SettlementAssessment {
           },
         ]
       : []),
+    ...(child
+      ? [
+          {
+            years: cl.values.skilledWorkerQualifyingYears.value,
+            start: skilledWorkerChildStart(ctx),
+            rules: pick('CL-SW-CHILD', 'CL-ENGLISH', 'CL-KOL'),
+          },
+        ]
+      : []),
     {
       years: cl.values.longResidenceQualifyingYears.value,
       start: longResidenceStart(ctx),
@@ -348,11 +394,11 @@ function assessCurrentLaw(ctx: RuleContext): SettlementAssessment {
   ];
   const decision = decide(candidates, ctx.simulationDate);
   const shown =
-    partner &&
+    (partner || child) &&
     decision.pathwayYears === cl.values.skilledWorkerQualifyingYears.value
       ? showProjected(
           rules,
-          'CL-SW-PARTNER-5Y',
+          partner ? 'CL-SW-PARTNER-5Y' : 'CL-SW-CHILD',
           decision,
           `截至 ${ctx.simulationDate} 尚未满期。`,
         )

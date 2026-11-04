@@ -5,6 +5,8 @@ import {
   clKol,
   clLrResidence10Y,
   clScope,
+  clSwChild,
+  clSwGoingRate,
   clSwPartner5Y,
   clSwResidence5Y,
   clSwSalary,
@@ -26,7 +28,10 @@ import {
 } from './es-contribution';
 import { esDependantPathway } from './es-dependant';
 import { esResidence, esRouteGroup } from './es-residence';
-import { esTransitionalCareWorker } from './es-transitional';
+import {
+  esTransitionalCareWorker,
+  esTransitionalHealthEducation,
+} from './es-transitional';
 
 /** Every rule, by rule set, in evaluation order. */
 export const RULES: Record<RuleSetId, Rule[]> = {
@@ -44,6 +49,7 @@ export const RULES: Record<RuleSetId, Rule[]> = {
     esPublicFunds,
     esBreach,
     esTransitionalCareWorker,
+    esTransitionalHealthEducation,
     esPublicService,
     esDependantPathway,
   ],
@@ -51,7 +57,9 @@ export const RULES: Record<RuleSetId, Rule[]> = {
     clScope,
     clSwResidence5Y,
     clSwSalary,
+    clSwGoingRate,
     clSwPartner5Y,
+    clSwChild,
     clEnglish,
     clKol,
     clLrResidence10Y,

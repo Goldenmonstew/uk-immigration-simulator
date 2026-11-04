@@ -160,6 +160,24 @@ function cl(
   ]!;
 }
 
+describe('Earned Settlement: pre April 2024 Skilled Worker cohort (p44)', () => {
+  const es = (validFrom: string) =>
+    evaluate({
+      timeline: timeline({ episodes: [sw(validFrom)] }),
+      simulationDate: SIMULATION_DATE,
+    }).byRuleSet['earned-settlement-2026-11']!;
+
+  test('a Skilled Worker since before 2024-04-04 gets the renewal note, with the pathway unchanged', () => {
+    const a = es('2024-04-03');
+    expect(a.assumptions.join('')).toContain('2035');
+    expect(a.pathwayYears).toBe(es('2024-04-04').pathwayYears);
+  });
+
+  test('from 2024-04-04 there is no note', () => {
+    expect(es('2024-04-04').assumptions.join('')).not.toContain('2035');
+  });
+});
+
 describe('current law', () => {
   test('Skilled Worker for 7 years on £60,000 qualifies after 5 years', () => {
     expect(cl({})).toMatchObject({
@@ -179,9 +197,19 @@ describe('current law', () => {
     expect(a.assumptions.join('')).toContain('届时定居须达到英语 B2');
   });
 
-  test('salary below £41,700 is insufficient information once residence is met', () => {
+  test('£38,000 qualifies under SW 24.3 row C before 2024-04-04; from then it fails row A, and is insufficient without a SOC code', () => {
     expect(
       cl({ episodes: [sw('2019-11-01', { salary: 38000 })] }).outcome,
+    ).toBe('LIKELY_ELIGIBLE');
+    expect(
+      cl({ episodes: [sw('2024-04-04', { salary: 38000 })] }, '2029-04-04')
+        .outcome,
+    ).toBe('LIKELY_NOT_ELIGIBLE');
+    expect(
+      cl(
+        { episodes: [sw('2024-04-04', { salary: 38000, socCode: undefined })] },
+        '2029-04-04',
+      ).outcome,
     ).toBe('INSUFFICIENT_INFORMATION');
   });
 

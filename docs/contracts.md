@@ -102,11 +102,11 @@ export const esIndividualC: Fixture = {
 
 - Earned Settlement（SRC-001 p46 Table 1）：强制要求 = `ES-CRIMINALITY`、`ES-DEBT`、`ES-ENGLISH-B2`、`ES-KOL`、`ES-ROUTE-GROUP`、`ES-RESIDENCE`。
   - 3 年：强制 + `ES-BREACH` + `ES-PUBLIC-FUNDS` + `ES-EARNINGS-3Y`
-  - 5 年：强制 + `ES-BREACH` + `ES-PUBLIC-FUNDS` + 以下任一：`ES-EARNINGS-5Y`、`ES-BRITISH-CONNECTION`、`ES-PUBLIC-SERVICE`、`ES-TRANSITIONAL-CARE-WORKER`
+  - 5 年：强制 + `ES-BREACH` + `ES-PUBLIC-FUNDS` + 以下任一：`ES-EARNINGS-5Y`、`ES-BRITISH-CONNECTION`、`ES-PUBLIC-SERVICE`、`ES-TRANSITIONAL-CARE-WORKER`、`ES-TRANSITIONAL-HEALTH-EDUCATION`（2.5）
   - 10 年：强制 + `ES-BREACH` + `ES-PUBLIC-FUNDS` + `ES-EARNINGS-10Y`
   - 20 年：强制 + `ES-EARNINGS-10Y`（用过 public funds 或有 breach 时只剩这条）
   - 当前为 Family and Private Life 时只有 10 / 20 年（p23）。居留起点都是 `ES-RESIDENCE` 的合格期起点。
-- 现行法律：`CL-SCOPE` 不通过时只输出这一条、结论 `INSUFFICIENT_INFORMATION`。否则候选为 Skilled Worker 5 年（`CL-SW-SALARY`、`CL-ENGLISH`、`CL-KOL`，起点为连续 Skilled Worker 段）与 Long Residence 10 年（`CL-ENGLISH`、`CL-KOL`，起点为连续合法居留段）；居留规则 `CL-SW-RESIDENCE-5Y` / `CL-LR-RESIDENCE-10Y` 只用于展示，年限由起点计算。
+- 现行法律：`CL-SCOPE` 不通过时只输出这一条、结论 `INSUFFICIENT_INFORMATION`。否则候选为 Skilled Worker 5 年（`CL-SW-SALARY`、`CL-SW-GOING-RATE`（2.5）、`CL-ENGLISH`、`CL-KOL`，起点为连续 Skilled Worker 段）与 Long Residence 10 年（`CL-ENGLISH`、`CL-KOL`，起点为连续合法居留段）；居留规则 `CL-SW-RESIDENCE-5Y` / `CL-LR-RESIDENCE-10Y` 只用于展示，年限由起点计算。
 
 判定（两个规则集同一套）：
 
@@ -157,6 +157,66 @@ Earned Settlement 栏的 dependant 候选路径（只有一条）：
 
 年龄分支：是否满 18 岁按申请日（`simulationDate`）；25 岁按家庭首次符合资格日（PD-060）。
 
-现行法律栏：Skilled Worker 主申请人的 dependent partner（当前 episode `SKILLED_WORKER` + `DEPENDANT` + `dependantOf = 'PARTNER'`，且有 `principal`）进入 `CL-SCOPE`。候选路径 = `CL-SW-PARTNER-5Y` + `CL-ENGLISH` + `CL-KOL`，5 年，起点 = max(伴侣连续 dependant 许可的起点, 主申请人连续 Skilled Worker 期的起点)，即不早于主申请人满 5 年（SW 39.1(a)、SW 42.1、SW 43.1）；没有薪资要求；英语 2027-03-26 前 B1、此后 B2（SW 44.1），KOL 按 SW 45.1。主申请人该栏没有 Skilled Worker 5 年路径（`pathwayYears` 不是 5）时：其结论为 `LIKELY_NOT_ELIGIBLE` → `FAIL`，否则 `UNKNOWN`。Long Residence 候选照常。主申请人已定居（SW 39.1(b)）不建模；dependent child（SW 41A.1 → Appendix Children）不建模，仍在 `CL-SCOPE` 之外。
+现行法律栏：Skilled Worker 主申请人的 dependent partner（当前 episode `SKILLED_WORKER` + `DEPENDANT` + `dependantOf = 'PARTNER'`，且有 `principal`）进入 `CL-SCOPE`。候选路径 = `CL-SW-PARTNER-5Y` + `CL-ENGLISH` + `CL-KOL`，5 年，起点 = max(伴侣连续 dependant 许可的起点, 主申请人连续 Skilled Worker 期的起点)，即不早于主申请人满 5 年（SW 39.1(a)、SW 42.1、SW 43.1）；没有薪资要求；英语 2027-03-26 前 B1、此后 B2（SW 44.1），KOL 按 SW 45.1。主申请人该栏没有 Skilled Worker 5 年路径（`pathwayYears` 不是 5）时：其结论为 `LIKELY_NOT_ELIGIBLE` → `FAIL`，否则 `UNKNOWN`。Long Residence 候选照常。dependent child 与主申请人已定居（SW 39.1(b)）见 §9（Phase 2.5）。
 
 短路：先看 dependant 本人的时间线（本人有犯罪记录照常短路，优先）；本人没有短路而主申请人有时，把主申请人的 `shortCircuit` 复制到 dependant 的 `SimulationResult`，`reason` 不变，`message` 前加"主申请人："。栏目影响沿用 §7：`CRIMINALITY` / `IMMIGRATION_BREACH` 两栏都是 `REQUIRES_REGULATED_REVIEW`，`PROTECTION` / `OUTSIDE_FRAMEWORK` 只影响 Earned Settlement 栏。
+
+## 9. 现行法律补全与剩余过渡安排（Phase 2.5）
+
+只新增可选字段，已有字段不变。
+
+字段：
+
+- `ImmigrationEpisode.immigrationSalaryList?: boolean`：只对 `SKILLED_WORKER` + `MAIN` 有意义，担保岗位在 Appendix Immigration Salary List 上（SW 24.3 rows B、D 看"最近一次许可"，即申请日当天那段）。缺省 = 否，不输出 `UNKNOWN`，规则在 `assumptions` 里写"未申报 Immigration Salary List，按不在清单处理"。
+- `PersonTimeline.settled?: { date: IsoDate; route: Route }`：填在**主申请人**的时间线上，表示主申请人已经定居（或已入籍），`date` 为获批日，`route` 为获批时所持许可的路线（SW 39.1(b)）。申请人本人时间线上的 `settled` 不被规则读取。缺省 = 未定居。
+- 不新增 `newEntrant`：SW 24.3 row C / D 引用的 SW 4.2(b) 不是"新入行"定义，而是 options F–J 的适用条件——(i) Health and Care ASHE salary job（SW A1.1），或 (ii) 2024-04-04 前按旧规则获批 Skilled Worker、此后连续持有、申请日早于 2030-04-04。两者都能从现有字段推出（`socCode` + `episodes`），见下。"新入行"只出现在 options E / J（入境 / 续签积分），SW 24.3 不用。
+
+参数（`currentLaw2026_11.values`）：
+
+| 名称 | 值 | 来源 |
+|---|---|---|
+| `skilledWorkerGeneralSalaryThreshold`（已有） | 41,700 | SW 24.3 row A |
+| `skilledWorkerSettlementSalaryRowB` | 33,400 | SW 24.3 row B |
+| `skilledWorkerSettlementSalaryRowC` | 31,300 | SW 24.3 row C |
+| `skilledWorkerSettlementSalaryRowD` | 25,000 | SW 24.3 row D |
+| `skilledWorkerPre2024RulesBefore` | 2024-04-04 | SW 4.2(b)(ii)；SRC-017 Table 2a |
+| `skilledWorkerPre2024ApplicationsBefore` | 2030-04-04 | SW 4.2(b)(ii) |
+| `skilledWorkerPre2025RulesBefore` | 2025-07-22 | SW 6.1(d)；SRC-017 Table 1a / 2aa |
+
+`earnedSettlement2026_11.values.preApril2024CohortBefore` = 2024-04-04（SRC-001 p44 + SW 4.2(b)(ii)；p44 本身没给日期，见 PD-040）。
+
+新数据表（`policy-data/src/data/occupations.ts`，形状同 `careWorkerOccupations`）：
+
+- `healthAndCareAsheOccupations`：SW A1.1 列出的 10 个 SOC 2020 代码（1171、1231、1232、2113、2114、3111、3211、3212、6135、6136）。
+- `nationalPayScaleBelowRqf6Occupations`：SRC-017 Table 3a 的 8 个 RQF 3–5 国家薪级职业（3213、3219、3231、6112、6113、6131、6132、6133）。
+- `healthEducationTransitionalExamples`：p44 点名的 nursing auxiliaries（6131）与 teaching assistants（6112），SOC 取自 Table 3a 同名行。
+
+`CL-SW-SALARY` 选行（SW 24.3，按 E → D → C → B → A 的排除顺序；"SW 4.2(b)" 下称 4.2(b)）：
+
+| 行 | 条件（当前 Skilled Worker 段） | general salary | going rate 查表顺序 |
+|---|---|---|---|
+| E | Tier 2 (General) STEM 遗留，不建模（假设说明） | — | — |
+| D | `socCode` 在 `nationalPayScaleOccupations`（Table 3），或 `immigrationSalaryList` 且满足 4.2(b) | 25,000 | Table 3 职业 → `UNKNOWN`（Table 4 / 5 未提取，新 PD）；其余 `2` → `2aa` → `2a` |
+| C | 满足 4.2(b)：`socCode` 在 `healthAndCareAsheOccupations`（雇主条件 SW A1.1(a)–(f) 按满足假设），或连续 Skilled Worker 段起点 < 2024-04-04 且申请日 < 2030-04-04 | 31,300 | `2` → `2aa` → `2a` |
+| B | `immigrationSalaryList` | 33,400 | `1` → `1a` |
+| A | 其余 | 41,700 | `1` → `1a` |
+
+- `CL-SW-SALARY` 只比 general salary，解释写明用的是哪一行；`CL-SW-GOING-RATE` 按同一行查 going rate，两条都 `PASS` 才满足 SW 24.3。两条都加进 Skilled Worker 5 年候选路径。
+- 查表用 `goingRates.rows` 里 `table` 与 `socCode` 都匹配的一行。附加表的适用条件从时间线判断，不另设 PD：`1a` / `2aa` 要求连续 Skilled Worker 段起点 < 2025-07-22（SW 6.1(d)），`2a` 要求起点 < 2024-04-04（SW 6.1(f)；"同一 sponsor"不核对，假设说明）。SOC 只在附加表里、但起点不满足其日期 → `UNKNOWN`（输入与可担保职业矛盾）。`socCode` 缺省或不在相应任何表 → `UNKNOWN`。
+- going rate 按每周 37.5 小时、不按实际工时折算（SW 14.4，假设说明）；薪资按用户填的 `salary`，SW 14.1–14.3 的口径不核对。
+
+`CL-SW-RESIDENCE-5Y` 合并（SW 21.2）：连续期可由以下 `MAIN` 许可任意组合构成：`SKILLED_WORKER`、`GLOBAL_TALENT`、`INNOVATOR_FOUNDER`、`MINISTER_OF_RELIGION`、`INTERNATIONAL_SPORTSPERSON`、`SCALE_UP`。`Route` 里没有 Representative of an Overseas Business 与 Tier 1，不计（假设说明）；SW 21.2(i) 不建模。当前段仍须是 `SKILLED_WORKER`（`CL-SCOPE` 不变）。Skilled Worker 5 年候选的起点即这个合并起点；伴侣路径的"主申请人起点"随之改用合并起点。4.2(b)(ii) 与附加表的日期条件仍只看纯 Skilled Worker 段。
+
+dependent child（`CL-SW-CHILD`，SRC-018 Appendix Children）：当前 episode `SKILLED_WORKER` + `DEPENDANT` + `dependantOf = 'PARENT'` 且有 `principal` 时进入 `CL-SCOPE`。候选 = `CL-SW-CHILD` + `CL-ENGLISH` + `CL-KOL`，与主申请人同时定居（SW 39.1(a)），日期 = 主申请人 Skilled Worker 5 年候选的日期；子女本人没有居留年限要求。`CL-SW-CHILD` 判断 SW 41A.1：age（CHI 1.1 / 1.2：申请日未满 18，或当前许可就是 dependent child 许可）、independent life（CHI 1A.1）、care（CHI 2.1，未满 18 时）。英语 SW 44.1、KOL SW 45.1（18 岁以上），未满 18 沿用 `settlementMinorAge` 豁免。
+
+主申请人已定居（SW 39.1(b)）：`principal.settled` 存在、`route = 'SKILLED_WORKER'`，且 dependant 在 `settled.date` 当天持有 `SKILLED_WORKER` + `DEPENDANT` 许可、`dependantOf` 与当前一致时：
+
+- 伴侣：起点 = 伴侣自己的连续 dependant 起点（不再受主申请人起点约束），满 5 年（SW 42.1）。
+- 子女：无居留年限要求，申请日即可（仍须满足 `CL-SW-CHILD`）。
+- `settled.route` 不是 `SKILLED_WORKER`，或 dependant 当时没有相应许可 → `FAIL`（不能按 SW 39.1(b)）。
+- Earned Settlement 栏：原文没写已定居主申请人的 dependant 如何定居 → `ES-DEPENDANT-PATHWAY` 为 `UNKNOWN`（PD-063），不给年限与日期；dependant 没有其他 `FAIL`、也没有不带 PD 的 `UNKNOWN` 时结论为 `POTENTIALLY_ELIGIBLE`。
+- `settled.date` 晚于申请日时视为尚未定居（按 SW 39.1(a) 判断）。SW 39.1(b)(ii)（在英出生、主申请人定居前出生的子女）不建模。
+
+Earned Settlement 栏新规则 `ES-TRANSITIONAL-HEALTH-EDUCATION`（SRC-001 p44，§2.2）加入 5 年候选的"以下任一"：当前 `SKILLED_WORKER` 且 `socCode` 在 `healthEducationTransitionalExamples`、该职业连续段起点 < `whitePaperPublished` → `PASS`；首段入境早于截止点但该职业段晚于截止点 → `UNKNOWN`（PD-039）；`socCode` 在 `nationalPayScaleBelowRqf6Occupations` 但不在示例 → `UNKNOWN`（PD-038）；其余 `FAIL`。强制要求照常适用（假设说明）。
+
+§2.3 前 2024-04 群体：不改年限，也不是规则；Earned Settlement 栏在当前 `SKILLED_WORKER` 段且连续 Skilled Worker 段起点 < `preApril2024CohortBefore` 时，在 `assumptions` 加一句"可按旧薪资条件续签至 2035（p44），本工具按标准路径计算定居年限"。
