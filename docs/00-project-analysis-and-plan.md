@@ -5,7 +5,7 @@
 | 日期 | 2026-11-04 |
 | 作者 | Fable 5.1（统筹 / 验收） |
 | 输入 | `docs/research/2026-11-03-deep-research-report.md`（研究报告，归档自 ~/Downloads，内容未改动） |
-| 原文核对 | `policy-sources/2026-11-02-cp1707-a-fairer-pathway-to-settlement-government-response.pdf`（官方回应文件 CP 1707，62 页）。本文所有 `p<N>` 指该 PDF 的物理页序（封面为 p1，与 `pdftotext -f N -l N` 一致）；2026-11-04 修正：此前按换页符计数漏了空白 p3，p3 以后的页码已全部 +1。对应 `docs/SOURCES.md` 的 SRC-001 |
+| 原文核对 | `policy-sources/2026-11-02-cp1707-a-fairer-pathway-to-settlement-government-response.pdf`（官方回应文件 CP 1707，62 页）。本文所有 `p<N>` 指该 PDF 的物理页序（封面为 p1，与 `pdftotext -f N -l N` 一致）；2026-11-04 修正：此前按换页符计数漏了空白 p2，p2 以后的页码已全部 +1。对应 `docs/SOURCES.md` 的 SRC-001 |
 | 状态 | 草案。§9 的决定项由用户确认后，本文作为各编码 agent 的任务依据 |
 
 ## 1. 现状
