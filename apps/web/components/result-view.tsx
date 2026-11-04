@@ -10,6 +10,7 @@ import { displayedRuleSets } from '../lib/policy';
 import { currentEpisode, type Draft } from '../lib/questionnaire';
 import { sourceUrls } from '../lib/sources';
 import { PolicyStatus, RuleSetStatus } from './policy-status';
+import { GapSummary } from './gap-summary';
 import site from '../app/site.module.css';
 import styles from '../app/result/result.module.css';
 
@@ -71,7 +72,11 @@ export function ResultView({
               {t('result.protectionNotice')}
             </p>
           )}
-          <AssessmentColumns result={result} />
+          <AssessmentColumns
+            result={result}
+            simulationDate={draft?.simulationDate}
+            canWhatIf={!!draft && !mock && !result.shortCircuit}
+          />
           <Advice />
         </>
       )}
@@ -85,9 +90,13 @@ export function ResultView({
 export function AssessmentColumns({
   result,
   idPrefix = '',
+  simulationDate,
+  canWhatIf = false,
 }: {
   result: SimulationResult;
   idPrefix?: string;
+  simulationDate?: string;
+  canWhatIf?: boolean;
 }) {
   const { t, locale } = useTranslation();
   const p = punct(locale);
@@ -122,6 +131,11 @@ export function AssessmentColumns({
                   <h3>{t(`outcome.${assessment.outcome}`)}</h3>
                   <p>{t(`outcome.${assessment.outcome}.description`)}</p>
                 </div>
+                <GapSummary
+                  assessment={assessment}
+                  simulationDate={simulationDate}
+                  canWhatIf={canWhatIf}
+                />
                 <dl className={styles.facts}>
                   {assessment.routeGroup && (
                     <div>
@@ -251,7 +265,13 @@ export function AssessmentColumns({
   );
 }
 
-export function PrincipalAssessment({ result }: { result: SimulationResult }) {
+export function PrincipalAssessment({
+  result,
+  simulationDate,
+}: {
+  result: SimulationResult;
+  simulationDate?: string;
+}) {
   const { t } = useTranslation();
   return (
     <details className={styles.principal}>
@@ -260,7 +280,11 @@ export function PrincipalAssessment({ result }: { result: SimulationResult }) {
         <p className={site.notice}>{result.shortCircuit.message}</p>
       )}
       {!!Object.keys(result.byRuleSet).length && (
-        <AssessmentColumns result={result} idPrefix="principal-" />
+        <AssessmentColumns
+          result={result}
+          idPrefix="principal-"
+          simulationDate={simulationDate}
+        />
       )}
     </details>
   );
