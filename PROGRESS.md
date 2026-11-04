@@ -53,9 +53,10 @@
 - 部署（2026-11-04）：Pages 项目 `uk-immigration-simulator` 已建并完成首次直传（https://uk-immigration-simulator.pages.dev），自定义域名 wanruncong.uk 已绑定并对外可访问（外部多节点 200；用户决定不等 IAA 复核先绑）；本机 wrangler 已 OAuth 登录（可在 Cloudflare My Profile → Connected Applications 撤销）。之后每次改动合并到 main 后跑 `pnpm deploy:pages`（需 `CF_PAGES_PROJECT=uk-immigration-simulator`）。
 - GitHub：远端 `origin` = https://github.com/Goldenmonstew/uk-immigration-simulator（私有）；secrets `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ACCOUNT_ID` 与变量 `CF_PAGES_PROJECT` 均已设。
 - 自动部署已生效（2026-11-04 18:29）：push main → CI + Deploy 工作流 → Cloudflare Pages 生产部署 → wanruncong.uk。token 名 github-pages-deploy，2027-11-04 到期，到期前需在 Cloudflare 重建并更新 secret。
-- 仍留给用户：撤销并重建曾贴进对话的 API token（可选但建议）；在右侧 Cloudflare 标签页重新登录（开 Web Analytics 用）。
+- 仍留给用户：撤销并重建曾贴进对话的 API token（可选但建议）。
+- Web Analytics（2026-11-04）：用户登录后 Fable 在 Pages 项目 Metrics 页点了 Enable（自动注入 beacon，无 cookie、不改代码），Cloudflare 提示下次部署后生效；查看入口为 Pages 项目 Metrics → View Web Analytics。
 - 已定口径、页码约定与 Codex 启动参数不变；验收时只看 gate 日志里的 `GATE EXIT` 行，不看后台任务的退出码。
 - 用户授权（2026-11-04）：每次验收合并到 main 后自动 `git push origin main`，不再逐次确认；push 后 GitHub Actions 自动跑 CI 与部署（secrets 就绪后）。
 - Phase 3 Wave 1 完成（2026-11-04）：3.1、3.2、3.3 均已合并并推送，`.worktrees/` 已清空；验收决定与后续候选见 `docs/tasks/phase-3-plan.md` §5。Wave 2 已派发（2026-11-04）：3.4 Opus 会话 refugee-3-4 契约先行，契约评审通过后 Fable 把契约 commit 单独合到 main，再派 3.5 astra（任务书已写）。
 - 后续候选：check-sources 对 GOV.UK 页面改比对归一化后的 `<main>` 正文或用 Content API 的 public_updated_at（sol）；web 路线名复用 policy-data 显示名表、分组英文大小写统一（astra）。
-- 用户已表明不需要 IAA 复核，此前记录中的"安排 IAA 复核"作废。Web Analytics：待用户在右侧 Cloudflare 重新登录后，Fable 在 Pages 项目设置开启自动注入。
+- 用户已表明不需要 IAA 复核，此前记录中的"安排 IAA 复核"作废。Web Analytics 已开启（见上）。
