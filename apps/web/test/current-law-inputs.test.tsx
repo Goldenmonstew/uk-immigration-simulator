@@ -41,6 +41,26 @@ const episodes: engine.ImmigrationEpisode[] = [
     validFrom: '2021-11-04',
     validTo: '2035-11-04',
   },
+  {
+    route: 'INNOVATOR_FOUNDER',
+    role: 'MAIN',
+    validFrom: '2023-11-04',
+    validTo: '2035-11-04',
+    innovatorSettlementCriteria: ['INVESTMENT', 'JOBS'],
+  },
+  {
+    route: 'FAMILY_AND_PRIVATE_LIFE',
+    role: 'MAIN',
+    validFrom: '2021-11-04',
+    validTo: '2035-11-04',
+    privateLifeRoute: 'YOUNG_ADULT',
+  },
+  {
+    route: 'CORE_PROTECTION',
+    role: 'MAIN',
+    validFrom: '2021-11-04',
+    validTo: '2035-11-04',
+  },
 ];
 
 function currentLawDraft(episode: engine.ImmigrationEpisode) {
@@ -111,8 +131,9 @@ test.each([false, true])(
 );
 
 test('new route inputs produce the contracted current law years and English results', () => {
-  // SRC-021 GT 11.1; SRC-024 E-ILRP.1.3; SRC-020 HK 62.1(b).
-  for (const [index, years] of [3, 5, 5].entries()) {
+  // SRC-021 GT 11.1; SRC-024 E-ILRP.1.3; SRC-020 HK 62.1(b);
+  // SRC-027 INNF 18.1; SRC-028 PL 14.1; SRC-023 STP 3.1.
+  for (const [index, years] of [3, 5, 5, 3, 5, 5].entries()) {
     const draft = currentLawDraft(episodes[index]);
     const result = runSimulation(draft, 'en');
     expect(result.byRuleSet['current-law-2026-11']?.pathwayYears).toBe(years);
@@ -151,7 +172,12 @@ test('unspecified Global Talent and family permission inputs remain insufficient
 test.each([false, true])(
   'changing route or role clears route inputs only on the edited episode, principal = %s',
   (principal) => {
-    for (const episode of episodes.slice(0, 2)) {
+    for (const episode of [
+      episodes[0],
+      episodes[1],
+      episodes[3],
+      episodes[4],
+    ]) {
       let draft = currentLawDraft(episode);
       draft.timeline.episodes.push({ ...episode });
       if (principal) {
@@ -186,6 +212,8 @@ test.each([false, true])(
         expect(after[0].globalTalentEndorsement).toBeUndefined();
         expect(after[0].globalTalentCriteria).toBeUndefined();
         expect(after[0].familyPermission).toBeUndefined();
+        expect(after[0].innovatorSettlementCriteria).toBeUndefined();
+        expect(after[0].privateLifeRoute).toBeUndefined();
         expect(after[1]).toEqual(before[1]);
         expect(principal ? changed.timeline : changed.principal).toEqual(
           principal ? draft.timeline : draft.principal,
@@ -205,6 +233,8 @@ test.each([false, true])(
           expect(sent.globalTalentEndorsement).toBeUndefined();
           expect(sent.globalTalentCriteria).toBeUndefined();
           expect(sent.familyPermission).toBeUndefined();
+          expect(sent.innovatorSettlementCriteria).toBeUndefined();
+          expect(sent.privateLifeRoute).toBeUndefined();
         } finally {
           evaluate.mockRestore();
         }
@@ -218,6 +248,10 @@ test.each(['zh-CN', 'en'] as const)(
   (locale) => {
     const cases: engine.ImmigrationEpisode[] = [
       ...episodes,
+      ...([undefined, []] as const).map((criteria) => ({
+        ...episodes[3],
+        innovatorSettlementCriteria: criteria === undefined ? undefined : [],
+      })),
       ...(['RESEARCH_BODY', 'TECH_NATION', 'PRIZE', undefined] as const).map(
         (globalTalentEndorsement) => ({
           ...episodes[0],
@@ -259,6 +293,22 @@ test.each(['zh-CN', 'en'] as const)(
               episode.globalTalentEndorsement === 'TECH_NATION'),
         );
         expect(html.includes('id="episode-0-familyPermission"')).toBe(family);
+        const innovator =
+          episode.route === 'INNOVATOR_FOUNDER' && episode.role === 'MAIN';
+        expect(html.includes('id="episode-0-innovator-unknown"')).toBe(
+          innovator,
+        );
+        expect(
+          (html.match(/id="episode-0-innovator-(?!unknown)/g) ?? []).length,
+        ).toBe(
+          innovator && episode.innovatorSettlementCriteria !== undefined
+            ? 7
+            : 0,
+        );
+        expect(html.includes('id="episode-0-privateLifeRoute"')).toBe(
+          episode.route === 'FAMILY_AND_PRIVATE_LIFE' &&
+            episode.role === 'MAIN',
+        );
         expect(html.includes(t('episodes.familyPermissionHint', locale))).toBe(
           family &&
             (episode.familyPermission === 'PARTNER_FIVE_YEAR' ||
@@ -272,6 +322,127 @@ test.each(['zh-CN', 'en'] as const)(
       } finally {
         create.mockRestore();
         state.mockRestore();
+      }
+    }
+  },
+);
+
+test.each([false, true])(
+  'extension inputs preserve none, unknown and revoked states in engine requests, principal = %s',
+  (principal) => {
+    let draft = currentLawDraft(episodes[3]);
+    if (principal) {
+      draft = draftReducer(draft, { type: 'principal-start' });
+      draft = draftReducer(draft, {
+        type: 'timeline',
+        patch: currentLawDraft(episodes[3]).timeline,
+      });
+    }
+    const evaluate = vi.spyOn(engine, 'evaluate');
+    try {
+      for (const criteria of [[], undefined] as const) {
+        draft = draftReducer(draft, {
+          type: 'episode',
+          index: 0,
+          patch: {
+            innovatorSettlementCriteria:
+              criteria === undefined ? undefined : [],
+          },
+        });
+        runSimulation(draft);
+        const sent =
+          evaluate.mock.lastCall![0][principal ? 'principal' : 'timeline']!;
+        expect(sent.episodes[0].innovatorSettlementCriteria).toEqual(criteria);
+        const result = principal
+          ? runPrincipalSimulation(draft)!
+          : runSimulation(draft);
+        expect(
+          result.byRuleSet['current-law-2026-11']?.rules.find(
+            (rule) => rule.id === 'CL-INNOVATOR-ENDORSEMENT',
+          )?.status,
+        ).toBe(criteria === undefined ? 'UNKNOWN' : 'FAIL');
+      }
+      draft = draftReducer(draft, {
+        type: 'timeline',
+        patch: { episodes: [episodes[5]] },
+      });
+      for (const revoked of [undefined, true, undefined]) {
+        draft = draftReducer(draft, {
+          type: 'timeline',
+          patch: { protectionStatusRevoked: revoked },
+        });
+        runSimulation(draft);
+        expect(
+          evaluate.mock.lastCall![0][principal ? 'principal' : 'timeline']!
+            .protectionStatusRevoked,
+        ).toBe(revoked);
+        const result = principal
+          ? runPrincipalSimulation(draft)!
+          : runSimulation(draft);
+        const current = result.byRuleSet['current-law-2026-11']!;
+        expect(
+          current.rules.find((rule) => rule.id === 'CL-PROTECTION-STATUS')
+            ?.status,
+        ).toBe(revoked ? 'FAIL' : 'PASS');
+        if (revoked) expect(current.pathwayYears).not.toBe(5);
+        else expect(current.pathwayYears).toBe(5);
+      }
+    } finally {
+      evaluate.mockRestore();
+    }
+  },
+);
+
+test('unspecified Private Life permission remains insufficient information', () => {
+  const draft = currentLawDraft({
+    ...episodes[4],
+    privateLifeRoute: undefined,
+  });
+  expect(runSimulation(draft).byRuleSet['current-law-2026-11']?.outcome).toBe(
+    'INSUFFICIENT_INFORMATION',
+  );
+});
+
+test.each(['zh-CN', 'en'] as const)(
+  'revocation input follows the current protection main applicant in %s',
+  (locale) => {
+    for (const route of [
+      'CORE_PROTECTION',
+      'PROTECTION_WORK_AND_STUDY',
+      'SAFE_AND_LEGAL',
+      'LEGACY_SAFE_AND_LEGAL',
+      'UK_ANCESTRY',
+    ] as const) {
+      for (const role of ['MAIN', 'DEPENDANT'] as const) {
+        for (const current of [true, false]) {
+          const draft = currentLawDraft({
+            ...episodes[5],
+            route,
+            role,
+            validTo: current ? '2035-11-04' : '2025-11-04',
+          });
+          draft.step = 5;
+          const create = vi
+            .spyOn(questionnaire, 'createDraft')
+            .mockReturnValue(draft);
+          const state = vi
+            .spyOn(React, 'useState')
+            .mockReturnValueOnce([true, vi.fn()]);
+          try {
+            const html = renderToStaticMarkup(
+              <LocaleContext value={{ locale, setLocale: () => {} }}>
+                <SimulatePage />
+              </LocaleContext>,
+            );
+            expect(html.includes('id="protection-status-revoked"')).toBe(
+              current && role === 'MAIN' && route !== 'UK_ANCESTRY',
+            );
+            if (locale === 'en') expect(html).not.toMatch(/[\u3400-\u9fff]/);
+          } finally {
+            create.mockRestore();
+            state.mockRestore();
+          }
+        }
       }
     }
   },

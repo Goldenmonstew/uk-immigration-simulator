@@ -27,6 +27,7 @@ import { routeLabel, routeNames } from '../../i18n/routes';
 import {
   activePersonDraft,
   createDraft,
+  currentEpisode,
   needsPrincipal,
   stepSequence,
   draftReducer,
@@ -85,6 +86,15 @@ export default function SimulatePage() {
   const heading = useRef<HTMLHeadingElement>(null);
   const active = activePersonDraft(draft);
   const { timeline } = active;
+  const current = currentEpisode(active);
+  const protectionMain =
+    current?.role === 'MAIN' &&
+    [
+      'CORE_PROTECTION',
+      'PROTECTION_WORK_AND_STUDY',
+      'SAFE_AND_LEGAL',
+      'LEGACY_SAFE_AND_LEGAL',
+    ].includes(current.route);
   const editingPrincipal = draft.principalStep !== undefined;
   const sequence = stepSequence(draft);
   const position = sequence.indexOf(active.step);
@@ -707,6 +717,116 @@ export default function SimulatePage() {
                               </select>
                             </Field>
                           )}
+                        {episode.route === 'INNOVATOR_FOUNDER' &&
+                          episode.role === 'MAIN' && (
+                            <fieldset className={styles.fieldset}>
+                              <legend className={styles.legend}>
+                                {t('episodes.innovatorSettlementCriteria')}
+                              </legend>
+                              <div className={styles.checkboxes}>
+                                <label>
+                                  <input
+                                    id={`${prefix}-innovator-unknown`}
+                                    type="checkbox"
+                                    checked={
+                                      episode.innovatorSettlementCriteria ===
+                                      undefined
+                                    }
+                                    onChange={(event) =>
+                                      updateEpisode(index, {
+                                        innovatorSettlementCriteria: event
+                                          .target.checked
+                                          ? undefined
+                                          : [],
+                                      })
+                                    }
+                                  />
+                                  <span>{t('form.unknown')}</span>
+                                </label>
+                                {episode.innovatorSettlementCriteria !==
+                                  undefined && (
+                                  <>
+                                    <p className={styles.hint}>
+                                      {t('episodes.innovatorCriteriaHint')}
+                                    </p>
+                                    {(
+                                      [
+                                        'INVESTMENT',
+                                        'CUSTOMERS',
+                                        'RESEARCH_AND_IP',
+                                        'REVENUE',
+                                        'EXPORT_REVENUE',
+                                        'JOBS',
+                                        'JOBS_WITH_SALARY',
+                                      ] as const
+                                    ).map((criterion) => (
+                                      <label key={criterion}>
+                                        <input
+                                          id={`${prefix}-innovator-${criterion}`}
+                                          type="checkbox"
+                                          checked={episode.innovatorSettlementCriteria!.includes(
+                                            criterion,
+                                          )}
+                                          onChange={(event) =>
+                                            updateEpisode(index, {
+                                              innovatorSettlementCriteria: event
+                                                .target.checked
+                                                ? [
+                                                    ...episode.innovatorSettlementCriteria!,
+                                                    criterion,
+                                                  ]
+                                                : episode.innovatorSettlementCriteria!.filter(
+                                                    (value) =>
+                                                      value !== criterion,
+                                                  ),
+                                            })
+                                          }
+                                        />
+                                        <span>
+                                          {t(
+                                            `episodes.innovatorCriteria.${criterion}`,
+                                          )}
+                                        </span>
+                                      </label>
+                                    ))}
+                                    {episode.innovatorSettlementCriteria
+                                      .length === 0 && (
+                                      <p>
+                                        {t('episodes.innovatorCriteriaNone')}
+                                      </p>
+                                    )}
+                                  </>
+                                )}
+                              </div>
+                            </fieldset>
+                          )}
+                        {episode.route === 'FAMILY_AND_PRIVATE_LIFE' &&
+                          episode.role === 'MAIN' && (
+                            <Field
+                              id={`${prefix}-privateLifeRoute`}
+                              label={t('episodes.privateLifeRoute')}
+                            >
+                              <select
+                                id={`${prefix}-privateLifeRoute`}
+                                value={episode.privateLifeRoute ?? ''}
+                                onChange={(event) =>
+                                  updateEpisode(index, {
+                                    privateLifeRoute: (event.target.value ||
+                                      undefined) as ImmigrationEpisode['privateLifeRoute'],
+                                  })
+                                }
+                              >
+                                <option value="">{t('form.unknown')}</option>
+                                {(
+                                  ['CHILD', 'YOUNG_ADULT', 'ADULT'] as const
+                                ).map((value) => (
+                                  <option key={value} value={value}>
+                                    {t(`episodes.privateLifeRoute.${value}`)}
+                                  </option>
+                                ))}
+                              </select>
+                            </Field>
+                          )}
                         {episode.route === 'SAFE_AND_LEGAL' && (
                           <Field
                             id={`${prefix}-resettlement`}
@@ -1129,6 +1249,25 @@ export default function SimulatePage() {
                           )}
                         </select>
                       </Field>
+                    </div>
+                  )}
+                  {protectionMain && (
+                    <div className={`${styles.followUp} ${styles.checkboxes}`}>
+                      <label>
+                        <input
+                          id="protection-status-revoked"
+                          type="checkbox"
+                          checked={timeline.protectionStatusRevoked === true}
+                          onChange={(event) =>
+                            update({
+                              protectionStatusRevoked: event.target.checked
+                                ? true
+                                : undefined,
+                            })
+                          }
+                        />
+                        <span>{t('benefits.protectionStatusRevoked')}</span>
+                      </label>
                     </div>
                   )}
                 </>
