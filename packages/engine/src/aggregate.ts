@@ -9,7 +9,9 @@ import { runRule, textFor } from './rule';
 import type { Lang } from './rule';
 import { RULES } from './rules';
 import {
+  hongKongBnoStart,
   longResidenceStart,
+  onHongKongBno,
   onSkilledWorker,
   onSkilledWorkerChild,
   onSkilledWorkerPartner,
@@ -456,8 +458,8 @@ function finishEarnedSettlement(
 
 const clBaseAssumption = (L: Lang) =>
   L(
-    '现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）与 Long Residence（Appendix Long Residence）；Part Suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。',
-    'The current rules are modelled only for Skilled Worker main applicants and their dependent partners / children (Appendix Skilled Worker, Appendix Children) and for Long Residence (Appendix Long Residence); other requirements, such as Part Suitability and the sponsor still being approved (SW 24.1–24.2), are not modelled.',
+    '现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人（Appendix Hong Kong British National (Overseas)）与 Long Residence（Appendix Long Residence）；Part Suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。',
+    'The current rules are modelled only for Skilled Worker main applicants and their dependent partners / children (Appendix Skilled Worker, Appendix Children), Hong Kong BN(O) main applicants (Appendix Hong Kong British National (Overseas)) and Long Residence (Appendix Long Residence); other requirements, such as Part Suitability and the sponsor still being approved (SW 24.1–24.2), are not modelled.',
   );
 
 function assessCurrentLaw(ctx: RuleContext): SettlementAssessment {
@@ -473,6 +475,7 @@ function assessCurrentLaw(ctx: RuleContext): SettlementAssessment {
     );
   }
   const sw = onSkilledWorker(ctx.timeline, ctx.simulationDate);
+  const hk = onHongKongBno(ctx.timeline, ctx.simulationDate);
   // In scope as a partner or child only with the principal (CL-SCOPE).
   const partner =
     ctx.principal !== undefined &&
@@ -485,7 +488,11 @@ function assessCurrentLaw(ctx: RuleContext): SettlementAssessment {
       ? partner
       : id === 'CL-SW-CHILD'
         ? child
-        : !id.startsWith('CL-SW-') || sw;
+        : id.startsWith('CL-SW-')
+          ? sw
+          : id.startsWith('CL-HKBNO-')
+            ? hk
+            : true;
   const rules = [
     scope,
     ...others
@@ -506,6 +513,15 @@ function assessCurrentLaw(ctx: RuleContext): SettlementAssessment {
               'CL-ENGLISH',
               'CL-KOL',
             ),
+          },
+        ]
+      : []),
+    ...(hk
+      ? [
+          {
+            years: cl.values.hongKongBnoQualifyingYears.value,
+            start: hongKongBnoStart(ctx)?.start,
+            rules: pick('CL-ENGLISH', 'CL-KOL'),
           },
         ]
       : []),
@@ -550,7 +566,11 @@ function assessCurrentLaw(ctx: RuleContext): SettlementAssessment {
   const assumptions = [clBaseAssumption(L)];
   // Projected past the B2 date while assessed under the earlier requirement.
   const b2 = cl.values.skilledWorkerSettlementEnglish.value;
+  // Hong Kong BN(O) stays at B1 (HK 60.1).
+  const hkPathway =
+    hk && decision.pathwayYears === cl.values.hongKongBnoQualifyingYears.value;
   if (
+    !hkPathway &&
     decision.earliestDate &&
     ctx.simulationDate < b2.applicationsFrom &&
     decision.earliestDate >= b2.applicationsFrom

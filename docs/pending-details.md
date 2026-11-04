@@ -165,3 +165,11 @@ dependant 随主申请人定居（SRC-001 Ch.5）时，原文未规定、引擎�
 | PD-066 | Protection Work and Study 用过 public funds 后的 20 年从何时起算 | 原文说难民须 5 年未用 public funds 才能走"短于 20 年"的路径，没有说这 20 年是否把此前的 Core Protection 时间算进去。 | p39；p38 | 按 p25 / p38 的"转入新路线重新起算"，20 年兜底自 Protection Work and Study 的合格期起点起算，假设说明。 | 原文未提及 |
 | PD-067 | 难民的 dependant | 第 7 章与 Table 2 只讲获保护的本人，没有说其伴侣、子女（如 family reunion）按什么路径定居；第 5 章的 dependant 规则是否适用于保护类路线未说明。 | p36–p40；p47–p48；p28–p31 | 申请日持保护类路线 `DEPENDANT` 许可：短路 `PROTECTION`，Earned Settlement 栏 `REQUIRES_REGULATED_REVIEW`，现行法律栏照常评估。 | 原文未提及 |
 | PD-068 | Safe and Legal 难民的 asylum support 偿还 | p8 注 1 与 p39 说领过 asylum support 且须偿还者须已偿还或按计划还款；Table 2 只在 Protection Work and Study 与 Core Protection 两行列出这一要求，Safe and Legal 一行没有。 | p8 注 1；p39；p47 | `ES-ASYLUM-SUPPORT` 只对 Protection Work and Study 与 Core Protection 运行；Safe and Legal 不评估（不出现在 `rules[]`）。 | 原文未提及 |
+
+## 七、现行法律栏扩展（任务 4.2 新增）
+
+以下条目的出处是现行 Immigration Rules 的 Appendix（SRC-020 Hong Kong BN(O)、SRC-021 Global Talent、SRC-022 Settlement Family Life），段号为 Rules 段落号，不是 SRC-001 的页码；"原文未提及"指该 Appendix 未作规定。
+
+| ID | 事项 | 原文怎么说 | 出处 | 对引擎的影响 | 预计何时明确 |
+|---|---|---|---|---|---|
+| PD-069 | 合并"可定居路线"的时间 | HK 62.1(b) 要求连续 5 年持"可定居路线"（a route under which a person can settle）的许可；SETF 3.2 允许 10 年路线在满足条件时补计"任何含定居规则的其他路线"的时间。两处都没有列出哪些路线属于此类。 | SRC-020 HK 62.1(b)；SRC-022 SETF 3.2 | 只计本路线（BN(O) 段；家庭伴侣 10 年路线为 SETF 3.1 列出的许可）；紧接之前有其他路线的许可时，居留规则在假设里说明"若该路线可定居，实际日期可能更早"。结论按只计本路线的年限给出，可能偏晚。 | 原文未提及（需逐条路线核对其 Appendix 是否为 route to settlement） |

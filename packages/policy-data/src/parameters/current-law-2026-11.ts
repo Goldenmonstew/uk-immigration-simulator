@@ -134,5 +134,20 @@ export const currentLaw2026_11 = {
       value: 'B1',
       sources: [{ srcId: 'SRC-004', locator: 'SW 44.1(a)' }],
     },
+
+    // Appendix Hong Kong British National (Overseas), version 2026-10-08.
+    hongKongBnoQualifyingYears: {
+      value: 5,
+      sources: [{ srcId: 'SRC-020', locator: 'HK 62.1(b)' }],
+    },
+    // B1 whatever the application date: HC 1691 did not add B2 to this
+    // Appendix (it is not among those listed in EM 5.60).
+    hongKongBnoSettlementEnglish: {
+      value: 'B1',
+      sources: [
+        { srcId: 'SRC-020', locator: 'HK 60.1' },
+        { srcId: 'SRC-007', locator: 'EM 5.60' },
+      ],
+    },
   },
 } satisfies ParameterSet;

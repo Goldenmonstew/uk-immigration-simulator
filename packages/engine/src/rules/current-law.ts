@@ -26,8 +26,9 @@ import type {
   RuleResult,
 } from '../types';
 
-// Current Immigration Rules, modelled for Skilled Worker settlement (SRC-004)
-// and Long Residence (SRC-005) only.
+// Current Immigration Rules, modelled for Skilled Worker settlement (SRC-004),
+// Long Residence (SRC-005) and the main applicants of Hong Kong BN(O)
+// (SRC-020).
 
 const RULE_SET = 'current-law-2026-11';
 
@@ -41,6 +42,18 @@ export function onSkilledWorker(
   const current = episodeOn(timeline, date);
   return current !== undefined && isSkilledWorker(current);
 }
+
+/** Main applicant on `route` on `date`. */
+const onMain = (timeline: PersonTimeline, date: IsoDate, route: Route) => {
+  const current = episodeOn(timeline, date);
+  return current?.route === route && current.role === 'MAIN';
+};
+
+export const onHongKongBno = (timeline: PersonTimeline, date: IsoDate) =>
+  onMain(timeline, date, 'HONG_KONG_BNO');
+
+// Routes modelled for main applicants only: their dependants are out of scope.
+const MAIN_ONLY_ROUTES: Route[] = ['HONG_KONG_BNO'];
 
 // A Skilled Worker's dependant: the run of such permissions counts towards
 // settlement as a dependent partner (SW 42.1).
@@ -82,12 +95,23 @@ export const clScope = defineRule(
       { srcId: 'SRC-004', locator: 'SW 39.1' },
       { srcId: 'SRC-004', locator: 'SW 41A.1' },
       { srcId: 'SRC-005', locator: 'LR 11.1' },
+      { srcId: 'SRC-020', locator: 'HK 62.1' },
     ],
     pendingDetails: [],
   },
   (ctx) => {
     const { timeline, simulationDate } = ctx;
     const L = textFor(ctx);
+    const rn = (r: Route) => nameIn(L, routeNames[r]);
+    if (onHongKongBno(timeline, simulationDate)) {
+      return {
+        status: 'PASS',
+        explanation: L(
+          '当前持 Hong Kong BN(O) 主申请人许可（BN(O) Status Holder 或 BN(O) Adult Child），按 Appendix Hong Kong British National (Overseas) 与 Appendix Long Residence 评估。',
+          'Currently holds Hong Kong BN(O) permission as the main applicant (BN(O) Status Holder or BN(O) Adult Child); assessed under Appendix Hong Kong British National (Overseas) and Appendix Long Residence.',
+        ),
+      };
+    }
     if (onSkilledWorker(timeline, simulationDate)) {
       return {
         status: 'PASS',
@@ -127,6 +151,18 @@ export const clScope = defineRule(
       };
     }
     const current = episodeOn(timeline, simulationDate);
+    if (
+      current?.role === 'DEPENDANT' &&
+      MAIN_ONLY_ROUTES.includes(current.route)
+    ) {
+      return {
+        status: 'UNKNOWN',
+        explanation: L(
+          `当前持${rn(current.route)}的 dependant 许可；现行法律栏只建模该路线的主申请人，dependant 的定居条件无法判断。`,
+          `Currently holds ${rn(current.route)} permission as a dependant; the current rules are modelled only for the main applicants of this route, so a dependant’s settlement requirements cannot be assessed.`,
+        ),
+      };
+    }
     const explanation =
       current && isSkilledWorkerDependant(current)
         ? partner || child
@@ -139,8 +175,8 @@ export const clScope = defineRule(
               'Currently holds Skilled Worker permission as a dependant; not provided whether this is as the principal applicant’s partner or child.',
             )
         : L(
-            '现行规则只建模了 Skilled Worker（主申请人及其 dependent partner / child）与 Long Residence；当前路线不在其中，也不满足 Long Residence 的 10 年，无法判断其他路线的定居条件。',
-            'The current rules are modelled only for Skilled Worker (main applicants and their dependent partners / children) and Long Residence; the current route is neither, and the 10 years for Long Residence are not met, so the settlement requirements of other routes cannot be assessed.',
+            '现行规则只建模了 Skilled Worker（主申请人及其 dependent partner / child）、Hong Kong BN(O) 主申请人与 Long Residence；当前路线不在其中，也不满足 Long Residence 的 10 年，无法判断其他路线的定居条件。',
+            'The current rules are modelled only for Skilled Worker (main applicants and their dependent partners / children), Hong Kong BN(O) main applicants and Long Residence; the current route is none of these, and the 10 years for Long Residence are not met, so the settlement requirements of other routes cannot be assessed.',
           );
     return { status: 'UNKNOWN', explanation };
   },
@@ -244,6 +280,92 @@ export const clSwResidence5Y = defineRule(
           explanation: L(
             `自 ${start} 起连续持可计入 Skilled Worker 定居的许可（SW 21.2），截至 ${ctx.simulationDate} 满 ${fullYears(start, ctx.simulationDate)} 年；${due} 满 ${years} 年。`,
             `Continuous permission counting towards Skilled Worker settlement (SW 21.2) since ${start}: ${fullYearsEn(start, ctx.simulationDate)} by ${ctx.simulationDate}; ${years} years are completed on ${due}.`,
+          ),
+          assumptions,
+        };
+  },
+);
+
+/**
+ * Start of the continuous Hong Kong BN(O) permission (any role) ending on the
+ * simulation date, while a main applicant on that route (HK 62.1, HK 63.1).
+ * Only BN(O) time is counted (PD-069); `before` is the adjoining earlier
+ * permission on another route, if any.
+ */
+export function hongKongBnoStart({
+  timeline,
+  simulationDate,
+}: RuleContext): { start: IsoDate; before?: ImmigrationEpisode } | undefined {
+  if (!onHongKongBno(timeline, simulationDate)) return undefined;
+  const { episodes, stoppedAt } = continuousRun(
+    timeline,
+    simulationDate,
+    (e) => e.route === 'HONG_KONG_BNO',
+  );
+  return {
+    start: restartAfterAbsences(
+      episodes[0].validFrom,
+      simulationDate,
+      timeline.absences,
+      CR_3_1,
+    ),
+    before: stoppedAt,
+  };
+}
+
+export const clHkbnoResidence5Y = defineRule(
+  {
+    id: 'CL-HKBNO-RESIDENCE-5Y',
+    ruleSetId: RULE_SET,
+    title: 'Hong Kong BN(O) 连续 5 年',
+    titleEn: `${cl.values.hongKongBnoQualifyingYears.value} continuous years on the Hong Kong BN(O) route`,
+    sources: [
+      { srcId: 'SRC-020', locator: 'HK 62.1' },
+      { srcId: 'SRC-020', locator: 'HK 63.1' },
+      { srcId: 'SRC-008', locator: 'CR 3.1' },
+    ],
+    pendingDetails: ['PD-069'],
+  },
+  (ctx) => {
+    const L = textFor(ctx);
+    const years = cl.values.hongKongBnoQualifyingYears.value;
+    const run = hongKongBnoStart(ctx);
+    if (!run) {
+      return {
+        status: 'FAIL',
+        explanation: L(
+          '当前不是 Hong Kong BN(O) 主申请人许可。',
+          'Current permission is not as a Hong Kong BN(O) main applicant.',
+        ),
+      };
+    }
+    const { start, before } = run;
+    const assumptions = [
+      ...(before
+        ? [
+            L(
+              `HK 62.1(b) 也计入其他可定居路线（a route under which a person can settle）的许可；本工具只计 Hong Kong BN(O) 段，紧接其前的${nameIn(L, routeNames[before.route])}许可未计入，若该路线可定居，实际日期可能更早（PD-069）。`,
+              `HK 62.1(b) also counts permission on any other route under which a person can settle; this tool counts only the Hong Kong BN(O) period, so the ${nameIn(L, routeNames[before.route])} permission just before it is not counted, and the actual date may be earlier if that route can lead to settlement (PD-069).`,
+            ),
+          ]
+        : []),
+      ...(ctx.timeline.absences.length > 0 ? [absenceAssumption(L)] : []),
+    ];
+    const due = addYears(start, years);
+    return due <= ctx.simulationDate
+      ? {
+          status: 'PASS',
+          explanation: L(
+            `自 ${start} 起连续持 Hong Kong BN(O) 许可，已满 ${years} 年（HK 62.1(b)）。`,
+            `Continuous Hong Kong BN(O) permission since ${start}: ${years} years completed (HK 62.1(b)).`,
+          ),
+          assumptions,
+        }
+      : {
+          status: 'FAIL',
+          explanation: L(
+            `自 ${start} 起连续持 Hong Kong BN(O) 许可，截至 ${ctx.simulationDate} 满 ${fullYears(start, ctx.simulationDate)} 年；${due} 满 ${years} 年（HK 62.1(b)）。`,
+            `Continuous Hong Kong BN(O) permission since ${start}: ${fullYearsEn(start, ctx.simulationDate)} by ${ctx.simulationDate}; ${years} years are completed on ${due} (HK 62.1(b)).`,
           ),
           assumptions,
         };
@@ -964,6 +1086,8 @@ export const clEnglish = defineRule(
       { srcId: 'SRC-004', locator: 'SW 44.1' },
       { srcId: 'SRC-007', locator: 'p24' },
       { srcId: 'SRC-005', locator: 'LR 13.1' },
+      { srcId: 'SRC-020', locator: 'HK 60.1' },
+      { srcId: 'SRC-007', locator: 'EM 5.60' },
       { srcId: 'SRC-014', locator: 'EL 1.1' },
     ],
     pendingDetails: [],
@@ -979,6 +1103,14 @@ export const clEnglish = defineRule(
         ),
       };
     }
+    const hk = onHongKongBno(timeline, simulationDate);
+    // Which paragraph sets the level, for the new routes' explanations.
+    const basis = hk
+      ? L(
+          '（Appendix Hong Kong BN(O) HK 60.1；HC 1691 的 B2 未覆盖该 Appendix，EM 5.60）',
+          ' (Appendix Hong Kong BN(O) HK 60.1; the B2 introduced by HC 1691 does not cover this Appendix, EM 5.60)',
+        )
+      : '';
     const sw = onSkilledWorker(timeline, simulationDate);
     // SW 44.1 covers a dependent partner and a dependent child.
     const partner =
@@ -988,8 +1120,9 @@ export const clEnglish = defineRule(
       sw || partner
         ? cl.values.skilledWorkerSettlementEnglish.value
         : cl.values.longResidenceSettlementEnglish.value;
-    const required =
-      simulationDate >= b2.applicationsFrom
+    const required = hk
+      ? cl.values.hongKongBnoSettlementEnglish.value
+      : simulationDate >= b2.applicationsFrom
         ? b2.cefrLevel
         : sw
           ? undefined
@@ -1010,8 +1143,8 @@ export const clEnglish = defineRule(
       return {
         status: 'UNKNOWN',
         explanation: L(
-          `未填写英语水平；定居要求 CEFR ${required}。`,
-          `English level not provided; settlement requires CEFR ${required}.`,
+          `未填写英语水平；定居要求 CEFR ${required}${basis}。`,
+          `English level not provided; settlement requires CEFR ${required}${basis}.`,
         ),
       };
     }
@@ -1034,15 +1167,15 @@ export const clEnglish = defineRule(
       ? {
           status: 'PASS',
           explanation: L(
-            `英语 ${english.cefrLevel}，达到定居要求的 ${required}。`,
-            `English at ${english.cefrLevel}, which meets the ${required} required for settlement.`,
+            `英语 ${english.cefrLevel}，达到定居要求的 ${required}${basis}。`,
+            `English at ${english.cefrLevel}, which meets the ${required} required for settlement${basis}.`,
           ),
         }
       : {
           status: 'FAIL',
           explanation: L(
-            `英语 ${english.cefrLevel}，低于定居要求的 ${required}${required === b2.cefrLevel ? `（${b2.applicationsFrom} 起的申请）` : ''}。`,
-            `English at ${english.cefrLevel}, below the ${required} required for settlement${required === b2.cefrLevel ? ` (applications from ${b2.applicationsFrom})` : ''}.`,
+            `英语 ${english.cefrLevel}，低于定居要求的 ${required}${hk ? basis : required === b2.cefrLevel ? `（${b2.applicationsFrom} 起的申请）` : ''}。`,
+            `English at ${english.cefrLevel}, below the ${required} required for settlement${hk ? basis : required === b2.cefrLevel ? ` (applications from ${b2.applicationsFrom})` : ''}.`,
           ),
         };
   },
@@ -1058,6 +1191,7 @@ export const clKol = defineRule(
       { srcId: 'SRC-004', locator: 'SW 23.1' },
       { srcId: 'SRC-004', locator: 'SW 45.1' },
       { srcId: 'SRC-005', locator: 'LR 14.1' },
+      { srcId: 'SRC-020', locator: 'HK 61.1' },
       { srcId: 'SRC-015', locator: 'KOL 1.1' },
       { srcId: 'SRC-015', locator: 'KOL 2.1' },
     ],
@@ -1074,13 +1208,16 @@ export const clKol = defineRule(
         ),
       };
     }
+    const basis = onHongKongBno(timeline, simulationDate)
+      ? L('（HK 61.1）', ' (HK 61.1)')
+      : '';
     const kol = timeline.lifeInTheUk;
     if (!kol) {
       return {
         status: 'UNKNOWN',
         explanation: L(
-          '未填写是否已通过 Life in the UK 考试。',
-          'Not provided whether the Life in the UK test has been passed.',
+          `未填写是否已通过 Life in the UK 考试${basis}。`,
+          `Not provided whether the Life in the UK test has been passed${basis}.`,
         ),
       };
     }
@@ -1101,8 +1238,8 @@ export const clKol = defineRule(
       : {
           status: 'PASS',
           explanation: L(
-            '已通过 Life in the UK 考试。',
-            'Passed the Life in the UK test.',
+            `已通过 Life in the UK 考试${basis}。`,
+            `Passed the Life in the UK test${basis}.`,
           ),
         };
   },
