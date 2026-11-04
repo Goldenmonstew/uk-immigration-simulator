@@ -2,6 +2,8 @@ export const POLICY_DATA_VERSION = '0.0.0';
 
 export type {
   BestYears,
+  CefrLevel,
+  DatedEnglishRequirement,
   Parameter,
   ParameterSet,
   RuleSetId,

@@ -22,10 +22,22 @@ export interface BestYears {
   window: number;
 }
 
+export type CefrLevel = 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2';
+
+/** An English level required for applications made on or after a date. */
+export interface DatedEnglishRequirement {
+  cefrLevel: CefrLevel;
+  /** YYYY-MM-DD */
+  applicationsFrom: string;
+}
+
 /** Declare parameter sets with `satisfies ParameterSet` so value names stay typed. */
 export interface ParameterSet {
   ruleSetId: RuleSetId;
   /** Date (YYYY-MM-DD) the values were last checked against their sources. */
   asOf: string;
-  values: Record<string, Parameter<number | BestYears>>;
+  values: Record<
+    string,
+    Parameter<number | BestYears | DatedEnglishRequirement>
+  >;
 }

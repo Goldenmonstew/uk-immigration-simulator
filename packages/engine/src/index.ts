@@ -6,6 +6,7 @@ export function getEngineVersion(): string {
 
 export type * from './types';
 export type {
+  CefrLevel,
   Route,
   RouteGroup,
   RuleSetId,

@@ -50,7 +50,7 @@ export const earnedSettlement2026_11 = {
       ],
     },
     // p15 says "at least three years"; p16 and Table 1 (p46) say 5 of 7.
-    // We follow Table 1 and the rules must state the assumption.
+    // We follow Table 1 and the rules must state the assumption (PD-041).
     bestYears10Year: {
       value: { required: 5, window: 7 },
       sources: [

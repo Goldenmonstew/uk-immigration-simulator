@@ -1,4 +1,5 @@
 import type {
+  CefrLevel,
   Route,
   RouteGroup,
   RuleSetId,
@@ -66,8 +67,6 @@ export interface Relationship {
   type: 'PARTNER' | 'PARENT' | 'CHILD';
   otherPartyStatus: 'BRITISH_CITIZEN' | 'SETTLED' | 'OTHER';
 }
-
-export type CefrLevel = 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2';
 
 export type EnglishEvidence = { cefrLevel: CefrLevel } | { exempt: true };
 

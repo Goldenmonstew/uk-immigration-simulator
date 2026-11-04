@@ -16,7 +16,7 @@ const TAX_YEARS = [
 // fixes no single pathway length or date. The timeline is on a route with
 // recourse to public funds (claiming on a no-recourse route would also be a
 // breach) and otherwise meets the 10-year pathway, so public funds is the only
-// failing rule. The exemption list is not yet published (p18); per the source
+// failing rule. The exemption list is not yet published (p18, PD-013); per the source
 // we assume none applies.
 export const esIndividualD: Fixture = {
   id: 'ES-OFFICIAL-INDIVIDUAL-D',
