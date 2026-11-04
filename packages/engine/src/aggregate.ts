@@ -2,7 +2,11 @@ import {
   currentLaw2026_11 as cl,
   earnedSettlement2026_11 as es,
 } from '@uk-immigration/policy-data';
-import type { RuleSetId } from '@uk-immigration/policy-data';
+import type {
+  Route,
+  RouteGroup,
+  RuleSetId,
+} from '@uk-immigration/policy-data';
 import { addYears } from './dates';
 import { continuousRun, episodeOn } from './residence';
 import { runRule, textFor } from './rule';
@@ -18,7 +22,16 @@ import {
   skilledWorkerStart,
 } from './rules/current-law';
 import { esDependantSettlement } from './rules/es-dependant';
-import { esQualifyingResidence, groupsOf } from './rules/es-residence';
+import {
+  illegalEntryExtraYears,
+  protectionBaseYears,
+} from './rules/es-protection';
+import {
+  esProtectionRouteOn,
+  esQualifyingResidence,
+  esRouteOn,
+  groupsOf,
+} from './rules/es-residence';
 import type {
   IsoDate,
   RuleContext,
@@ -166,6 +179,50 @@ const ES_DEPENDANT_RULES = [
   'ES-BREACH',
 ];
 
+// Rules only for protection routes (contracts §11).
+const ES_PROTECTION_ONLY = ['ES-PROTECTION-PATHWAY'];
+// What protection routes run: no earnings, British connection, public
+// service or transitional rules (Table 2).
+const ES_PROTECTION_RULES = [
+  ...ES_MANDATORY,
+  'ES-BREACH',
+  'ES-PUBLIC-FUNDS',
+  ...ES_PROTECTION_ONLY,
+];
+
+/**
+ * Table 2 (p47–p48): one pathway per protection route, plus the 20 years
+ * left after public funds or a breach (p13, p39). Illegal entry adds 10
+ * years to each (p38, p48).
+ */
+function protectionCandidates(
+  route: Route,
+  pick: (...ids: string[]) => RuleOutcome[],
+  ctx: RuleContext,
+): Candidate[] {
+  const mandatory = [...pick(...ES_MANDATORY), ...pick('ES-PROTECTION-PATHWAY')];
+  const extra = illegalEntryExtraYears(ctx.timeline);
+  const base = protectionBaseYears(route) + extra;
+  const fallback = es.values.pathwayYears20.value + extra;
+  const candidates: Candidate[] =
+    route === 'SAFE_AND_LEGAL'
+      ? [
+          { years: base, rules: [...mandatory, ...pick('ES-BREACH')] },
+          { years: fallback, rules: mandatory },
+        ]
+      : route === 'PROTECTION_WORK_AND_STUDY'
+        ? [
+            {
+              years: base,
+              rules: [...mandatory, ...pick('ES-BREACH', 'ES-PUBLIC-FUNDS')],
+            },
+            { years: fallback, rules: mandatory },
+          ]
+        : [{ years: base, rules: mandatory }];
+  const start = esQualifyingResidence(ctx)?.start;
+  return candidates.map((c) => ({ ...c, start }));
+}
+
 /** `rules` with `id` failed for want of time, until `earliestDate`. */
 function showProjected(
   rules: RuleOutcome[],
@@ -247,11 +304,33 @@ function assessEarnedSettlement(ctx: RuleContext): SettlementAssessment {
         .map((rule) => runRule(rule, ctx)),
     );
   }
+  const protection = esProtectionRouteOn(ctx.timeline, ctx.simulationDate);
   const rules = RULES['earned-settlement-2026-11']
-    .filter((rule) => rule.meta.id !== 'ES-DEPENDANT-PATHWAY')
+    .filter((rule) =>
+      protection
+        ? ES_PROTECTION_RULES.includes(rule.meta.id)
+        : rule.meta.id !== 'ES-DEPENDANT-PATHWAY' &&
+          !ES_PROTECTION_ONLY.includes(rule.meta.id),
+    )
     .map((rule) => runRule(rule, ctx));
   const pick = (...ids: string[]) =>
     ids.map((id) => rules.find((r) => r.id === id)!);
+  if (protection) {
+    const L = textFor(ctx);
+    return finishEarnedSettlement(
+      ctx,
+      rules,
+      protectionCandidates(protection, pick, ctx),
+      [
+        esBaseAssumption(L),
+        L(
+          '难民定居路径的多项细则（路线推出时间、已有时间如何计入、public funds 与偿还安排、Article 31）将在实施前公布；本结果仅帮助理解已公布的政策，具体情况请咨询受监管的移民顾问。',
+          'Many details of the refugee settlement pathways (when the routes start, how existing time counts, public funds and repayment, Article 31) will be set out before implementation. This result only helps to understand the announced policy; for your own case, please seek advice from a regulated immigration adviser.',
+        ),
+      ],
+      'PROTECTION',
+    );
+  }
   const mandatory = pick(...ES_MANDATORY);
   const standard = [...mandatory, ...pick('ES-BREACH', 'ES-PUBLIC-FUNDS')];
   const v = es.values;
@@ -263,7 +342,8 @@ function assessEarnedSettlement(ctx: RuleContext): SettlementAssessment {
     'ES-TRANSITIONAL-HEALTH-EDUCATION',
   ];
   const start = esQualifyingResidence(ctx)?.start;
-  const groups = current ? groupsOf(current.route) : [];
+  const route = esRouteOn(ctx.timeline, ctx.simulationDate);
+  const groups = route ? groupsOf(route) : [];
   // Family and Private Life only qualifies for the 10 and 20-year pathways (p23).
   const shortPathways = !groups.includes('FAMILY_AND_PRIVATE_LIFE');
   const candidates: Candidate[] = [
@@ -322,6 +402,17 @@ function assessEarnedSettlement(ctx: RuleContext): SettlementAssessment {
       ),
     );
   }
+  return finishEarnedSettlement(ctx, rules, candidates, assumptions, groups[0]);
+}
+
+function finishEarnedSettlement(
+  ctx: RuleContext,
+  rules: RuleOutcome[],
+  candidates: Candidate[],
+  assumptions: string[],
+  routeGroup: RouteGroup | undefined,
+): SettlementAssessment {
+  const L = textFor(ctx);
   const decision = decide(candidates, ctx.simulationDate);
   // Not enough residence yet for the pathway the date was projected from:
   // ES-RESIDENCE shows that as the failing rule.
@@ -336,8 +427,8 @@ function assessEarnedSettlement(ctx: RuleContext): SettlementAssessment {
   );
   return {
     ...toAssessment(decision, shown, assumptions, L),
-    ...(pick('ES-ROUTE-GROUP')[0].status === 'PASS' && {
-      routeGroup: groups[0],
+    ...(rules.find((r) => r.id === 'ES-ROUTE-GROUP')?.status === 'PASS' && {
+      routeGroup,
     }),
   };
 }

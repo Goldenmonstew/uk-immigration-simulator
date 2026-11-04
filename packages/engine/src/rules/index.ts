@@ -27,6 +27,7 @@ import {
   esPublicService,
 } from './es-contribution';
 import { esDependantPathway } from './es-dependant';
+import { esProtectionPathway } from './es-protection';
 import { esResidence, esRouteGroup } from './es-residence';
 import {
   esTransitionalCareWorker,
@@ -48,6 +49,7 @@ export const RULES: Record<RuleSetId, Rule[]> = {
     esBritishConnection,
     esPublicFunds,
     esBreach,
+    esProtectionPathway,
     esTransitionalCareWorker,
     esTransitionalHealthEducation,
     esPublicService,

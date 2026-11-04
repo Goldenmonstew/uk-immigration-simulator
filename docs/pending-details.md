@@ -161,3 +161,6 @@ dependant 随主申请人定居（SRC-001 Ch.5）时，原文未规定、引擎�
 | ID | 事项 | 原文怎么说 | 出处 | 对引擎的影响 | 预计何时明确 |
 |---|---|---|---|---|---|
 | PD-064 | 从 Protection Work and Study 回到 Core Protection | 原文只说从 Core Protection 转入 Protection Work and Study 时 10 年自转入起算、Core Protection 时间不计入；没有说失去工作等原因回到 Core Protection 后，此前的保护类时间如何计入 20 年。 | p38；p40 | 当前为 Core Protection 且紧接其前是 Protection Work and Study 时，`ES-RESIDENCE` 输出 `UNKNOWN`（PD-064）；年限仍按自回切起算的 20 年投影。 | 原文未提及 |
+| PD-065 | 有其他 qualifying breach 的难民 | 第 1 章说成年后的 qualifying breach（逾期停留、违反条件、欺骗、妨碍管制）让任何申请人进入 20 年路径，Table 1 注明"所有强制要求适用于所有路径"；Table 2 只列非法入境的后果，没有提其他 breach。 | p13；p46；p47–p48 | 保护类路线上的成年后非法入境只按 Table 2 加 10 年，不算 `ES-BREACH`；其他 breach 照常让 `ES-BREACH` `FAIL`：Safe and Legal 与 Protection Work and Study 落到 20 年兜底（叠加非法入境的 10 年），Core Protection 本来就是 20 年；兜底自当前保护类路线的合格期起点起算。 | 原文未提及 |
+| PD-066 | Protection Work and Study 用过 public funds 后的 20 年从何时起算 | 原文说难民须 5 年未用 public funds 才能走"短于 20 年"的路径，没有说这 20 年是否把此前的 Core Protection 时间算进去。 | p39；p38 | 按 p25 / p38 的"转入新路线重新起算"，20 年兜底自 Protection Work and Study 的合格期起点起算，假设说明。 | 原文未提及 |
+| PD-067 | 难民的 dependant | 第 7 章与 Table 2 只讲获保护的本人，没有说其伴侣、子女（如 family reunion）按什么路径定居；第 5 章的 dependant 规则是否适用于保护类路线未说明。 | p36–p40；p47–p48；p28–p31 | 申请日持保护类路线 `DEPENDANT` 许可：短路 `PROTECTION`，Earned Settlement 栏 `REQUIRES_REGULATED_REVIEW`，现行法律栏照常评估。 | 原文未提及 |
