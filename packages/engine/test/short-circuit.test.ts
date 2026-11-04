@@ -34,6 +34,7 @@ describe('short circuits', () => {
       ],
     });
     expect(r.shortCircuit?.reason).toBe('OUTSIDE_FRAMEWORK');
+    expect(r.shortCircuit?.message).toContain('B2 英语要求仍适用');
     expect(r.byRuleSet['earned-settlement-2026-11']?.outcome).toBe(
       'REQUIRES_REGULATED_REVIEW',
     );
@@ -55,6 +56,10 @@ describe('short circuits', () => {
       ],
     });
     expect(r.shortCircuit?.reason).toBe('OUTSIDE_FRAMEWORK');
+    // PD-045: B2 for groups outside the framework vs A2 for UKRS refugees.
+    expect(r.shortCircuit?.message).toContain('PD-045');
+    expect(r.shortCircuit?.message).toContain('A2');
+    expect(r.shortCircuit?.message).not.toContain('B2 英语要求仍适用');
     expect(r.byRuleSet['earned-settlement-2026-11']?.outcome).toBe(
       'REQUIRES_REGULATED_REVIEW',
     );

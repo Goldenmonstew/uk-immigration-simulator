@@ -869,7 +869,9 @@
 
 - 中：申报了犯罪记录。Earned Settlement 下成年人的任何犯罪记录都会导致拒绝定居，现行规则下也取决于 Part Suitability 的具体情形；本工具不作结论，请咨询受监管的移民顾问。
   - EN: A criminal record has been declared. Under Earned Settlement any criminal record as an adult leads to refusal of settlement; under the current rules the outcome depends on the circumstances under Part Suitability. This tool does not reach a conclusion: please seek advice from a regulated immigration adviser.
-- 中：当前路线不在 Earned Settlement 框架内，继续按该群体现有的定居安排（SRC-001 p25–p26）；但强化的犯罪记录与 B2 英语要求仍适用，除非有现有豁免或保障。
-  - EN: The current route is outside the Earned Settlement framework and keeps the existing settlement arrangements for that group (SRC-001 p25–p26). The strengthened criminality and B2 English requirements still apply, unless an existing exemption or protection applies.
+- 中：当前路线属 Legacy Safe and Legal Routes（2027-04-06 前经 UK Resettlement Scheme 抵达），不在 Earned Settlement 框架内，继续按该群体现有的定居安排（SRC-001 p25–p26）；强化的犯罪记录要求仍适用。英语等级原文不一致：框架外群体一般须 B2（p25–p26），第 7 章又说 UK Resettlement Scheme 难民只需 A2（p37、p39），见 PD-045。
+  - EN: The current route is a Legacy Safe and Legal Route (arrival through the UK Resettlement Scheme before 2027-04-06), outside the Earned Settlement framework, and keeps the existing settlement arrangements for that group (SRC-001 p25–p26). The strengthened criminality requirements still apply. The English level is inconsistent: groups outside the framework generally need B2 (p25–p26), while Chapter 7 says UK Resettlement Scheme refugees only need A2 (p37, p39); see PD-045.
 - 中：当前以 dependant 身份持保护类路线许可。Earned Settlement 的难民定居路径（SRC-001 Chapter 7、Table 2）没有说明难民的 dependant 如何定居（PD-067），本工具不作结论，请咨询受监管的移民顾问。
   - EN: The current permission is on a protection route as a dependant. The Earned Settlement refugee pathways (SRC-001 Chapter 7, Table 2) do not say how refugees’ dependants settle (PD-067). This tool does not reach a conclusion: please seek advice from a regulated immigration adviser.
+- 中：当前路线不在 Earned Settlement 框架内，继续按该群体现有的定居安排（SRC-001 p25–p26）；但强化的犯罪记录与 B2 英语要求仍适用，除非有现有豁免或保障。
+  - EN: The current route is outside the Earned Settlement framework and keeps the existing settlement arrangements for that group (SRC-001 p25–p26). The strengthened criminality and B2 English requirements still apply, unless an existing exemption or protection applies.

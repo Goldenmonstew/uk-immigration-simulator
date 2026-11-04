@@ -315,7 +315,7 @@ M = 强制要求；P = `ES-PROTECTION-PATHWAY`；+10 = 成年后非法入境且�
 
 - `IMMIGRATION_BREACH`（成年后非法入境）：只在申请日当天的路线**不是**保护类时触发（非保护类路线维持 PD-044 的"不作结论"，两栏都 `REQUIRES_REGULATED_REVIEW`）。保护类路线上不短路，两栏照常评估。
 - `PROTECTION`：取值保留，只在申请日当天是保护类路线上的 `DEPENDANT` 时触发（Chapter 7 与 Table 2 未提难民的 dependant，新 PD）；只影响 Earned Settlement 栏。保护类主申请人不再短路。
-- `OUTSIDE_FRAMEWORK`：不变，另含 11.3 推导出的 Legacy UKRS。
+- `OUTSIDE_FRAMEWORK`：不变，另含 11.3 推导出的 Legacy UKRS；其短路文案不说"B2 英语要求仍适用"，改为写明框架外一般 B2 与第 7 章 UKRS A2 不一致（PD-045）（4.5）。
 - `CRIMINALITY`：不变，优先。
 
 ### 11.6 给 3.5（问卷与结果页）
