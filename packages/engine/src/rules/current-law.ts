@@ -30,8 +30,8 @@ import type {
 // Long Residence (SRC-005) and the main applicants of Hong Kong BN(O)
 // (SRC-020) and Global Talent (SRC-021), Appendix FM partners on the
 // 10-year (SRC-022) and 5-year (SRC-024, SRC-025) routes, people with
-// refugee status or humanitarian protection (SRC-023), and UK Ancestry main
-// applicants (SRC-026).
+// refugee status or humanitarian protection (SRC-023), and UK Ancestry
+// (SRC-026) and Innovator Founder (SRC-027) main applicants.
 
 const RULE_SET = 'current-law-2026-11';
 
@@ -60,6 +60,9 @@ export const onGlobalTalent = (timeline: PersonTimeline, date: IsoDate) =>
 
 export const onUkAncestry = (timeline: PersonTimeline, date: IsoDate) =>
   onMain(timeline, date, 'UK_ANCESTRY');
+
+export const onInnovatorFounder = (timeline: PersonTimeline, date: IsoDate) =>
+  onMain(timeline, date, 'INNOVATOR_FOUNDER');
 
 /** Appendix FM partner on the date (any kind but PARENT, contracts §12.8). */
 export function onFamilyPartner(timeline: PersonTimeline, date: IsoDate) {
@@ -110,6 +113,7 @@ const MAIN_ONLY_ROUTES: Route[] = [
   'FAMILY_PARTNER_OR_PARENT',
   ...PROTECTION_ROUTES,
   'UK_ANCESTRY',
+  'INNOVATOR_FOUNDER',
 ];
 
 // A Skilled Worker's dependant: the run of such permissions counts towards
@@ -157,6 +161,7 @@ export const clScope = defineRule(
       { srcId: 'SRC-022', locator: 'SETF 1.3' },
       { srcId: 'SRC-023', locator: 'STP 1.3' },
       { srcId: 'SRC-026', locator: 'UKA 13.1' },
+      { srcId: 'SRC-027', locator: 'INNF 18.1' },
     ],
     pendingDetails: [],
   },
@@ -197,6 +202,15 @@ export const clScope = defineRule(
         explanation: L(
           '当前持 UK Ancestry 主申请人许可，按 Appendix UK Ancestry 与 Appendix Long Residence 评估。',
           'Currently holds UK Ancestry permission as the main applicant; assessed under Appendix UK Ancestry and Appendix Long Residence.',
+        ),
+      };
+    }
+    if (onInnovatorFounder(timeline, simulationDate)) {
+      return {
+        status: 'PASS',
+        explanation: L(
+          '当前持 Innovator Founder 主申请人许可，按 Appendix Innovator Founder 与 Appendix Long Residence 评估。',
+          'Currently holds Innovator Founder permission as the main applicant; assessed under Appendix Innovator Founder and Appendix Long Residence.',
         ),
       };
     }
@@ -284,8 +298,8 @@ export const clScope = defineRule(
               'Currently holds Skilled Worker permission as a dependant; not provided whether this is as the principal applicant’s partner or child.',
             )
         : L(
-            '现行规则只建模了 Skilled Worker（主申请人及其 dependent partner / child）、Hong Kong BN(O) 与 Global Talent 主申请人、Appendix FM 伴侣、持 refugee status 或 humanitarian protection 的主申请人、UK Ancestry 主申请人、Long Residence；当前路线不在其中，也不满足 Long Residence 的 10 年，无法判断其他路线的定居条件。',
-            'The current rules are modelled only for Skilled Worker (main applicants and their dependent partners / children), Hong Kong BN(O) and Global Talent main applicants, Appendix FM partners, main applicants with refugee status or humanitarian protection, UK Ancestry main applicants, and Long Residence; the current route is none of these, and the 10 years for Long Residence are not met, so the settlement requirements of other routes cannot be assessed.',
+            '现行规则只建模了 Skilled Worker（主申请人及其 dependent partner / child）、Hong Kong BN(O) 与 Global Talent 主申请人、Appendix FM 伴侣、持 refugee status 或 humanitarian protection 的主申请人、UK Ancestry 与 Innovator Founder 主申请人、Long Residence；当前路线不在其中，也不满足 Long Residence 的 10 年，无法判断其他路线的定居条件。',
+            'The current rules are modelled only for Skilled Worker (main applicants and their dependent partners / children), Hong Kong BN(O) and Global Talent main applicants, Appendix FM partners, main applicants with refugee status or humanitarian protection, UK Ancestry and Innovator Founder main applicants, and Long Residence; the current route is none of these, and the 10 years for Long Residence are not met, so the settlement requirements of other routes cannot be assessed.',
           );
     return { status: 'UNKNOWN', explanation };
   },
@@ -1196,6 +1210,154 @@ export const clAncestryResidence5Y = defineRule(
   },
 );
 
+/**
+ * Start of the continuous Innovator Founder main applicant permission
+ * (INNF 18.1) ending on the simulation date, while on that route (INNF 19.1,
+ * CR 3.1).
+ */
+export function innovatorFounderStart({
+  timeline,
+  simulationDate,
+}: RuleContext): IsoDate | undefined {
+  if (!onInnovatorFounder(timeline, simulationDate)) return undefined;
+  const { episodes } = continuousRun(
+    timeline,
+    simulationDate,
+    (e) => e.route === 'INNOVATOR_FOUNDER' && e.role === 'MAIN',
+  );
+  return restartAfterAbsences(
+    episodes[0].validFrom,
+    simulationDate,
+    timeline.absences,
+    CR_3_1,
+  );
+}
+
+export const clInnovatorResidence3Y = defineRule(
+  {
+    id: 'CL-INNOVATOR-RESIDENCE-3Y',
+    ruleSetId: RULE_SET,
+    title: 'Innovator Founder 连续 3 年',
+    titleEn: `${cl.values.innovatorFounderQualifyingYears.value} continuous years as an Innovator Founder`,
+    sources: [
+      { srcId: 'SRC-027', locator: 'INNF 18.1' },
+      { srcId: 'SRC-027', locator: 'INNF 19.1' },
+      { srcId: 'SRC-008', locator: 'CR 3.1' },
+    ],
+    pendingDetails: [],
+  },
+  (ctx) => {
+    const L = textFor(ctx);
+    const years = cl.values.innovatorFounderQualifyingYears.value;
+    const start = innovatorFounderStart(ctx);
+    if (!start) {
+      return {
+        status: 'FAIL',
+        explanation: L(
+          '当前不是 Innovator Founder 主申请人许可。',
+          'Current permission is not as an Innovator Founder main applicant.',
+        ),
+      };
+    }
+    const assumptions =
+      ctx.timeline.absences.length > 0 ? [absenceAssumption(L)] : [];
+    const due = addYears(start, years);
+    return due <= ctx.simulationDate
+      ? {
+          status: 'PASS',
+          explanation: L(
+            `自 ${start} 起连续持 Innovator Founder 许可，已满 ${years} 年（INNF 18.1）。`,
+            `Continuous Innovator Founder permission since ${start}: ${years} years completed (INNF 18.1).`,
+          ),
+          assumptions,
+        }
+      : {
+          status: 'FAIL',
+          explanation: L(
+            `自 ${start} 起连续持 Innovator Founder 许可，截至 ${ctx.simulationDate} 满 ${fullYears(start, ctx.simulationDate)} 年；${due} 满 ${years} 年（INNF 18.1）。`,
+            `Continuous Innovator Founder permission since ${start}: ${fullYearsEn(start, ctx.simulationDate)} by ${ctx.simulationDate}; ${years} years are completed on ${due} (INNF 18.1).`,
+          ),
+          assumptions,
+        };
+  },
+);
+
+// INNF 17.1(f): the sub-paragraph of each business criterion.
+const INNOVATOR_CRITERIA: Record<
+  NonNullable<ImmigrationEpisode['innovatorSettlementCriteria']>[number],
+  string
+> = {
+  INVESTMENT: 'i',
+  CUSTOMERS: 'ii',
+  RESEARCH_AND_IP: 'iii',
+  REVENUE: 'iv',
+  EXPORT_REVENUE: 'v',
+  JOBS: 'vi',
+  JOBS_WITH_SALARY: 'vii',
+};
+
+export const clInnovatorEndorsement = defineRule(
+  {
+    id: 'CL-INNOVATOR-ENDORSEMENT',
+    ruleSetId: RULE_SET,
+    title: 'Innovator Founder 定居背书的业务条件',
+    titleEn:
+      'Business criteria for the Innovator Founder settlement endorsement',
+    sources: [
+      { srcId: 'SRC-027', locator: 'INNF 15.2(e)' },
+      { srcId: 'SRC-027', locator: 'INNF 17.1' },
+      { srcId: 'SRC-027', locator: 'INNF 17.2' },
+      { srcId: 'SRC-027', locator: 'INNF 17.3' },
+      { srcId: 'SRC-027', locator: 'INNF 17.4' },
+    ],
+    pendingDetails: [],
+  },
+  (ctx) => {
+    const L = textFor(ctx);
+    const required = cl.values.innovatorFounderSettlementCriteriaMinimum.value;
+    const declared = episodeOn(
+      ctx.timeline,
+      ctx.simulationDate,
+    )?.innovatorSettlementCriteria;
+    if (!declared) {
+      return {
+        status: 'UNKNOWN',
+        explanation: L(
+          `未填写业务已满足 INNF 17.1(f) 的哪几项；定居背书须至少满足 ${required} 项。`,
+          `Not provided which of the INNF 17.1(f) business criteria have been met; the settlement endorsement needs at least ${required}.`,
+        ),
+      };
+    }
+    // The same criterion cannot count twice (INNF 17.2).
+    const met = [...new Set(declared)].map(
+      (c) => `INNF 17.1(f)(${INNOVATOR_CRITERIA[c]})`,
+    );
+    const list = met.length > 0 ? met.join(L('、', ', ')) : L('无', 'none');
+    if (met.length < required) {
+      return {
+        status: 'FAIL',
+        explanation: L(
+          `业务已满足 ${met.length} 项（${list}），INNF 17.1(f) 须至少 ${required} 项。`,
+          `The business has met ${met.length} of the criteria (${list}); INNF 17.1(f) requires at least ${required}.`,
+        ),
+      };
+    }
+    return {
+      status: 'PASS',
+      explanation: L(
+        `业务已满足 ${met.length} 项（${list}），达到 INNF 17.1(f) 的至少 ${required} 项。`,
+        `The business has met ${met.length} of the criteria (${list}), at least the ${required} required by INNF 17.1(f).`,
+      ),
+      assumptions: [
+        L(
+          '按 endorsing body 会确认 INNF 17.1(a)–(e)（对照原业务计划有显著成果、在 Companies House 登记且你是 director 或 member、仍在经营、未来至少 12 个月可持续、你在日常管理中起关键作用）处理；背书信须在申请前 3 个月内签发且未撤回（INNF 15.2(e)）。团队成员不能共用同一项（INNF 17.3），岗位须存在满 12 个月、每周至少 30 小时等（INNF 17.4），均未核实。',
+          'Assumes the endorsing body will confirm INNF 17.1(a)–(e) (significant achievements against the business plan, registration with Companies House with you as a director or member, active trading, sustainability for at least the next 12 months, and your key role in day-to-day management); the endorsement letter must be issued no more than 3 months before the application and not withdrawn (INNF 15.2(e)). That team members cannot share a criterion (INNF 17.3) and that jobs must have existed for 12 months with at least 30 hours a week (INNF 17.4) are not checked.',
+        ),
+      ],
+    };
+  },
+);
+
 const inTable = (rows: { socCode: string }[], soc: string | undefined) =>
   soc !== undefined && rows.some((r) => r.socCode === soc);
 
@@ -1951,6 +2113,7 @@ export const clEnglish = defineRule(
     const family = familyTen || familyFive;
     const protection = onProtection(timeline, simulationDate);
     const ancestry = onUkAncestry(timeline, simulationDate);
+    const innovator = onInnovatorFounder(timeline, simulationDate);
     const sw = onSkilledWorker(timeline, simulationDate);
     // SW 44.1 covers a dependent partner and a dependent child.
     const partner =
@@ -2013,7 +2176,12 @@ export const clEnglish = defineRule(
                     '（Appendix Settlement Protection 未对定居设英语要求，此等级只适用于 Long Residence 10 年路径，PD-072）',
                     ' (Appendix Settlement Protection sets no English requirement for settlement; this level applies only to the 10-year Long Residence pathway, PD-072)',
                   )
-                : '';
+                : innovator
+                  ? L(
+                      '（Appendix Innovator Founder 未对主申请人定居设英语要求，INNF 15.1–21.6；此等级只适用于 Long Residence 10 年路径）',
+                      ' (Appendix Innovator Founder sets no English requirement for a main applicant’s settlement, INNF 15.1–21.6; this level applies only to the 10-year Long Residence pathway)',
+                    )
+                  : '';
     if (!required) {
       return {
         status: 'PASS',
@@ -2081,6 +2249,7 @@ export const clKol = defineRule(
       { srcId: 'SRC-022', locator: 'SETF 6.1' },
       { srcId: 'SRC-025', locator: 'KoLL 2.3' },
       { srcId: 'SRC-026', locator: 'UKA 16.1' },
+      { srcId: 'SRC-027', locator: 'INNF 20.1' },
       { srcId: 'SRC-015', locator: 'KOL 1.1' },
       { srcId: 'SRC-015', locator: 'KOL 2.1' },
     ],
@@ -2103,19 +2272,21 @@ export const clKol = defineRule(
         ? L('（GT 14.1）', ' (GT 14.1)')
         : onUkAncestry(timeline, simulationDate)
           ? L('（UKA 16.1）', ' (UKA 16.1)')
-          : onFamilyPartnerTenYear(timeline, simulationDate)
-            ? L('（SETF 6.1）', ' (SETF 6.1)')
-            : onFamilyPartnerFiveYear(timeline, simulationDate)
-              ? L(
-                  '（Appendix KoLL 2.3，经 E-ILRP.1.6）',
-                  ' (Appendix KoLL 2.3, through E-ILRP.1.6)',
-                )
-              : onProtection(timeline, simulationDate)
+          : onInnovatorFounder(timeline, simulationDate)
+            ? L('（INNF 20.1）', ' (INNF 20.1)')
+            : onFamilyPartnerTenYear(timeline, simulationDate)
+              ? L('（SETF 6.1）', ' (SETF 6.1)')
+              : onFamilyPartnerFiveYear(timeline, simulationDate)
                 ? L(
-                    '（Appendix Settlement Protection 未设 Life in the UK 要求，此项只适用于 Long Residence 10 年路径，PD-072）',
-                    ' (Appendix Settlement Protection sets no Life in the UK requirement; this applies only to the 10-year Long Residence pathway, PD-072)',
+                    '（Appendix KoLL 2.3，经 E-ILRP.1.6）',
+                    ' (Appendix KoLL 2.3, through E-ILRP.1.6)',
                   )
-                : '';
+                : onProtection(timeline, simulationDate)
+                  ? L(
+                      '（Appendix Settlement Protection 未设 Life in the UK 要求，此项只适用于 Long Residence 10 年路径，PD-072）',
+                      ' (Appendix Settlement Protection sets no Life in the UK requirement; this applies only to the 10-year Long Residence pathway, PD-072)',
+                    )
+                  : '';
     const kol = timeline.lifeInTheUk;
     if (!kol) {
       return {

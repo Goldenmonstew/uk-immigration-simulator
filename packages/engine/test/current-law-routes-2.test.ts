@@ -4,6 +4,8 @@ import { evaluate } from '../src/evaluate';
 import {
   clAncestryResidence5Y,
   clEnglish,
+  clInnovatorEndorsement,
+  clInnovatorResidence3Y,
   clKol,
   clProtectionResidence5Y,
   clProtectionStatus,
@@ -290,5 +292,108 @@ describe('UK Ancestry (SRC-026)', () => {
     expect(run(clKol, ancestry('2021-09-01')).explanation).toContain(
       'UKA 16.1',
     );
+  });
+});
+
+describe('Innovator Founder (SRC-027)', () => {
+  const founder = (
+    validFrom: string,
+    criteria: ImmigrationEpisode['innovatorSettlementCriteria'] = [
+      'INVESTMENT',
+      'JOBS',
+    ],
+    extra: Partial<PersonTimeline> = {},
+  ): Partial<PersonTimeline> => ({
+    episodes: [
+      on('INNOVATOR_FOUNDER', validFrom, {
+        innovatorSettlementCriteria: criteria,
+      }),
+    ],
+    english: undefined,
+    ...extra,
+  });
+
+  test('CL-SCOPE: a main applicant is in scope, a dependant is not', () => {
+    expect(run(clScope, founder('2023-05-01')).explanation).toContain(
+      'Appendix Innovator Founder',
+    );
+    expect(
+      run(clScope, {
+        episodes: [
+          on('INNOVATOR_FOUNDER', '2023-05-01', { role: 'DEPENDANT' }),
+        ],
+      }).status,
+    ).toBe('UNKNOWN');
+  });
+
+  test('3 years to the day with two criteria, no English needed (INNF 18.1)', () => {
+    expect(
+      run(clInnovatorResidence3Y, founder('2023-05-01'), '2026-05-01').status,
+    ).toBe('PASS');
+    const result = currentLaw(founder('2023-05-01'), '2026-05-01');
+    expect(result).toMatchObject({
+      outcome: 'LIKELY_ELIGIBLE',
+      pathwayYears: 3,
+      earliestDate: '2026-05-01',
+    });
+    const english = result.rules.find((r) => r.id === 'CL-ENGLISH')!;
+    expect(english.status).toBe('UNKNOWN');
+    expect(english.explanation).toContain('INNF 15.1–21.6');
+    expect(result.rules.find((r) => r.id === 'CL-KOL')!.explanation).toContain(
+      'INNF 20.1',
+    );
+  });
+
+  test('a day short: projects 3 years on, with no B2 note', () => {
+    expect(
+      run(clInnovatorResidence3Y, founder('2024-05-02'), '2027-05-01').status,
+    ).toBe('FAIL');
+    const result = currentLaw(founder('2024-05-02'), '2027-05-01');
+    expect(result).toMatchObject({
+      outcome: 'LIKELY_NOT_ELIGIBLE',
+      pathwayYears: 3,
+      earliestDate: '2027-05-02',
+    });
+    expect(result.assumptions.join()).not.toContain('B2');
+  });
+
+  test('INNF 17.1(f): at least two distinct criteria; missing is unknown', () => {
+    const noCriteria = {
+      episodes: [on('INNOVATOR_FOUNDER', '2023-05-01')],
+      english: undefined,
+    };
+    const two = run(clInnovatorEndorsement, founder('2023-05-01'));
+    expect(two.status).toBe('PASS');
+    expect(two.explanation).toContain('INNF 17.1(f)(i)、INNF 17.1(f)(vi)');
+    expect(two.assumptions?.join()).toContain('INNF 15.2(e)');
+    expect(
+      run(clInnovatorEndorsement, founder('2023-05-01', ['REVENUE', 'REVENUE']))
+        .status,
+    ).toBe('FAIL');
+    expect(
+      run(clInnovatorEndorsement, founder('2023-05-01', [])).explanation,
+    ).toContain('0 项');
+    expect(run(clInnovatorEndorsement, noCriteria).status).toBe('UNKNOWN');
+    expect(currentLaw(noCriteria, '2026-05-01').outcome).toBe(
+      'INSUFFICIENT_INFORMATION',
+    );
+    expect(
+      currentLaw(founder('2023-05-01', ['JOBS']), '2026-05-01'),
+    ).toMatchObject({
+      outcome: 'LIKELY_NOT_ELIGIBLE',
+      pathwayYears: 10,
+    });
+  });
+
+  test('absences restart the period (INNF 19.1, CR 3.1)', () => {
+    const result = run(
+      clInnovatorResidence3Y,
+      founder('2023-05-01', undefined, {
+        absences: [{ from: '2024-01-01', to: '2024-06-30' }],
+      }),
+      '2026-05-01',
+    );
+    expect(result.status).toBe('FAIL');
+    expect(result.explanation).toContain('2027-07-01');
   });
 });

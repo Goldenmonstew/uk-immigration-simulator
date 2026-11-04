@@ -261,5 +261,17 @@ export const currentLaw2026_11 = {
         { srcId: 'SRC-007', locator: 'EM 5.60' },
       ],
     },
+
+    // Appendix Innovator Founder, version 2026-08-03. The main applicant's
+    // settlement has no English requirement (INNF 15.1–21.6).
+    innovatorFounderQualifyingYears: {
+      value: 3,
+      sources: [{ srcId: 'SRC-027', locator: 'INNF 18.1' }],
+    },
+    // Of the business criteria in INNF 17.1(f)(i)–(vii).
+    innovatorFounderSettlementCriteriaMinimum: {
+      value: 2,
+      sources: [{ srcId: 'SRC-027', locator: 'INNF 17.1(f)' }],
+    },
   },
 } satisfies ParameterSet;

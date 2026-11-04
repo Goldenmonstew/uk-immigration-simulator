@@ -2,6 +2,7 @@ import type { Fixture } from '../../engine/src/types';
 import { clFamilyPartnerFiveYears } from './cl-family-partner-five-years';
 import { clGlobalTalentThreeYears } from './cl-global-talent-three-years';
 import { clHkbnoFiveYears } from './cl-hkbno-five-years';
+import { clInnovatorFounderThreeYears } from './cl-innovator-founder-three-years';
 import { clRefugeeFiveYears } from './cl-refugee-five-years';
 import { clUkAncestryFiveYears } from './cl-uk-ancestry-five-years';
 import { esIndividualC } from './es-individual-c-combined-income';
@@ -47,4 +48,5 @@ export const fixtures: Fixture[] = [
   clFamilyPartnerFiveYears,
   clRefugeeFiveYears,
   clUkAncestryFiveYears,
+  clInnovatorFounderThreeYears,
 ];
