@@ -17,6 +17,7 @@
 | 11 | 合并 1.2 问卷流与结果页（astra）：首页、九步问卷（高风险前置短路、本机草稿）、双栏结果页、mock 预览、自写 i18n、CSS Modules；Fable 独立复跑验收命令并用内置浏览器走完五条路径（短路、完整 SW、mock 1/2、刷新保留、375px 无溢出），网络面板无用户数据请求 | apps/web/**, docs/tasks/reports/1.2-web-mvp0.md |
 | 12 | 合并 1.1 MVP-0 规则与前向推算（Opus）：14 条 Earned Settlement 规则 + 6 条现行法律规则、候选路径聚合与最早日期推算、Annex C 与 public funds 数据表、PD-003/019/035 更新、PD-053–055 新增；Fable 独立复跑全套命令、通读代码、亲自跑六个场景、抽查 13 处来源；验收后三处修改（dependant 不按主申请人评估、信息不足不显示年限、PD-041/007 口径）已复核 | packages/engine/**, packages/policy-data/src/data/**, packages/policy-data/src/parameters/**, packages/policy-data/fixtures/es-p31-individual-a-partner-arrives-together.ts, docs/contracts.md, docs/pending-details.md, docs/tasks/reports/1.1-rules-mvp0.md |
 | 13 | 1.4 brief；合并 1.4 前端对接真实规则（astra）：web 显式依赖 policy-data、福利下拉用数据表两组、政府债务交 ES-DEBT、引擎短路保留两栏、路线分组 / 政府未定细节标签 / 假设折叠、真实引擎回归测试；Fable 独立复跑 gate 并用内置浏览器走查六条路径（债务、SW £55k、HK BN(O) 短路、Visit、mock=1、375px）；brief 验收示例 Visit 改为 HK BN(O)（Visit 属 NOT_COUNTING） | docs/tasks/1.4-web-integration.md, apps/web/**, pnpm-lock.yaml, docs/tasks/reports/1.4-web-integration.md, PROGRESS.md |
+| 14 | Phase 2 规划：docs/tasks/phase-2-plan.md（六张任务卡、两波次、验收总则、待用户决定三项）；方案 §6 加 Phase 2 指针 | docs/tasks/phase-2-plan.md, docs/00-project-analysis-and-plan.md, PROGRESS.md |
 
 ### 当前状态
 
@@ -27,4 +28,6 @@
 - 已定口径（见上）：已公布规则集按"假设在模拟日适用"评估；居留不足 → ES-RESIDENCE FAIL + earliestDate；INSUFFICIENT_INFORMATION 不显示 pathwayYears；dependant 两栏 INSUFFICIENT_INFORMATION；CL-ENGLISH 按快照原文（SW 主申请人 2027-03-26 前无定居英语要求）；引擎短路 PROTECTION / OUTSIDE_FRAMEWORK 只停 Earned Settlement 栏。
 - 本地预览：`.claude/launch.json`（gitignored）`web-static-astra` 用 `scratchpad/serve/static.mjs` 托管 main 的 `apps/web/out`（先 `pnpm build`）。
 - 页码约定与 Codex 启动参数不变。
-- 下一步：Phase 2 规划（What-if 实验室、政策版本库与变更日志、Cloudflare Pages 部署、dependant 建模）。
+- Phase 2 规划已写入 `docs/tasks/phase-2-plan.md`：Wave 1 = 2.1 What-if（astra）、2.2 dependant 与家庭建模（Opus，契约先行）、2.3 Cloudflare Pages 部署 + 政策变更日志数据（sol）；Wave 2 = 2.4 家庭问卷 + 政策页（astra）、2.5 现行法律补全与剩余过渡安排（Opus）；2.6 going rate、2.7 分享链接可选。
+- 待用户决定：是否建 GitHub 远端（目前无 remote）；IAA 复核安排在绑定正式域名前；可选项取舍。
+- 下一步：用户确认后写 Wave 1 三份 brief 并派发。

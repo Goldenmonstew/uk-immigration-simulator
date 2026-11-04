@@ -160,6 +160,10 @@ astra 与 sol 的分配可互换；关键是 UI 与基础设施分开，且都�
 - astra：问卷流 + 结果页 + 政策版本标注；先用 engine 契约的 mock 数据开发，不等引擎完成。
 - sol：官方示例 → fixtures；路线分类表与 Annex C 数据表；CI 跑 fixtures；禁裸数字门槛的 lint；i18n 脚手架。
 
+### Phase 2
+
+Phase 1 全部合并后（2026-11-04）的规划见 `docs/tasks/phase-2-plan.md`：Wave 1 = What-if 实验室（astra）、dependant 与家庭建模（Opus）、Cloudflare Pages 部署与政策变更日志数据（sol）；Wave 2 = 家庭问卷与政策页（astra）、现行法律补全与剩余过渡安排（Opus）。
+
 ## 7. 验收标准（Fable 检查项）
 
 - 所有 fixtures 通过；新增规则必须带 positive / negative / boundary 三组用例（如 £50,270 / £50,271 / £50,272）。
