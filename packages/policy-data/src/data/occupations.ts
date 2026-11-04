@@ -81,3 +81,30 @@ export const careWorkerOccupations: {
     { socCode: '6136', title: 'Senior care workers' },
   ],
 };
+
+// "Health and Care ASHE salary job" (SW A1.1): a job in one of these codes
+// with one of the employers listed in SW A1.1(a)–(f), which is not modelled.
+export const healthAndCareAsheOccupations: {
+  sources: SourceRef[];
+  occupations: Occupation[];
+} = {
+  sources: [{ srcId: 'SRC-004', locator: 'SW A1.1' }],
+  occupations: [
+    {
+      socCode: '1171',
+      title: 'Health services and public health managers and directors',
+    },
+    { socCode: '1231', title: 'Health care practice managers' },
+    {
+      socCode: '1232',
+      title: 'Residential, day and domiciliary care managers and proprietors',
+    },
+    { socCode: '2113', title: 'Biochemists and biomedical scientists' },
+    { socCode: '2114', title: 'Physical scientists' },
+    { socCode: '3111', title: 'Laboratory technicians' },
+    { socCode: '3211', title: 'Dispensing opticians' },
+    { socCode: '3212', title: 'Pharmaceutical technicians' },
+    { socCode: '6135', title: 'Care workers and home carers' },
+    { socCode: '6136', title: 'Senior care workers' },
+  ],
+};

@@ -1,4 +1,8 @@
-import { currentLaw2026_11 as cl } from '@uk-immigration/policy-data';
+import {
+  currentLaw2026_11 as cl,
+  healthAndCareAsheOccupations,
+  nationalPayScaleOccupations,
+} from '@uk-immigration/policy-data';
 import { addYears, fullYears } from '../dates';
 import { continuousRun, episodeOn, restartAfterAbsences } from '../residence';
 import { defineRule } from '../rule';
@@ -181,40 +185,158 @@ export const clSwResidence5Y = defineRule(
   },
 );
 
+/** The relevant row of the table in SW 24.3 (row E is not modelled). */
+export interface SalaryRow {
+  row: 'A' | 'B' | 'C' | 'D';
+  /** General salary, GBP per year. */
+  threshold: number;
+  /** Why this row applies, for explanations. */
+  reason: string;
+  /** Lower rows might apply but `socCode` is missing. */
+  socMissing: boolean;
+  /** Start of the continuous Skilled Worker (not SW 21.2) permission. */
+  skilledWorkerFrom: IsoDate;
+  assumptions: string[];
+}
+
+const inTable = (rows: { socCode: string }[], soc: string | undefined) =>
+  soc !== undefined && rows.some((r) => r.socCode === soc);
+
+/** Undefined unless on Skilled Worker on the simulation date. */
+export function settlementSalaryRow({
+  timeline,
+  simulationDate,
+}: RuleContext): SalaryRow | undefined {
+  const current = episodeOn(timeline, simulationDate);
+  if (!current || !isSkilledWorker(current)) return undefined;
+  const v = cl.values;
+  const soc = current.socCode;
+  const skilledWorkerFrom = continuousRun(
+    timeline,
+    simulationDate,
+    isSkilledWorker,
+  ).episodes[0].validFrom;
+  const table3 = inTable(nationalPayScaleOccupations.rows, soc);
+  const ashe = inTable(healthAndCareAsheOccupations.occupations, soc);
+  // SW 4.2(b)(ii)
+  const pre2024 =
+    skilledWorkerFrom < v.skilledWorkerPre2024RulesBefore.value &&
+    simulationDate < v.skilledWorkerPre2024ApplicationsBefore.value;
+  const isl = current.immigrationSalaryList === true;
+  const pre2024Reason = `自 ${skilledWorkerFrom} 起连续持 Skilled Worker 许可，早于 ${v.skilledWorkerPre2024RulesBefore.value}，且申请日早于 ${v.skilledWorkerPre2024ApplicationsBefore.value}（SW 4.2(b)(ii)）`;
+  const asheReason = `SOC ${soc} 属 Health and Care ASHE salary job（SW A1.1）`;
+  const b42Reason = pre2024 ? pre2024Reason : asheReason;
+  const assumptions = [
+    'SW 24.3 row E（5 年期含 Tier 2 (General) 下的 STEM 类 SOC 2010 职业）未建模。',
+    ...(current.immigrationSalaryList === undefined
+      ? ['未申报是否在 Immigration Salary List 上，按不在清单处理。']
+      : []),
+    ...(ashe && !pre2024
+      ? [
+          `SOC ${soc} 在 SW A1.1 的 Health and Care ASHE salary job 职业列表内，假设雇主属 SW A1.1(a)–(f) 列出的类型。`,
+        ]
+      : []),
+    ...(pre2024
+      ? [
+          `"${v.skilledWorkerPre2024RulesBefore.value} 前按当时规则获批"按连续 Skilled Worker 许可的起始日判断（SW 4.2(b)(ii)）。`,
+        ]
+      : []),
+  ];
+  const base = {
+    socMissing: soc === undefined,
+    skilledWorkerFrom,
+    assumptions,
+  };
+  if (table3) {
+    return {
+      ...base,
+      socMissing: false,
+      row: 'D',
+      threshold: v.skilledWorkerSettlementSalaryRowD.value,
+      reason: `SOC ${soc} 是 Appendix Skilled Occupations Table 3 的医疗 / 教育职业`,
+    };
+  }
+  if (isl && (pre2024 || ashe)) {
+    return {
+      ...base,
+      socMissing: false,
+      row: 'D',
+      threshold: v.skilledWorkerSettlementSalaryRowD.value,
+      reason: `岗位在 Immigration Salary List 上，且${b42Reason}`,
+    };
+  }
+  if (pre2024 || ashe) {
+    return {
+      ...base,
+      row: 'C',
+      threshold: v.skilledWorkerSettlementSalaryRowC.value,
+      reason: b42Reason,
+    };
+  }
+  if (isl) {
+    return {
+      ...base,
+      row: 'B',
+      threshold: v.skilledWorkerSettlementSalaryRowB.value,
+      reason: '岗位在 Immigration Salary List 上',
+    };
+  }
+  return {
+    ...base,
+    row: 'A',
+    threshold: v.skilledWorkerGeneralSalaryThreshold.value,
+    reason: '不适用 rows B–E',
+  };
+}
+
 export const clSwSalary = defineRule(
   {
     id: 'CL-SW-SALARY',
     ruleSetId: RULE_SET,
-    title: 'Skilled Worker 定居薪资',
-    sources: [{ srcId: 'SRC-004', locator: 'SW 24.3' }],
+    title: 'Skilled Worker 定居薪资（general salary）',
+    sources: [
+      { srcId: 'SRC-004', locator: 'SW 24.3' },
+      { srcId: 'SRC-004', locator: 'SW 4.2(b)' },
+      { srcId: 'SRC-004', locator: 'SW A1.1' },
+      { srcId: 'SRC-017', locator: 'Table 3' },
+    ],
     pendingDetails: [],
   },
-  ({ timeline, simulationDate }) => {
-    const threshold = cl.values.skilledWorkerGeneralSalaryThreshold.value;
-    const current = episodeOn(timeline, simulationDate);
-    if (!current || !isSkilledWorker(current)) {
+  (ctx) => {
+    const row = settlementSalaryRow(ctx);
+    if (!row) {
       return {
         status: 'FAIL',
         explanation: '当前不是 Skilled Worker 主申请人许可。',
       };
     }
-    if (current.salary === undefined) {
+    const salary = episodeOn(ctx.timeline, ctx.simulationDate)!.salary;
+    const { assumptions } = row;
+    if (salary === undefined) {
       return {
         status: 'UNKNOWN',
         explanation: '未填写当前 Skilled Worker 工作的年薪。',
+        assumptions,
       };
     }
-    return current.salary >= threshold
+    const which = `按 SW 24.3 row ${row.row}（${row.reason}），general salary 门槛 ${gbp(row.threshold)}`;
+    if (salary >= row.threshold) {
+      return {
+        status: 'PASS',
+        explanation: `${which}；当前年薪 ${gbp(salary)}，已达到。`,
+        assumptions,
+      };
+    }
+    return row.socMissing
       ? {
-          status: 'PASS',
-          explanation: `当前年薪 ${gbp(current.salary)}，达到 SW 24.3 row A 的一般门槛 ${gbp(threshold)}。`,
-          assumptions: [
-            '薪资还须达到该职业的 going rate（Appendix Skilled Occupations Table 1 / 1a），本工具未核对。',
-          ],
+          status: 'UNKNOWN',
+          explanation: `${which}；当前年薪 ${gbp(salary)} 低于此门槛。未填写 SOC 职业代码，若属 Table 3 医疗 / 教育职业或 Health and Care ASHE salary job，适用更低的 row C / D。`,
+          assumptions,
         }
       : {
-          status: 'UNKNOWN',
-          explanation: `当前年薪 ${gbp(current.salary)}，低于 SW 24.3 row A 的 ${gbp(threshold)}；若适用 rows B–E（Immigration Salary List、新入职、Table 3 医疗与教育职业等），门槛更低，需按具体职业判断。`,
+          status: 'FAIL',
+          explanation: `${which}；当前年薪 ${gbp(salary)}，低于此门槛。`,
+          assumptions,
         };
   },
 );

@@ -24,3 +24,4 @@ export {
   nationalPayScaleOccupations,
 } from './data/skilled-occupations';
 export type { GoingRate } from './data/skilled-occupations';
+export { healthAndCareAsheOccupations } from './data/occupations';

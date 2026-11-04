@@ -139,17 +139,76 @@ describe('CL-SW-RESIDENCE-5Y', () => {
 });
 
 describe('CL-SW-SALARY', () => {
-  const at = (salary?: number) =>
-    run(clSwSalary, { episodes: [episode({ salary })] }).status;
+  // From 2025: no SW 4.2(b)(ii), so row A unless another row applies.
+  const at = (
+    salary: number | undefined,
+    extra: Partial<ImmigrationEpisode> = {},
+    simulationDate = '2030-03-01',
+  ) =>
+    run(
+      clSwSalary,
+      {
+        episodes: [
+          episode({
+            validFrom: '2025-03-01',
+            validTo: '2030-12-31',
+            socCode: '2136',
+            salary,
+            ...extra,
+          }),
+        ],
+      },
+      simulationDate,
+    );
 
-  test('£41,700 passes with a going-rate assumption; £41,699 is unknown', () => {
-    expect(at(41700)).toBe('PASS');
-    expect(run(clSwSalary).assumptions?.[0]).toContain('going rate');
-    expect(at(41699)).toBe('UNKNOWN');
+  test('row A: £41,700 passes, £41,699 fails, naming the row', () => {
+    const pass = at(41700);
+    expect(pass.status).toBe('PASS');
+    expect(pass.explanation).toContain('row A');
+    expect(pass.assumptions?.join('')).toContain('Immigration Salary List');
+    expect(at(41699).status).toBe('FAIL');
   });
 
-  test('missing salary is unknown', () => {
-    expect(at(undefined)).toBe('UNKNOWN');
+  test('row B: Immigration Salary List lowers it to £33,400', () => {
+    const isl = { immigrationSalaryList: true };
+    expect(at(33400, isl)).toMatchObject({ status: 'PASS' });
+    expect(at(33400, isl).explanation).toContain('row B');
+    expect(at(33399, isl).status).toBe('FAIL');
+  });
+
+  test('row C: SW 4.2(b)(ii) before 2024-04-04, or a Health and Care ASHE job', () => {
+    const pre = (validFrom: string, date = SIMULATION_DATE) =>
+      run(
+        clSwSalary,
+        { episodes: [episode({ validFrom, socCode: '2136', salary: 31300 })] },
+        date,
+      );
+    expect(pre('2024-04-03').status).toBe('PASS');
+    expect(pre('2024-04-03').explanation).toContain('row C');
+    expect(pre('2024-04-04').status).toBe('FAIL');
+    // SW 4.2(b)(ii) stops applying from 2030-04-04.
+    expect(pre('2024-04-03', '2030-04-04').status).toBe('FAIL');
+    const care = at(31300, { socCode: '6135' });
+    expect(care.status).toBe('PASS');
+    expect(care.explanation).toContain('Health and Care ASHE');
+    expect(care.assumptions?.join('')).toContain('SW A1.1(a)–(f)');
+    expect(at(31299, { socCode: '6135' }).status).toBe('FAIL');
+  });
+
+  test('row D: a Table 3 occupation, or Immigration Salary List with SW 4.2(b)', () => {
+    expect(at(25000, { socCode: '2231' }).status).toBe('PASS');
+    expect(at(25000, { socCode: '2231' }).explanation).toContain('row D');
+    expect(at(24999, { socCode: '2231' }).status).toBe('FAIL');
+    const islCare = { socCode: '6135', immigrationSalaryList: true };
+    expect(at(25000, islCare).explanation).toContain('row D');
+    // Immigration Salary List alone is row B.
+    expect(at(25000, { immigrationSalaryList: true }).status).toBe('FAIL');
+  });
+
+  test('missing salary is unknown; missing SOC is unknown only below the row', () => {
+    expect(at(undefined).status).toBe('UNKNOWN');
+    expect(at(30000, { socCode: undefined }).status).toBe('UNKNOWN');
+    expect(at(41700, { socCode: undefined }).status).toBe('PASS');
   });
 });
 

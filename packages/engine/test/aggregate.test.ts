@@ -179,9 +179,19 @@ describe('current law', () => {
     expect(a.assumptions.join('')).toContain('届时定居须达到英语 B2');
   });
 
-  test('salary below £41,700 is insufficient information once residence is met', () => {
+  test('£38,000 qualifies under SW 24.3 row C before 2024-04-04; from then it fails row A, and is insufficient without a SOC code', () => {
     expect(
       cl({ episodes: [sw('2019-11-01', { salary: 38000 })] }).outcome,
+    ).toBe('LIKELY_ELIGIBLE');
+    expect(
+      cl({ episodes: [sw('2024-04-04', { salary: 38000 })] }, '2029-04-04')
+        .outcome,
+    ).toBe('LIKELY_NOT_ELIGIBLE');
+    expect(
+      cl(
+        { episodes: [sw('2024-04-04', { salary: 38000, socCode: undefined })] },
+        '2029-04-04',
+      ).outcome,
     ).toBe('INSUFFICIENT_INFORMATION');
   });
 
