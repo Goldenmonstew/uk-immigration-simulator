@@ -32,6 +32,7 @@
 | SRC-016 | GUIDANCE | About us - Immigration Advice Authority（IAA 的调查、执法与起诉权） | https://www.gov.uk/government/organisations/immigration-advice-authority/about | 2025-01-16 | 2026-11-04 | `policy-sources/2025-01-16-iaa-about-us.html`（sha256 `4f8fa4114e9b593c7d197574d7144eed1f72adc1130d55f03ade9fb21f827212`） | archived |
 | SRC-017 | LAW | Immigration Rules: Appendix Skilled Occupations（版本 2025-11-11，HC 1333；SOC 2020 职业及 going rates） | https://www.gov.uk/guidance/immigration-rules/immigration-rules-appendix-skilled-occupations | 2025-11-11 | 2026-11-04 | `policy-sources/2025-11-11-immigration-rules-appendix-skilled-occupations.html`（sha256 `80e31318ea53831fff90635abc64a4d8ca5eaef574bef66421045410b12818c7`） | archived |
 | SRC-018 | LAW | Immigration Rules: Appendix Children（版本 2025-11-11，HC 1333；dependent child 的 age CHI 1.1–1.2、independent life CHI 1A.1、care CHI 2.1、settlement 关系要求 CHI 4.1–4.3；SW 39.4、SW 41A.1 引用） | https://www.gov.uk/guidance/immigration-rules/immigration-rules-appendix-children | 2025-11-11 | 2026-11-04 | `policy-sources/2025-11-11-immigration-rules-appendix-children.html`（sha256 `51c9aece25bec6a58af8149dd4ab8292a0e87f10538c092e9a89bedad749338f`） | archived |
+| SRC-019 | LAW | Immigration Rules: Appendix Immigration Salary List（版本 2025-11-11，HC 1333；SOC 2020 职业、进一步条件、适用国家与 removal date） | https://www.gov.uk/guidance/immigration-rules/immigration-rules-appendix-immigration-salary-list | 2025-11-11 | 2026-11-04 | `policy-sources/2025-11-11-immigration-rules-appendix-immigration-salary-list.html`（sha256 `eae72b67984b14187821976ca618e81008755e6cab99266bec8dbf002b8c883a`） | archived |
 
 ## 登记备注（按 SRC）
 
@@ -179,3 +180,11 @@
 - **Care requirement**：CHI 2.1（未满 18 岁时须有符合英国法律的照护与住宿安排）。
 - **Relationship requirement: settlement**：CHI 4.1（P 同时获批同一路线定居，或已定居 / 入籍且此前持同一路线许可）；CHI 4.2（最近一次许可为 P 的 dependent child，或在英出生等）；CHI 4.3（另一位家长须同时获批、已定居或为英国公民，除非 P 是唯一在世家长或负唯一抚养责任，或有严重而紧迫的理由）。
 - SW 41A.1 只引用其中的 care requirement 与 age and independent life requirement；关系要求经 SW 39.4 引用。
+
+## SRC-019 常用定位
+
+- 版本：[GOV.UK Content API 变更记录](https://www.gov.uk/api/content/guidance/immigration-rules/immigration-rules-appendix-immigration-salary-list) 最近一条为 2025-11-11，说明为 “Updated to reflect Statement of Changes HC 1333”；此前为 2025-07-22（HC 997）。`public_updated_at` 与快照的 `govuk:public-updated-at` 同为 `2025-11-11T12:42:52+00:00`。页面头部 “Updated: 29 October 2026” 是整本手册的更新日。
+- **段落定位**：该页没有 `ISL 1.1` 等编号；引用未编号的表前引言（以 “An occupation is only included on the list” 开始）及唯一职业表的 SOC 2020 行，不虚构 ISL 段落号。引言规定须使用 removal date 之前由 sponsor 向申请人签发的 certificate of sponsorship。
+- **表格列**：`SOC 2020 occupation code and any further criteria` 同单元格包含四位代码、职业名及 “–” 后的 further criteria；`Included on the Immigration Salary List in:` 实际跨 England / Scotland / Wales / Northern Ireland 四个国家列，单元格原文为 `Yes` 或 `-`；末列为 `Removal date`。本任务数据中的 `nations` 按原表顺序组合值为 `Yes` 的国家名；`criteria` 保留原文措辞（包括 “all jobs”、Note 与后续段落），仅归一化 HTML 换行与空白，不解释条件。
+- **行数口径**：唯一表格的 `<tbody>` 共 26 行，其中第 1 行是国家子表头，实际为 25 条职业。按原顺序保留职业行，不按 SOC 去重。1212、2111、5235 仅 Scotland，其余行列四国；removal date 原文为 `31 December 2026`，6135 / 6136 为 `22 July 2028`。这些日期与国家范围均见对应 SOC 行。
+- **SRC-017 Table 3a 补充（任务 3.1）**：上文任务 2.6 的“本次未提取”是历史范围；现已从 SRC-017 同一快照脚本提取 8 行国家薪级职业的 SOC 2020 代码与职业名，保留原 `sources` / `occupations` 结构；不提取薪级金额。Table 3a 引言标为 RQF 3–5，适用限制仍以原表引言为准。
