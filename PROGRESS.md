@@ -16,17 +16,15 @@
 | 10 | 契约补齐（rules[] 携带解释与来源；lifeInTheUk、earningsExemptHealth）；Phase 1 三份 brief；合并 1.3（sol）：8 个官方案例 fixtures（共 10 个）、来源一致性测试、engine/src 禁裸数字与隐式时钟 lint；Fable 独立复跑验收并用探针验证 lint；C / D 补 lifeInTheUk | packages/engine/src/types.ts, docs/contracts.md, docs/tasks/1.*.md, packages/policy-data/fixtures/**, packages/policy-data/test/sources.test.ts, eslint.config.mjs, docs/tasks/reports/1.3-fixtures-tooling.md |
 | 11 | 合并 1.2 问卷流与结果页（astra）：首页、九步问卷（高风险前置短路、本机草稿）、双栏结果页、mock 预览、自写 i18n、CSS Modules；Fable 独立复跑验收命令并用内置浏览器走完五条路径（短路、完整 SW、mock 1/2、刷新保留、375px 无溢出），网络面板无用户数据请求 | apps/web/**, docs/tasks/reports/1.2-web-mvp0.md |
 | 12 | 合并 1.1 MVP-0 规则与前向推算（Opus）：14 条 Earned Settlement 规则 + 6 条现行法律规则、候选路径聚合与最早日期推算、Annex C 与 public funds 数据表、PD-003/019/035 更新、PD-053–055 新增；Fable 独立复跑全套命令、通读代码、亲自跑六个场景、抽查 13 处来源；验收后三处修改（dependant 不按主申请人评估、信息不足不显示年限、PD-041/007 口径）已复核 | packages/engine/**, packages/policy-data/src/data/**, packages/policy-data/src/parameters/**, packages/policy-data/fixtures/es-p31-individual-a-partner-arrives-together.ts, docs/contracts.md, docs/pending-details.md, docs/tasks/reports/1.1-rules-mvp0.md |
+| 13 | 1.4 brief；合并 1.4 前端对接真实规则（astra）：web 显式依赖 policy-data、福利下拉用数据表两组、政府债务交 ES-DEBT、引擎短路保留两栏、路线分组 / 政府未定细节标签 / 假设折叠、真实引擎回归测试；Fable 独立复跑 gate 并用内置浏览器走查六条路径（债务、SW £55k、HK BN(O) 短路、Visit、mock=1、375px）；brief 验收示例 Visit 改为 HK BN(O)（Visit 属 NOT_COUNTING） | docs/tasks/1.4-web-integration.md, apps/web/**, pnpm-lock.yaml, docs/tasks/reports/1.4-web-integration.md, PROGRESS.md |
 
 ### 当前状态
 
-- **Phase 1 三个任务全部合并到 main**（1.1 规则引擎、1.2 问卷与结果页、1.3 fixtures 与机械检查）。`pnpm lint && pnpm typecheck && pnpm test && pnpm build` 在 main 全过：engine 129 个测试、policy-data 2 个、web 19 个；10 个官方 fixture 全部真实断言通过。
-- 待派发 1.4（astra，前端对接真实规则，需用户确认）：
-  - 福利下拉换成 `policy-data` 的 `publicFundsBenefits`（用 `name` 显示，`benefitType` 为值）。
-  - 高风险筛查：政府债务改为设 `governmentDebt.outstanding = true` 交给 ES-DEBT 规则，不再合成 `OUTSIDE_FRAMEWORK` 短路；犯罪记录 / 违规筛查继续前端短路（契约的 `CriminalEvent` / `ImmigrationBreach` 需日期，Phase 2 再补无日期形式）。
-  - `lib/policy.ts` / `mock-results.ts` 的相对路径引用改为 web 显式依赖 `@uk-immigration/policy-data`（允许改 package.json 与锁文件）。
-  - 结果页：`routeGroup` 展示、`rules[].pendingDetails` 标记"政府未定"、假设清单去重后可能较长需折叠；用真实引擎跑一遍 brief 1.2 的路径截图核对。
+- **Phase 1 四个任务全部合并到 main**（1.1 规则引擎、1.2 问卷与结果页、1.3 fixtures 与机械检查、1.4 前端对接真实规则）。`pnpm lint && pnpm typecheck && pnpm test && pnpm build` 在 main 全过：engine 129 个测试、policy-data 2 个、web 23 个；10 个官方 fixture 全部真实断言通过。
+- 1.4 验收记录：债务 = 是 → 走完问卷，Earned Settlement 栏 ES-DEBT 未满足、不给年限；债务 = 否 → 两栏 5 年 / 2030-01-01，路线分组显示"核心许可 · Core Permission"；最近一段为 Hong Kong BN(O) → 页首 OUTSIDE_FRAMEWORK 提示且现行法律栏仍评估；Visit → 无提示、ES-ROUTE-GROUP 未满足；福利下拉两组（38 + 13 项）可选，Statutory Maternity Pay 判为不算 public funds；`?mock=1` 显示路线分组与"政府未定细节：PD-012、PD-013"；假设清单默认折叠、点击展开；375px 无横向溢出。
+- 已知小项（不阻塞）：`?mock=1` 现行法律栏 LIKELY_ELIGIBLE 未给 pathwayYears（手写示例）；"修改输入"回到问卷第 1 步而非最后一步（1.2 起如此）；犯罪 / 违规 / 庇护筛查仍是前端合成短路（契约缺无日期形式与庇护字段，Phase 2 再补）。
 - 1.1 报告列出的未建模项（Phase 2 候选）：SW 21.2 其他可计入路线合并、going rate（需登记 Appendix Skilled Occupations）、SW 24.3 rows B–E、dependant 随主申请人定居（PD-055）、RQF6 以下医疗 / 教育与 2024 前 Skilled Worker 两项过渡安排、难民路径、Highest Talent Group、强制要求 FAIL 时的"补足后"推算。
-- 已定口径（见上）：已公布规则集按"假设在模拟日适用"评估；居留不足 → ES-RESIDENCE FAIL + earliestDate；INSUFFICIENT_INFORMATION 不显示 pathwayYears；dependant 两栏 INSUFFICIENT_INFORMATION；CL-ENGLISH 按快照原文（SW 主申请人 2027-03-26 前无定居英语要求）。
-- 本地预览：`.claude/launch.json`（gitignored）`web-static-astra` 用 `scratchpad/serve/static.mjs` 托管静态导出；路径需改到 main 的 `apps/web/out`。
+- 已定口径（见上）：已公布规则集按"假设在模拟日适用"评估；居留不足 → ES-RESIDENCE FAIL + earliestDate；INSUFFICIENT_INFORMATION 不显示 pathwayYears；dependant 两栏 INSUFFICIENT_INFORMATION；CL-ENGLISH 按快照原文（SW 主申请人 2027-03-26 前无定居英语要求）；引擎短路 PROTECTION / OUTSIDE_FRAMEWORK 只停 Earned Settlement 栏。
+- 本地预览：`.claude/launch.json`（gitignored）`web-static-astra` 用 `scratchpad/serve/static.mjs` 托管 main 的 `apps/web/out`（先 `pnpm build`）。
 - 页码约定与 Codex 启动参数不变。
-- 下一步：1.4 → Phase 2 规划（What-if 实验室、政策版本库与变更日志、Cloudflare Pages 部署、dependant 建模）。
+- 下一步：Phase 2 规划（What-if 实验室、政策版本库与变更日志、Cloudflare Pages 部署、dependant 建模）。
