@@ -6,6 +6,7 @@ import {
   esEarnings10Y,
   esEarnings3Y,
   esEarnings5Y,
+  esPublicFunds,
 } from './es-contribution';
 import { esResidence, esRouteGroup } from './es-residence';
 
@@ -22,6 +23,7 @@ export const RULES: Record<RuleSetId, Rule[]> = {
     esEarnings5Y,
     esEarnings10Y,
     esBritishConnection,
+    esPublicFunds,
   ],
   'current-law-2026-11': [],
 };

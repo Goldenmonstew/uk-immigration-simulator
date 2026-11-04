@@ -4,6 +4,7 @@ import {
   esEarnings10Y,
   esEarnings3Y,
   esEarnings5Y,
+  esPublicFunds,
 } from '../src/rules/es-contribution';
 import type { ImmigrationEpisode, IncomeYear } from '../src/types';
 import { run } from './helpers';
@@ -156,5 +157,50 @@ describe('ES-BRITISH-CONNECTION', () => {
         ],
       }).status,
     ).toBe('FAIL');
+  });
+});
+
+describe('ES-PUBLIC-FUNDS', () => {
+  const benefit = (benefitType: string, from: string, to?: string) => ({
+    benefitType,
+    from,
+    to,
+  });
+
+  test('Universal Credit in the last 5 years fails and says when it clears', () => {
+    const result = run(esPublicFunds, {
+      benefits: [benefit('UNIVERSAL_CREDIT', '2023-01-01', '2023-09-30')],
+    });
+    expect(result.status).toBe('FAIL');
+    expect(result.explanation).toContain('2028-10-01');
+  });
+
+  test('use ending the day before the 5-year window passes; on its first day fails', () => {
+    // Window for 2026-11-04 starts 2021-11-04.
+    expect(
+      run(esPublicFunds, {
+        benefits: [benefit('HOUSING_BENEFIT', '2021-01-01', '2021-11-03')],
+      }).status,
+    ).toBe('PASS');
+    expect(
+      run(esPublicFunds, {
+        benefits: [benefit('HOUSING_BENEFIT', '2021-01-01', '2021-11-04')],
+      }).status,
+    ).toBe('FAIL');
+  });
+
+  test('statutory payments are ignored; unlisted benefits are unknown for policy reasons', () => {
+    expect(
+      run(esPublicFunds, {
+        benefits: [
+          benefit('STATUTORY_MATERNITY_PAY', '2024-01-01', '2024-09-30'),
+        ],
+      }).status,
+    ).toBe('PASS');
+    const unlisted = run(esPublicFunds, {
+      benefits: [benefit('ASYLUM_SUPPORT', '2024-01-01')],
+    });
+    expect(unlisted.status).toBe('UNKNOWN');
+    expect(unlisted.pendingDetails).toEqual(['PD-013']);
   });
 });

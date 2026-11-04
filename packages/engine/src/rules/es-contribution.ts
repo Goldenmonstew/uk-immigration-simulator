@@ -1,6 +1,13 @@
-import { earnedSettlement2026_11 as es } from '@uk-immigration/policy-data';
-import type { BestYears, SourceRef } from '@uk-immigration/policy-data';
-import { taxYearsBefore } from '../dates';
+import {
+  earnedSettlement2026_11 as es,
+  publicFundsBenefits,
+} from '@uk-immigration/policy-data';
+import type {
+  Benefit,
+  BestYears,
+  SourceRef,
+} from '@uk-immigration/policy-data';
+import { addDays, addYears, taxYearsBefore } from '../dates';
 import { episodeOn } from '../residence';
 import { defineRule } from '../rule';
 import type { RuleContext } from '../types';
@@ -183,6 +190,97 @@ export const esBritishConnection = defineRule(
       status: 'FAIL',
       explanation:
         '不属于 British citizen 家属路线或 UK Ancestry，不走这条 5 年路径。',
+    };
+  },
+);
+
+function namesOf(types: string[]): string {
+  return [...new Set(types)]
+    .map(
+      (t) =>
+        [
+          ...publicFundsBenefits.publicFunds,
+          ...publicFundsBenefits.notPublicFunds,
+        ].find((b) => b.benefitType === t)?.name ?? t,
+    )
+    .join('、');
+}
+
+export const esPublicFunds = defineRule(
+  {
+    id: 'ES-PUBLIC-FUNDS',
+    ruleSetId: RULE_SET,
+    title: '申请前 5 年未使用 public funds',
+    sources: [
+      { srcId: 'SRC-001', locator: 'p18' },
+      { srcId: 'SRC-006', locator: '#benefits-open-to-new-claims' },
+      {
+        srcId: 'SRC-006',
+        locator: '#contributory-benefits-and-statutory-payments',
+      },
+    ],
+    pendingDetails: ['PD-013', 'PD-014', 'PD-047'],
+  },
+  ({ timeline, simulationDate }) => {
+    const years = es.values.publicFundsLookbackYears.value;
+    const from = addYears(simulationDate, -years);
+    const inWindow = timeline.benefits.filter(
+      (b) => b.from <= simulationDate && (b.to ?? simulationDate) >= from,
+    );
+    const isIn = (list: Benefit[]) => (t: string) =>
+      list.some((b) => b.benefitType === t);
+    const used = inWindow.filter((b) =>
+      isIn(publicFundsBenefits.publicFunds)(b.benefitType),
+    );
+    const unlisted = inWindow.filter(
+      (b) =>
+        !isIn(publicFundsBenefits.publicFunds)(b.benefitType) &&
+        !isIn(publicFundsBenefits.notPublicFunds)(b.benefitType),
+    );
+    const ignored = inWindow.filter((b) =>
+      isIn(publicFundsBenefits.notPublicFunds)(b.benefitType),
+    );
+    const assumptions =
+      inWindow.length > 0
+        ? [
+            'specified public funds 先按现行 public funds 定义（SRC-006）判断；政府将另定纳入范围与弱势群体的保障或豁免（PD-013）。',
+            '只计申请人本人领取的福利；伴侣或子女领取是否影响申请人，原文未说明（PD-014）。',
+            `回看期按正文"申请前紧接的 ${years} 年"计算，不要求这段时间都在 qualifying route 上（PD-047）。`,
+          ]
+        : [];
+    const ignoredNote =
+      ignored.length > 0
+        ? `${namesOf(ignored.map((b) => b.benefitType))} 属缴费型福利或法定支付，不算 public funds。`
+        : '';
+    if (used.length > 0) {
+      const ongoing = used.some((b) => !b.to);
+      const lastUse = used
+        .map((b) => b.to ?? simulationDate)
+        .sort()
+        .at(-1)!;
+      return {
+        status: 'FAIL',
+        explanation:
+          `${from} 以来领取过 ${namesOf(used.map((b) => b.benefitType))}，属 public funds。3 / 5 / 10 年路径要求申请前 ${years} 年未使用 specified public funds，否则须在 qualifying route 上满 20 年。` +
+          (ongoing
+            ? ''
+            : `若此后不再使用，自 ${addDays(addYears(lastUse, years), 1)} 起回看期内不再有 public funds，可按较短路径重新评估。`) +
+          ignoredNote,
+        assumptions,
+      };
+    }
+    if (unlisted.length > 0) {
+      return {
+        status: 'UNKNOWN',
+        explanation: `${namesOf(unlisted.map((b) => b.benefitType))} 不在现行 public funds 指引的两张清单中，无法判断是否算 public funds。${ignoredNote}`,
+        pendingDetails: ['PD-013'],
+        assumptions,
+      };
+    }
+    return {
+      status: 'PASS',
+      explanation: `申请前 ${years} 年内未领取 public funds。${ignoredNote}`,
+      assumptions,
     };
   },
 );
