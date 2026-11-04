@@ -203,3 +203,9 @@ dependant 随主申请人定居（SRC-001 Ch.5）时，原文未规定、引擎�
 - UK Ancestry（SRC-026）：UKA 10.3（申请日为 Commonwealth citizen）与 UKA 12.1（仍满足 UKA 4.1–6.1）按满足处理，写进 `CL-ANCESTRY-RESIDENCE-5Y` 的假设；dependant（UKA 18–UKA 36）由 `CL-SCOPE` 输出 `UNKNOWN`。
 - Innovator Founder（SRC-027）：INNF 17.1(f) 各项由用户自报（`innovatorSettlementCriteria`），金额与岗位数不由引擎判断；INNF 17.1(a)–(e)、INNF 15.2(e)、INNF 17.3、INNF 17.4 写进 `CL-INNOVATOR-ENDORSEMENT` 的假设。主申请人定居没有英语要求是原文写明的（INNF 15.1–21.6；EM 5.60 涉及的是 dependant 的 INNF 39.1），不是待定事项。dependant 由 `CL-SCOPE` 输出 `UNKNOWN`。
 - Private Life（SRC-028）：PL 13（英国出生的儿童）、PL 14.1A / PL 14.2(b) / PL 14.2A（2022-06-20 前的过渡安排）、PL 12.3–12.5（suitability 事由要求 10 年）未建模，PL 14.3(e) 的 Article 8 Leave Outside the Rules 不计入，都写进 `CL-PRIVATE-LIFE-RESIDENCE` 的假设；PL 14.4 的其他可定居路线归入 PD-069。dependant（PL 19–PL 33）由 `CL-SCOPE` 输出 `UNKNOWN`。
+
+## 九、现行法律栏 dependant（任务 5.4 新增）
+
+| ID | 事项 | 原文怎么说 | 出处 | 对引擎的影响 | 预计何时明确 |
+|---|---|---|---|---|---|
+| PD-074 | Appendix FM 5 年路线伴侣的子女如何定居 | D-LTRC.1.1 末句：随按 Appendix Settlement Family Life 申请的伴侣或父母定居的子女适用该 Appendix；否则适用 Immigration Rules Part 8 第 298 段。本仓库未登记 Part 8。 | SRC-024 D-LTRC.1.1 | 主申请人为 `PARTNER_FIVE_YEAR` 时，子女的现行法律栏 `CL-SCOPE` 输出 `UNKNOWN`（PD-074），结论"信息不足"，不给年限与日期。 | 待登记 Part 8 第 298 段后可建模 |
