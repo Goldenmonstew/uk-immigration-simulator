@@ -246,6 +246,7 @@ function assessEarnedSettlement(ctx: RuleContext): SettlementAssessment {
     'ES-BRITISH-CONNECTION',
     'ES-PUBLIC-SERVICE',
     'ES-TRANSITIONAL-CARE-WORKER',
+    'ES-TRANSITIONAL-HEALTH-EDUCATION',
   ];
   const start = esQualifyingResidence(ctx)?.start;
   const groups = current ? groupsOf(current.route) : [];
@@ -276,7 +277,12 @@ function assessEarnedSettlement(ctx: RuleContext): SettlementAssessment {
   ].map((c) => ({ ...c, start }));
 
   const assumptions = [ES_BASE_ASSUMPTION];
-  if (pick('ES-TRANSITIONAL-CARE-WORKER')[0].status === 'PASS') {
+  if (
+    pick(
+      'ES-TRANSITIONAL-CARE-WORKER',
+      'ES-TRANSITIONAL-HEALTH-EDUCATION',
+    ).some((r) => r.status === 'PASS')
+  ) {
     assumptions.push(
       '原文未规定同时符合过渡安排与标准路径时如何取舍；本结果取满足条件的最短路径，申请人可能可以选择更有利的安排，需咨询受监管顾问。',
     );

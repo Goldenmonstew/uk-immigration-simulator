@@ -28,7 +28,10 @@ import {
 } from './es-contribution';
 import { esDependantPathway } from './es-dependant';
 import { esResidence, esRouteGroup } from './es-residence';
-import { esTransitionalCareWorker } from './es-transitional';
+import {
+  esTransitionalCareWorker,
+  esTransitionalHealthEducation,
+} from './es-transitional';
 
 /** Every rule, by rule set, in evaluation order. */
 export const RULES: Record<RuleSetId, Rule[]> = {
@@ -46,6 +49,7 @@ export const RULES: Record<RuleSetId, Rule[]> = {
     esPublicFunds,
     esBreach,
     esTransitionalCareWorker,
+    esTransitionalHealthEducation,
     esPublicService,
     esDependantPathway,
   ],
