@@ -4,8 +4,9 @@ dist/
 out/
 coverage/
 .DS_Store
-.env
-.env.*
+.env*
+*.tsbuildinfo
+next-env.d.ts
 *.log
 .turbo/
 .worktrees/
