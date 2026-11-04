@@ -237,5 +237,63 @@ export const currentLaw2026_11 = {
       value: 2400,
       sources: [{ srcId: 'SRC-024', locator: 'E-LTRP.3.7(a)(iii)' }],
     },
+    // Continuous years in the UK with refugee status or humanitarian
+    // protection. Appendix Settlement Protection sets no English or Life in
+    // the UK requirement (PD-072).
+    protectionQualifyingYears: {
+      value: 5,
+      sources: [{ srcId: 'SRC-023', locator: 'STP 3.1' }],
+    },
+
+    // Appendix UK Ancestry, version 2026-08-03.
+    ukAncestryQualifyingYears: {
+      value: 5,
+      sources: [{ srcId: 'SRC-026', locator: 'UKA 13.1' }],
+    },
+    ukAncestrySettlementEnglishBefore: {
+      value: 'B1',
+      sources: [{ srcId: 'SRC-026', locator: 'UKA 15.1(a)' }],
+    },
+    ukAncestrySettlementEnglish: {
+      value: { cefrLevel: 'B2', applicationsFrom: '2027-03-26' },
+      sources: [
+        { srcId: 'SRC-026', locator: 'UKA 15.1(b)' },
+        { srcId: 'SRC-007', locator: 'EM 5.60' },
+      ],
+    },
+
+    // Appendix Innovator Founder, version 2026-08-03. The main applicant's
+    // settlement has no English requirement (INNF 15.1–21.6).
+    innovatorFounderQualifyingYears: {
+      value: 3,
+      sources: [{ srcId: 'SRC-027', locator: 'INNF 18.1' }],
+    },
+    // Of the business criteria in INNF 17.1(f)(i)–(vii).
+    innovatorFounderSettlementCriteriaMinimum: {
+      value: 2,
+      sources: [{ srcId: 'SRC-027', locator: 'INNF 17.1(f)' }],
+    },
+
+    // Appendix Private Life, version 2026-10-08. Five years after permission
+    // as a child or a young adult who met the half-life test, ten otherwise.
+    privateLifeQualifyingYearsFive: {
+      value: 5,
+      sources: [{ srcId: 'SRC-028', locator: 'PL 14.1' }],
+    },
+    privateLifeQualifyingYearsTen: {
+      value: 10,
+      sources: [{ srcId: 'SRC-028', locator: 'PL 14.2(a)' }],
+    },
+    privateLifeSettlementEnglishBefore: {
+      value: 'B1',
+      sources: [{ srcId: 'SRC-028', locator: 'PL 16.1(a)' }],
+    },
+    privateLifeSettlementEnglish: {
+      value: { cefrLevel: 'B2', applicationsFrom: '2027-03-26' },
+      sources: [
+        { srcId: 'SRC-028', locator: 'PL 16.1(b)' },
+        { srcId: 'SRC-007', locator: 'EM 5.60' },
+      ],
+    },
   },
 } satisfies ParameterSet;
