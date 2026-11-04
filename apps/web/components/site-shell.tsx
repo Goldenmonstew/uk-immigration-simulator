@@ -16,6 +16,9 @@ export function SiteShell({ children }: { children: ReactNode }) {
         <div className={styles.headerInner}>
           <Link href="/">{t('site.name')}</Link>
           <span>{t('site.englishName')}</span>
+          <nav aria-label={t('site.navigation')}>
+            <Link href="/policy">{t('site.policy')}</Link>
+          </nav>
           <div
             className={styles.languages}
             role="group"
@@ -27,7 +30,7 @@ export function SiteShell({ children }: { children: ReactNode }) {
               aria-pressed={locale === 'zh-CN'}
               onClick={() => setLocale('zh-CN')}
             >
-              中文
+              {t('site.chinese')}
             </button>
             <button
               type="button"

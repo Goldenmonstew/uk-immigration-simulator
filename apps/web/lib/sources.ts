@@ -1,4 +1,4 @@
-// URLs transcribed from docs/SOURCES.md, SRC-001 through SRC-016.
+// URLs transcribed from docs/SOURCES.md, SRC-001 through SRC-017.
 export const sourceUrls: Record<string, string> = {
   'SRC-001':
     'https://assets.publishing.service.gov.uk/media/6ae90b0e5b14ba0182a272a4/A_Fairer_Pathway_to_Settlement_-_Government_response_to_the_consultation.pdf',
@@ -29,4 +29,6 @@ export const sourceUrls: Record<string, string> = {
     'https://www.gov.uk/guidance/immigration-rules/immigration-rules-appendix-kol-uk',
   'SRC-016':
     'https://www.gov.uk/government/organisations/immigration-advice-authority/about',
+  'SRC-017':
+    'https://www.gov.uk/guidance/immigration-rules/immigration-rules-appendix-skilled-occupations',
 };
