@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from '../i18n/locale';
+import { punct } from '../i18n/punctuation';
 import { ruleSets } from '../lib/policy';
 import { type Draft, runSimulation } from '../lib/questionnaire';
 import {
@@ -23,6 +24,7 @@ export function SavedScenarios({
   onLoad?: (draft: Draft) => void;
 }) {
   const { t, locale } = useTranslation();
+  const p = punct(locale);
   const [scenarios, setScenarios] = useState<SavedScenario[]>([]);
   const [name, setName] = useState<string>();
   const [available, setAvailable] = useState(true);
@@ -92,7 +94,8 @@ export function SavedScenarios({
           <li key={scenario.id} className={styles.card}>
             <h3>{scenario.name}</h3>
             <p>
-              {t('whatif.date')}：
+              {t('whatif.date')}
+              {p.colon}
               <time dateTime={scenario.draft.simulationDate}>
                 {scenario.draft.simulationDate}
               </time>

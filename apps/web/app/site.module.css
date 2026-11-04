@@ -62,6 +62,9 @@
 .skip:focus {
   top: 10px;
 }
+.body .skip {
+  color: #0b0c0c;
+}
 .header {
   background: #16324f;
   border-bottom: 6px solid #1d70b8;
@@ -83,9 +86,18 @@
   font-size: 1.25rem;
   font-weight: 700;
 }
+.body .header a:hover {
+  color: #fff;
+  text-decoration: underline;
+}
 .header span {
   color: #d9e5ee;
   font-size: 0.95rem;
+}
+.navigation {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 24px;
 }
 .languages {
   display: flex;

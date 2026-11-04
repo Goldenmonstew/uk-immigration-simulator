@@ -22,7 +22,8 @@ import type {
 } from '@uk-immigration/engine';
 import type { TranslationKey } from '../../i18n';
 import { useTranslation } from '../../i18n/locale';
-import { routeNames } from '../../i18n/routes';
+import { punct } from '../../i18n/punctuation';
+import { routeLabel, routeNames } from '../../i18n/routes';
 import {
   activePersonDraft,
   createDraft,
@@ -75,6 +76,7 @@ function Field({
 
 export default function SimulatePage() {
   const { t, locale } = useTranslation();
+  const p = punct(locale);
   const router = useRouter();
   const [draft, dispatch] = useReducer(draftReducer, undefined, createDraft);
   const [ready, setReady] = useState(false);
@@ -348,7 +350,7 @@ export default function SimulatePage() {
                               {Object.entries(routeNames).map(
                                 ([route, name]) => (
                                   <option key={route} value={route}>
-                                    {name[locale]}
+                                    {routeLabel(name, locale)}
                                   </option>
                                 ),
                               )}
@@ -535,7 +537,7 @@ export default function SimulatePage() {
                           >
                             {Object.entries(routeNames).map(([route, name]) => (
                               <option key={route} value={route}>
-                                {name[locale]}
+                                {routeLabel(name, locale)}
                               </option>
                             ))}
                           </select>
@@ -1198,10 +1200,11 @@ export default function SimulatePage() {
                     (date) => dispatch({ type: 'date', date }),
                   )}
                   <p>
-                    {t('date.incomeWindow')}：
+                    {t('date.incomeWindow')}
+                    {p.colon}
                     {visibleIncomeYears(active)
                       .map((row) => row.taxYear)
-                      .join('、')}
+                      .join(p.list)}
                   </p>
                   <button
                     type="button"
