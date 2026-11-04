@@ -1,5 +1,24 @@
 import type { Fixture } from '../../engine/src/types';
 import { esIndividualC } from './es-individual-c-combined-income';
 import { esIndividualD } from './es-individual-d-public-funds';
+import { esP16MaternityBestYears } from './es-p16-maternity-best-years';
+import { esP19IndividualAPublicService } from './es-p19-individual-a-public-service';
+import { esP19IndividualBBritishConnection } from './es-p19-individual-b-british-connection';
+import { esP31IndividualAPartnerArrivesTogether } from './es-p31-individual-a-partner-arrives-together';
+import { esP31IndividualBPartnerArrivesLater } from './es-p31-individual-b-partner-arrives-later';
+import { esP45IndividualACareWorkerEligible } from './es-p45-individual-a-care-worker-eligible';
+import { esP45IndividualBCareWorkerIneligible } from './es-p45-individual-b-care-worker-ineligible';
+import { esP45IndividualCCareWorkerAfterCutoff } from './es-p45-individual-c-care-worker-after-cutoff';
 
-export const fixtures: Fixture[] = [esIndividualC, esIndividualD];
+export const fixtures: Fixture[] = [
+  esIndividualC,
+  esIndividualD,
+  esP16MaternityBestYears,
+  esP19IndividualAPublicService,
+  esP19IndividualBBritishConnection,
+  esP31IndividualAPartnerArrivesTogether,
+  esP31IndividualBPartnerArrivesLater,
+  esP45IndividualACareWorkerEligible,
+  esP45IndividualBCareWorkerIneligible,
+  esP45IndividualCCareWorkerAfterCutoff,
+];
