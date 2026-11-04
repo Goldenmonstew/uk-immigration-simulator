@@ -2,6 +2,8 @@ import type { RuleSetId } from '@uk-immigration/policy-data';
 import type { Rule } from '../types';
 import {
   clEnglish,
+  clFamilyRelationship,
+  clFamilyResidence,
   clGtResidence,
   clHkbnoResidence5Y,
   clKol,
@@ -72,6 +74,8 @@ export const RULES: Record<RuleSetId, Rule[]> = {
     clSwChild,
     clHkbnoResidence5Y,
     clGtResidence,
+    clFamilyResidence,
+    clFamilyRelationship,
     clEnglish,
     clKol,
     clLrResidence10Y,

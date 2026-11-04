@@ -174,5 +174,24 @@ export const currentLaw2026_11 = {
         { srcId: 'SRC-007', locator: 'EM 5.60' },
       ],
     },
+
+    // Appendix Settlement Family Life (10-year partner route), version
+    // 2026-08-03.
+    familyPartnerQualifyingYearsTen: {
+      value: 10,
+      sources: [{ srcId: 'SRC-022', locator: 'SETF 3.1' }],
+    },
+    // B1 before 2027-03-26, B2 from then.
+    familyPartnerSettlementEnglishBefore: {
+      value: 'B1',
+      sources: [{ srcId: 'SRC-022', locator: 'SETF 5.1(a)' }],
+    },
+    familyPartnerSettlementEnglish: {
+      value: { cefrLevel: 'B2', applicationsFrom: '2027-03-26' },
+      sources: [
+        { srcId: 'SRC-022', locator: 'SETF 5.1(b)' },
+        { srcId: 'SRC-007', locator: 'EM 5.60' },
+      ],
+    },
   },
 } satisfies ParameterSet;

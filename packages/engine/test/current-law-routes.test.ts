@@ -2,6 +2,8 @@ import { describe, expect, test } from 'vitest';
 import { evaluate } from '../src/evaluate';
 import {
   clEnglish,
+  clFamilyRelationship,
+  clFamilyResidence,
   clGtResidence,
   clHkbnoResidence5Y,
   clKol,
@@ -241,5 +243,118 @@ describe('Global Talent (SRC-021)', () => {
 
   test('Life in the UK: GT 14.1', () => {
     expect(run(clKol, gt('2023-11-04')).explanation).toContain('GT 14.1');
+  });
+});
+
+describe('family partner, 10-year route (SRC-022)', () => {
+  const partner = (
+    validFrom: string,
+    extra: Partial<ImmigrationEpisode> = {
+      familyPermission: 'PARTNER_TEN_YEAR',
+    },
+    otherPartyStatus:
+      'BRITISH_CITIZEN' | 'SETTLED' | 'OTHER' = 'BRITISH_CITIZEN',
+  ): Partial<PersonTimeline> => ({
+    episodes: [on('FAMILY_PARTNER_OR_PARENT', validFrom, extra)],
+    relationships: [{ type: 'PARTNER', otherPartyStatus }],
+    english: { cefrLevel: 'B1' },
+  });
+
+  test('10 years to the day is likely eligible; a day short projects the date', () => {
+    expect(currentLaw(partner('2016-11-04'), '2026-11-04')).toMatchObject({
+      outcome: 'LIKELY_ELIGIBLE',
+      pathwayYears: 10,
+      earliestDate: '2026-11-04',
+    });
+    const short = run(clFamilyResidence, partner('2016-11-05'), '2026-11-04');
+    expect(short.status).toBe('FAIL');
+    expect(short.explanation).toContain('2026-11-05');
+    expect(currentLaw(partner('2016-11-05'), '2026-11-04')).toMatchObject({
+      outcome: 'LIKELY_NOT_ELIGIBLE',
+      pathwayYears: 10,
+      earliestDate: '2026-11-05',
+    });
+  });
+
+  test('SETF 3.1: private life time counts; Skilled Worker time is named in an assumption (PD-069)', () => {
+    const before = (route: ImmigrationEpisode['route']) => ({
+      ...partner('2021-01-01'),
+      episodes: [
+        on(route, '2016-01-01', { validTo: '2020-12-31' }),
+        on('FAMILY_PARTNER_OR_PARENT', '2021-01-01', {
+          familyPermission: 'PARTNER_TEN_YEAR',
+        }),
+      ],
+    });
+    const privateLife = run(
+      clFamilyResidence,
+      before('FAMILY_AND_PRIVATE_LIFE'),
+      '2026-11-04',
+    );
+    expect(privateLife.explanation).toContain('自 2016-01-01 起');
+    const sw = run(clFamilyResidence, before('SKILLED_WORKER'), '2026-11-04');
+    expect(sw.explanation).toContain('自 2021-01-01 起');
+    expect(sw.assumptions?.join()).toContain('PD-069');
+  });
+
+  test('missing route, or the 5-year route (not yet modelled), is unknown: insufficient information', () => {
+    for (const extra of [
+      {},
+      { familyPermission: 'PARTNER_FIVE_YEAR' as const },
+    ]) {
+      expect(
+        run(clFamilyResidence, partner('2018-11-04', extra), '2026-11-04')
+          .status,
+      ).toBe('UNKNOWN');
+      // Long Residence is not met either.
+      const a = currentLaw(partner('2018-11-04', extra), '2026-11-04');
+      expect(a.outcome).toBe('INSUFFICIENT_INFORMATION');
+      expect(a.pathwayYears).toBeUndefined();
+    }
+  });
+
+  test('the parent route and dependants are out of scope', () => {
+    const parent = run(
+      clScope,
+      partner('2020-11-04', { familyPermission: 'PARENT' }),
+    );
+    expect(parent.status).toBe('UNKNOWN');
+    expect(parent.explanation).toContain('父母路线未建模');
+    expect(
+      run(clScope, partner('2020-11-04', { role: 'DEPENDANT' })).status,
+    ).toBe('UNKNOWN');
+  });
+
+  test('SETF 7.1: British citizen or settled partner passes; OTHER or none is unknown', () => {
+    expect(run(clFamilyRelationship, partner('2016-11-04')).status).toBe(
+      'PASS',
+    );
+    expect(
+      run(clFamilyRelationship, partner('2016-11-04', undefined, 'SETTLED'))
+        .explanation,
+    ).toContain('SETF 7.1(b)');
+    expect(
+      run(clFamilyRelationship, partner('2016-11-04', undefined, 'OTHER'))
+        .status,
+    ).toBe('UNKNOWN');
+    expect(
+      run(clFamilyRelationship, { ...partner('2016-11-04'), relationships: [] })
+        .status,
+    ).toBe('UNKNOWN');
+    // The same 10 years also meet Long Residence, which has no partner
+    // requirement.
+    expect(
+      currentLaw(partner('2016-11-04', undefined, 'OTHER'), '2026-11-04'),
+    ).toMatchObject({ outcome: 'LIKELY_ELIGIBLE', pathwayYears: 10 });
+  });
+
+  test('English: B1 before 2027-03-26, B2 from then (SETF 5.1); Life in the UK SETF 6.1', () => {
+    const before = run(clEnglish, partner('2016-11-04'), '2027-03-25');
+    expect(before.status).toBe('PASS');
+    expect(before.explanation).toContain('SETF 5.1(a)');
+    const after = run(clEnglish, partner('2016-11-04'), '2027-03-26');
+    expect(after.status).toBe('FAIL');
+    expect(after.explanation).toContain('SETF 5.1(b)');
+    expect(run(clKol, partner('2016-11-04')).explanation).toContain('SETF 6.1');
   });
 });

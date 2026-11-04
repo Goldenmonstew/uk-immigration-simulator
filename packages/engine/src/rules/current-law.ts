@@ -28,7 +28,8 @@ import type {
 
 // Current Immigration Rules, modelled for Skilled Worker settlement (SRC-004),
 // Long Residence (SRC-005) and the main applicants of Hong Kong BN(O)
-// (SRC-020) and Global Talent (SRC-021).
+// (SRC-020) and Global Talent (SRC-021), and the 10-year family partner route
+// (SRC-022).
 
 const RULE_SET = 'current-law-2026-11';
 
@@ -55,8 +56,28 @@ export const onHongKongBno = (timeline: PersonTimeline, date: IsoDate) =>
 export const onGlobalTalent = (timeline: PersonTimeline, date: IsoDate) =>
   onMain(timeline, date, 'GLOBAL_TALENT');
 
+/** Appendix FM partner on the date (any kind but PARENT, contracts §12.8). */
+export function onFamilyPartner(timeline: PersonTimeline, date: IsoDate) {
+  return (
+    onMain(timeline, date, 'FAMILY_PARTNER_OR_PARENT') &&
+    episodeOn(timeline, date)!.familyPermission !== 'PARENT'
+  );
+}
+
+/** Appendix FM partner on the 10-year route on the date. */
+export const onFamilyPartnerTenYear = (
+  timeline: PersonTimeline,
+  date: IsoDate,
+) =>
+  onFamilyPartner(timeline, date) &&
+  episodeOn(timeline, date)!.familyPermission === 'PARTNER_TEN_YEAR';
+
 // Routes modelled for main applicants only: their dependants are out of scope.
-const MAIN_ONLY_ROUTES: Route[] = ['HONG_KONG_BNO', 'GLOBAL_TALENT'];
+const MAIN_ONLY_ROUTES: Route[] = [
+  'HONG_KONG_BNO',
+  'GLOBAL_TALENT',
+  'FAMILY_PARTNER_OR_PARENT',
+];
 
 // A Skilled Worker's dependant: the run of such permissions counts towards
 // settlement as a dependent partner (SW 42.1).
@@ -100,6 +121,7 @@ export const clScope = defineRule(
       { srcId: 'SRC-005', locator: 'LR 11.1' },
       { srcId: 'SRC-020', locator: 'HK 62.1' },
       { srcId: 'SRC-021', locator: 'GT 11.1' },
+      { srcId: 'SRC-022', locator: 'SETF 1.3' },
     ],
     pendingDetails: [],
   },
@@ -122,6 +144,15 @@ export const clScope = defineRule(
         explanation: L(
           '当前持 Global Talent 主申请人许可，按 Appendix Global Talent 与 Appendix Long Residence 评估。',
           'Currently holds Global Talent permission as the main applicant; assessed under Appendix Global Talent and Appendix Long Residence.',
+        ),
+      };
+    }
+    if (onFamilyPartner(timeline, simulationDate)) {
+      return {
+        status: 'PASS',
+        explanation: L(
+          '当前持 Appendix FM 的伴侣许可，按伴侣的定居要求与 Appendix Long Residence 评估。',
+          'Currently holds permission as a partner under Appendix FM; assessed under the partner settlement requirements and Appendix Long Residence.',
         ),
       };
     }
@@ -165,6 +196,18 @@ export const clScope = defineRule(
     }
     const current = episodeOn(timeline, simulationDate);
     if (
+      current?.route === 'FAMILY_PARTNER_OR_PARENT' &&
+      current.role === 'MAIN'
+    ) {
+      return {
+        status: 'UNKNOWN',
+        explanation: L(
+          '当前持 Appendix FM 的 parent 许可；现行法律栏只建模伴侣，父母路线未建模，也不满足 Long Residence 的 10 年。',
+          'Currently holds permission as a parent under Appendix FM; the current rules are modelled only for partners, not the parent route, and the 10 years for Long Residence are not met.',
+        ),
+      };
+    }
+    if (
       current?.role === 'DEPENDANT' &&
       MAIN_ONLY_ROUTES.includes(current.route)
     ) {
@@ -188,8 +231,8 @@ export const clScope = defineRule(
               'Currently holds Skilled Worker permission as a dependant; not provided whether this is as the principal applicant’s partner or child.',
             )
         : L(
-            '现行规则只建模了 Skilled Worker（主申请人及其 dependent partner / child）、Hong Kong BN(O) 与 Global Talent 主申请人、Long Residence；当前路线不在其中，也不满足 Long Residence 的 10 年，无法判断其他路线的定居条件。',
-            'The current rules are modelled only for Skilled Worker (main applicants and their dependent partners / children), Hong Kong BN(O) and Global Talent main applicants, and Long Residence; the current route is none of these, and the 10 years for Long Residence are not met, so the settlement requirements of other routes cannot be assessed.',
+            '现行规则只建模了 Skilled Worker（主申请人及其 dependent partner / child）、Hong Kong BN(O) 与 Global Talent 主申请人、Appendix FM 伴侣（10 年路线）、Long Residence；当前路线不在其中，也不满足 Long Residence 的 10 年，无法判断其他路线的定居条件。',
+            'The current rules are modelled only for Skilled Worker (main applicants and their dependent partners / children), Hong Kong BN(O) and Global Talent main applicants, Appendix FM partners (10-year route), and Long Residence; the current route is none of these, and the 10 years for Long Residence are not met, so the settlement requirements of other routes cannot be assessed.',
           );
     return { status: 'UNKNOWN', explanation };
   },
@@ -512,6 +555,183 @@ export const clGtResidence = defineRule(
           ),
           assumptions,
         };
+  },
+);
+
+// SETF 3.1(a)–(d): Appendix FM partner, parent or child permission and the
+// private life route, in any combination. Leave Outside the Rules on Article 8
+// grounds (SETF 3.1(e)) cannot be told apart from other such leave.
+const countsForFamilyTenYear = (e: ImmigrationEpisode) =>
+  e.route === 'FAMILY_PARTNER_OR_PARENT' ||
+  e.route === 'FAMILY_AND_PRIVATE_LIFE';
+
+/**
+ * Start of the continuous SETF 3.1 period ending on the simulation date, while
+ * an Appendix FM partner on the 10-year route; `before` is the adjoining
+ * earlier permission that does not count, if any (SETF 3.2, PD-069).
+ */
+export function familyTenYearStart({
+  timeline,
+  simulationDate,
+}: RuleContext): { start: IsoDate; before?: ImmigrationEpisode } | undefined {
+  if (!onFamilyPartnerTenYear(timeline, simulationDate)) return undefined;
+  const { episodes, stoppedAt } = continuousRun(
+    timeline,
+    simulationDate,
+    countsForFamilyTenYear,
+  );
+  return {
+    start: restartAfterAbsences(
+      episodes[0].validFrom,
+      simulationDate,
+      timeline.absences,
+      CR_3_1,
+    ),
+    before: stoppedAt,
+  };
+}
+
+export const clFamilyResidence = defineRule(
+  {
+    id: 'CL-FAMILY-RESIDENCE',
+    ruleSetId: RULE_SET,
+    title: '家庭伴侣路线的连续居留',
+    titleEn: 'Continuous residence on the family partner route',
+    sources: [
+      { srcId: 'SRC-022', locator: 'SETF 3.1' },
+      { srcId: 'SRC-022', locator: 'SETF 3.2' },
+      { srcId: 'SRC-022', locator: 'SETF 4.1' },
+      { srcId: 'SRC-008', locator: 'CR 3.1' },
+    ],
+    pendingDetails: ['PD-069'],
+  },
+  (ctx) => {
+    const L = textFor(ctx);
+    const { timeline, simulationDate } = ctx;
+    if (!onFamilyPartner(timeline, simulationDate)) {
+      return {
+        status: 'FAIL',
+        explanation: L(
+          '当前不是 Appendix FM 的伴侣许可。',
+          'Current permission is not as a partner under Appendix FM.',
+        ),
+      };
+    }
+    const permission = episodeOn(timeline, simulationDate)!.familyPermission;
+    if (permission === 'PARTNER_FIVE_YEAR') {
+      return {
+        status: 'UNKNOWN',
+        explanation: L(
+          '5 年伴侣路线（Appendix FM E-ILRP）尚未建模，无法判断。',
+          'The 5-year partner route (Appendix FM E-ILRP) is not modelled yet, so this cannot be assessed.',
+        ),
+      };
+    }
+    const run = familyTenYearStart(ctx);
+    if (!run) {
+      return {
+        status: 'UNKNOWN',
+        explanation: L(
+          '未填写伴侣许可是 5 年路线还是 10 年路线：5 年路线按 Appendix FM，10 年路线按 Appendix Settlement Family Life（SETF 3.1）。',
+          'Not provided whether the partner permission is on the 5-year or the 10-year route: the 5-year route follows Appendix FM, the 10-year route Appendix Settlement Family Life (SETF 3.1).',
+        ),
+      };
+    }
+    const years = cl.values.familyPartnerQualifyingYearsTen.value;
+    const { start, before } = run;
+    const rn = (r: Route) => nameIn(L, routeNames[r]);
+    const assumptions = [
+      L(
+        `连续期合并 SETF 3.1 列出的${rn('FAMILY_PARTNER_OR_PARENT')}与${rn('FAMILY_AND_PRIVATE_LIFE')}许可；各段按与当前许可同属 10 年路线计算。`,
+        `The continuous period combines the ${rn('FAMILY_PARTNER_OR_PARENT')} and ${rn('FAMILY_AND_PRIVATE_LIFE')} permissions listed in SETF 3.1; each period is taken to be on the 10-year route like the current permission.`,
+      ),
+      ...(before?.route === 'LEAVE_OUTSIDE_THE_RULES'
+        ? [
+            L(
+              `紧接其前的${rn(before.route)}若是基于 Article 8 的伴侣、父母、子女或私人生活许可，也可计入（SETF 3.1(e)），本工具无法区分，未计入。`,
+              `The ${rn(before.route)} just before it also counts if it was granted on Article 8 grounds as a partner, parent or child or for private life (SETF 3.1(e)); this tool cannot tell and does not count it.`,
+            ),
+          ]
+        : before
+          ? [
+              L(
+                `SETF 3.2 在满足条件时（未非法入境、以伴侣身份持 Appendix FM 许可至少 1 年）也计入其他可定居路线的时间；本工具未计入紧接其前的${rn(before.route)}许可，实际日期可能更早（PD-069）。`,
+                `SETF 3.2 also counts time on other routes that can lead to settlement if conditions are met (no illegal entry, and at least one year as a partner under Appendix FM); this tool does not count the ${rn(before.route)} permission just before it, so the actual date may be earlier (PD-069).`,
+              ),
+            ]
+          : []),
+      ...(timeline.absences.length > 0 ? [absenceAssumption(L)] : []),
+    ];
+    const due = addYears(start, years);
+    return due <= simulationDate
+      ? {
+          status: 'PASS',
+          explanation: L(
+            `10 年伴侣路线：自 ${start} 起连续持可计入的许可（SETF 3.1），已满 ${years} 年。`,
+            `10-year partner route: continuous qualifying permission (SETF 3.1) since ${start}: ${years} years completed.`,
+          ),
+          assumptions,
+        }
+      : {
+          status: 'FAIL',
+          explanation: L(
+            `10 年伴侣路线：自 ${start} 起连续持可计入的许可（SETF 3.1），截至 ${simulationDate} 满 ${fullYears(start, simulationDate)} 年；${due} 满 ${years} 年。`,
+            `10-year partner route: continuous qualifying permission (SETF 3.1) since ${start}: ${fullYearsEn(start, simulationDate)} by ${simulationDate}; ${years} years are completed on ${due}.`,
+          ),
+          assumptions,
+        };
+  },
+);
+
+export const clFamilyRelationship = defineRule(
+  {
+    id: 'CL-FAMILY-RELATIONSHIP',
+    ruleSetId: RULE_SET,
+    title: '伴侣为 British citizen 或已定居',
+    titleEn: 'Partner is a British citizen or settled',
+    sources: [
+      { srcId: 'SRC-022', locator: 'SETF 7.1' },
+      { srcId: 'SRC-022', locator: 'SETF 7.2' },
+      { srcId: 'SRC-022', locator: 'SETF 7.3' },
+    ],
+    pendingDetails: [],
+  },
+  (ctx) => {
+    const L = textFor(ctx);
+    const partner = ctx.timeline.relationships.find(
+      (r) => r.type === 'PARTNER',
+    );
+    if (!partner) {
+      return {
+        status: 'UNKNOWN',
+        explanation: L(
+          '未填写伴侣信息；SETF 7.1 要求伴侣为在英国的 British citizen、已定居，或与申请人同时申请定居。',
+          'Partner details not provided; SETF 7.1 requires the partner to be a British citizen living in the UK, settled in the UK, or applying for settlement at the same time.',
+        ),
+      };
+    }
+    if (partner.otherPartyStatus === 'OTHER') {
+      return {
+        status: 'UNKNOWN',
+        explanation: L(
+          '伴侣既不是 British citizen 也未定居；只有伴侣与申请人同时申请定居时才满足 SETF 7.1(c)，本工具无法判断。',
+          'The partner is neither a British citizen nor settled; SETF 7.1(c) is met only if the partner is applying for settlement at the same time, which this tool cannot tell.',
+        ),
+      };
+    }
+    return {
+      status: 'PASS',
+      explanation: L(
+        `伴侣${partner.otherPartyStatus === 'BRITISH_CITIZEN' ? '为 British citizen（SETF 7.1(a)）' : '已在英国定居（SETF 7.1(b)）'}。`,
+        `The partner is ${partner.otherPartyStatus === 'BRITISH_CITIZEN' ? 'a British citizen (SETF 7.1(a))' : 'settled in the UK (SETF 7.1(b))'}.`,
+      ),
+      assumptions: [
+        L(
+          '按关系真实且持续（SETF 7.2、Appendix Relationship with Partner）、已以与当前伴侣的关系持许可至少 1 年（SETF 7.3）处理，本工具未核对。',
+          'The relationship is taken as genuine and subsisting (SETF 7.2, Appendix Relationship with Partner), with permission based on it held for at least one year (SETF 7.3); this tool does not check these.',
+        ),
+      ],
+    };
   },
 );
 
@@ -1231,6 +1451,7 @@ export const clEnglish = defineRule(
       { srcId: 'SRC-005', locator: 'LR 13.1' },
       { srcId: 'SRC-020', locator: 'HK 60.1' },
       { srcId: 'SRC-021', locator: 'GT 13.1' },
+      { srcId: 'SRC-022', locator: 'SETF 5.1' },
       { srcId: 'SRC-007', locator: 'EM 5.60' },
       { srcId: 'SRC-014', locator: 'EL 1.1' },
     ],
@@ -1249,6 +1470,7 @@ export const clEnglish = defineRule(
     }
     const hk = onHongKongBno(timeline, simulationDate);
     const gt = onGlobalTalent(timeline, simulationDate);
+    const family = onFamilyPartnerTenYear(timeline, simulationDate);
     const sw = onSkilledWorker(timeline, simulationDate);
     // SW 44.1 covers a dependent partner and a dependent child.
     const partner =
@@ -1256,9 +1478,11 @@ export const clEnglish = defineRule(
       onSkilledWorkerChild(timeline, simulationDate);
     const b2 = gt
       ? cl.values.globalTalentSettlementEnglish.value
-      : sw || partner
-        ? cl.values.skilledWorkerSettlementEnglish.value
-        : cl.values.longResidenceSettlementEnglish.value;
+      : family
+        ? cl.values.familyPartnerSettlementEnglish.value
+        : sw || partner
+          ? cl.values.skilledWorkerSettlementEnglish.value
+          : cl.values.longResidenceSettlementEnglish.value;
     const fromB2 = simulationDate >= b2.applicationsFrom;
     const required = hk
       ? cl.values.hongKongBnoSettlementEnglish.value
@@ -1268,9 +1492,11 @@ export const clEnglish = defineRule(
           ? undefined
           : gt
             ? cl.values.globalTalentSettlementEnglishBefore.value
-            : partner
-              ? cl.values.skilledWorkerDependantSettlementEnglishBefore.value
-              : cl.values.longResidenceSettlementEnglishBefore.value;
+            : family
+              ? cl.values.familyPartnerSettlementEnglishBefore.value
+              : partner
+                ? cl.values.skilledWorkerDependantSettlementEnglishBefore.value
+                : cl.values.longResidenceSettlementEnglishBefore.value;
     // Which paragraph sets the level, for the new routes' explanations.
     const basis = hk
       ? L(
@@ -1282,7 +1508,12 @@ export const clEnglish = defineRule(
             `（Appendix Global Talent GT 13.1(${fromB2 ? 'b' : 'a'})，${b2.applicationsFrom} ${fromB2 ? '起' : '前'}的申请）`,
             ` (Appendix Global Talent GT 13.1(${fromB2 ? 'b' : 'a'}), applications ${fromB2 ? 'from' : 'before'} ${b2.applicationsFrom})`,
           )
-        : '';
+        : family
+          ? L(
+              `（Appendix Settlement Family Life SETF 5.1(${fromB2 ? 'b' : 'a'})，${b2.applicationsFrom} ${fromB2 ? '起' : '前'}的申请）`,
+              ` (Appendix Settlement Family Life SETF 5.1(${fromB2 ? 'b' : 'a'}), applications ${fromB2 ? 'from' : 'before'} ${b2.applicationsFrom})`,
+            )
+          : '';
     if (!required) {
       return {
         status: 'PASS',
@@ -1347,6 +1578,7 @@ export const clKol = defineRule(
       { srcId: 'SRC-005', locator: 'LR 14.1' },
       { srcId: 'SRC-020', locator: 'HK 61.1' },
       { srcId: 'SRC-021', locator: 'GT 14.1' },
+      { srcId: 'SRC-022', locator: 'SETF 6.1' },
       { srcId: 'SRC-015', locator: 'KOL 1.1' },
       { srcId: 'SRC-015', locator: 'KOL 2.1' },
     ],
@@ -1367,7 +1599,9 @@ export const clKol = defineRule(
       ? L('（HK 61.1）', ' (HK 61.1)')
       : onGlobalTalent(timeline, simulationDate)
         ? L('（GT 14.1）', ' (GT 14.1)')
-        : '';
+        : onFamilyPartnerTenYear(timeline, simulationDate)
+          ? L('（SETF 6.1）', ' (SETF 6.1)')
+          : '';
     const kol = timeline.lifeInTheUk;
     if (!kol) {
       return {
