@@ -1,6 +1,6 @@
 # Phase 3 规划（2026-11-04）
 
-站点已上线（https://wanruncong.uk，GitHub push main 自动部署）。Phase 3 的主题是**上线后的可信度与完善**：把 Phase 2 留下的数据缺口补上，把面向用户的文案做到可以交给 IAA 顾问复核，把结果页做成能保存、能打印、能装到手机上的工具，再决定难民路径与 App 的去留。候选来源：`docs/tasks/phase-2-plan.md` §6、`PROGRESS.md` 当前状态、各任务报告 §4。
+站点已上线（https://wanruncong.uk，GitHub push main 自动部署）。Phase 3 的主题是**上线后的可信度与完善**：把 Phase 2 留下的数据缺口补上，把面向用户的中英文文案整理成可以通读校对的材料，把结果页做成能保存、能打印、能装到手机上的工具，再决定难民路径与 App 的去留。候选来源：`docs/tasks/phase-2-plan.md` §6、`PROGRESS.md` 当前状态、各任务报告 §4。
 
 原则不变：一个 package 一个 writer；规则语义只由 Opus 改；契约改动先 commit 再评审；每项政策数字带 `SRC-xxx` 定位；不过度工程化；合并后自动 push 触发 CI 与部署。
 
@@ -11,7 +11,7 @@
 | 3.1 | Immigration Salary List 登记与提取；Table 3a 改脚本提取；来源快照核对脚本 | sol | `policy-sources/`、`docs/SOURCES.md`、`packages/policy-data`（scripts、data、test） | 无 | 1 |
 | 3.2 | 引擎可读名、ISL 按职业表推导、文案收尾、给 IAA 复核的全文案导出 | Opus | `packages/engine`、`packages/policy-data/src/data/*`（显示名表）、`docs/review/` | 3.1 的 ISL 表（可先按契约名写，合并后接上） | 1 |
 | 3.3 | 结果页打印 / 保存 PDF、本地多情景保存、PWA 可安装、细节修正 | astra | `apps/web` | 无 | 1 |
-| 3.4 | 难民路径（SRC-001 Ch.7、Table 2） | Opus | `packages/engine`、`packages/policy-data`、`docs/pending-details.md` | 3.2 合并后；契约先行；**待用户决定是否做** | 2 |
+| 3.4 | 难民路径（SRC-001 Ch.7、Table 2） | Opus | `packages/engine`、`packages/policy-data`、`docs/pending-details.md` | 3.2 合并后；契约先行 | 2 |
 | 3.5 | 难民路径的问卷与结果页 | astra | `apps/web` | 3.4 | 2 |
 
 Wave 1 三个任务互不碰同一 package。3.2 需要 3.1 的 `immigrationSalaryListOccupations` 表：Opus 先按 contracts 约定的导出名写规则与测试（用临时的两三条 SOC 桩数据不进仓库），3.1 合并后再接真实表；或者等 3.1 合并（预计半天内）再派 3.2，Fable 按进度定。
@@ -31,7 +31,7 @@ Wave 1 三个任务互不碰同一 package。3.2 需要 3.1 的 `immigrationSala
 - **显示名表**：`policy-data/src/data/display-names.ts`，`Route`、`RouteGroup`、`ImmigrationBreach['type']`、`DecisionOutcome` 的中英文显示名（路线名可沿用 web 的 `routes.ts` 文字）。规则解释里不再直接拼枚举码（`SKILLED_WORKER`、`CORE_PERMISSION / HIGH_TALENT`、`OVERSTAYING` 等），改为显示名；中文快照会变，按新文案更新快照并在报告里列出改动的句子。
 - **ISL 按职业推导**：`CL-SW-SALARY` / `CL-SW-GOING-RATE` 的 ISL 判断改为：`immigrationSalaryList` 已申报（true / false）→ 以申报为准；未申报 → `socCode` 在 `immigrationSalaryListOccupations` 中即视为在清单上，假设里说明"按职业代码推导，清单的岗位限制未核对"。
 - **文案收尾**：英文 "1 full years" 单复数；`policy-changelog.ts` 的 `locator: '版本 2026-10-08'` 改为不含中文的写法（如 `version 2026-10-08`，SOURCES.md 同步）；PD-040 的"对引擎的影响"按 SW 4.2(b)(ii) 更新并标"部分关闭"。
-- **复核导出**：`packages/engine/scripts/export-wording.mjs`（或 vitest 外的 tsx 脚本）把全部面向用户文案——每条规则的 title / titleEn、各分支 explanation、assumptions、短路 message、聚合假设——按中英文各一份导出到 `docs/review/wording-2026-11.md`，用 bilingual 测试里的样例上下文驱动，按规则分节、注明来源定位。这是给 IAA 顾问复核用的材料，Fable 先读一遍。
+- **文案导出**：把全部面向用户文案——每条规则的 title / titleEn、各分支 explanation、assumptions、短路 message、聚合假设——按中英文各一份导出到 `docs/review/wording-2026-11.md`，用 bilingual 测试里的样例上下文驱动，按规则分节、注明来源定位。用途是用户通读校对，Fable 先读一遍。
 - 验收（Fable）：gate 全过；抽读 10 条改名后的解释；ISL 推导的 positive / negative（申报 false 覆盖表内职业）用例；导出文件完整可读。
 
 ### 3.3 打印、多情景、PWA 与细节（astra）
@@ -40,12 +40,11 @@ Wave 1 三个任务互不碰同一 package。3.2 需要 3.1 的 `immigrationSala
 - **本地多情景**：结果页"保存此情景"（命名），首页 / 结果页列出已保存情景（名称、模拟日期、两栏结论摘要），可载入、删除；全部存 `localStorage`，不新增网络请求；分享链接照常。
 - **PWA 可安装**：`manifest.webmanifest`（名称、图标、`display: standalone`、主题色）+ 最小 service worker（预缓存静态导出的页面与 `_next/static`，网络优先、离线回退缓存）；iOS Safari "添加到主屏幕"可用。不做推送、不做后台同步。
 - **细节**：问卷"修改输入"回到最后一步而不是第 1 步；英文模式下路线与分组名只显示英文（`routes.ts` 拆成双语字段）；首页与结果页加 Open Graph / description 元数据（静态文案，不含用户输入）。
-- 可选（用户决定）：Cloudflare Web Analytics 的 beacon 脚本（无 cookie；需要用户在 Cloudflare 开启并提供 token，token 是公开的站点标识，可直接提交）。
 - 验收（Fable）：gate 全过；浏览器：打印预览单列且折叠已展开；保存两个情景、载入其一、删除另一；Lighthouse PWA 可安装项通过；断网后首页与结果页仍可打开；375px。
 
-### 3.4 难民路径（Opus，待用户决定）
+### 3.4 难民路径（Opus，Wave 2）
 
-现在保护类路线一律短路为"需要受监管复核"。SRC-001 Ch.7 与 p47 Table 2 的规则相对清楚：Safe and Legal Routes 5 年（UKRS 难民 A2 英语，不要求 5 年未用 public funds）；Protection Work and Study 10 年（持续工作 / 教育 / 培训，工作者 3 年达 £12,571，B2，Life in the UK，asylum support 还款，无非法入境）；Core Protection 20 年（B2、Life in the UK、其他强制要求、还款、无非法入境）。p40 有官方案例。需要新契约字段（持续活动、asylum support 还款状态等），契约先行。做的话结果页仍保留"寻求受监管建议"的强提示；不做则维持短路。
+现在保护类路线一律短路为"需要受监管复核"。SRC-001 Ch.7 与 p47 Table 2 的规则相对清楚：Safe and Legal Routes 5 年（UKRS 难民 A2 英语，不要求 5 年未用 public funds）；Protection Work and Study 10 年（持续工作 / 教育 / 培训，工作者 3 年达 £12,571，B2，Life in the UK，asylum support 还款，无非法入境）；Core Protection 20 年（B2、Life in the UK、其他强制要求、还款、无非法入境）。p40 有官方案例。需要新契约字段（持续活动、asylum support 还款状态等），契约先行。结果页仍保留"寻求受监管建议"的强提示。
 
 ### 3.5 难民路径的问卷与结果页（astra，随 3.4）
 
@@ -57,8 +56,8 @@ Wave 1 三个任务互不碰同一 package。3.2 需要 3.1 的 `immigrationSala
 
 同 Phase 2：gate 全过；新规则三组用例；来源定位齐全；UI 改动 Fable 浏览器走查；一个逻辑改动一次 commit；合并后 push main，GitHub Actions 自动部署，Fable 在 `*.pages.dev` 复核线上结果。
 
-## 4. 待用户决定
+## 4. 用户决定（2026-11-04）
 
-1. **是否做 3.4 / 3.5 难民路径。** 价值：覆盖一个明确有需求的人群；风险：敏感人群、细节多，需要更强的"寻求受监管建议"提示。默认不做，先完成 Wave 1。
-2. **Web Analytics。** 要不要接 Cloudflare Web Analytics（无 cookie）；要就在 Cloudflare 开启后把 token 给我。默认不接。
-3. **IAA 复核。** 3.2 的文案导出做好后，由你交给顾问；顾问的修改意见回来后由 Opus 改文案。
+1. **难民路径做**：3.4 / 3.5 列入 Wave 2，3.2 合并后派发。
+2. **Web Analytics 接**：用 Cloudflare Pages 项目设置里的 Web Analytics 自动注入（无 cookie、不改代码），由 Fable 在后台开启；不在 3.3 里写 beacon 脚本。
+3. **IAA 复核不做**：用户此前已表明不需要；3.2 的全文案导出保留，用途改为用户自己通读校对中英文文案。
