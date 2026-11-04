@@ -3,6 +3,7 @@ import {
   goingRates,
   healthAndCareAsheOccupations,
   nationalPayScaleOccupations,
+  routeNames,
 } from '@uk-immigration/policy-data';
 import { addYears, fullYears } from '../dates';
 import {
@@ -11,7 +12,7 @@ import {
   restartAfterAbsences,
   settledBy,
 } from '../residence';
-import { defineRule, textFor } from '../rule';
+import { defineRule, nameIn, textFor } from '../rule';
 import type { Lang } from '../rule';
 import { gbp } from './es-contribution';
 import { meetsCefr } from './es-requirements';
@@ -1153,10 +1154,11 @@ export const clLrResidence10Y = defineRule(
     const L = textFor(ctx);
     const years = cl.values.longResidenceQualifyingYears.value;
     const start = longResidenceStart(ctx);
+    const rn = (r: Route) => nameIn(L, routeNames[r]);
     const assumptions = [
       L(
-        `连续合法居留计入 Student、Graduate 等临时路线，不计 ${LR_EXCLUDED.join('、')}（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。`,
-        `Continuous lawful residence includes temporary routes such as Student and Graduate, but not ${LR_EXCLUDED.join(', ')} (LR 11.1(a)); periods that do not count under LR 11.2 (immigration bail and similar) and the 12-month requirement in LR 11.3 are not modelled.`,
+        `连续合法居留计入${rn('STUDENT')}、${rn('GRADUATE')}等临时路线，不计${LR_EXCLUDED.map(rn).join('、')}（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。`,
+        `Continuous lawful residence includes temporary routes such as ${rn('STUDENT')} and ${rn('GRADUATE')}, but not ${LR_EXCLUDED.map(rn).join(', ')} (LR 11.1(a)); periods that do not count under LR 11.2 (immigration bail and similar) and the 12-month requirement in LR 11.3 are not modelled.`,
       ),
       ...(ctx.timeline.absences.length > 0
         ? [

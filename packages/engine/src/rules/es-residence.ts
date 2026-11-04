@@ -1,12 +1,14 @@
 import {
   currentLaw2026_11 as cl,
   ROUTE_GROUPS,
+  routeGroupNames,
+  routeNames,
 } from '@uk-immigration/policy-data';
 import type { Route, RouteGroup } from '@uk-immigration/policy-data';
 import { fullYears } from '../dates';
 import { continuousRun, episodeOn, restartAfterAbsences } from '../residence';
 import type { Run } from '../residence';
-import { defineRule, textFor } from '../rule';
+import { defineRule, nameIn, textFor } from '../rule';
 import type { Lang } from '../rule';
 import type { IsoDate, PersonTimeline, RuleContext } from '../types';
 
@@ -47,12 +49,13 @@ export const esRouteGroup = defineRule(
     }
     const { route } = episode;
     const groups = groupsOf(route);
+    const rn = nameIn(L, routeNames[route]);
     if (groups.includes('OUTSIDE_FRAMEWORK')) {
       return {
         status: 'UNKNOWN',
         explanation: L(
-          `当前路线 ${route} 不在 Earned Settlement 框架内，继续按该群体现有的定居安排；但强化的犯罪记录与 B2 英语要求仍适用，除非有现有豁免或保障。`,
-          `The current route ${route} is outside the Earned Settlement framework and keeps the existing settlement arrangements for that group. The strengthened criminality and B2 English requirements still apply, unless an existing exemption or protection applies.`,
+          `当前路线"${rn}"不在 Earned Settlement 框架内，继续按该群体现有的定居安排；但强化的犯罪记录与 B2 英语要求仍适用，除非有现有豁免或保障。`,
+          `The current route, ${rn}, is outside the Earned Settlement framework and keeps the existing settlement arrangements for that group. The strengthened criminality and B2 English requirements still apply, unless an existing exemption or protection applies.`,
         ),
       };
     }
@@ -60,8 +63,8 @@ export const esRouteGroup = defineRule(
       return {
         status: 'UNKNOWN',
         explanation: L(
-          `当前路线 ${route} 属保护类路线，定居路径另有规定（SRC-001 Chapter 7），本工具尚未建模。`,
-          `The current route ${route} is a protection route with its own settlement pathway (SRC-001 Chapter 7), which this tool does not yet model.`,
+          `当前路线"${rn}"属保护类路线，定居路径另有规定（SRC-001 Chapter 7），本工具尚未建模。`,
+          `The current route, ${rn}, is a protection route with its own settlement pathway (SRC-001 Chapter 7), which this tool does not yet model.`,
         ),
       };
     }
@@ -89,17 +92,20 @@ export const esRouteGroup = defineRule(
       return {
         status: 'FAIL',
         explanation: L(
-          `当前路线 ${route} 是临时路线，不计入定居；转入计入的路线后才开始累计。`,
-          `The current route ${route} is a temporary route and does not count towards settlement; time starts to count only after switching to a counting route.`,
+          `当前路线"${rn}"是临时路线，不计入定居；转入计入的路线后才开始累计。`,
+          `The current route, ${rn}, is a temporary route and does not count towards settlement; time starts to count only after switching to a counting route.`,
         ),
       };
     }
+    const groupNames = groups
+      .map((g) => nameIn(L, routeGroupNames[g]))
+      .join(' / ');
     return {
       status: 'PASS',
       explanation:
         L(
-          `当前路线 ${route} 属 ${groups.join(' / ')}，计入定居。`,
-          `The current route ${route} is in ${groups.join(' / ')} and counts towards settlement.`,
+          `当前路线"${rn}"属${groupNames}分组，计入定居。`,
+          `The current route, ${rn}, is in the ${groupNames} group${groups.length > 1 ? 's' : ''} and counts towards settlement.`,
         ) +
         (groups.includes('FAMILY_AND_PRIVATE_LIFE')
           ? L(
@@ -192,11 +198,12 @@ function whyRunStarts(
       : undefined;
   }
   const { route } = stoppedAt;
+  const rn = nameIn(L, routeNames[route]);
   if (kindOf(route)) {
     return [
       L(
-        `此前的 ${route} 与当前路线属不同类型（工作 / 家庭、人权、保护），时间不能合并，自 ${first.validFrom} 转入起重新起算。`,
-        `The earlier ${route} is a different kind of route from the current one (work / family, human rights, protection); the time cannot be combined, and the count restarts from the switch on ${first.validFrom}.`,
+        `此前的"${rn}"路线与当前路线属不同类型（工作 / 家庭、人权、保护），时间不能合并，自 ${first.validFrom} 转入起重新起算。`,
+        `The earlier ${rn} permission is a different kind of route from the current one (work / family, human rights, protection); the time cannot be combined, and the count restarts from the switch on ${first.validFrom}.`,
       ),
       false,
     ];
@@ -204,16 +211,16 @@ function whyRunStarts(
   if (route === 'LEAVE_OUTSIDE_THE_RULES' || groupsOf(route).length === 0) {
     return [
       L(
-        `此前的 ${route} 时间是否计入未定，按不计入处理（PD-022 / PD-023）；若将来计入，日期可能提前。`,
-        `Whether the earlier time on ${route} counts is not settled; it is treated as not counting (PD-022 / PD-023). If it later counts, the date may come earlier.`,
+        `此前在"${rn}"路线的时间是否计入未定，按不计入处理（PD-022 / PD-023）；若将来计入，日期可能提前。`,
+        `Whether the earlier time on ${rn} counts is not settled; it is treated as not counting (PD-022 / PD-023). If it later counts, the date may come earlier.`,
       ),
       true,
     ];
   }
   return [
     L(
-      `此前的 ${route} 时间不计入定居；本工具假设不计入路线的时间同时打断连续居留，而不只是从合格期中扣除（PD-053）。`,
-      `The earlier time on ${route} does not count towards settlement; this tool assumes that time on a non-counting route also breaks continuous residence, rather than only being deducted from the qualifying period (PD-053).`,
+      `此前在"${rn}"路线的时间不计入定居；本工具假设不计入路线的时间同时打断连续居留，而不只是从合格期中扣除（PD-053）。`,
+      `The earlier time on ${rn} does not count towards settlement; this tool assumes that time on a non-counting route also breaks continuous residence, rather than only being deducted from the qualifying period (PD-053).`,
     ),
     true,
   ];
@@ -250,6 +257,7 @@ export const esResidence = defineRule(
     const residence = esQualifyingResidence(ctx);
     if (!residence) {
       const groups = groupsOf(current.route);
+      const rn = nameIn(L, routeNames[current.route]);
       if (
         groups.includes('NOT_COUNTING') &&
         current.route !== 'LEAVE_OUTSIDE_THE_RULES'
@@ -257,8 +265,8 @@ export const esResidence = defineRule(
         return {
           status: 'FAIL',
           explanation: L(
-            `当前路线 ${current.route} 不计入定居，计入的居留为 0。`,
-            `The current route ${current.route} does not count towards settlement, so the counting residence is 0.`,
+            `当前路线"${rn}"不计入定居，计入的居留为 0。`,
+            `The current route, ${rn}, does not count towards settlement, so the counting residence is 0.`,
           ),
         };
       }
@@ -266,15 +274,15 @@ export const esResidence = defineRule(
         ? {
             status: 'UNKNOWN',
             explanation: L(
-              `当前路线 ${current.route} 不在 Earned Settlement 框架内，不按本框架计算居留。`,
-              `The current route ${current.route} is outside the Earned Settlement framework, so residence is not calculated under it.`,
+              `当前路线"${rn}"不在 Earned Settlement 框架内，不按本框架计算居留。`,
+              `The current route, ${rn}, is outside the Earned Settlement framework, so residence is not calculated under it.`,
             ),
           }
         : {
             status: 'UNKNOWN',
             explanation: L(
-              `当前路线 ${current.route} 是否计入定居未定，无法计算居留。`,
-              `Whether the current route ${current.route} counts towards settlement is not settled, so residence cannot be calculated.`,
+              `当前路线"${rn}"是否计入定居未定，无法计算居留。`,
+              `Whether the current route, ${rn}, counts towards settlement is not settled, so residence cannot be calculated.`,
             ),
             pendingDetails: [
               current.route === 'LEAVE_OUTSIDE_THE_RULES' ? 'PD-022' : 'PD-023',

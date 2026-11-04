@@ -113,13 +113,13 @@ exports[`ES-OFFICIAL-INDIVIDUAL-C default-locale output is unchanged 1`] = `
           "status": "PASS",
           "explanation": "自 2016-09-01 起连续合法居留，已满 10 年。",
           "assumptions": [
-            "连续合法居留计入 Student、Graduate 等临时路线，不计 VISIT、SEASONAL_WORKER、UKRAINE_SCHEME（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。"
+            "连续合法居留计入学生、毕业生等临时路线，不计访问、季节性工作者、乌克兰计划（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。"
           ]
         }
       ],
       "assumptions": [
         "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）与 Long Residence（Appendix Long Residence）；Part Suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
-        "连续合法居留计入 Student、Graduate 等临时路线，不计 VISIT、SEASONAL_WORKER、UKRAINE_SCHEME（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。"
+        "连续合法居留计入学生、毕业生等临时路线，不计访问、季节性工作者、乌克兰计划（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。"
       ]
     },
     "earned-settlement-2026-11": {
@@ -204,7 +204,7 @@ exports[`ES-OFFICIAL-INDIVIDUAL-C default-locale output is unchanged 1`] = `
             }
           ],
           "status": "PASS",
-          "explanation": "当前路线 FAMILY_PARTNER_OR_PARENT 属 CORE_PERMISSION / BRITISH_CONNECTION，计入定居。"
+          "explanation": "当前路线\\"家庭伴侣或父母\\"属核心许可 / 英国联系分组，计入定居。"
         },
         {
           "id": "ES-RESIDENCE",
@@ -570,13 +570,13 @@ exports[`ES-OFFICIAL-INDIVIDUAL-D default-locale output is unchanged 1`] = `
           "status": "PASS",
           "explanation": "自 2015-06-01 起连续合法居留，已满 10 年。",
           "assumptions": [
-            "连续合法居留计入 Student、Graduate 等临时路线，不计 VISIT、SEASONAL_WORKER、UKRAINE_SCHEME（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。"
+            "连续合法居留计入学生、毕业生等临时路线，不计访问、季节性工作者、乌克兰计划（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。"
           ]
         }
       ],
       "assumptions": [
         "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）与 Long Residence（Appendix Long Residence）；Part Suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
-        "连续合法居留计入 Student、Graduate 等临时路线，不计 VISIT、SEASONAL_WORKER、UKRAINE_SCHEME（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。"
+        "连续合法居留计入学生、毕业生等临时路线，不计访问、季节性工作者、乌克兰计划（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。"
       ]
     },
     "earned-settlement-2026-11": {
@@ -661,7 +661,7 @@ exports[`ES-OFFICIAL-INDIVIDUAL-D default-locale output is unchanged 1`] = `
             }
           ],
           "status": "PASS",
-          "explanation": "当前路线 FAMILY_AND_PRIVATE_LIFE 属 FAMILY_AND_PRIVATE_LIFE，计入定居。Family and Private Life 路线只能走 10 年或 20 年路径。"
+          "explanation": "当前路线\\"家庭与私人生活\\"属家庭与私人生活分组，计入定居。Family and Private Life 路线只能走 10 年或 20 年路径。"
         },
         {
           "id": "ES-RESIDENCE",
@@ -1033,13 +1033,13 @@ exports[`ES-OFFICIAL-P16-MATERNITY-BEST-YEARS default-locale output is unchanged
           "status": "PASS",
           "explanation": "自 2016-04-06 起连续合法居留，已满 10 年。",
           "assumptions": [
-            "连续合法居留计入 Student、Graduate 等临时路线，不计 VISIT、SEASONAL_WORKER、UKRAINE_SCHEME（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。"
+            "连续合法居留计入学生、毕业生等临时路线，不计访问、季节性工作者、乌克兰计划（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。"
           ]
         }
       ],
       "assumptions": [
         "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）与 Long Residence（Appendix Long Residence）；Part Suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
-        "连续合法居留计入 Student、Graduate 等临时路线，不计 VISIT、SEASONAL_WORKER、UKRAINE_SCHEME（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。"
+        "连续合法居留计入学生、毕业生等临时路线，不计访问、季节性工作者、乌克兰计划（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。"
       ]
     },
     "earned-settlement-2026-11": {
@@ -1124,7 +1124,7 @@ exports[`ES-OFFICIAL-P16-MATERNITY-BEST-YEARS default-locale output is unchanged
             }
           ],
           "status": "PASS",
-          "explanation": "当前路线 FAMILY_PARTNER_OR_PARENT 属 CORE_PERMISSION / BRITISH_CONNECTION，计入定居。"
+          "explanation": "当前路线\\"家庭伴侣或父母\\"属核心许可 / 英国联系分组，计入定居。"
         },
         {
           "id": "ES-RESIDENCE",
@@ -1569,7 +1569,7 @@ exports[`ES-OFFICIAL-P19-INDIVIDUAL-A default-locale output is unchanged 1`] = `
           "status": "FAIL",
           "explanation": "自 2021-04-06 起连续合法居留，截至 2026-11-04 满 5 年；2031-04-06 满 10 年。",
           "assumptions": [
-            "连续合法居留计入 Student、Graduate 等临时路线，不计 VISIT、SEASONAL_WORKER、UKRAINE_SCHEME（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。"
+            "连续合法居留计入学生、毕业生等临时路线，不计访问、季节性工作者、乌克兰计划（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。"
           ]
         }
       ],
@@ -1580,7 +1580,7 @@ exports[`ES-OFFICIAL-P19-INDIVIDUAL-A default-locale output is unchanged 1`] = `
         "未申报是否在 Immigration Salary List 上，按不在清单处理。",
         "\\"2024-04-04 前按当时规则获批\\"按连续 Skilled Worker 许可的起始日判断（SW 4.2(b)(ii)）。",
         "going rate 按每周 37.5 小时的全额年薪比较，未按实际工时折算（SW 14.4）。",
-        "连续合法居留计入 Student、Graduate 等临时路线，不计 VISIT、SEASONAL_WORKER、UKRAINE_SCHEME（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。"
+        "连续合法居留计入学生、毕业生等临时路线，不计访问、季节性工作者、乌克兰计划（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。"
       ]
     },
     "earned-settlement-2026-11": {
@@ -1665,7 +1665,7 @@ exports[`ES-OFFICIAL-P19-INDIVIDUAL-A default-locale output is unchanged 1`] = `
             }
           ],
           "status": "PASS",
-          "explanation": "当前路线 SKILLED_WORKER 属 CORE_PERMISSION / HIGH_TALENT，计入定居。"
+          "explanation": "当前路线\\"技术工作者\\"属核心许可 / 高技能人才分组，计入定居。"
         },
         {
           "id": "ES-RESIDENCE",
@@ -2035,7 +2035,7 @@ exports[`ES-OFFICIAL-P19-INDIVIDUAL-B default-locale output is unchanged 1`] = `
             }
           ],
           "status": "PASS",
-          "explanation": "当前路线 FAMILY_PARTNER_OR_PARENT 属 CORE_PERMISSION / BRITISH_CONNECTION，计入定居。"
+          "explanation": "当前路线\\"家庭伴侣或父母\\"属核心许可 / 英国联系分组，计入定居。"
         },
         {
           "id": "ES-RESIDENCE",
@@ -2427,7 +2427,7 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-A default-locale output is unchanged 1`] = `
           "status": "FAIL",
           "explanation": "自 2021-04-06 起连续合法居留，截至 2026-04-06 满 5 年；2031-04-06 满 10 年。",
           "assumptions": [
-            "连续合法居留计入 Student、Graduate 等临时路线，不计 VISIT、SEASONAL_WORKER、UKRAINE_SCHEME（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。"
+            "连续合法居留计入学生、毕业生等临时路线，不计访问、季节性工作者、乌克兰计划（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。"
           ]
         }
       ],
@@ -2435,7 +2435,7 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-A default-locale output is unchanged 1`] = `
         "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）与 Long Residence（Appendix Long Residence）；Part Suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
         "只计连续的 Skilled Worker dependant 许可，假设整段都是同一主申请人的 dependent partner；Appendix Relationship with Partner（SW 39.3）未核对。",
         "主申请人尚未定居时，只判断与主申请人同时获批（SW 39.1(a)）；若其已定居，须在主申请人信息里填写定居日期与路线（SW 39.1(b)）。",
-        "连续合法居留计入 Student、Graduate 等临时路线，不计 VISIT、SEASONAL_WORKER、UKRAINE_SCHEME（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。"
+        "连续合法居留计入学生、毕业生等临时路线，不计访问、季节性工作者、乌克兰计划（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。"
       ]
     },
     "earned-settlement-2026-11": {
@@ -2520,7 +2520,7 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-A default-locale output is unchanged 1`] = `
             }
           ],
           "status": "PASS",
-          "explanation": "当前路线 SKILLED_WORKER 属 CORE_PERMISSION / HIGH_TALENT，计入定居。"
+          "explanation": "当前路线\\"技术工作者\\"属核心许可 / 高技能人才分组，计入定居。"
         },
         {
           "id": "ES-RESIDENCE",
@@ -2849,7 +2849,7 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-B default-locale output is unchanged 1`] = `
           "status": "FAIL",
           "explanation": "自 2021-04-06 起连续合法居留，截至 2026-04-06 满 5 年；2031-04-06 满 10 年。",
           "assumptions": [
-            "连续合法居留计入 Student、Graduate 等临时路线，不计 VISIT、SEASONAL_WORKER、UKRAINE_SCHEME（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。"
+            "连续合法居留计入学生、毕业生等临时路线，不计访问、季节性工作者、乌克兰计划（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。"
           ]
         }
       ],
@@ -2860,7 +2860,7 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-B default-locale output is unchanged 1`] = `
         "未申报是否在 Immigration Salary List 上，按不在清单处理。",
         "\\"2024-04-04 前按当时规则获批\\"按连续 Skilled Worker 许可的起始日判断（SW 4.2(b)(ii)）。",
         "going rate 按每周 37.5 小时的全额年薪比较，未按实际工时折算（SW 14.4）。",
-        "连续合法居留计入 Student、Graduate 等临时路线，不计 VISIT、SEASONAL_WORKER、UKRAINE_SCHEME（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。"
+        "连续合法居留计入学生、毕业生等临时路线，不计访问、季节性工作者、乌克兰计划（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。"
       ]
     },
     "earned-settlement-2026-11": {
@@ -2945,7 +2945,7 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-B default-locale output is unchanged 1`] = `
             }
           ],
           "status": "PASS",
-          "explanation": "当前路线 SKILLED_WORKER 属 CORE_PERMISSION / HIGH_TALENT，计入定居。"
+          "explanation": "当前路线\\"技术工作者\\"属核心许可 / 高技能人才分组，计入定居。"
         },
         {
           "id": "ES-RESIDENCE",
@@ -3338,7 +3338,7 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-B-PARTNER default-locale output is unchanged
           "status": "FAIL",
           "explanation": "自 2023-04-06 起连续合法居留，截至 2026-04-06 满 3 年；2033-04-06 满 10 年。",
           "assumptions": [
-            "连续合法居留计入 Student、Graduate 等临时路线，不计 VISIT、SEASONAL_WORKER、UKRAINE_SCHEME（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。"
+            "连续合法居留计入学生、毕业生等临时路线，不计访问、季节性工作者、乌克兰计划（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。"
           ]
         }
       ],
@@ -3347,7 +3347,7 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-B-PARTNER default-locale output is unchanged
         "预计日期在 2027-03-26 之后，届时定居须达到英语 B2（SW 22A.1、LR 13.1(b)）。",
         "只计连续的 Skilled Worker dependant 许可，假设整段都是同一主申请人的 dependent partner；Appendix Relationship with Partner（SW 39.3）未核对。",
         "主申请人尚未定居时，只判断与主申请人同时获批（SW 39.1(a)）；若其已定居，须在主申请人信息里填写定居日期与路线（SW 39.1(b)）。",
-        "连续合法居留计入 Student、Graduate 等临时路线，不计 VISIT、SEASONAL_WORKER、UKRAINE_SCHEME（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。",
+        "连续合法居留计入学生、毕业生等临时路线，不计访问、季节性工作者、乌克兰计划（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。",
         "最早可申请日期按\\"自 2023-04-06 起持续居留、收入等状况不变、其余要求届时仍满足\\"推算，不是对未来的保证。"
       ]
     },
@@ -3433,7 +3433,7 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-B-PARTNER default-locale output is unchanged
             }
           ],
           "status": "PASS",
-          "explanation": "当前路线 SKILLED_WORKER 属 CORE_PERMISSION / HIGH_TALENT，计入定居。"
+          "explanation": "当前路线\\"技术工作者\\"属核心许可 / 高技能人才分组，计入定居。"
         },
         {
           "id": "ES-RESIDENCE",
@@ -3722,7 +3722,7 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-C default-locale output is unchanged 1`] = `
           "status": "FAIL",
           "explanation": "自 2021-04-06 起连续合法居留，截至 2026-04-06 满 5 年；2031-04-06 满 10 年。",
           "assumptions": [
-            "连续合法居留计入 Student、Graduate 等临时路线，不计 VISIT、SEASONAL_WORKER、UKRAINE_SCHEME（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。"
+            "连续合法居留计入学生、毕业生等临时路线，不计访问、季节性工作者、乌克兰计划（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。"
           ]
         }
       ],
@@ -3732,7 +3732,7 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-C default-locale output is unchanged 1`] = `
         "假设子女有符合英国法律的照护与住宿安排（CHI 2.1）。",
         "只看申请日当天的 Skilled Worker dependent child 许可，假设是同一主申请人的子女；另一位家长须同时获批定居、已定居或为英国公民，除非主申请人负唯一抚养责任等（CHI 4.3，经 SW 39.4），本工具未核对。",
         "主申请人尚未定居时，只判断与主申请人同时获批（SW 39.1(a)）；若其已定居，须在主申请人信息里填写定居日期与路线（SW 39.1(b)）。",
-        "连续合法居留计入 Student、Graduate 等临时路线，不计 VISIT、SEASONAL_WORKER、UKRAINE_SCHEME（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。"
+        "连续合法居留计入学生、毕业生等临时路线，不计访问、季节性工作者、乌克兰计划（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。"
       ]
     },
     "earned-settlement-2026-11": {
@@ -3810,7 +3810,7 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-C default-locale output is unchanged 1`] = `
             }
           ],
           "status": "PASS",
-          "explanation": "当前路线 SKILLED_WORKER 属 CORE_PERMISSION / HIGH_TALENT，计入定居。"
+          "explanation": "当前路线\\"技术工作者\\"属核心许可 / 高技能人才分组，计入定居。"
         },
         {
           "id": "ES-RESIDENCE",
@@ -4090,7 +4090,7 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-D default-locale output is unchanged 1`] = `
           "status": "FAIL",
           "explanation": "自 2021-04-06 起连续合法居留，截至 2026-04-06 满 5 年；2031-04-06 满 10 年。",
           "assumptions": [
-            "连续合法居留计入 Student、Graduate 等临时路线，不计 VISIT、SEASONAL_WORKER、UKRAINE_SCHEME（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。"
+            "连续合法居留计入学生、毕业生等临时路线，不计访问、季节性工作者、乌克兰计划（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。"
           ]
         }
       ],
@@ -4099,7 +4099,7 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-D default-locale output is unchanged 1`] = `
         "假设子女未 leading an independent life（CHI 1A.1）。",
         "只看申请日当天的 Skilled Worker dependent child 许可，假设是同一主申请人的子女；另一位家长须同时获批定居、已定居或为英国公民，除非主申请人负唯一抚养责任等（CHI 4.3，经 SW 39.4），本工具未核对。",
         "主申请人尚未定居时，只判断与主申请人同时获批（SW 39.1(a)）；若其已定居，须在主申请人信息里填写定居日期与路线（SW 39.1(b)）。",
-        "连续合法居留计入 Student、Graduate 等临时路线，不计 VISIT、SEASONAL_WORKER、UKRAINE_SCHEME（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。"
+        "连续合法居留计入学生、毕业生等临时路线，不计访问、季节性工作者、乌克兰计划（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。"
       ]
     },
     "earned-settlement-2026-11": {
@@ -4184,7 +4184,7 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-D default-locale output is unchanged 1`] = `
             }
           ],
           "status": "PASS",
-          "explanation": "当前路线 SKILLED_WORKER 属 CORE_PERMISSION / HIGH_TALENT，计入定居。"
+          "explanation": "当前路线\\"技术工作者\\"属核心许可 / 高技能人才分组，计入定居。"
         },
         {
           "id": "ES-RESIDENCE",
@@ -4454,7 +4454,7 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-E default-locale output is unchanged 1`] = `
           "status": "FAIL",
           "explanation": "自 2021-04-06 起连续合法居留，截至 2026-04-06 满 5 年；2031-04-06 满 10 年。",
           "assumptions": [
-            "连续合法居留计入 Student、Graduate 等临时路线，不计 VISIT、SEASONAL_WORKER、UKRAINE_SCHEME（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。"
+            "连续合法居留计入学生、毕业生等临时路线，不计访问、季节性工作者、乌克兰计划（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。"
           ]
         }
       ],
@@ -4464,7 +4464,7 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-E default-locale output is unchanged 1`] = `
         "假设子女未 leading an independent life（CHI 1A.1）。",
         "只看申请日当天的 Skilled Worker dependent child 许可，假设是同一主申请人的子女；另一位家长须同时获批定居、已定居或为英国公民，除非主申请人负唯一抚养责任等（CHI 4.3，经 SW 39.4），本工具未核对。",
         "主申请人尚未定居时，只判断与主申请人同时获批（SW 39.1(a)）；若其已定居，须在主申请人信息里填写定居日期与路线（SW 39.1(b)）。",
-        "连续合法居留计入 Student、Graduate 等临时路线，不计 VISIT、SEASONAL_WORKER、UKRAINE_SCHEME（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。",
+        "连续合法居留计入学生、毕业生等临时路线，不计访问、季节性工作者、乌克兰计划（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。",
         "最早可申请日期按\\"自 2021-04-06 起持续居留、收入等状况不变、其余要求届时仍满足\\"推算，不是对未来的保证。"
       ]
     },
@@ -4548,7 +4548,7 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-E default-locale output is unchanged 1`] = `
             }
           ],
           "status": "PASS",
-          "explanation": "当前路线 SKILLED_WORKER 属 CORE_PERMISSION / HIGH_TALENT，计入定居。"
+          "explanation": "当前路线\\"技术工作者\\"属核心许可 / 高技能人才分组，计入定居。"
         },
         {
           "id": "ES-RESIDENCE",
@@ -4863,7 +4863,7 @@ exports[`ES-OFFICIAL-P45-INDIVIDUAL-A default-locale output is unchanged 1`] = `
           "status": "FAIL",
           "explanation": "自 2023-04-06 起连续合法居留，截至 2028-04-06 满 5 年；2033-04-06 满 10 年。",
           "assumptions": [
-            "连续合法居留计入 Student、Graduate 等临时路线，不计 VISIT、SEASONAL_WORKER、UKRAINE_SCHEME（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。"
+            "连续合法居留计入学生、毕业生等临时路线，不计访问、季节性工作者、乌克兰计划（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。"
           ]
         }
       ],
@@ -4874,7 +4874,7 @@ exports[`ES-OFFICIAL-P45-INDIVIDUAL-A default-locale output is unchanged 1`] = `
         "未申报是否在 Immigration Salary List 上，按不在清单处理。",
         "\\"2024-04-04 前按当时规则获批\\"按连续 Skilled Worker 许可的起始日判断（SW 4.2(b)(ii)）。",
         "going rate 按每周 37.5 小时的全额年薪比较，未按实际工时折算（SW 14.4）。",
-        "连续合法居留计入 Student、Graduate 等临时路线，不计 VISIT、SEASONAL_WORKER、UKRAINE_SCHEME（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。",
+        "连续合法居留计入学生、毕业生等临时路线，不计访问、季节性工作者、乌克兰计划（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。",
         "最早可申请日期按\\"自 2023-04-06 起持续居留、收入等状况不变、其余要求届时仍满足\\"推算，不是对未来的保证。"
       ]
     },
@@ -4960,7 +4960,7 @@ exports[`ES-OFFICIAL-P45-INDIVIDUAL-A default-locale output is unchanged 1`] = `
             }
           ],
           "status": "PASS",
-          "explanation": "当前路线 SKILLED_WORKER 属 CORE_PERMISSION / HIGH_TALENT，计入定居。"
+          "explanation": "当前路线\\"技术工作者\\"属核心许可 / 高技能人才分组，计入定居。"
         },
         {
           "id": "ES-RESIDENCE",
@@ -5415,7 +5415,7 @@ exports[`ES-OFFICIAL-P45-INDIVIDUAL-B default-locale output is unchanged 1`] = `
           "status": "FAIL",
           "explanation": "自 2023-04-06 起连续合法居留，截至 2028-04-06 满 5 年；2033-04-06 满 10 年。",
           "assumptions": [
-            "连续合法居留计入 Student、Graduate 等临时路线，不计 VISIT、SEASONAL_WORKER、UKRAINE_SCHEME（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。"
+            "连续合法居留计入学生、毕业生等临时路线，不计访问、季节性工作者、乌克兰计划（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。"
           ]
         }
       ],
@@ -5426,7 +5426,7 @@ exports[`ES-OFFICIAL-P45-INDIVIDUAL-B default-locale output is unchanged 1`] = `
         "未申报是否在 Immigration Salary List 上，按不在清单处理。",
         "\\"2024-04-04 前按当时规则获批\\"按连续 Skilled Worker 许可的起始日判断（SW 4.2(b)(ii)）。",
         "going rate 按每周 37.5 小时的全额年薪比较，未按实际工时折算（SW 14.4）。",
-        "连续合法居留计入 Student、Graduate 等临时路线，不计 VISIT、SEASONAL_WORKER、UKRAINE_SCHEME（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。",
+        "连续合法居留计入学生、毕业生等临时路线，不计访问、季节性工作者、乌克兰计划（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。",
         "最早可申请日期按\\"自 2023-04-06 起持续居留、收入等状况不变、其余要求届时仍满足\\"推算，不是对未来的保证。"
       ]
     },
@@ -5512,7 +5512,7 @@ exports[`ES-OFFICIAL-P45-INDIVIDUAL-B default-locale output is unchanged 1`] = `
             }
           ],
           "status": "PASS",
-          "explanation": "当前路线 SKILLED_WORKER 属 CORE_PERMISSION / HIGH_TALENT，计入定居。"
+          "explanation": "当前路线\\"技术工作者\\"属核心许可 / 高技能人才分组，计入定居。"
         },
         {
           "id": "ES-RESIDENCE",
@@ -5965,7 +5965,7 @@ exports[`ES-OFFICIAL-P45-INDIVIDUAL-C default-locale output is unchanged 1`] = `
           "status": "PASS",
           "explanation": "自 2024-06-06 起连续合法居留，已满 10 年。",
           "assumptions": [
-            "连续合法居留计入 Student、Graduate 等临时路线，不计 VISIT、SEASONAL_WORKER、UKRAINE_SCHEME（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。"
+            "连续合法居留计入学生、毕业生等临时路线，不计访问、季节性工作者、乌克兰计划（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。"
           ]
         }
       ],
@@ -5976,7 +5976,7 @@ exports[`ES-OFFICIAL-P45-INDIVIDUAL-C default-locale output is unchanged 1`] = `
         "未申报是否在 Immigration Salary List 上，按不在清单处理。",
         "SOC 6135 在 SW A1.1 的 Health and Care ASHE salary job 职业列表内，假设雇主属 SW A1.1(a)–(f) 列出的类型。",
         "going rate 按每周 37.5 小时的全额年薪比较，未按实际工时折算（SW 14.4）。",
-        "连续合法居留计入 Student、Graduate 等临时路线，不计 VISIT、SEASONAL_WORKER、UKRAINE_SCHEME（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。"
+        "连续合法居留计入学生、毕业生等临时路线，不计访问、季节性工作者、乌克兰计划（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。"
       ]
     },
     "earned-settlement-2026-11": {
@@ -6061,7 +6061,7 @@ exports[`ES-OFFICIAL-P45-INDIVIDUAL-C default-locale output is unchanged 1`] = `
             }
           ],
           "status": "PASS",
-          "explanation": "当前路线 SKILLED_WORKER 属 CORE_PERMISSION / HIGH_TALENT，计入定居。"
+          "explanation": "当前路线\\"技术工作者\\"属核心许可 / 高技能人才分组，计入定居。"
         },
         {
           "id": "ES-RESIDENCE",
@@ -6089,9 +6089,9 @@ exports[`ES-OFFICIAL-P45-INDIVIDUAL-C default-locale output is unchanged 1`] = `
             }
           ],
           "status": "PASS",
-          "explanation": "计入定居的连续居留自 2025-06-06 起，截至 2035-06-06 满 10 年。此前的 GRADUATE 时间不计入定居；本工具假设不计入路线的时间同时打断连续居留，而不只是从合格期中扣除（PD-053）。",
+          "explanation": "计入定居的连续居留自 2025-06-06 起，截至 2035-06-06 满 10 年。此前在\\"毕业生\\"路线的时间不计入定居；本工具假设不计入路线的时间同时打断连续居留，而不只是从合格期中扣除（PD-053）。",
           "assumptions": [
-            "此前的 GRADUATE 时间不计入定居；本工具假设不计入路线的时间同时打断连续居留，而不只是从合格期中扣除（PD-053）。"
+            "此前在\\"毕业生\\"路线的时间不计入定居；本工具假设不计入路线的时间同时打断连续居留，而不只是从合格期中扣除（PD-053）。"
           ]
         },
         {
@@ -6308,7 +6308,7 @@ exports[`ES-OFFICIAL-P45-INDIVIDUAL-C default-locale output is unchanged 1`] = `
       "assumptions": [
         "Earned Settlement 已公布、尚未生效，按\\"假设在申请日适用\\"评估；规则依据为政府回应文件（SRC-001），不是已生效的 Immigration Rules（PD-001）。首批规则修改预计 2026 年 12 月起提交、2027 年 1 月生效，2027–2028 年继续修改（SRC-002 col 593；SRC-003 cols 1423–1424），具体生效日以届时的 Statement of Changes 为准（PD-003）。",
         "\\"无政府债务\\"按用户申报判断；正在按还款计划偿还的非 asylum support 债务是否满足要求，原文未说明（PD-018）。",
-        "此前的 GRADUATE 时间不计入定居；本工具假设不计入路线的时间同时打断连续居留，而不只是从合格期中扣除（PD-053）。",
+        "此前在\\"毕业生\\"路线的时间不计入定居；本工具假设不计入路线的时间同时打断连续居留，而不只是从合格期中扣除（PD-053）。",
         "收入按英国 tax year 的税前收入计算，窗口为申请日所在 tax year 之前的完整 tax year；各年份统一按现行门槛比较（PD-005 / PD-006 / PD-007）。",
         "最低收入按 p16 与 Table 1 的\\"申请前 7 年中 5 年\\"计算；p15 另有\\"至少 3 年\\"的说法（PD-041）。",
         "截止点取 Immigration White Paper 的发布日 2025-05-12（PD-035）；\\"进入或转入该路线\\"按这段连续 care worker 许可的起始日判断，职业按 SOC 2020 6135 / 6136 认定（PD-036）。"

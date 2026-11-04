@@ -29,3 +29,9 @@ export {
   healthEducationTransitionalExamples,
   nationalPayScaleBelowRqf6Occupations,
 } from './data/occupations';
+export {
+  breachTypeNames,
+  routeGroupNames,
+  routeNames,
+} from './data/display-names';
+export type { DisplayName } from './data/display-names';
