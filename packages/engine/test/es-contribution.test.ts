@@ -8,7 +8,7 @@ import {
   esPublicService,
 } from '../src/rules/es-contribution';
 import type { ImmigrationEpisode, IncomeYear } from '../src/types';
-import { run } from './helpers';
+import { asDependant, run } from './helpers';
 
 // SIMULATION_DATE 2026-11-04 is in 2026-27, so windows end with 2025-26.
 const LAST_SEVEN = [
@@ -112,6 +112,22 @@ describe('ES-EARNINGS-10Y', () => {
       run(esEarnings10Y, { incomeYears: [], earningsExemptHealth: true })
         .status,
     ).toBe('PASS');
+  });
+  test('an adult child dependant needs no income (p30)', () => {
+    const child = run(esEarnings10Y, {
+      dateOfBirth: '2004-06-01',
+      episodes: asDependant('PARENT'),
+      incomeYears: [],
+    });
+    expect(child.status).toBe('PASS');
+    expect(child.assumptions?.join('')).toContain('PD-059');
+  });
+
+  test('a partner dependant still needs the minimum income', () => {
+    expect(
+      run(esEarnings10Y, { episodes: asDependant('PARTNER'), incomeYears: [] })
+        .status,
+    ).toBe('UNKNOWN');
   });
 });
 

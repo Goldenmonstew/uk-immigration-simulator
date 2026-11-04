@@ -134,4 +134,18 @@
 |---|---|---|---|---|---|
 | PD-053 | qualifying residence 的连续性 | 原文只说哪些路线计入（p23）、哪些不计入（p24），以及保护 / 人权路线与工作 / 家庭路线切换时重新起算（p25）；没有说不计入路线上的时间或许可之间的空隙是"只扣除"还是"打断连续性"。 | p23–p25 | 合格期 = 截至申请日连续处于同一类计入路线的最后一段；中间夹有不计入路线（如 Student、Graduate）或许可之间空隙超过 1 天，都视为中断、从下一段起重新起算。若政府采用"只扣除"口径，日期可能提前。 | 原文未提及 |
 | PD-054 | Earned Settlement 的缺席口径 | 原文没有规定 Earned Settlement 下缺席多少天会打断连续居留。 | p22–p25 | 沿用现行 Appendix Continuous Residence CR 3.1（SRC-008）：任意 12 个月缺席不超过 180 天，超过则自该次缺席结束次日重新起算；缺席天数按含出境与入境当日计（偏保守）。CR 3.4 的可豁免缺席理由不建模。 | 原文未提及 |
-| PD-055 | dependant 随主申请人定居 | 同时到达的伴侣可与主申请人同时定居（须各自满足相关要求），后到的伴侣须完成同样的合格期；18 岁以下子女随父母定居。引擎的输入只有申请人本人的时间线，没有主申请人的路径、起点或是否满足条件。 | p29；p31 | 当前 episode 为 `DEPENDANT` 时，Earned Settlement 栏不按主申请人评估：`ES-ROUTE-GROUP` 为 `UNKNOWN`，结论 `INSUFFICIENT_INFORMATION`，不给 `pathwayYears` / `earliestDate`。属引擎建模缺口，待 Phase 2 为 dependant 补主申请人信息后建模。 | 原文规则已定；引擎待 Phase 2 |
+| PD-055 | dependant 随主申请人定居 | 同时到达的伴侣可与主申请人同时定居（须各自满足相关要求），后到的伴侣须完成同样的合格期；18 岁以下子女随父母定居并豁免收入、债务、英语、Life in the UK；18–24 岁保留 child-dependant 身份者须满足成人强制要求、不需个人收入；家庭符合资格时已满 25 岁者须独立符合资格。 | p29–p31 | **已建模（任务 2.2）**：请求带 `principal`（主申请人时间线）与 `dependantOf` 时，`ES-DEPENDANT-PATHWAY` 按主申请人在同一申请日的结果给 dependant 年限与日期（见 `docs/contracts.md` §8）；现行法律栏建模 Skilled Worker 的 dependent partner（`CL-SW-PARTNER-5Y`）。仍不能判断：没有 `principal` 或 `dependantOf` → `INSUFFICIENT_INFORMATION`；主申请人本身是 dependant（不递归）；现行法律下的 dependent child（Appendix Children 未登记）与主申请人已定居的伴侣（SW 39.1(b)）。原文未定的口径见 PD-056–PD-062。 | 原文规则已定；剩余为建模范围 |
+
+## 四、家庭建模假设（任务 2.2 新增）
+
+dependant 随主申请人定居（SRC-001 Ch.5）时，原文未规定、引擎为给出结论而采用的口径。dependant 的请求须带主申请人的时间线（`SimulationRequest.principal`，见 `docs/contracts.md` §8）。
+
+| ID | 事项 | 原文怎么说 | 出处 | 对引擎的影响 | 预计何时明确 |
+|---|---|---|---|---|---|
+| PD-056 | dependant 伴侣须满足的收入要求 | 同时到达的伴侣"满足相关要求"即可与主申请人同时定居；Table 1 说强制要求适用于所有路径；没有说伴侣须满足哪一档收入要求，也没有说能否与主申请人合并收入。 | p29；p46 | 伴侣按最低收入要求判断（`ES-EARNINGS-10Y`：7 年中 5 年个人达到 £12,571，或与伴侣合计达到 £25,142），不按主申请人的加速门槛；合计收入只用伴侣本人申报的 `partnerEarnings`，不从主申请人的时间线推出。结论不输出 `UNKNOWN`，在 `assumptions` 声明。 | 原文未提及 |
+| PD-057 | 后到伴侣的"同样合格期"取几年 | 后到的伴侣须完成"同样的合格居留期"；p31 Individual B 只举了主申请人走 5 年、伴侣也满 5 年的例子。主申请人走 3 年或 10 / 20 年路径时是否同样取主申请人的年限，原文未说。 | p29；p31 | 后到伴侣的年限取主申请人实际所在路径的年限，最早日期 = 伴侣自己的合格居留起点 + 该年限（不早于主申请人的定居时点），并声明假设。 | 原文未提及 |
+| PD-058 | 后到的子女 | 原文只讲后到的伴侣须完成同样的合格期；对后到的子女只说 18 岁以下子女随父母定居。 | p29；p31 | 子女不论何时加入，都按主申请人的定居时点随家庭定居，不另计自己的合格期，并声明假设。 | 原文未提及 |
+| PD-059 | "保留 child-dependant 身份"的认定 | 18–24 岁"保留 child-dependant 身份"者可随家庭定居；没有说怎样才算保留（是否须持续依赖父母、在学、未独立生活等）。 | p29–p30；p31 | 当前 episode 为 `DEPENDANT` 且 `dependantOf = 'PARENT'` 即视为保留，不输出 `UNKNOWN`；在 `assumptions` 声明。 | 原文未提及 |
+| PD-060 | 25 岁按哪一天的年龄 | 在"家庭符合定居资格时"已满 25 岁者须独立符合资格；没有说"符合资格时"是主申请人首次满足条件之日，还是家庭实际申请之日。 | p30；p31 | 按家庭首次符合资格日计算年龄：主申请人的合格居留起点 + 其路径年限（过去或未来都按这一天），不按模拟日；在 `assumptions` 声明。若按实际申请日，已过资格日才申请的家庭中，部分子女可能已不能随家庭定居。 | 原文未提及 |
+| PD-061 | "父母双方都定居"与单主申请人 | Individual C 是"父母双方都符合资格并一起申请"，Individual D 是"只有在父母双方都定居时"才能作为 dependant 定居；引擎只接收一个主申请人。 | p31 | 子女的结论只按一位主申请人评估，假设另一位家长同时定居，或就是主申请人的随行伴侣；在 `assumptions` 声明。单亲家庭、另一位家长不在英或另有路线的情形未建模。 | 原文未提及 |
+| PD-062 | 成年 dependant 本人用过 public funds 或有 breach | 原文对主申请人规定：用过 specified public funds 或成年后有 qualifying breach 进入 20 年路径；对 dependant 只说随主申请人定居，没有说 dependant 本人的 public funds 或 breach 是否让其另走 20 年。 | p13；p18；p29–p30 | 伴侣或 18 岁及以上子女本人的 `ES-PUBLIC-FUNDS` 或 `ES-BREACH` 为 `FAIL` 时，`ES-DEPENDANT-PATHWAY` 输出 `UNKNOWN`（PD-062），结论最多为 `POTENTIALLY_ELIGIBLE`。 | 原文未提及 |

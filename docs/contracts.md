@@ -1,11 +1,11 @@
-# 引擎契约（Phase 0.2；Phase 1.1 补充规则、数据表与路径聚合）
+# 引擎契约（Phase 0.2；Phase 1.1 补充规则、数据表与路径聚合；Phase 2.2 补充家庭）
 
 给 astra（`apps/web`）和 sol（fixtures 工具链）看的接口说明。类型的唯一真相是代码：`packages/engine/src/types.ts` 与 `packages/policy-data/src/{types,routes}.ts`；本文只讲关系和约定。
 
 ## 1. 数据流
 
 ```text
-SimulationRequest { timeline: PersonTimeline, simulationDate, ruleSetIds? }
+SimulationRequest { timeline: PersonTimeline, simulationDate, ruleSetIds?, principal? }
         │
         ▼  evaluate(request)          packages/engine
 SimulationResult {
@@ -115,3 +115,48 @@ export const esIndividualC: Fixture = {
 3. 否则 `LIKELY_NOT_ELIGIBLE`；若还有未 `FAIL` 的候选，取起点 + 年限最早的一条给出 `pathwayYears` 与 `earliestDate`，并加假设"持续居留、收入等状况不变"。强制要求 `FAIL` 时所有候选都失败，不给年限与日期。
 
 短路（`SimulationResult.shortCircuit`）：`CRIMINALITY`（任何犯罪记录）与 `IMMIGRATION_BREACH`（成年后非法入境）让两栏都是 `REQUIRES_REGULATED_REVIEW`；`PROTECTION` 与 `OUTSIDE_FRAMEWORK`（当前路线）只让 Earned Settlement 一栏是 `REQUIRES_REGULATED_REVIEW`，现行法律照常评估。短路时规则照常运行、出现在 `rules` 里，但该栏不给 `pathwayYears` / `earliestDate`。
+
+## 8. 家庭（Phase 2.2）
+
+dependant 不单独挣定居，而是随主申请人定居（SRC-001 Ch.5，p28–p31；现行法律 Appendix Skilled Worker SW 38–SW 46）。所以 dependant 的请求要带上主申请人。
+
+```text
+SimulationRequest {
+  timeline,                 dependant 本人（当前 episode role = DEPENDANT，dependantOf 指明身份）
+  principal?,               主申请人的完整 PersonTimeline
+  simulationDate,
+}
+        │
+        ▼  evaluate(request)
+  1. 先按同一个 simulationDate 评估 principal（作为主申请人；principal 自己的 principal 不存在，不递归）
+  2. 再评估 dependant：路径年限、定居时点、routeGroup 取自 principal 那一栏的结果
+```
+
+字段：
+
+- `SimulationRequest.principal?: PersonTimeline`：主申请人的完整时间线，和普通申请人填法一样。不另设"主申请人摘要"：用户通常不知道主申请人的路径年限，那正是引擎要算的。缺省时 dependant 仍是 `INSUFFICIENT_INFORMATION`，解释说"填写主申请人信息后可判断"。当前 episode 不是 `DEPENDANT` 时 `principal` 被忽略。
+- `ImmigrationEpisode.dependantOf?: 'PARTNER' | 'PARENT'`：只对 `role = 'DEPENDANT'` 有意义。`PARTNER` = 主申请人是此人的伴侣；`PARENT` = 主申请人是此人的父 / 母（此人是 child dependant）。缺省 → 分支未知，dependant 路径规则 `UNKNOWN`。`role` 的取值不变。
+- 参数 `independentAge`（25，SRC-001 p30）；18 岁沿用 `adultAge`。
+- `SettlementAssessment` 不加字段：dependant 的依据写在 `rules[]`（`ES-DEPENDANT-PATHWAY`、`CL-SW-PARTNER-5Y`）的解释与 `assumptions` 里，主申请人自己的规则清单不并入 dependant 的结果。
+
+Earned Settlement 栏的 dependant 候选路径（只有一条）：
+
+- 规则 = 强制要求（`ES-CRIMINALITY`、`ES-DEBT`、`ES-ENGLISH-B2`、`ES-KOL`、`ES-ROUTE-GROUP`、`ES-RESIDENCE`）+ `ES-EARNINGS-10Y`（最低收入）+ `ES-DEPENDANT-PATHWAY`。按身份的豁免写在各规则里（见下表），豁免时规则 `PASS` 并引 p29 / p30。dependant 的 `rules` 另外只列 `ES-PUBLIC-FUNDS` 与 `ES-BREACH`（成年 dependant 本人 `FAIL` → `ES-DEPENDANT-PATHWAY` 为 `UNKNOWN`，PD-062）；3 / 5 年收入、British connection、公共服务与过渡安排规则不对 dependant 运行。
+- 年限 = 主申请人该栏的 `pathwayYears`；`routeGroup` = 主申请人的。
+- `earliestDate` = max(主申请人的定居时点, dependant 自己的 dependant 居留起点 + 年限)。同时到达 → 与主申请人同日；后到的伴侣 → 晚到多久就晚多久（p29、p31 Individual B）。
+- 主申请人该栏：`LIKELY_ELIGIBLE` 或带日期的 `LIKELY_NOT_ELIGIBLE` → 按上面取年限与时点；`POTENTIALLY_ELIGIBLE` → 同样取年限，`ES-DEPENDANT-PATHWAY` 为 `UNKNOWN` 并带上主申请人的 `pendingDetails`（dependant 也是 `POTENTIALLY_ELIGIBLE`）；强制要求不满足、没有日期的 `LIKELY_NOT_ELIGIBLE` → `FAIL`；`INSUFFICIENT_INFORMATION`、`REQUIRES_REGULATED_REVIEW` → `UNKNOWN`（不带 PD）。
+- 居留不够时（主申请人尚未满期，或伴侣后到）由 `ES-DEPENDANT-PATHWAY` 显示为 `FAIL` 并写明可申请日期（主申请人用 `ES-RESIDENCE`）。
+- 规则通过 `RuleContext.principal`（`{ timeline, result }`，`evaluate` 先算好）读取主申请人的时间线与结果；只在当前 episode 为 `DEPENDANT` 且请求带 `principal` 时设置。
+
+| 身份（按年龄与 `dependantOf`） | 适用的强制要求 | 收入 | 来源 |
+|---|---|---|---|
+| 伴侣 | criminality、debt、B2、KOL | 最低收入（个人或家庭口径，假设，见 PD） | p29、p46 |
+| 子女，18 岁以下 | 只有 criminality（与 suitability） | 豁免 | p29 |
+| 子女，18–24 岁 | criminality、debt、B2、KOL | 豁免 | p29–p30 |
+| 子女，家庭首次符合资格日（主申请人合格期起点 + 其年限）已满 25 岁 | 不能作为 dependant 定居，`ES-DEPENDANT-PATHWAY` 为 `FAIL`，须独立符合资格或转入自己的路线 | — | p30、p31 Individual E；PD-060 |
+
+年龄分支：是否满 18 岁按申请日（`simulationDate`）；25 岁按家庭首次符合资格日（PD-060）。
+
+现行法律栏：Skilled Worker 主申请人的 dependent partner（当前 episode `SKILLED_WORKER` + `DEPENDANT` + `dependantOf = 'PARTNER'`，且有 `principal`）进入 `CL-SCOPE`。候选路径 = `CL-SW-PARTNER-5Y` + `CL-ENGLISH` + `CL-KOL`，5 年，起点 = max(伴侣连续 dependant 许可的起点, 主申请人连续 Skilled Worker 期的起点)，即不早于主申请人满 5 年（SW 39.1(a)、SW 42.1、SW 43.1）；没有薪资要求；英语 2027-03-26 前 B1、此后 B2（SW 44.1），KOL 按 SW 45.1。主申请人该栏没有 Skilled Worker 5 年路径（`pathwayYears` 不是 5）时：其结论为 `LIKELY_NOT_ELIGIBLE` → `FAIL`，否则 `UNKNOWN`。Long Residence 候选照常。主申请人已定居（SW 39.1(b)）不建模；dependent child（SW 41A.1 → Appendix Children）不建模，仍在 `CL-SCOPE` 之外。
+
+短路：先看 dependant 本人的时间线（本人有犯罪记录照常短路，优先）；本人没有短路而主申请人有时，把主申请人的 `shortCircuit` 复制到 dependant 的 `SimulationResult`，`reason` 不变，`message` 前加"主申请人："。栏目影响沿用 §7：`CRIMINALITY` / `IMMIGRATION_BREACH` 两栏都是 `REQUIRES_REGULATED_REVIEW`，`PROTECTION` / `OUTSIDE_FRAMEWORK` 只影响 Earned Settlement 栏。

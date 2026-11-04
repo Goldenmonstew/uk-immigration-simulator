@@ -7,7 +7,7 @@ import {
   esKol,
 } from '../src/rules/es-requirements';
 import { evaluate } from '../src/evaluate';
-import { run, SIMULATION_DATE, timeline } from './helpers';
+import { asDependant, run, SIMULATION_DATE, timeline } from './helpers';
 
 describe('ES-CRIMINALITY', () => {
   test('no record passes', () => {
@@ -47,6 +47,29 @@ describe('ES-DEBT', () => {
     const result = run(esDebt, { governmentDebt: undefined });
     expect(result.status).toBe('UNKNOWN');
     expect(result.pendingDetails).toBeUndefined();
+  });
+  test('a child dependant is exempt until the day before turning 18 (p29)', () => {
+    const child = (dateOfBirth: string) =>
+      run(esDebt, {
+        dateOfBirth,
+        episodes: asDependant('PARENT'),
+        governmentDebt: { outstanding: true },
+      });
+    expect(child('2008-11-05').status).toBe('PASS');
+    expect(child('2008-11-05').sources).toEqual([
+      { srcId: 'SRC-001', locator: 'p29' },
+    ]);
+    expect(child('2008-11-04').status).toBe('FAIL');
+  });
+
+  test('a partner dependant under 18 is not exempt', () => {
+    expect(
+      run(esDebt, {
+        dateOfBirth: '2008-11-05',
+        episodes: asDependant('PARTNER'),
+        governmentDebt: { outstanding: true },
+      }).status,
+    ).toBe('FAIL');
   });
 });
 

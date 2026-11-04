@@ -12,7 +12,11 @@ import { addDays, addYears, taxYearsBefore } from '../dates';
 import { continuousRun, episodeOn } from '../residence';
 import { defineRule } from '../rule';
 import type { ImmigrationEpisode, RuleContext } from '../types';
-import { ageExemptOn } from './es-requirements';
+import {
+  ageExemptOn,
+  CHILD_DEPENDANT_ASSUMPTION,
+  childDependantOn,
+} from './es-requirements';
 import { esQualifyingResidence } from './es-residence';
 
 // Contribution: earnings, British connection, public funds and public service
@@ -113,7 +117,11 @@ export const esEarnings10Y = defineRule(
     id: 'ES-EARNINGS-10Y',
     ruleSetId: RULE_SET,
     title: `最低收入：${es.values.bestYears10Year.value.window} 年中 ${es.values.bestYears10Year.value.required} 年达到 ${gbp(es.values.earningsThresholdMinimum.value)}（或家庭合计 ${gbp(es.values.householdEarningsThreshold.value)}）`,
-    sources: [...EARNINGS_SOURCES, { srcId: 'SRC-001', locator: 'p17' }],
+    sources: [
+      ...EARNINGS_SOURCES,
+      { srcId: 'SRC-001', locator: 'p17' },
+      { srcId: 'SRC-001', locator: 'p30' },
+    ],
     pendingDetails: [
       'PD-005',
       'PD-006',
@@ -123,6 +131,7 @@ export const esEarnings10Y = defineRule(
       'PD-010',
       'PD-041',
       'PD-042',
+      'PD-059',
     ],
   },
   (ctx) => {
@@ -131,6 +140,17 @@ export const esEarnings10Y = defineRule(
       return {
         status: 'PASS',
         explanation: `申请日未满 ${es.values.adultAge.value} 岁或已满 ${es.values.exemptionAge.value} 岁，豁免最低收入要求。`,
+      };
+    }
+    // Adult children over the age limit cannot settle as dependants at all
+    // (ES-DEPENDANT-PATHWAY, p30).
+    if (childDependantOn(timeline, simulationDate)) {
+      return {
+        status: 'PASS',
+        explanation:
+          '保留 child-dependant 身份的成年子女随家庭定居，不需满足个人收入要求。',
+        sources: [{ srcId: 'SRC-001', locator: 'p30' }],
+        assumptions: [CHILD_DEPENDANT_ASSUMPTION],
       };
     }
     if (timeline.earningsExemptHealth) {

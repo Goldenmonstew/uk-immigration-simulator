@@ -223,15 +223,21 @@ describe('current law', () => {
 });
 
 describe('dependants', () => {
-  test('a dependant gets no Earned Settlement pathway or date', () => {
+  test('a dependant without a principal gets no Earned Settlement pathway or date', () => {
     const a = es({
       episodes: [sw('2025-01-15', { role: 'DEPENDANT', salary: undefined })],
     });
     expect(a.outcome).toBe('INSUFFICIENT_INFORMATION');
     expect(a.pathwayYears).toBeUndefined();
     expect(a.earliestDate).toBeUndefined();
-    const routeGroup = a.rules.find((r) => r.id === 'ES-ROUTE-GROUP');
-    expect(routeGroup?.status).toBe('UNKNOWN');
-    expect(routeGroup?.pendingDetails).toBeUndefined();
+    const pathway = a.rules.find((r) => r.id === 'ES-DEPENDANT-PATHWAY');
+    expect(pathway?.status).toBe('UNKNOWN');
+    expect(pathway?.explanation).toContain('填写主申请人信息后可判断');
+  });
+
+  test('a main applicant does not get the dependant rule', () => {
+    expect(es({}).rules.some((r) => r.id === 'ES-DEPENDANT-PATHWAY')).toBe(
+      false,
+    );
   });
 });

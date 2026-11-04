@@ -1,5 +1,6 @@
 import { earnedSettlement2026_11 as es } from '@uk-immigration/policy-data';
 import { fullYears } from '../dates';
+import { episodeOn } from '../residence';
 import { defineRule } from '../rule';
 import type { CefrLevel } from '@uk-immigration/policy-data';
 import type { IsoDate, PersonTimeline } from '../types';
@@ -18,6 +19,18 @@ export function isAdultOn(timeline: PersonTimeline, date: IsoDate): boolean {
 export function ageExemptOn(timeline: PersonTimeline, date: IsoDate): boolean {
   const age = fullYears(timeline.dateOfBirth, date);
   return age < es.values.adultAge.value || age >= es.values.exemptionAge.value;
+}
+
+export const CHILD_DEPENDANT_ASSUMPTION =
+  '当前以父母的 dependant 身份持证，即视为"保留 child-dependant 身份"（retain child-dependant status）；原文未说明认定标准（PD-059）。';
+
+/** Current permission is as the principal's child (SRC-001 p29–p30). */
+export function childDependantOn(
+  timeline: PersonTimeline,
+  date: IsoDate,
+): boolean {
+  const episode = episodeOn(timeline, date);
+  return episode?.role === 'DEPENDANT' && episode.dependantOf === 'PARENT';
 }
 
 const CEFR_ORDER: readonly string[] = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
@@ -58,10 +71,23 @@ export const esDebt = defineRule(
     id: 'ES-DEBT',
     ruleSetId: RULE_SET,
     title: '无未清偿的政府债务',
-    sources: [{ srcId: 'SRC-001', locator: 'p12' }],
+    sources: [
+      { srcId: 'SRC-001', locator: 'p12' },
+      { srcId: 'SRC-001', locator: 'p29' },
+    ],
     pendingDetails: ['PD-018'],
   },
-  ({ timeline }) => {
+  ({ timeline, simulationDate }) => {
+    if (
+      childDependantOn(timeline, simulationDate) &&
+      !isAdultOn(timeline, simulationDate)
+    ) {
+      return {
+        status: 'PASS',
+        explanation: `申请日未满 ${es.values.adultAge.value} 岁的 child dependant 豁免政府债务要求。`,
+        sources: [{ srcId: 'SRC-001', locator: 'p29' }],
+      };
+    }
     if (!timeline.governmentDebt) {
       return {
         status: 'UNKNOWN',
