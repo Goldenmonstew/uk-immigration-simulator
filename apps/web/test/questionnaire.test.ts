@@ -5,11 +5,51 @@ import {
   draftReducer,
   runSimulation,
   shortCircuitKeys,
+  stepSequence,
   taxYearsBefore,
   validateStep,
   visibleIncomeYears,
 } from '../lib/questionnaire';
 import { draftStorage } from '../lib/storage';
+
+test.each(['MAIN', 'DEPENDANT'] as const)(
+  'restoring completed %s inputs opens the last applicant step and can go back',
+  (role) => {
+    const saved = createDraft();
+    saved.completed = true;
+    saved.step = 1;
+    saved.principalStep = 3;
+    saved.timeline.episodes = [
+      {
+        route: 'SKILLED_WORKER',
+        role,
+        validFrom: '2020-01-01',
+        validTo: '2099-01-01',
+      },
+    ];
+    saved.principal = createDraft().timeline;
+    const restored = draftReducer(createDraft(), {
+      type: 'restore',
+      draft: saved,
+    });
+    const sequence = stepSequence(restored);
+    expect(restored.step).toBe(sequence.at(-1));
+    expect(restored.step).toBe(8);
+    expect(restored.principalStep).toBeUndefined();
+    expect(restored.principal).toEqual(saved.principal);
+    expect(
+      draftReducer(restored, { type: 'step', step: sequence.at(-2)! }).step,
+    ).toBe(7);
+    expect(saved.step).toBe(1);
+  },
+);
+
+test('an unfinished draft resumes its applicant or principal step', () => {
+  const draft = { ...createDraft(), step: 9, principalStep: 4 };
+  expect(draftReducer(createDraft(), { type: 'restore', draft })).toEqual(
+    draft,
+  );
+});
 
 test('normal submission sends the entered timeline and selected income window to evaluate', () => {
   const draft = draftReducer(createDraft(), {

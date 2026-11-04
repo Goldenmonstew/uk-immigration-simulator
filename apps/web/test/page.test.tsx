@@ -130,7 +130,7 @@ test('previews render rules, assumptions, dates, source links and group order', 
   expect(positive).toContain('SRC-001 p16');
   expect(positive).toContain(sourceUrls['SRC-001']);
   expect(positive).toContain(`dateTime="${policyAsOf}"`);
-  expect(positive).toContain(routeGroupNames.CORE_PERMISSION);
+  expect(positive).toContain(routeGroupNames.CORE_PERMISSION['zh-CN']);
   expect(positive).toContain('政府未定细节：PD-012、PD-013');
   expect(positive).toContain('<details><summary>假设清单（2 条）</summary>');
   expect(positive).not.toContain('<details open');
