@@ -2,7 +2,7 @@
 
 由 `pnpm --filter @uk-immigration/engine export:wording` 生成（`packages/engine/test/export-wording.test.ts`），请勿手改。
 
-收集范围：`test/helpers.ts` 的 6 个样例上下文（每条规则单独跑一遍 + 整体评估）与 14 个 fixtures，各按 zh-CN 与 en 运行一次；按规则 ID 分节，句子去重，按首次出现排序。样例跑不到的分支不在其中。
+收集范围：`test/helpers.ts` 的 13 个样例上下文（每条规则单独跑一遍 + 整体评估）与 18 个 fixtures，各按 zh-CN 与 en 运行一次；按规则 ID 分节，句子去重，按首次出现排序。样例跑不到的分支不在其中。
 
 ## earned-settlement-2026-11
 
@@ -34,11 +34,11 @@
 - 中：申请日未满 18 岁的 child dependant 豁免政府债务要求。
   - EN: A child dependant under 18 on the date of application is exempt from the government debt requirement.
 
-### ES-ENGLISH-B2：英语达到 B2 / English at B2
+### ES-ENGLISH-B2：定居英语要求（B2；UKRS 难民 A2） / English for settlement (B2; A2 for UK Resettlement Scheme refugees)
 
 来源：SRC-001 p21
 
-待定细节：PD-019
+待定细节：PD-019、PD-045
 
 - 中：英语 B2，达到 B2。
   - EN: English at B2, which meets B2.
@@ -46,14 +46,18 @@
   - EN: English level not provided. Earned Settlement requires CEFR B2 (existing exemptions are retained).
 - 中：英语 B1，低于 Earned Settlement 要求的 B2。这是强制要求，不能用收入或其他贡献抵消。
   - EN: English at B1, below the B2 required by Earned Settlement. This is a mandatory requirement and cannot be offset by earnings or other contributions.
+- 中：2023-01-01 经 UK Resettlement Scheme 抵达，属 Legacy Safe and Legal Routes。框架外群体一般须达 B2，第 7 章又说 UK Resettlement Scheme 难民只需 A2，原文不一致。
+  - EN: Arrived through the UK Resettlement Scheme on 2023-01-01, so on the Legacy Safe and Legal Routes. Groups outside the framework generally need B2, while Chapter 7 says UK Resettlement Scheme refugees need A2 only; the response is inconsistent.
 - 中：申请日未满 18 岁或已满 65 岁，豁免英语要求。
   - EN: Under 18 or aged 65 or over on the date of application: exempt from the English requirement.
+- 中：英语 A2，达到 A2。经 UK Resettlement Scheme 入境的难民只需 A2（p37、p39）。
+  - EN: English at A2, which meets A2. Refugees admitted through the UK Resettlement Scheme need A2 only (p37, p39).
 
 ### ES-KOL：通过 Life in the UK 考试 / Pass the Life in the UK test
 
 来源：SRC-001 p21
 
-待定细节：PD-020
+待定细节：PD-020、PD-021
 
 - 中：已通过 Life in the UK 考试。
   - EN: Passed the Life in the UK test.
@@ -61,15 +65,29 @@
   - EN: Not provided whether the Life in the UK test has been passed.
 - 中：申请日未满 18 岁或已满 65 岁，豁免 Life in the UK 考试。
   - EN: Under 18 or aged 65 or over on the date of application: exempt from the Life in the UK test.
+- 中：经 UK Resettlement Scheme 入境的难民在出现适合 A2 水平的考试版本前，暂免 Life in the UK 考试（p21 注 8、p39）。
+  - EN: Refugees admitted through the UK Resettlement Scheme are exempt from the Life in the UK test until a version suitable for A2 English is available (p21 note 8, p39).
+- 中：A2 版 Life in the UK 考试推出后，这一豁免可能改变；推出时间未公布（PD-021）。
+  - EN: This exemption may change once an A2 version of the Life in the UK test is available; no date has been given (PD-021).
 
 ### ES-ROUTE-GROUP：当前路线计入定居 / Current route counts towards settlement
 
 来源：SRC-001 p23；SRC-001 p24；SRC-001 p25；SRC-001 p26
 
-待定细节：PD-022、PD-023
+待定细节：PD-022、PD-023、PD-045
 
 - 中：当前路线"技术工作者"属核心许可 / 高技能人才分组，计入定居。
   - EN: The current route, Skilled Worker, is in the Core permission / High talent groups and counts towards settlement.
+- 中：当前路线"核心保护"属保护类分组，计入定居，按难民定居路径（Table 2）计算；保护类时间不能与工作、家庭路线的时间合并（p25）。
+  - EN: The current route, Core Protection, is in the Protection group and counts towards settlement under the refugee pathways (Table 2); time on protection routes cannot be combined with time on work or family routes (p25).
+- 中：当前路线"保护工作与学习"属保护类分组，计入定居，按难民定居路径（Table 2）计算；保护类时间不能与工作、家庭路线的时间合并（p25）。
+  - EN: The current route, Protection Work and Study, is in the Protection group and counts towards settlement under the refugee pathways (Table 2); time on protection routes cannot be combined with time on work or family routes (p25).
+- 中：当前路线"安全合法保护路线"属保护类分组，计入定居，按难民定居路径（Table 2）计算；保护类时间不能与工作、家庭路线的时间合并（p25）。
+  - EN: The current route, Safe and Legal, is in the Protection group and counts towards settlement under the refugee pathways (Table 2); time on protection routes cannot be combined with time on work or family routes (p25).
+- 中：经 UK Resettlement Scheme 于 2023-01-01 抵达，早于 2027-04-06，属 Legacy Safe and Legal Routes（p26 注 13）：不在 Earned Settlement 框架内，继续按现有安排 5 年定居；但强化的犯罪记录与英语要求仍适用，除非有现有豁免或保障。
+  - EN: Arrived through the UK Resettlement Scheme on 2023-01-01, before 2027-04-06, so on the Legacy Safe and Legal Routes (p26 note 13): outside the Earned Settlement framework, keeping settlement after five years under the existing arrangements. The strengthened criminality and English requirements still apply, unless an existing exemption or protection applies.
+- 中：2027-04-06 前抵达的 UK Resettlement Scheme 难民须达 B2 还是 A2 英语，原文前后不一（PD-045）。
+  - EN: Whether UK Resettlement Scheme refugees who arrived before 2027-04-06 need English at B2 or A2 is inconsistent in the response (PD-045).
 - 中：当前路线"学生"是临时路线，不计入定居；转入计入的路线后才开始累计。
   - EN: The current route, Student, is a temporary route and does not count towards settlement; time starts to count only after switching to a counting route.
 - 中：当前路线"家庭伴侣或父母"属核心许可 / 英国联系分组，计入定居。
@@ -81,7 +99,7 @@
 
 来源：SRC-001 p22；SRC-001 p23；SRC-001 p24；SRC-001 p25；SRC-008 CR 3.1
 
-待定细节：PD-022、PD-023、PD-025、PD-053、PD-054
+待定细节：PD-022、PD-023、PD-025、PD-053、PD-054、PD-064
 
 - 中：计入定居的连续居留自 2019-11-01 起，截至 2026-11-04 满 7 年。
   - EN: Continuous residence counting towards settlement since 2019-11-01: 7 full years by 2026-11-04.
@@ -89,6 +107,24 @@
   - EN: Continuous residence counting towards settlement since 2022-01-01: 4 full years by 2026-11-04. Absences exceed 180 days in a 12-month period, so continuous residence is broken and restarts from 2022-01-01.
 - 中：Earned Settlement 的缺席口径未公布，假设沿用现行 Appendix Continuous Residence CR 3.1（任意 12 个月不超过 180 天，出境与入境当日都计入缺席）（PD-054）。
   - EN: How absences count under Earned Settlement has not been published; assumed to follow the current Appendix Continuous Residence CR 3.1 (no more than 180 days in any 12-month period, with the days of departure and return both counted as absence) (PD-054).
+- 中：计入定居的连续居留自 2024-01-01 起，截至 2026-11-04 满 2 年。
+  - EN: Continuous residence counting towards settlement since 2024-01-01: 2 full years by 2026-11-04.
+- 中：计入定居的连续居留自 2024-01-01 起，截至 2026-11-04 满 2 年。20 年路径的居留还不够，2044-01-01 满 20 年。
+  - EN: Continuous residence counting towards settlement since 2024-01-01: 2 full years by 2026-11-04. Not enough residence yet for the 20-year pathway; 20 years are completed on 2044-01-01.
+- 中：计入定居的连续居留自 2022-01-01 起，截至 2026-11-04 满 4 年。此前在"核心保护"路线的时间不计入当前保护类路线的合格期，自 2022-01-01 转入起重新起算（p38；p40 Individual B）。
+  - EN: Continuous residence counting towards settlement since 2022-01-01: 4 full years by 2026-11-04. Earlier time on Core Protection does not count towards the qualifying period of the current protection route; the count restarts from the move on 2022-01-01 (p38; p40 Individual B).
+- 中：计入定居的连续居留自 2024-01-01 起，截至 2026-11-04 满 2 年。10 年路径的居留还不够，2034-01-01 满 10 年。
+  - EN: Continuous residence counting towards settlement since 2024-01-01: 2 full years by 2026-11-04. Not enough residence yet for the 10-year pathway; 10 years are completed on 2034-01-01.
+- 中：自 2025-01-01 起从 Protection Work and Study 回到 Core Protection。原文只说 Core Protection 的时间不计入 Protection Work and Study，没有说回到 Core Protection 后此前的时间如何计入。
+  - EN: Back on Core Protection from Protection Work and Study since 2025-01-01. The response only says that time on Core Protection does not count towards Protection Work and Study; it does not say how earlier time counts after moving back to Core Protection.
+- 中：自 2025-01-01 起从 Protection Work and Study 回到 Core Protection。原文只说 Core Protection 的时间不计入 Protection Work and Study，没有说回到 Core Protection 后此前的时间如何计入。20 年路径的居留还不够，2045-01-01 满 20 年。
+  - EN: Back on Core Protection from Protection Work and Study since 2025-01-01. The response only says that time on Core Protection does not count towards Protection Work and Study; it does not say how earlier time counts after moving back to Core Protection. Not enough residence yet for the 20-year pathway; 20 years are completed on 2045-01-01.
+- 中：计入定居的连续居留自 2023-01-01 起，截至 2026-11-04 满 3 年。
+  - EN: Continuous residence counting towards settlement since 2023-01-01: 3 full years by 2026-11-04.
+- 中：计入定居的连续居留自 2023-01-01 起，截至 2026-11-04 满 3 年。5 年路径的居留还不够，2028-01-01 满 5 年。
+  - EN: Continuous residence counting towards settlement since 2023-01-01: 3 full years by 2026-11-04. Not enough residence yet for the 5-year pathway; 5 years are completed on 2028-01-01.
+- 中：当前路线"原有安全合法路线"不在 Earned Settlement 框架内，不按本框架计算居留。
+  - EN: The current route, Legacy Safe and Legal, is outside the Earned Settlement framework, so residence is not calculated under it.
 - 中：当前路线"学生"不计入定居，计入的居留为 0。
   - EN: The current route, Student, does not count towards settlement, so the counting residence is 0.
 - 中：计入定居的连续居留自 2016-09-01 起，截至 2026-11-04 满 10 年。
@@ -103,6 +139,14 @@
   - EN: Continuous residence counting towards settlement since 2021-04-06: 5 full years by 2026-04-06.
 - 中：计入定居的连续居留自 2023-04-06 起，截至 2026-04-06 满 3 年。
   - EN: Continuous residence counting towards settlement since 2023-04-06: 3 full years by 2026-04-06.
+- 中：计入定居的连续居留自 2027-06-01 起，截至 2032-06-01 满 5 年。
+  - EN: Continuous residence counting towards settlement since 2027-06-01: 5 full years by 2032-06-01.
+- 中：计入定居的连续居留自 2028-03-01 起，截至 2030-01-01 满 1 年。此前在"核心保护"路线的时间不计入当前保护类路线的合格期，自 2028-03-01 转入起重新起算（p38；p40 Individual B）。10 年路径的居留还不够，2038-03-01 满 10 年。
+  - EN: Continuous residence counting towards settlement since 2028-03-01: 1 full year by 2030-01-01. Earlier time on Core Protection does not count towards the qualifying period of the current protection route; the count restarts from the move on 2028-03-01 (p38; p40 Individual B). Not enough residence yet for the 10-year pathway; 10 years are completed on 2038-03-01.
+- 中：计入定居的连续居留自 2028-03-01 起，截至 2030-01-01 满 1 年。此前在"核心保护"路线的时间不计入当前保护类路线的合格期，自 2028-03-01 转入起重新起算（p38；p40 Individual B）。20 年路径的居留还不够，2048-03-01 满 20 年。
+  - EN: Continuous residence counting towards settlement since 2028-03-01: 1 full year by 2030-01-01. Earlier time on Core Protection does not count towards the qualifying period of the current protection route; the count restarts from the move on 2028-03-01 (p38; p40 Individual B). Not enough residence yet for the 20-year pathway; 20 years are completed on 2048-03-01.
+- 中：计入定居的连续居留自 2027-03-01 起，截至 2030-01-01 满 2 年。30 年路径的居留还不够，2057-03-01 满 30 年。
+  - EN: Continuous residence counting towards settlement since 2027-03-01: 2 full years by 2030-01-01. Not enough residence yet for the 30-year pathway; 30 years are completed on 2057-03-01.
 - 中：计入定居的连续居留自 2023-04-06 起，截至 2028-04-06 满 5 年。
   - EN: Continuous residence counting towards settlement since 2023-04-06: 5 full years by 2028-04-06.
 - 中：计入定居的连续居留自 2023-04-06 起，截至 2028-04-06 满 5 年。10 年路径的居留还不够，2033-04-06 满 10 年。
@@ -204,7 +248,7 @@
 
 来源：SRC-001 p18；SRC-006 #benefits-open-to-new-claims；SRC-006 #contributory-benefits-and-statutory-payments
 
-待定细节：PD-013、PD-014、PD-047
+待定细节：PD-013、PD-014、PD-031、PD-047、PD-066
 
 - 中：申请前 5 年内未领取 public funds。
   - EN: No public funds received in the 5 years before applying.
@@ -216,6 +260,16 @@
   - EN: Only benefits received by the applicant are counted; the response does not say whether benefits received by a partner or child affect the applicant (PD-014).
 - 中：回看期按正文"申请前紧接的 5 年"计算，不要求这段时间都在 qualifying route 上（PD-047）。
   - EN: The lookback is “the 5 years immediately before applying”, as in the main text, and that time need not all be on a qualifying route (PD-047).
+- 中：Core Protection 的 20 年路径不要求申请前 5 年未使用 public funds；这一要求只用于短于 20 年的路径（p39）。
+  - EN: The 20-year Core Protection pathway does not require no use of public funds in the 5 years before applying; that requirement only applies to pathways shorter than 20 years (p39).
+- 中：2021-11-04 以来领取过 Universal Credit，属 public funds。Protection Work and Study 的 10 年路径要求申请前 5 年未使用 public funds，否则只能走 20 年路径（p39）。若此后不再使用，自 2028-07-01 起回看期内不再有 public funds，可按较短路径重新评估。
+  - EN: Public funds received since 2021-11-04: Universal Credit. The 10-year Protection Work and Study pathway requires no use of public funds in the 5 years before applying; otherwise only the 20-year pathway is available (p39). If they are not used again, the lookback contains no public funds from 2028-07-01, and the shorter pathways can be reassessed.
+- 中：难民哪些福利可不计入、对最弱势者的保障措施，将在实施前公布；目前先按现行 public funds 定义判断（PD-031）。
+  - EN: Which benefits may be disregarded for refugees, and the safeguards for the most vulnerable, are to be set out before implementation; the current public funds definition is used for now (PD-031).
+- 中：20 年按 p25 / p38 的"转入新路线重新起算"，自 Protection Work and Study 的合格期起点起算，不含此前的 Core Protection 时间（PD-066）。
+  - EN: Following the rule that the count restarts on moving to a new route (p25, p38), the 20 years count from the start of the qualifying period on Protection Work and Study, without earlier Core Protection time (PD-066).
+- 中：经 designated Safe and Legal Routes 入境的难民豁免"定居前 5 年未使用 public funds"的要求（p37、p47）。
+  - EN: Refugees admitted through designated Safe and Legal Routes are exempt from the requirement not to have used public funds in the 5 years before settlement (p37, p47).
 - 中：2021-11-04 以来领取过 Universal Credit，属 public funds。3 / 5 / 10 年路径要求申请前 5 年未使用 specified public funds，否则须在 qualifying route 上满 20 年。若此后不再使用，自 2028-10-01 起回看期内不再有 public funds，可按较短路径重新评估。
   - EN: Public funds received since 2021-11-04: Universal Credit. The 3 / 5 / 10-year pathways require no use of specified public funds in the 5 years before applying; otherwise 20 years on a qualifying route are needed. If they are not used again, the lookback contains no public funds from 2028-10-01, and the shorter pathways can be reassessed.
 
@@ -223,7 +277,7 @@
 
 来源：SRC-001 p13
 
-待定细节：PD-015、PD-016、PD-044
+待定细节：PD-015、PD-016、PD-044、PD-065
 
 - 中：成年后无 qualifying immigration breach。
   - EN: No qualifying immigration breach as an adult.
@@ -231,6 +285,83 @@
   - EN: Qualifying immigration breach as an adult (Overstaying): the 20-year pathway applies however high the earnings.
 - 中：20 年按在 qualifying route 上的连续居留计算，违规不设时效（PD-016）。
   - EN: The 20 years count continuous residence on a qualifying route; breaches do not expire (PD-016).
+- 中：成年后无 qualifying immigration breach。成年后非法入境在保护类路线上按 Table 2 额外加 10 年，见"难民定居路径与年限"，不在此计入。
+  - EN: No qualifying immigration breach as an adult. On a protection route illegal entry as an adult adds 10 years under Table 2 (see the refugee settlement pathway) and is not counted here.
+- 中：成年后有 qualifying immigration breach（逾期停留），不论收入多高都进入 20 年路径。成年后非法入境在保护类路线上按 Table 2 额外加 10 年，见"难民定居路径与年限"，不在此计入。
+  - EN: Qualifying immigration breach as an adult (Overstaying): the 20-year pathway applies however high the earnings. On a protection route illegal entry as an adult adds 10 years under Table 2 (see the refugee settlement pathway) and is not counted here.
+- 中：Table 2 只规定非法入境的后果；其他 qualifying breach 按第 1 章与 Table 1"所有路径适用"进入 20 年路径（叠加非法入境的 10 年），自当前保护类路线的合格期起点起算（PD-065）。
+  - EN: Table 2 only sets out the consequence of illegal entry; other qualifying breaches lead to the 20-year pathway under Chapter 1 and Table 1 (“apply to all”), plus 10 years for any illegal entry, counted from the start of the qualifying period on the current protection route (PD-065).
+
+### ES-PROTECTION-PATHWAY：难民定居路径与年限 / Refugee settlement pathway and qualifying period
+
+来源：SRC-001 p37；SRC-001 p38；SRC-001 p39；SRC-001 p40；SRC-001 p47；SRC-001 p48
+
+待定细节：PD-029、PD-032、PD-033、PD-034、PD-043
+
+- 中：当前不是保护类路线，本条不适用。
+  - EN: The current route is not a protection route, so this does not apply.
+- 中：Core Protection：20 年路径（p38、p47）。转入持续的工作、教育或培训并进入 Protection Work and Study 后，可自转入起按 10 年计算（p38）。成年后非法入境（2023-06-01），申报受 Refugee Convention Article 31 保护。Article 31 适用时不加 10 年，按 20 年计算；这一保障如何运作将在实施前公布（p39、p48）。若不适用，为 30 年，最早 2054-01-01。
+  - EN: Core Protection: the 20-year pathway (p38, p47). Moving into sustained work, education or training and onto Protection Work and Study gives a 10-year pathway counted from the move (p38). Illegal entry as an adult (2023-06-01), declared to be protected by Article 31 of the Refugee Convention. Where Article 31 applies the extra 10 years do not, so 20 years are used; how this protection will work is to be set out before implementation (p39, p48). If it does not apply, the pathway is 30 years, at the earliest 2054-01-01.
+- 中：Core Protection 与 Protection Work and Study 尚未推出，启用日期未定（PD-034）；本工具按所填许可片段的日期计算。推出前已有的难民身份时间是否及如何计入，原文说法不一、细则待公布（PD-029、PD-043）。
+  - EN: Core Protection and Protection Work and Study have not been introduced and their start dates are not set (PD-034); this tool counts from the dates of the permissions entered. Whether and how refugee time before their introduction counts is inconsistent in the response and the details are still to be set out (PD-029, PD-043).
+- 中：Protection Work and Study：10 年路径，自转入本路线起算，此前在 Core Protection 的时间不计入（p38、p47）。成年后非法入境（2020-06-01），按 Table 2"Protection Work and Study following illegal entry"行额外加 10 年，共 20 年（p38、p48）；受 Article 31 保护时不加（未申报）。
+  - EN: Protection Work and Study: the 10-year pathway, counted from the move onto this route; earlier time on Core Protection does not count (p38, p47). Illegal entry as an adult (2020-06-01): under Table 2’s “Protection Work and Study following illegal entry” row an extra 10 years apply, 20 years in all (p38, p48); they do not apply where Article 31 protects the person (not declared).
+- 中：Protection Work and Study：10 年路径，自转入本路线起算，此前在 Core Protection 的时间不计入（p38、p47）。
+  - EN: Protection Work and Study: the 10-year pathway, counted from the move onto this route; earlier time on Core Protection does not count (p38, p47).
+- 中：Core Protection：20 年路径（p38、p47）。转入持续的工作、教育或培训并进入 Protection Work and Study 后，可自转入起按 10 年计算（p38）。
+  - EN: Core Protection: the 20-year pathway (p38, p47). Moving into sustained work, education or training and onto Protection Work and Study gives a 10-year pathway counted from the move (p38).
+- 中：按申报经其他指定的安置或担保路线入境，属 designated Safe and Legal Routes：5 年路径（p37、p47）。
+  - EN: Admitted, as declared, through another designated resettlement or sponsorship route, a designated Safe and Legal Route: the 5-year pathway (p37, p47).
+- 中："其他指定的安置或担保路线"的清单尚未公布，按你的申报处理（PD-033）；若为 Community Sponsorship、Mandate Resettlement Scheme 或此前的安置计划，属 Legacy Safe and Legal Routes，不在 Earned Settlement 框架内（p26 注 13）。
+  - EN: The list of other designated resettlement and sponsorship routes has not been published, so this follows what you declared (PD-033). Community Sponsorship, the Mandate Resettlement Scheme and predecessor resettlement schemes are Legacy Safe and Legal Routes, outside the Earned Settlement framework (p26 note 13).
+- 中：未填写经哪条 designated Safe and Legal Route 入境（UK Resettlement Scheme 或其他指定的安置 / 担保路线）。先以其他路线合法入境、之后申请庇护的，不走这条 5 年路径（p37）。
+  - EN: Not provided which designated Safe and Legal Route the person was admitted on (the UK Resettlement Scheme, or another designated resettlement or sponsorship route). Entering legally on another route and later claiming asylum does not lead to this five-year pathway (p37).
+- 中：经 UK Resettlement Scheme 入境，属 designated Safe and Legal Routes：5 年路径（p37、p47）。
+  - EN: Admitted through the UK Resettlement Scheme, a designated Safe and Legal Route: the 5-year pathway (p37, p47).
+- 中：Protection Work and Study：10 年路径，自转入本路线起算，此前在 Core Protection 的时间不计入（p38、p47）。成年后非法入境（2026-08-10），按 Table 2"Protection Work and Study following illegal entry"行额外加 10 年，共 20 年（p38、p48）；受 Article 31 保护时不加（未申报）。
+  - EN: Protection Work and Study: the 10-year pathway, counted from the move onto this route; earlier time on Core Protection does not count (p38, p47). Illegal entry as an adult (2026-08-10): under Table 2’s “Protection Work and Study following illegal entry” row an extra 10 years apply, 20 years in all (p38, p48); they do not apply where Article 31 protects the person (not declared).
+- 中：Core Protection：20 年路径（p38、p47）。转入持续的工作、教育或培训并进入 Protection Work and Study 后，可自转入起按 10 年计算（p38）。成年后非法入境（2026-08-10），按 Table 2"Core Protection following illegal entry"行额外加 10 年，共 30 年（p38、p48）；受 Article 31 保护时不加（未申报）。
+  - EN: Core Protection: the 20-year pathway (p38, p47). Moving into sustained work, education or training and onto Protection Work and Study gives a 10-year pathway counted from the move (p38). Illegal entry as an adult (2026-08-10): under Table 2’s “Core Protection following illegal entry” row an extra 10 years apply, 30 years in all (p38, p48); they do not apply where Article 31 protects the person (not declared).
+
+### ES-PROTECTION-CONTRIBUTION：Protection Work and Study 的持续贡献 / Sustained contribution on Protection Work and Study
+
+来源：SRC-001 p38；SRC-001 p47
+
+待定细节：PD-030
+
+- 中：当前不是 Protection Work and Study，本条不适用。
+  - EN: The current route is not Protection Work and Study, so this does not apply.
+- 中：原文只给出工作者的 contribution 标准（3 年年收入达 £12,571），没有给出教育或培训者如何证明持续贡献。
+  - EN: The response only sets the contribution standard for those working (earning £12,571 a year for three years); it does not say how those in education or training show sustained contribution.
+- 中：2 个完整 tax year 中有 2 个年收入达 £12,571（2024-25、2025-26），需 3 个（p38、p47）。合格期到 2034-01-01 才满，在此之前仍可达到。计入自 2024-01-01 起的完整 tax year（起点所在 tax year 不计，因年收入无法拆出转入前的部分），截至申请日所在 tax year 之前。
+  - EN: 2 of 2 complete tax years with earnings of at least £12,571 (2024-25, 2025-26); 3 are needed (p38, p47). The qualifying period ends on 2034-01-01, so this can still be met by then. Complete tax years from 2024-01-01 count (the tax year containing that date does not, as its earnings cannot be split at the move), up to the tax year before the application date.
+- 中：原文未定义 3 个 qualifying years 的观察窗口；本工具按"Protection Work and Study 合格期内任意 3 个 tax year"计算（PD-030）。
+  - EN: The response does not define the window for the three qualifying years; this tool counts any 3 tax years in the qualifying period on Protection Work and Study (PD-030).
+- 中：1 个完整 tax year 中有 1 个年收入达 £12,571（2028-29），需 3 个（p38、p47）。合格期到 2038-03-01 才满，在此之前仍可达到。计入自 2028-03-01 起的完整 tax year（起点所在 tax year 不计，因年收入无法拆出转入前的部分），截至申请日所在 tax year 之前。
+  - EN: 1 of 1 complete tax year with earnings of at least £12,571 (2028-29); 3 are needed (p38, p47). The qualifying period ends on 2038-03-01, so this can still be met by then. Complete tax years from 2028-03-01 count (the tax year containing that date does not, as its earnings cannot be split at the move), up to the tax year before the application date.
+- 中：1 个完整 tax year 中有 1 个年收入达 £12,571（2028-29），需 3 个（p38、p47）。合格期到 2048-03-01 才满，在此之前仍可达到。计入自 2028-03-01 起的完整 tax year（起点所在 tax year 不计，因年收入无法拆出转入前的部分），截至申请日所在 tax year 之前。
+  - EN: 1 of 1 complete tax year with earnings of at least £12,571 (2028-29); 3 are needed (p38, p47). The qualifying period ends on 2048-03-01, so this can still be met by then. Complete tax years from 2028-03-01 count (the tax year containing that date does not, as its earnings cannot be split at the move), up to the tax year before the application date.
+
+### ES-ASYLUM-SUPPORT：已偿还 asylum support 或按计划还款 / Asylum support repaid or repayment plan kept up
+
+来源：SRC-001 p8；SRC-001 p39；SRC-001 p47
+
+待定细节：PD-031、PD-068
+
+- 中：当前不是 Protection Work and Study 或 Core Protection，本条不适用。
+  - EN: The current route is neither Protection Work and Study nor Core Protection, so this does not apply.
+- 中：未填写 asylum support 的偿还情况。领过 asylum support 且须偿还的，定居前须已全额偿还或按约定还款计划持续履行（p8 注 1、p39）。
+  - EN: Repayment of asylum support not provided. Anyone who received asylum support and must repay it needs to have repaid it in full, or be keeping up with an agreed repayment plan, before settlement (p8 note 1, p39).
+- 中：须偿还的 asylum support 尚未偿还，也没有按约定的还款计划履行。这是最低要求，不满足即不能定居（p8 注 1、p39、p47）。
+  - EN: Asylum support that must be repaid is outstanding and no agreed repayment plan is being kept up. This is a minimum requirement: without it settlement is not possible (p8 note 1, p39, p47).
+- 中：申报正按约定的还款计划偿还 asylum support（p39）。
+  - EN: Declared that an agreed repayment plan for asylum support is being kept up (p39).
+- 中：难民偿还义务与保障措施的细则将在实施前公布（PD-031）；偿还情况按你的申报判断。
+  - EN: The details of refugees’ repayment obligations and safeguards are to be set out before implementation (PD-031); repayment follows what you declared.
+- 中：申报未领取 asylum support 或无需偿还。
+  - EN: Declared that no asylum support was received or none needs to be repaid.
+- 中：申报已全额偿还 asylum support（p39）。
+  - EN: Declared that asylum support has been repaid in full (p39).
 
 ### ES-TRANSITIONAL-CARE-WORKER：care worker 过渡安排（保留 5 年） / Care worker transitional arrangements (retain 5 years)
 
@@ -279,6 +410,8 @@
 
 - 中：当前不是以 dependant 身份持证，不走随主申请人定居的路径。
   - EN: The current permission is not as a dependant, so the pathway of settling with the principal applicant does not apply.
+- 中：当前以 dependant 身份在英，dependant 随主申请人定居；填写主申请人信息后可判断。
+  - EN: Currently in the UK as a dependant, and a dependant settles with the principal applicant; this can be assessed once the principal applicant’s details are provided.
 - 中：与主申请人同时开始居留，可在主申请人的 5 年路径满期时（2026-04-06）一同定居，须各自满足相关要求。
   - EN: Residence started together with the principal applicant, so they can settle together when the principal applicant’s 5-year pathway is completed (2026-04-06), each meeting the relevant requirements.
 - 中：dependant 的路径年限与日期按主申请人在同一申请日的 Earned Settlement 评估结果推出；主申请人自己的规则明细见其本人的结果。
@@ -310,12 +443,24 @@
   - EN: Earned Settlement has been announced but is not yet in force; it is assessed as if it applied on the date of application. The rules are based on the government response (SRC-001), not on Immigration Rules in force (PD-001). The first rule changes are expected to be laid from December 2026 and take effect in January 2027, with further changes in 2027–2028 (SRC-002 col 593; SRC-003 cols 1423–1424); the actual dates will be set by the Statements of Changes (PD-003).
 - 中：自 2019-11-01 起连续持 Skilled Worker 许可，早于 2024-04-04，属"2024 年 4 月前群体"：可按现有薪资条件续签至 2035 年（p44，具体日期未定，PD-040）；本工具按标准路径计算定居年限。
   - EN: Continuous Skilled Worker permission since 2019-11-01, before 2024-04-04, so in the “pre-April 2024 cohort”: permission can be extended under the existing salary requirements until 2035 (p44; exact dates not set, PD-040). This tool calculates the settlement pathway under the standard pathways.
+- 中：难民定居路径的多项细则（路线推出时间、已有时间如何计入、public funds 与偿还安排、Article 31）将在实施前公布；本结果仅帮助理解已公布的政策，具体情况请咨询受监管的移民顾问。
+  - EN: Many details of the refugee settlement pathways (when the routes start, how existing time counts, public funds and repayment, Article 31) will be set out before implementation. This result only helps to understand the announced policy; for your own case, please seek advice from a regulated immigration adviser.
+- 中：最早可申请日期按"自 2024-01-01 起持续居留、收入等状况不变、其余要求届时仍满足"推算，不是对未来的保证。
+  - EN: The earliest application date is projected on the basis that residence continues from 2024-01-01, earnings and other circumstances stay the same, and the other requirements are still met then; it is not a guarantee about the future.
+- 中：最早可申请日期按"自 2025-01-01 起持续居留、收入等状况不变、其余要求届时仍满足"推算，不是对未来的保证。
+  - EN: The earliest application date is projected on the basis that residence continues from 2025-01-01, earnings and other circumstances stay the same, and the other requirements are still met then; it is not a guarantee about the future.
+- 中：最早可申请日期按"自 2023-01-01 起持续居留、收入等状况不变、其余要求届时仍满足"推算，不是对未来的保证。
+  - EN: The earliest application date is projected on the basis that residence continues from 2023-01-01, earnings and other circumstances stay the same, and the other requirements are still met then; it is not a guarantee about the future.
 - 中：最早可申请日期按"自 2015-06-01 起持续居留、收入等状况不变、其余要求届时仍满足"推算，不是对未来的保证。
   - EN: The earliest application date is projected on the basis that residence continues from 2015-06-01, earnings and other circumstances stay the same, and the other requirements are still met then; it is not a guarantee about the future.
 - 中：自 2021-04-06 起连续持 Skilled Worker 许可，早于 2024-04-04，属"2024 年 4 月前群体"：可按现有薪资条件续签至 2035 年（p44，具体日期未定，PD-040）；本工具按标准路径计算定居年限。
   - EN: Continuous Skilled Worker permission since 2021-04-06, before 2024-04-04, so in the “pre-April 2024 cohort”: permission can be extended under the existing salary requirements until 2035 (p44; exact dates not set, PD-040). This tool calculates the settlement pathway under the standard pathways.
 - 中：最早可申请日期按"自 2023-04-06 起持续居留、收入等状况不变、其余要求届时仍满足"推算，不是对未来的保证。
   - EN: The earliest application date is projected on the basis that residence continues from 2023-04-06, earnings and other circumstances stay the same, and the other requirements are still met then; it is not a guarantee about the future.
+- 中：最早可申请日期按"自 2028-03-01 起持续居留、收入等状况不变、其余要求届时仍满足"推算，不是对未来的保证。
+  - EN: The earliest application date is projected on the basis that residence continues from 2028-03-01, earnings and other circumstances stay the same, and the other requirements are still met then; it is not a guarantee about the future.
+- 中：最早可申请日期按"自 2027-03-01 起持续居留、收入等状况不变、其余要求届时仍满足"推算，不是对未来的保证。
+  - EN: The earliest application date is projected on the basis that residence continues from 2027-03-01, earnings and other circumstances stay the same, and the other requirements are still met then; it is not a guarantee about the future.
 - 中：原文未规定同时符合过渡安排与标准路径时如何取舍；本结果取满足条件的最短路径，申请人可能可以选择更有利的安排，需咨询受监管顾问。
   - EN: The response does not say how to choose when someone qualifies for both a transitional arrangement and a standard pathway; this result takes the shortest pathway whose conditions are met. The applicant may be able to choose a more favourable arrangement and should seek regulated advice.
 - 中：自 2023-04-06 起连续持 Skilled Worker 许可，早于 2024-04-04，属"2024 年 4 月前群体"：可按现有薪资条件续签至 2035 年（p44，具体日期未定，PD-040）；本工具按标准路径计算定居年限。
@@ -501,6 +646,12 @@
   - EN: Continuous lawful residence since 2022-01-01: 4 full years by 2026-11-04; 10 years are completed on 2032-01-01.
 - 中：2024-04-11 前开始的缺席按 CR 3.3（单次不超过 184 天、累计不超过 548 天），之后的按 CR 3.1；出境与入境当日都计入缺席。
   - EN: Absences starting before 2024-04-11 follow CR 3.3 (no single absence over 184 days and no more than 548 days in total), and later ones follow CR 3.1; the days of departure and return both count as absence.
+- 中：自 2024-01-01 起连续合法居留，截至 2026-11-04 满 2 年；2034-01-01 满 10 年。
+  - EN: Continuous lawful residence since 2024-01-01: 2 full years by 2026-11-04; 10 years are completed on 2034-01-01.
+- 中：自 2021-01-01 起连续合法居留，截至 2026-11-04 满 5 年；2031-01-01 满 10 年。
+  - EN: Continuous lawful residence since 2021-01-01: 5 full years by 2026-11-04; 10 years are completed on 2031-01-01.
+- 中：自 2023-01-01 起连续合法居留，截至 2026-11-04 满 3 年；2033-01-01 满 10 年。
+  - EN: Continuous lawful residence since 2023-01-01: 3 full years by 2026-11-04; 10 years are completed on 2033-01-01.
 - 中：自 2024-09-01 起连续合法居留，截至 2026-11-04 满 2 年；2034-09-01 满 10 年。
   - EN: Continuous lawful residence since 2024-09-01: 2 full years by 2026-11-04; 10 years are completed on 2034-09-01.
 - 中：自 2016-09-01 起连续合法居留，已满 10 年。
@@ -539,3 +690,7 @@
 
 - 中：申报了犯罪记录。Earned Settlement 下成年人的任何犯罪记录都会导致拒绝定居，现行规则下也取决于 Part Suitability 的具体情形；本工具不作结论，请咨询受监管的移民顾问。
   - EN: A criminal record has been declared. Under Earned Settlement any criminal record as an adult leads to refusal of settlement; under the current rules the outcome depends on the circumstances under Part Suitability. This tool does not reach a conclusion: please seek advice from a regulated immigration adviser.
+- 中：当前路线不在 Earned Settlement 框架内，继续按该群体现有的定居安排（SRC-001 p25–p26）；但强化的犯罪记录与 B2 英语要求仍适用，除非有现有豁免或保障。
+  - EN: The current route is outside the Earned Settlement framework and keeps the existing settlement arrangements for that group (SRC-001 p25–p26). The strengthened criminality and B2 English requirements still apply, unless an existing exemption or protection applies.
+- 中：当前以 dependant 身份持保护类路线许可。Earned Settlement 的难民定居路径（SRC-001 Chapter 7、Table 2）没有说明难民的 dependant 如何定居（PD-067），本工具不作结论，请咨询受监管的移民顾问。
+  - EN: The current permission is on a protection route as a dependant. The Earned Settlement refugee pathways (SRC-001 Chapter 7, Table 2) do not say how refugees’ dependants settle (PD-067). This tool does not reach a conclusion: please seek advice from a regulated immigration adviser.

@@ -121,6 +121,113 @@ export const SAMPLES: Record<string, PersonTimeline> = {
       salary: 20000,
     })),
   }),
+  // Refugee pathways (contracts §11): Article 31, missing repayment.
+  coreProtection: timeline({
+    episodes: [
+      {
+        route: 'CORE_PROTECTION',
+        role: 'MAIN',
+        validFrom: '2024-01-01',
+        validTo: '2029-12-31',
+      },
+    ],
+    immigrationBreaches: [
+      { type: 'ILLEGAL_ENTRY', date: '2023-06-01', article31: true },
+    ],
+  }),
+  // Education, public funds, outstanding repayment, another breach.
+  protectionWorkAndStudy: timeline({
+    episodes: [
+      {
+        route: 'CORE_PROTECTION',
+        role: 'MAIN',
+        validFrom: '2021-01-01',
+        validTo: '2021-12-31',
+      },
+      {
+        route: 'PROTECTION_WORK_AND_STUDY',
+        role: 'MAIN',
+        validFrom: '2022-01-01',
+        validTo: '2028-12-31',
+        sustainedActivity: 'EDUCATION',
+      },
+    ],
+    benefits: [
+      { benefitType: 'UNIVERSAL_CREDIT', from: '2023-01-01', to: '2023-06-30' },
+    ],
+    immigrationBreaches: [
+      { type: 'ILLEGAL_ENTRY', date: '2020-06-01' },
+      { type: 'OVERSTAYING', date: '2020-09-01' },
+    ],
+    asylumSupportRepayment: 'OUTSTANDING',
+  }),
+  // Contribution through work, not yet three years; on a repayment plan.
+  protectionWork: timeline({
+    episodes: [
+      {
+        route: 'PROTECTION_WORK_AND_STUDY',
+        role: 'MAIN',
+        validFrom: '2024-01-01',
+        validTo: '2029-12-31',
+        sustainedActivity: 'WORK',
+      },
+    ],
+    asylumSupportRepayment: 'ON_PLAN',
+  }),
+  // Back on Core Protection after Protection Work and Study.
+  backOnCoreProtection: timeline({
+    episodes: [
+      {
+        route: 'PROTECTION_WORK_AND_STUDY',
+        role: 'MAIN',
+        validFrom: '2022-01-01',
+        validTo: '2024-12-31',
+      },
+      {
+        route: 'CORE_PROTECTION',
+        role: 'MAIN',
+        validFrom: '2025-01-01',
+        validTo: '2029-12-31',
+      },
+    ],
+    asylumSupportRepayment: 'NOT_REQUIRED',
+  }),
+  // Another designated Safe and Legal route.
+  safeAndLegal: timeline({
+    episodes: [
+      {
+        route: 'SAFE_AND_LEGAL',
+        role: 'MAIN',
+        validFrom: '2023-01-01',
+        validTo: '2028-12-31',
+        resettlementScheme: 'OTHER_DESIGNATED',
+      },
+    ],
+  }),
+  // UK Resettlement Scheme before 2027-04-06: Legacy Safe and Legal.
+  legacyResettlement: timeline({
+    episodes: [
+      {
+        route: 'SAFE_AND_LEGAL',
+        role: 'MAIN',
+        validFrom: '2023-01-01',
+        validTo: '2028-12-31',
+        resettlementScheme: 'UK_RESETTLEMENT_SCHEME',
+      },
+    ],
+  }),
+  // Safe and Legal without the scheme; refugee dependant short circuit below.
+  protectionDependant: timeline({
+    episodes: [
+      {
+        route: 'SAFE_AND_LEGAL',
+        role: 'DEPENDANT',
+        validFrom: '2023-01-01',
+        validTo: '2028-12-31',
+        dependantOf: 'PARTNER',
+      },
+    ],
+  }),
   student: timeline({
     episodes: [
       {
