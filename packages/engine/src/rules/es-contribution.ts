@@ -18,7 +18,7 @@ import {
   childDependantAssumption,
   childDependantOn,
 } from './es-requirements';
-import { esQualifyingResidence } from './es-residence';
+import { esProtectionRouteOn, esQualifyingResidence } from './es-residence';
 
 // Contribution: earnings, British connection, public funds and public service
 // (SRC-001 Chapter 2, p14–p19; Table 1 p46).
@@ -294,11 +294,39 @@ export const esPublicFunds = defineRule(
         locator: '#contributory-benefits-and-statutory-payments',
       },
     ],
-    pendingDetails: ['PD-013', 'PD-014', 'PD-047'],
+    pendingDetails: ['PD-013', 'PD-014', 'PD-031', 'PD-047', 'PD-066'],
   },
   ({ timeline, simulationDate, locale }) => {
     const L = textFor({ locale });
     const years = es.values.publicFundsLookbackYears.value;
+    const protection = esProtectionRouteOn(timeline, simulationDate);
+    if (protection === 'SAFE_AND_LEGAL') {
+      return {
+        status: 'PASS',
+        explanation: L(
+          `经 designated Safe and Legal Routes 入境的难民豁免"定居前 ${years} 年未使用 public funds"的要求（p37、p47）。`,
+          `Refugees admitted through designated Safe and Legal Routes are exempt from the requirement not to have used public funds in the ${years} years before settlement (p37, p47).`,
+        ),
+        sources: [
+          { srcId: 'SRC-001', locator: 'p37' },
+          { srcId: 'SRC-001', locator: 'p47' },
+        ],
+      };
+    }
+    if (protection === 'CORE_PROTECTION') {
+      return {
+        status: 'PASS',
+        explanation: L(
+          `Core Protection 的 ${es.values.protectionPathwayYearsCore.value} 年路径不要求申请前 ${years} 年未使用 public funds；这一要求只用于短于 20 年的路径（p39）。`,
+          `The ${es.values.protectionPathwayYearsCore.value}-year Core Protection pathway does not require no use of public funds in the ${years} years before applying; that requirement only applies to pathways shorter than 20 years (p39).`,
+        ),
+        sources: [
+          { srcId: 'SRC-001', locator: 'p39' },
+          { srcId: 'SRC-001', locator: 'p47' },
+        ],
+      };
+    }
+    const pws = protection === 'PROTECTION_WORK_AND_STUDY';
     const from = addYears(simulationDate, -years);
     const inWindow = timeline.benefits.filter(
       (b) => b.from <= simulationDate && (b.to ?? simulationDate) >= from,
@@ -319,6 +347,14 @@ export const esPublicFunds = defineRule(
     const assumptions =
       inWindow.length > 0
         ? [
+            ...(pws
+              ? [
+                  L(
+                    '难民哪些福利可不计入、对最弱势者的保障措施，将在实施前公布；目前先按现行 public funds 定义判断（PD-031）。',
+                    'Which benefits may be disregarded for refugees, and the safeguards for the most vulnerable, are to be set out before implementation; the current public funds definition is used for now (PD-031).',
+                  ),
+                ]
+              : []),
             L(
               'specified public funds 先按现行 public funds 定义（SRC-006）判断；政府将另定纳入范围与弱势群体的保障或豁免（PD-013）。',
               'Specified public funds are judged by the current public funds definition (SRC-006) for now; the government will set the scope, and protections or exemptions for vulnerable groups, separately (PD-013).',
@@ -359,11 +395,11 @@ export const esPublicFunds = defineRule(
             `${from} 以来领取过 ${namesOf(
               used.map((b) => b.benefitType),
               L,
-            )}，属 public funds。3 / 5 / 10 年路径要求申请前 ${years} 年未使用 specified public funds，否则须在 qualifying route 上满 20 年。`,
+            )}，属 public funds。${pws ? `Protection Work and Study 的 ${es.values.protectionPathwayYearsWorkAndStudy.value} 年路径要求申请前 ${years} 年未使用 public funds，否则只能走 20 年路径（p39）。` : `3 / 5 / 10 年路径要求申请前 ${years} 年未使用 specified public funds，否则须在 qualifying route 上满 20 年。`}`,
             `Public funds received since ${from}: ${namesOf(
               used.map((b) => b.benefitType),
               L,
-            )}. The 3 / 5 / 10-year pathways require no use of specified public funds in the ${years} years before applying; otherwise 20 years on a qualifying route are needed.`,
+            )}. ${pws ? `The ${es.values.protectionPathwayYearsWorkAndStudy.value}-year Protection Work and Study pathway requires no use of public funds in the ${years} years before applying; otherwise only the 20-year pathway is available (p39).` : `The 3 / 5 / 10-year pathways require no use of specified public funds in the ${years} years before applying; otherwise 20 years on a qualifying route are needed.`}`,
           ) +
           (ongoing
             ? ''
@@ -372,7 +408,23 @@ export const esPublicFunds = defineRule(
                 ` If they are not used again, the lookback contains no public funds from ${addDays(addYears(lastUse, years), 1)}, and the shorter pathways can be reassessed.`,
               )) +
           ignoredNote,
-        assumptions,
+        ...(pws && {
+          sources: [
+            { srcId: 'SRC-001', locator: 'p39' },
+            { srcId: 'SRC-006', locator: '#benefits-open-to-new-claims' },
+          ],
+        }),
+        assumptions: [
+          ...assumptions,
+          ...(pws
+            ? [
+                L(
+                  '20 年按 p25 / p38 的"转入新路线重新起算"，自 Protection Work and Study 的合格期起点起算，不含此前的 Core Protection 时间（PD-066）。',
+                  'Following the rule that the count restarts on moving to a new route (p25, p38), the 20 years count from the start of the qualifying period on Protection Work and Study, without earlier Core Protection time (PD-066).',
+                ),
+              ]
+            : []),
+        ],
       };
     }
     if (unlisted.length > 0) {

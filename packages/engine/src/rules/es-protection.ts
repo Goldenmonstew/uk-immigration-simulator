@@ -1,0 +1,355 @@
+import { earnedSettlement2026_11 as es } from '@uk-immigration/policy-data';
+import type { Route, SourceRef } from '@uk-immigration/policy-data';
+import { addYears, taxYearsFrom } from '../dates';
+import { episodeOn } from '../residence';
+import { defineRule, textFor } from '../rule';
+import type { Lang } from '../rule';
+import type { PersonTimeline } from '../types';
+import { gbp } from './es-contribution';
+import { isAdultOn } from './es-requirements';
+import { esProtectionRouteOn, esQualifyingResidence } from './es-residence';
+
+// Refugee pathways under Earned Settlement (SRC-001 Chapter 7, p36–p40;
+// Table 2, p47–p48).
+
+const RULE_SET = 'earned-settlement-2026-11';
+const v = es.values;
+const src = (...pages: string[]): SourceRef[] =>
+  pages.map((locator) => ({ srcId: 'SRC-001', locator }));
+
+/** Base qualifying years on a protection route (Table 2). */
+export function protectionBaseYears(route: Route): number {
+  return route === 'SAFE_AND_LEGAL'
+    ? v.protectionPathwayYearsSafeAndLegal.value
+    : route === 'PROTECTION_WORK_AND_STUDY'
+      ? v.protectionPathwayYearsWorkAndStudy.value
+      : v.protectionPathwayYearsCore.value;
+}
+
+const adultIllegalEntries = (timeline: PersonTimeline) =>
+  timeline.immigrationBreaches.filter(
+    (b) => b.type === 'ILLEGAL_ENTRY' && isAdultOn(timeline, b.date),
+  );
+
+/**
+ * Illegal entry as an adult (p13): none, the extra 10 years (p38), or every
+ * such entry claimed to be protected by Article 31 (p39, PD-032).
+ */
+export function illegalEntryOf(
+  timeline: PersonTimeline,
+): 'NONE' | 'ADDED' | 'ARTICLE_31' {
+  const entries = adultIllegalEntries(timeline);
+  if (entries.length === 0) return 'NONE';
+  return entries.every((b) => b.article31 === true) ? 'ARTICLE_31' : 'ADDED';
+}
+
+/** Years added to every protection pathway for illegal entry. */
+export function illegalEntryExtraYears(timeline: PersonTimeline): number {
+  return illegalEntryOf(timeline) === 'ADDED'
+    ? v.illegalEntryAdditionalYears.value
+    : 0;
+}
+
+/** Table 2's row for the route after illegal entry, if it has one. */
+function illegalEntryRow(route: Route, L: Lang): string {
+  return route === 'PROTECTION_WORK_AND_STUDY'
+    ? L(
+        'Table 2"Protection Work and Study following illegal entry"行',
+        'Table 2’s “Protection Work and Study following illegal entry” row',
+      )
+    : route === 'CORE_PROTECTION'
+      ? L(
+          'Table 2"Core Protection following illegal entry"行',
+          'Table 2’s “Core Protection following illegal entry” row',
+        )
+      : L(
+          '"无论走哪条路线"都加 10 年的规定',
+          'the rule that 10 years are added “regardless of the immigration route”',
+        );
+}
+
+export const esProtectionPathway = defineRule(
+  {
+    id: 'ES-PROTECTION-PATHWAY',
+    ruleSetId: RULE_SET,
+    title: '难民定居路径与年限',
+    titleEn: 'Refugee settlement pathway and qualifying period',
+    sources: src('p37', 'p38', 'p39', 'p40', 'p47', 'p48'),
+    pendingDetails: ['PD-029', 'PD-032', 'PD-033', 'PD-034', 'PD-043'],
+  },
+  (ctx) => {
+    const { timeline, simulationDate } = ctx;
+    const L = textFor(ctx);
+    const route = esProtectionRouteOn(timeline, simulationDate);
+    if (!route) {
+      return {
+        status: 'PASS',
+        explanation: L(
+          '当前不是保护类路线，本条不适用。',
+          'The current route is not a protection route, so this does not apply.',
+        ),
+      };
+    }
+    const base = protectionBaseYears(route);
+    const assumptions: string[] = [];
+    let explanation: string;
+    let sources: SourceRef[];
+    if (route === 'SAFE_AND_LEGAL') {
+      const scheme = episodeOn(timeline, simulationDate)?.resettlementScheme;
+      if (!scheme) {
+        return {
+          status: 'UNKNOWN',
+          explanation: L(
+            '未填写经哪条 designated Safe and Legal Route 入境（UK Resettlement Scheme 或其他指定的安置 / 担保路线）。先以其他路线合法入境、之后申请庇护的，不走这条 5 年路径（p37）。',
+            'Not provided which designated Safe and Legal Route the person was admitted on (the UK Resettlement Scheme, or another designated resettlement or sponsorship route). Entering legally on another route and later claiming asylum does not lead to this five-year pathway (p37).',
+          ),
+          sources: src('p37', 'p47'),
+        };
+      }
+      sources = src('p37', 'p47');
+      explanation =
+        scheme === 'UK_RESETTLEMENT_SCHEME'
+          ? L(
+              `经 UK Resettlement Scheme 入境，属 designated Safe and Legal Routes：${base} 年路径（p37、p47）。`,
+              `Admitted through the UK Resettlement Scheme, a designated Safe and Legal Route: the ${base}-year pathway (p37, p47).`,
+            )
+          : L(
+              `按申报经其他指定的安置或担保路线入境，属 designated Safe and Legal Routes：${base} 年路径（p37、p47）。`,
+              `Admitted, as declared, through another designated resettlement or sponsorship route, a designated Safe and Legal Route: the ${base}-year pathway (p37, p47).`,
+            );
+      if (scheme === 'OTHER_DESIGNATED') {
+        assumptions.push(
+          L(
+            '"其他指定的安置或担保路线"的清单尚未公布，按你的申报处理（PD-033）；若为 Community Sponsorship、Mandate Resettlement Scheme 或此前的安置计划，属 Legacy Safe and Legal Routes，不在 Earned Settlement 框架内（p26 注 13）。',
+            'The list of other designated resettlement and sponsorship routes has not been published, so this follows what you declared (PD-033). Community Sponsorship, the Mandate Resettlement Scheme and predecessor resettlement schemes are Legacy Safe and Legal Routes, outside the Earned Settlement framework (p26 note 13).',
+          ),
+        );
+      }
+    } else {
+      sources = src('p38', 'p40', 'p47');
+      explanation =
+        route === 'PROTECTION_WORK_AND_STUDY'
+          ? L(
+              `Protection Work and Study：${base} 年路径，自转入本路线起算，此前在 Core Protection 的时间不计入（p38、p47）。`,
+              `Protection Work and Study: the ${base}-year pathway, counted from the move onto this route; earlier time on Core Protection does not count (p38, p47).`,
+            )
+          : L(
+              `Core Protection：${base} 年路径（p38、p47）。转入持续的工作、教育或培训并进入 Protection Work and Study 后，可自转入起按 ${v.protectionPathwayYearsWorkAndStudy.value} 年计算（p38）。`,
+              `Core Protection: the ${base}-year pathway (p38, p47). Moving into sustained work, education or training and onto Protection Work and Study gives a ${v.protectionPathwayYearsWorkAndStudy.value}-year pathway counted from the move (p38).`,
+            );
+      assumptions.push(
+        L(
+          'Core Protection 与 Protection Work and Study 尚未推出，启用日期未定（PD-034）；本工具按所填许可片段的日期计算。推出前已有的难民身份时间是否及如何计入，原文说法不一、细则待公布（PD-029、PD-043）。',
+          'Core Protection and Protection Work and Study have not been introduced and their start dates are not set (PD-034); this tool counts from the dates of the permissions entered. Whether and how refugee time before their introduction counts is inconsistent in the response and the details are still to be set out (PD-029, PD-043).',
+        ),
+      );
+    }
+    const entries = adultIllegalEntries(timeline).map((b) => b.date);
+    const extra = v.illegalEntryAdditionalYears.value;
+    const illegal = illegalEntryOf(timeline);
+    if (illegal === 'ARTICLE_31') {
+      const start = esQualifyingResidence(ctx)?.start;
+      return {
+        status: 'UNKNOWN',
+        explanation:
+          explanation +
+          L(
+            `成年后非法入境（${entries.join('、')}），申报受 Refugee Convention Article 31 保护。Article 31 适用时不加 ${extra} 年，按 ${base} 年计算；这一保障如何运作将在实施前公布（p39、p48）。若不适用，为 ${base + extra} 年${start ? `，最早 ${addYears(start, base + extra)}` : ''}。`,
+            ` Illegal entry as an adult (${entries.join(', ')}), declared to be protected by Article 31 of the Refugee Convention. Where Article 31 applies the extra ${extra} years do not, so ${base} years are used; how this protection will work is to be set out before implementation (p39, p48). If it does not apply, the pathway is ${base + extra} years${start ? `, at the earliest ${addYears(start, base + extra)}` : ''}.`,
+          ),
+        sources: [...sources, ...src('p39', 'p48')],
+        pendingDetails: ['PD-032'],
+        assumptions,
+      };
+    }
+    if (illegal === 'ADDED') {
+      explanation += L(
+        `成年后非法入境（${entries.join('、')}），按 ${illegalEntryRow(route, L)}额外加 ${extra} 年，共 ${base + extra} 年（p38、p48）；受 Article 31 保护时不加（未申报）。`,
+        ` Illegal entry as an adult (${entries.join(', ')}): under ${illegalEntryRow(route, L)} an extra ${extra} years apply, ${base + extra} years in all (p38, p48); they do not apply where Article 31 protects the person (not declared).`,
+      );
+      sources = [...sources, ...src('p48')];
+    }
+    return { status: 'PASS', explanation, sources, assumptions };
+  },
+);
+
+export const esAsylumSupport = defineRule(
+  {
+    id: 'ES-ASYLUM-SUPPORT',
+    ruleSetId: RULE_SET,
+    title: '已偿还 asylum support 或按计划还款',
+    titleEn: 'Asylum support repaid or repayment plan kept up',
+    sources: src('p8', 'p39', 'p47'),
+    pendingDetails: ['PD-031', 'PD-068'],
+  },
+  (ctx) => {
+    const { timeline, simulationDate } = ctx;
+    const L = textFor(ctx);
+    const route = esProtectionRouteOn(timeline, simulationDate);
+    if (route !== 'PROTECTION_WORK_AND_STUDY' && route !== 'CORE_PROTECTION') {
+      return {
+        status: 'PASS',
+        explanation: L(
+          '当前不是 Protection Work and Study 或 Core Protection，本条不适用。',
+          'The current route is neither Protection Work and Study nor Core Protection, so this does not apply.',
+        ),
+      };
+    }
+    switch (timeline.asylumSupportRepayment) {
+      case undefined:
+        return {
+          status: 'UNKNOWN',
+          explanation: L(
+            '未填写 asylum support 的偿还情况。领过 asylum support 且须偿还的，定居前须已全额偿还或按约定还款计划持续履行（p8 注 1、p39）。',
+            'Repayment of asylum support not provided. Anyone who received asylum support and must repay it needs to have repaid it in full, or be keeping up with an agreed repayment plan, before settlement (p8 note 1, p39).',
+          ),
+        };
+      case 'OUTSTANDING':
+        return {
+          status: 'FAIL',
+          explanation: L(
+            '须偿还的 asylum support 尚未偿还，也没有按约定的还款计划履行。这是最低要求，不满足即不能定居（p8 注 1、p39、p47）。',
+            'Asylum support that must be repaid is outstanding and no agreed repayment plan is being kept up. This is a minimum requirement: without it settlement is not possible (p8 note 1, p39, p47).',
+          ),
+        };
+      case 'NOT_REQUIRED':
+        return {
+          status: 'PASS',
+          explanation: L(
+            '申报未领取 asylum support 或无需偿还。',
+            'Declared that no asylum support was received or none needs to be repaid.',
+          ),
+        };
+      default:
+        return {
+          status: 'PASS',
+          explanation:
+            timeline.asylumSupportRepayment === 'REPAID'
+              ? L(
+                  '申报已全额偿还 asylum support（p39）。',
+                  'Declared that asylum support has been repaid in full (p39).',
+                )
+              : L(
+                  '申报正按约定的还款计划偿还 asylum support（p39）。',
+                  'Declared that an agreed repayment plan for asylum support is being kept up (p39).',
+                ),
+          assumptions: [
+            L(
+              '难民偿还义务与保障措施的细则将在实施前公布（PD-031）；偿还情况按你的申报判断。',
+              'The details of refugees’ repayment obligations and safeguards are to be set out before implementation (PD-031); repayment follows what you declared.',
+            ),
+          ],
+        };
+    }
+  },
+);
+
+export const esProtectionContribution = defineRule(
+  {
+    id: 'ES-PROTECTION-CONTRIBUTION',
+    ruleSetId: RULE_SET,
+    title: 'Protection Work and Study 的持续贡献',
+    titleEn: 'Sustained contribution on Protection Work and Study',
+    sources: src('p38', 'p47'),
+    pendingDetails: ['PD-030'],
+  },
+  (ctx) => {
+    const { timeline, simulationDate } = ctx;
+    const L = textFor(ctx);
+    const route = esProtectionRouteOn(timeline, simulationDate);
+    if (route !== 'PROTECTION_WORK_AND_STUDY') {
+      return {
+        status: 'PASS',
+        explanation: L(
+          '当前不是 Protection Work and Study，本条不适用。',
+          'The current route is not Protection Work and Study, so this does not apply.',
+        ),
+      };
+    }
+    const activity = episodeOn(timeline, simulationDate)?.sustainedActivity;
+    if (!activity) {
+      return {
+        status: 'UNKNOWN',
+        explanation: L(
+          '未填写转入 Protection Work and Study 所依据的持续活动（工作、教育或培训）。',
+          'Not provided which sustained activity (work, education or training) the move onto Protection Work and Study is based on.',
+        ),
+      };
+    }
+    if (activity !== 'WORK') {
+      return {
+        status: 'UNKNOWN',
+        explanation: L(
+          '原文只给出工作者的 contribution 标准（3 年年收入达 £12,571），没有给出教育或培训者如何证明持续贡献。',
+          'The response only sets the contribution standard for those working (earning £12,571 a year for three years); it does not say how those in education or training show sustained contribution.',
+        ),
+        pendingDetails: ['PD-030'],
+      };
+    }
+    const threshold = v.earningsThresholdMinimum.value;
+    const required = v.protectionWorkQualifyingYears.value;
+    const start = esQualifyingResidence(ctx)!.start;
+    const years = taxYearsFrom(start, simulationDate);
+    const earnings = (taxYear: string) =>
+      timeline.incomeYears.find((i) => i.taxYear === taxYear)?.earnings;
+    const met = years.filter((y) => (earnings(y) ?? 0) >= threshold);
+    const missing = years.filter((y) => earnings(y) === undefined);
+    const window = L(
+      `计入自 ${start} 起的完整 tax year（起点所在 tax year 不计，因年收入无法拆出转入前的部分），截至申请日所在 tax year 之前。`,
+      ` Complete tax years from ${start} count (the tax year containing that date does not, as its earnings cannot be split at the move), up to the tax year before the application date.`,
+    );
+    const assumptions = [
+      L(
+        `原文未定义 3 个 qualifying years 的观察窗口；本工具按"Protection Work and Study 合格期内任意 ${required} 个 tax year"计算（PD-030）。`,
+        `The response does not define the window for the three qualifying years; this tool counts any ${required} tax years in the qualifying period on Protection Work and Study (PD-030).`,
+      ),
+    ];
+    const summary = L(
+      `${years.length} 个完整 tax year 中有 ${met.length} 个年收入达 ${gbp(threshold)}${met.length ? `（${met.join('、')}）` : ''}，需 ${required} 个（p38、p47）。`,
+      `${met.length} of ${years.length} complete tax year${years.length === 1 ? '' : 's'} with earnings of at least ${gbp(threshold)}${met.length ? ` (${met.join(', ')})` : ''}; ${required} are needed (p38, p47).`,
+    );
+    if (met.length >= required) {
+      return {
+        status: 'PASS',
+        explanation: summary + window,
+        assumptions,
+      };
+    }
+    const due = addYears(
+      start,
+      protectionBaseYears(route) + illegalEntryExtraYears(timeline),
+    );
+    if (due > simulationDate) {
+      return {
+        status: 'UNKNOWN',
+        explanation:
+          summary +
+          L(
+            `合格期到 ${due} 才满，在此之前仍可达到。`,
+            ` The qualifying period ends on ${due}, so this can still be met by then.`,
+          ) +
+          window,
+        pendingDetails: ['PD-030'],
+        assumptions,
+      };
+    }
+    if (met.length + missing.length >= required) {
+      return {
+        status: 'UNKNOWN',
+        explanation:
+          summary +
+          L(
+            `未填写 ${missing.join('、')} 的收入。`,
+            ` Earnings not provided for ${missing.join(', ')}.`,
+          ) +
+          window,
+        assumptions,
+      };
+    }
+    return {
+      status: 'FAIL',
+      explanation: summary + window,
+      assumptions,
+    };
+  },
+);

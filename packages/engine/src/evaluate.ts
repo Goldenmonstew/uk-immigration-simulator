@@ -41,7 +41,10 @@ function shortCircuitOf(ctx: RuleContext): ShortCircuit | undefined {
       ),
     };
   }
-  if (adultIllegalEntry(timeline)) {
+  const group = esCurrentGroup(timeline, simulationDate);
+  // On a protection route illegal entry adds 10 years (Table 2, p48) and is
+  // assessed; elsewhere its consequence is inconsistent (PD-044).
+  if (adultIllegalEntry(timeline) && group !== 'PROTECTION') {
     return {
       reason: 'IMMIGRATION_BREACH',
       message: L(
@@ -50,13 +53,16 @@ function shortCircuitOf(ctx: RuleContext): ShortCircuit | undefined {
       ),
     };
   }
-  const group = esCurrentGroup(timeline, simulationDate);
-  if (group === 'PROTECTION') {
+  // Chapter 7 and Table 2 do not cover refugees' dependants (PD-067).
+  if (
+    group === 'PROTECTION' &&
+    episodeOn(timeline, simulationDate)?.role === 'DEPENDANT'
+  ) {
     return {
       reason: 'PROTECTION',
       message: L(
-        '当前是保护类路线（难民、Safe and Legal 等），Earned Settlement 对其另设路径（SRC-001 Chapter 7），本工具尚未建模，请咨询受监管的移民顾问。',
-        'The current route is a protection route (refugee, Safe and Legal routes and similar). Earned Settlement sets a separate pathway for these (SRC-001 Chapter 7), which this tool does not yet model: please seek advice from a regulated immigration adviser.',
+        '当前以 dependant 身份持保护类路线许可。Earned Settlement 的难民定居路径（SRC-001 Chapter 7、Table 2）没有说明难民的 dependant 如何定居（PD-067），本工具不作结论，请咨询受监管的移民顾问。',
+        'The current permission is on a protection route as a dependant. The Earned Settlement refugee pathways (SRC-001 Chapter 7, Table 2) do not say how refugees’ dependants settle (PD-067). This tool does not reach a conclusion: please seek advice from a regulated immigration adviser.',
       ),
     };
   }
@@ -107,8 +113,8 @@ export function evaluate(request: SimulationRequest): SimulationResult {
     });
   const byRuleSet: SimulationResult['byRuleSet'] = {};
   for (const id of ids) {
-    // Protection and outside-framework routes only stop the Earned Settlement
-    // column; current law is still assessed.
+    // Protection dependants and outside-framework routes only stop the Earned
+    // Settlement column; current law is still assessed.
     const stopped =
       shortCircuit &&
       (id === 'earned-settlement-2026-11' ||

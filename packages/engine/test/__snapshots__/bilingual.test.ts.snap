@@ -160,7 +160,7 @@ exports[`ES-OFFICIAL-INDIVIDUAL-C default-locale output is unchanged 1`] = `
         },
         {
           "id": "ES-ENGLISH-B2",
-          "title": "英语达到 B2",
+          "title": "定居英语要求（B2；UKRS 难民 A2）",
           "sources": [
             {
               "srcId": "SRC-001",
@@ -617,7 +617,7 @@ exports[`ES-OFFICIAL-INDIVIDUAL-D default-locale output is unchanged 1`] = `
         },
         {
           "id": "ES-ENGLISH-B2",
-          "title": "英语达到 B2",
+          "title": "定居英语要求（B2；UKRS 难民 A2）",
           "sources": [
             {
               "srcId": "SRC-001",
@@ -1080,7 +1080,7 @@ exports[`ES-OFFICIAL-P16-MATERNITY-BEST-YEARS default-locale output is unchanged
         },
         {
           "id": "ES-ENGLISH-B2",
-          "title": "英语达到 B2",
+          "title": "定居英语要求（B2；UKRS 难民 A2）",
           "sources": [
             {
               "srcId": "SRC-001",
@@ -1629,7 +1629,7 @@ exports[`ES-OFFICIAL-P19-INDIVIDUAL-A default-locale output is unchanged 1`] = `
         },
         {
           "id": "ES-ENGLISH-B2",
-          "title": "英语达到 B2",
+          "title": "定居英语要求（B2；UKRS 难民 A2）",
           "sources": [
             {
               "srcId": "SRC-001",
@@ -1999,7 +1999,7 @@ exports[`ES-OFFICIAL-P19-INDIVIDUAL-B default-locale output is unchanged 1`] = `
         },
         {
           "id": "ES-ENGLISH-B2",
-          "title": "英语达到 B2",
+          "title": "定居英语要求（B2；UKRS 难民 A2）",
           "sources": [
             {
               "srcId": "SRC-001",
@@ -2484,7 +2484,7 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-A default-locale output is unchanged 1`] = `
         },
         {
           "id": "ES-ENGLISH-B2",
-          "title": "英语达到 B2",
+          "title": "定居英语要求（B2；UKRS 难民 A2）",
           "sources": [
             {
               "srcId": "SRC-001",
@@ -2917,7 +2917,7 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-B default-locale output is unchanged 1`] = `
         },
         {
           "id": "ES-ENGLISH-B2",
-          "title": "英语达到 B2",
+          "title": "定居英语要求（B2；UKRS 难民 A2）",
           "sources": [
             {
               "srcId": "SRC-001",
@@ -3405,7 +3405,7 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-B-PARTNER default-locale output is unchanged
         },
         {
           "id": "ES-ENGLISH-B2",
-          "title": "英语达到 B2",
+          "title": "定居英语要求（B2；UKRS 难民 A2）",
           "sources": [
             {
               "srcId": "SRC-001",
@@ -3782,7 +3782,7 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-C default-locale output is unchanged 1`] = `
         },
         {
           "id": "ES-ENGLISH-B2",
-          "title": "英语达到 B2",
+          "title": "定居英语要求（B2；UKRS 难民 A2）",
           "sources": [
             {
               "srcId": "SRC-001",
@@ -4156,7 +4156,7 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-D default-locale output is unchanged 1`] = `
         },
         {
           "id": "ES-ENGLISH-B2",
-          "title": "英语达到 B2",
+          "title": "定居英语要求（B2；UKRS 难民 A2）",
           "sources": [
             {
               "srcId": "SRC-001",
@@ -4520,7 +4520,7 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-E default-locale output is unchanged 1`] = `
         },
         {
           "id": "ES-ENGLISH-B2",
-          "title": "英语达到 B2",
+          "title": "定居英语要求（B2；UKRS 难民 A2）",
           "sources": [
             {
               "srcId": "SRC-001",
@@ -4678,6 +4678,994 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-E default-locale output is unchanged 1`] = `
         "只按一位主申请人评估，假设另一位家长同时定居或就是主申请人的随行伴侣（PD-061）。"
       ],
       "routeGroup": "CORE_PERMISSION"
+    }
+  }
+}"
+`;
+
+exports[`ES-OFFICIAL-P40-INDIVIDUAL-A default-locale output is unchanged 1`] = `
+"{
+  "policyAsOf": "2026-11-04",
+  "byRuleSet": {
+    "current-law-2026-11": {
+      "outcome": "INSUFFICIENT_INFORMATION",
+      "rules": [
+        {
+          "id": "CL-SCOPE",
+          "title": "在现行规则的建模范围内",
+          "sources": [
+            {
+              "srcId": "SRC-004",
+              "locator": "SW 21.1"
+            },
+            {
+              "srcId": "SRC-004",
+              "locator": "SW 39.1"
+            },
+            {
+              "srcId": "SRC-004",
+              "locator": "SW 41A.1"
+            },
+            {
+              "srcId": "SRC-005",
+              "locator": "LR 11.1"
+            }
+          ],
+          "status": "UNKNOWN",
+          "explanation": "现行规则只建模了 Skilled Worker（主申请人及其 dependent partner / child）与 Long Residence；当前路线不在其中，也不满足 Long Residence 的 10 年，无法判断其他路线的定居条件。"
+        }
+      ],
+      "assumptions": [
+        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）与 Long Residence（Appendix Long Residence）；Part Suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。"
+      ]
+    },
+    "earned-settlement-2026-11": {
+      "outcome": "LIKELY_ELIGIBLE",
+      "pathwayYears": 5,
+      "earliestDate": "2032-06-01",
+      "rules": [
+        {
+          "id": "ES-CRIMINALITY",
+          "title": "无犯罪记录",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p12"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "未申报犯罪记录。"
+        },
+        {
+          "id": "ES-DEBT",
+          "title": "无未清偿的政府债务",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p12"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p29"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "申报无未清偿的政府债务。",
+          "assumptions": [
+            "\\"无政府债务\\"按用户申报判断；正在按还款计划偿还的非 asylum support 债务是否满足要求，原文未说明（PD-018）。"
+          ]
+        },
+        {
+          "id": "ES-ENGLISH-B2",
+          "title": "定居英语要求（B2；UKRS 难民 A2）",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p21"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p37"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p39"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p47"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "英语 A2，达到 A2。经 UK Resettlement Scheme 入境的难民只需 A2（p37、p39）。"
+        },
+        {
+          "id": "ES-KOL",
+          "title": "通过 Life in the UK 考试",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p21"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p39"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "经 UK Resettlement Scheme 入境的难民在出现适合 A2 水平的考试版本前，暂免 Life in the UK 考试（p21 注 8、p39）。",
+          "assumptions": [
+            "A2 版 Life in the UK 考试推出后，这一豁免可能改变；推出时间未公布（PD-021）。"
+          ]
+        },
+        {
+          "id": "ES-ROUTE-GROUP",
+          "title": "当前路线计入定居",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p25"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p47"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p48"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "当前路线\\"安全合法保护路线\\"属保护类分组，计入定居，按难民定居路径（Table 2）计算；保护类时间不能与工作、家庭路线的时间合并（p25）。"
+        },
+        {
+          "id": "ES-RESIDENCE",
+          "title": "计入定居的连续居留",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p22"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p23"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p24"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p25"
+            },
+            {
+              "srcId": "SRC-008",
+              "locator": "CR 3.1"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "计入定居的连续居留自 2027-06-01 起，截至 2032-06-01 满 5 年。",
+          "assumptions": []
+        },
+        {
+          "id": "ES-PUBLIC-FUNDS",
+          "title": "申请前 5 年未使用 public funds",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p37"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p47"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "经 designated Safe and Legal Routes 入境的难民豁免\\"定居前 5 年未使用 public funds\\"的要求（p37、p47）。"
+        },
+        {
+          "id": "ES-BREACH",
+          "title": "成年后无 qualifying immigration breach",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p13"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "成年后无 qualifying immigration breach。"
+        },
+        {
+          "id": "ES-PROTECTION-PATHWAY",
+          "title": "难民定居路径与年限",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p37"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p47"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "经 UK Resettlement Scheme 入境，属 designated Safe and Legal Routes：5 年路径（p37、p47）。",
+          "assumptions": []
+        }
+      ],
+      "assumptions": [
+        "Earned Settlement 已公布、尚未生效，按\\"假设在申请日适用\\"评估；规则依据为政府回应文件（SRC-001），不是已生效的 Immigration Rules（PD-001）。首批规则修改预计 2026 年 12 月起提交、2027 年 1 月生效，2027–2028 年继续修改（SRC-002 col 593；SRC-003 cols 1423–1424），具体生效日以届时的 Statement of Changes 为准（PD-003）。",
+        "难民定居路径的多项细则（路线推出时间、已有时间如何计入、public funds 与偿还安排、Article 31）将在实施前公布；本结果仅帮助理解已公布的政策，具体情况请咨询受监管的移民顾问。",
+        "\\"无政府债务\\"按用户申报判断；正在按还款计划偿还的非 asylum support 债务是否满足要求，原文未说明（PD-018）。",
+        "A2 版 Life in the UK 考试推出后，这一豁免可能改变；推出时间未公布（PD-021）。"
+      ],
+      "routeGroup": "PROTECTION"
+    }
+  }
+}"
+`;
+
+exports[`ES-OFFICIAL-P40-INDIVIDUAL-B default-locale output is unchanged 1`] = `
+"{
+  "policyAsOf": "2026-11-04",
+  "byRuleSet": {
+    "current-law-2026-11": {
+      "outcome": "INSUFFICIENT_INFORMATION",
+      "rules": [
+        {
+          "id": "CL-SCOPE",
+          "title": "在现行规则的建模范围内",
+          "sources": [
+            {
+              "srcId": "SRC-004",
+              "locator": "SW 21.1"
+            },
+            {
+              "srcId": "SRC-004",
+              "locator": "SW 39.1"
+            },
+            {
+              "srcId": "SRC-004",
+              "locator": "SW 41A.1"
+            },
+            {
+              "srcId": "SRC-005",
+              "locator": "LR 11.1"
+            }
+          ],
+          "status": "UNKNOWN",
+          "explanation": "现行规则只建模了 Skilled Worker（主申请人及其 dependent partner / child）与 Long Residence；当前路线不在其中，也不满足 Long Residence 的 10 年，无法判断其他路线的定居条件。"
+        }
+      ],
+      "assumptions": [
+        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）与 Long Residence（Appendix Long Residence）；Part Suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。"
+      ]
+    },
+    "earned-settlement-2026-11": {
+      "outcome": "LIKELY_NOT_ELIGIBLE",
+      "pathwayYears": 10,
+      "earliestDate": "2038-03-01",
+      "rules": [
+        {
+          "id": "ES-CRIMINALITY",
+          "title": "无犯罪记录",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p12"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "未申报犯罪记录。"
+        },
+        {
+          "id": "ES-DEBT",
+          "title": "无未清偿的政府债务",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p12"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p29"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "申报无未清偿的政府债务。",
+          "assumptions": [
+            "\\"无政府债务\\"按用户申报判断；正在按还款计划偿还的非 asylum support 债务是否满足要求，原文未说明（PD-018）。"
+          ]
+        },
+        {
+          "id": "ES-ENGLISH-B2",
+          "title": "定居英语要求（B2；UKRS 难民 A2）",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p21"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "英语 B2，达到 B2。"
+        },
+        {
+          "id": "ES-KOL",
+          "title": "通过 Life in the UK 考试",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p21"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "已通过 Life in the UK 考试。"
+        },
+        {
+          "id": "ES-ROUTE-GROUP",
+          "title": "当前路线计入定居",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p25"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p47"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p48"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "当前路线\\"保护工作与学习\\"属保护类分组，计入定居，按难民定居路径（Table 2）计算；保护类时间不能与工作、家庭路线的时间合并（p25）。"
+        },
+        {
+          "id": "ES-RESIDENCE",
+          "title": "计入定居的连续居留",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p22"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p23"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p24"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p25"
+            },
+            {
+              "srcId": "SRC-008",
+              "locator": "CR 3.1"
+            }
+          ],
+          "status": "FAIL",
+          "explanation": "计入定居的连续居留自 2028-03-01 起，截至 2030-01-01 满 1 年。此前在\\"核心保护\\"路线的时间不计入当前保护类路线的合格期，自 2028-03-01 转入起重新起算（p38；p40 Individual B）。10 年路径的居留还不够，2038-03-01 满 10 年。",
+          "assumptions": []
+        },
+        {
+          "id": "ES-PUBLIC-FUNDS",
+          "title": "申请前 5 年未使用 public funds",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p18"
+            },
+            {
+              "srcId": "SRC-006",
+              "locator": "#benefits-open-to-new-claims"
+            },
+            {
+              "srcId": "SRC-006",
+              "locator": "#contributory-benefits-and-statutory-payments"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "申请前 5 年内未领取 public funds。",
+          "assumptions": []
+        },
+        {
+          "id": "ES-BREACH",
+          "title": "成年后无 qualifying immigration breach",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p13"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "成年后无 qualifying immigration breach。"
+        },
+        {
+          "id": "ES-PROTECTION-PATHWAY",
+          "title": "难民定居路径与年限",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p38"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p40"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p47"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "Protection Work and Study：10 年路径，自转入本路线起算，此前在 Core Protection 的时间不计入（p38、p47）。",
+          "assumptions": [
+            "Core Protection 与 Protection Work and Study 尚未推出，启用日期未定（PD-034）；本工具按所填许可片段的日期计算。推出前已有的难民身份时间是否及如何计入，原文说法不一、细则待公布（PD-029、PD-043）。"
+          ]
+        },
+        {
+          "id": "ES-PROTECTION-CONTRIBUTION",
+          "title": "Protection Work and Study 的持续贡献",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p38"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p47"
+            }
+          ],
+          "status": "UNKNOWN",
+          "explanation": "1 个完整 tax year 中有 1 个年收入达 £12,571（2028-29），需 3 个（p38、p47）。合格期到 2038-03-01 才满，在此之前仍可达到。计入自 2028-03-01 起的完整 tax year（起点所在 tax year 不计，因年收入无法拆出转入前的部分），截至申请日所在 tax year 之前。",
+          "pendingDetails": [
+            "PD-030"
+          ],
+          "assumptions": [
+            "原文未定义 3 个 qualifying years 的观察窗口；本工具按\\"Protection Work and Study 合格期内任意 3 个 tax year\\"计算（PD-030）。"
+          ]
+        },
+        {
+          "id": "ES-ASYLUM-SUPPORT",
+          "title": "已偿还 asylum support 或按计划还款",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p8"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p39"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p47"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "申报已全额偿还 asylum support（p39）。",
+          "assumptions": [
+            "难民偿还义务与保障措施的细则将在实施前公布（PD-031）；偿还情况按你的申报判断。"
+          ]
+        }
+      ],
+      "assumptions": [
+        "Earned Settlement 已公布、尚未生效，按\\"假设在申请日适用\\"评估；规则依据为政府回应文件（SRC-001），不是已生效的 Immigration Rules（PD-001）。首批规则修改预计 2026 年 12 月起提交、2027 年 1 月生效，2027–2028 年继续修改（SRC-002 col 593；SRC-003 cols 1423–1424），具体生效日以届时的 Statement of Changes 为准（PD-003）。",
+        "难民定居路径的多项细则（路线推出时间、已有时间如何计入、public funds 与偿还安排、Article 31）将在实施前公布；本结果仅帮助理解已公布的政策，具体情况请咨询受监管的移民顾问。",
+        "\\"无政府债务\\"按用户申报判断；正在按还款计划偿还的非 asylum support 债务是否满足要求，原文未说明（PD-018）。",
+        "Core Protection 与 Protection Work and Study 尚未推出，启用日期未定（PD-034）；本工具按所填许可片段的日期计算。推出前已有的难民身份时间是否及如何计入，原文说法不一、细则待公布（PD-029、PD-043）。",
+        "原文未定义 3 个 qualifying years 的观察窗口；本工具按\\"Protection Work and Study 合格期内任意 3 个 tax year\\"计算（PD-030）。",
+        "难民偿还义务与保障措施的细则将在实施前公布（PD-031）；偿还情况按你的申报判断。",
+        "最早可申请日期按\\"自 2028-03-01 起持续居留、收入等状况不变、其余要求届时仍满足\\"推算，不是对未来的保证。"
+      ],
+      "routeGroup": "PROTECTION"
+    }
+  }
+}"
+`;
+
+exports[`ES-OFFICIAL-P40-INDIVIDUAL-C default-locale output is unchanged 1`] = `
+"{
+  "policyAsOf": "2026-11-04",
+  "byRuleSet": {
+    "current-law-2026-11": {
+      "outcome": "INSUFFICIENT_INFORMATION",
+      "rules": [
+        {
+          "id": "CL-SCOPE",
+          "title": "在现行规则的建模范围内",
+          "sources": [
+            {
+              "srcId": "SRC-004",
+              "locator": "SW 21.1"
+            },
+            {
+              "srcId": "SRC-004",
+              "locator": "SW 39.1"
+            },
+            {
+              "srcId": "SRC-004",
+              "locator": "SW 41A.1"
+            },
+            {
+              "srcId": "SRC-005",
+              "locator": "LR 11.1"
+            }
+          ],
+          "status": "UNKNOWN",
+          "explanation": "现行规则只建模了 Skilled Worker（主申请人及其 dependent partner / child）与 Long Residence；当前路线不在其中，也不满足 Long Residence 的 10 年，无法判断其他路线的定居条件。"
+        }
+      ],
+      "assumptions": [
+        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）与 Long Residence（Appendix Long Residence）；Part Suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。"
+      ]
+    },
+    "earned-settlement-2026-11": {
+      "outcome": "LIKELY_NOT_ELIGIBLE",
+      "pathwayYears": 20,
+      "earliestDate": "2048-03-01",
+      "rules": [
+        {
+          "id": "ES-CRIMINALITY",
+          "title": "无犯罪记录",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p12"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "未申报犯罪记录。"
+        },
+        {
+          "id": "ES-DEBT",
+          "title": "无未清偿的政府债务",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p12"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p29"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "申报无未清偿的政府债务。",
+          "assumptions": [
+            "\\"无政府债务\\"按用户申报判断；正在按还款计划偿还的非 asylum support 债务是否满足要求，原文未说明（PD-018）。"
+          ]
+        },
+        {
+          "id": "ES-ENGLISH-B2",
+          "title": "定居英语要求（B2；UKRS 难民 A2）",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p21"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "英语 B2，达到 B2。"
+        },
+        {
+          "id": "ES-KOL",
+          "title": "通过 Life in the UK 考试",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p21"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "已通过 Life in the UK 考试。"
+        },
+        {
+          "id": "ES-ROUTE-GROUP",
+          "title": "当前路线计入定居",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p25"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p47"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p48"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "当前路线\\"保护工作与学习\\"属保护类分组，计入定居，按难民定居路径（Table 2）计算；保护类时间不能与工作、家庭路线的时间合并（p25）。"
+        },
+        {
+          "id": "ES-RESIDENCE",
+          "title": "计入定居的连续居留",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p22"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p23"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p24"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p25"
+            },
+            {
+              "srcId": "SRC-008",
+              "locator": "CR 3.1"
+            }
+          ],
+          "status": "FAIL",
+          "explanation": "计入定居的连续居留自 2028-03-01 起，截至 2030-01-01 满 1 年。此前在\\"核心保护\\"路线的时间不计入当前保护类路线的合格期，自 2028-03-01 转入起重新起算（p38；p40 Individual B）。20 年路径的居留还不够，2048-03-01 满 20 年。",
+          "assumptions": []
+        },
+        {
+          "id": "ES-PUBLIC-FUNDS",
+          "title": "申请前 5 年未使用 public funds",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p18"
+            },
+            {
+              "srcId": "SRC-006",
+              "locator": "#benefits-open-to-new-claims"
+            },
+            {
+              "srcId": "SRC-006",
+              "locator": "#contributory-benefits-and-statutory-payments"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "申请前 5 年内未领取 public funds。",
+          "assumptions": []
+        },
+        {
+          "id": "ES-BREACH",
+          "title": "成年后无 qualifying immigration breach",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p13"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "成年后无 qualifying immigration breach。成年后非法入境在保护类路线上按 Table 2 额外加 10 年，见\\"难民定居路径与年限\\"，不在此计入。"
+        },
+        {
+          "id": "ES-PROTECTION-PATHWAY",
+          "title": "难民定居路径与年限",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p38"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p40"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p47"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p48"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "Protection Work and Study：10 年路径，自转入本路线起算，此前在 Core Protection 的时间不计入（p38、p47）。成年后非法入境（2026-08-10），按 Table 2\\"Protection Work and Study following illegal entry\\"行额外加 10 年，共 20 年（p38、p48）；受 Article 31 保护时不加（未申报）。",
+          "assumptions": [
+            "Core Protection 与 Protection Work and Study 尚未推出，启用日期未定（PD-034）；本工具按所填许可片段的日期计算。推出前已有的难民身份时间是否及如何计入，原文说法不一、细则待公布（PD-029、PD-043）。"
+          ]
+        },
+        {
+          "id": "ES-PROTECTION-CONTRIBUTION",
+          "title": "Protection Work and Study 的持续贡献",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p38"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p47"
+            }
+          ],
+          "status": "UNKNOWN",
+          "explanation": "1 个完整 tax year 中有 1 个年收入达 £12,571（2028-29），需 3 个（p38、p47）。合格期到 2048-03-01 才满，在此之前仍可达到。计入自 2028-03-01 起的完整 tax year（起点所在 tax year 不计，因年收入无法拆出转入前的部分），截至申请日所在 tax year 之前。",
+          "pendingDetails": [
+            "PD-030"
+          ],
+          "assumptions": [
+            "原文未定义 3 个 qualifying years 的观察窗口；本工具按\\"Protection Work and Study 合格期内任意 3 个 tax year\\"计算（PD-030）。"
+          ]
+        },
+        {
+          "id": "ES-ASYLUM-SUPPORT",
+          "title": "已偿还 asylum support 或按计划还款",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p8"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p39"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p47"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "申报已全额偿还 asylum support（p39）。",
+          "assumptions": [
+            "难民偿还义务与保障措施的细则将在实施前公布（PD-031）；偿还情况按你的申报判断。"
+          ]
+        }
+      ],
+      "assumptions": [
+        "Earned Settlement 已公布、尚未生效，按\\"假设在申请日适用\\"评估；规则依据为政府回应文件（SRC-001），不是已生效的 Immigration Rules（PD-001）。首批规则修改预计 2026 年 12 月起提交、2027 年 1 月生效，2027–2028 年继续修改（SRC-002 col 593；SRC-003 cols 1423–1424），具体生效日以届时的 Statement of Changes 为准（PD-003）。",
+        "难民定居路径的多项细则（路线推出时间、已有时间如何计入、public funds 与偿还安排、Article 31）将在实施前公布；本结果仅帮助理解已公布的政策，具体情况请咨询受监管的移民顾问。",
+        "\\"无政府债务\\"按用户申报判断；正在按还款计划偿还的非 asylum support 债务是否满足要求，原文未说明（PD-018）。",
+        "Core Protection 与 Protection Work and Study 尚未推出，启用日期未定（PD-034）；本工具按所填许可片段的日期计算。推出前已有的难民身份时间是否及如何计入，原文说法不一、细则待公布（PD-029、PD-043）。",
+        "原文未定义 3 个 qualifying years 的观察窗口；本工具按\\"Protection Work and Study 合格期内任意 3 个 tax year\\"计算（PD-030）。",
+        "难民偿还义务与保障措施的细则将在实施前公布（PD-031）；偿还情况按你的申报判断。",
+        "最早可申请日期按\\"自 2028-03-01 起持续居留、收入等状况不变、其余要求届时仍满足\\"推算，不是对未来的保证。"
+      ],
+      "routeGroup": "PROTECTION"
+    }
+  }
+}"
+`;
+
+exports[`ES-OFFICIAL-P40-INDIVIDUAL-D default-locale output is unchanged 1`] = `
+"{
+  "policyAsOf": "2026-11-04",
+  "byRuleSet": {
+    "current-law-2026-11": {
+      "outcome": "INSUFFICIENT_INFORMATION",
+      "rules": [
+        {
+          "id": "CL-SCOPE",
+          "title": "在现行规则的建模范围内",
+          "sources": [
+            {
+              "srcId": "SRC-004",
+              "locator": "SW 21.1"
+            },
+            {
+              "srcId": "SRC-004",
+              "locator": "SW 39.1"
+            },
+            {
+              "srcId": "SRC-004",
+              "locator": "SW 41A.1"
+            },
+            {
+              "srcId": "SRC-005",
+              "locator": "LR 11.1"
+            }
+          ],
+          "status": "UNKNOWN",
+          "explanation": "现行规则只建模了 Skilled Worker（主申请人及其 dependent partner / child）与 Long Residence；当前路线不在其中，也不满足 Long Residence 的 10 年，无法判断其他路线的定居条件。"
+        }
+      ],
+      "assumptions": [
+        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）与 Long Residence（Appendix Long Residence）；Part Suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。"
+      ]
+    },
+    "earned-settlement-2026-11": {
+      "outcome": "LIKELY_NOT_ELIGIBLE",
+      "pathwayYears": 30,
+      "earliestDate": "2057-03-01",
+      "rules": [
+        {
+          "id": "ES-CRIMINALITY",
+          "title": "无犯罪记录",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p12"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "未申报犯罪记录。"
+        },
+        {
+          "id": "ES-DEBT",
+          "title": "无未清偿的政府债务",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p12"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p29"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "申报无未清偿的政府债务。",
+          "assumptions": [
+            "\\"无政府债务\\"按用户申报判断；正在按还款计划偿还的非 asylum support 债务是否满足要求，原文未说明（PD-018）。"
+          ]
+        },
+        {
+          "id": "ES-ENGLISH-B2",
+          "title": "定居英语要求（B2；UKRS 难民 A2）",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p21"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "英语 B2，达到 B2。"
+        },
+        {
+          "id": "ES-KOL",
+          "title": "通过 Life in the UK 考试",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p21"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "已通过 Life in the UK 考试。"
+        },
+        {
+          "id": "ES-ROUTE-GROUP",
+          "title": "当前路线计入定居",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p25"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p47"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p48"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "当前路线\\"核心保护\\"属保护类分组，计入定居，按难民定居路径（Table 2）计算；保护类时间不能与工作、家庭路线的时间合并（p25）。"
+        },
+        {
+          "id": "ES-RESIDENCE",
+          "title": "计入定居的连续居留",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p22"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p23"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p24"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p25"
+            },
+            {
+              "srcId": "SRC-008",
+              "locator": "CR 3.1"
+            }
+          ],
+          "status": "FAIL",
+          "explanation": "计入定居的连续居留自 2027-03-01 起，截至 2030-01-01 满 2 年。30 年路径的居留还不够，2057-03-01 满 30 年。",
+          "assumptions": []
+        },
+        {
+          "id": "ES-PUBLIC-FUNDS",
+          "title": "申请前 5 年未使用 public funds",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p39"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p47"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "Core Protection 的 20 年路径不要求申请前 5 年未使用 public funds；这一要求只用于短于 20 年的路径（p39）。"
+        },
+        {
+          "id": "ES-BREACH",
+          "title": "成年后无 qualifying immigration breach",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p13"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "成年后无 qualifying immigration breach。成年后非法入境在保护类路线上按 Table 2 额外加 10 年，见\\"难民定居路径与年限\\"，不在此计入。"
+        },
+        {
+          "id": "ES-PROTECTION-PATHWAY",
+          "title": "难民定居路径与年限",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p38"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p40"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p47"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p48"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "Core Protection：20 年路径（p38、p47）。转入持续的工作、教育或培训并进入 Protection Work and Study 后，可自转入起按 10 年计算（p38）。成年后非法入境（2026-08-10），按 Table 2\\"Core Protection following illegal entry\\"行额外加 10 年，共 30 年（p38、p48）；受 Article 31 保护时不加（未申报）。",
+          "assumptions": [
+            "Core Protection 与 Protection Work and Study 尚未推出，启用日期未定（PD-034）；本工具按所填许可片段的日期计算。推出前已有的难民身份时间是否及如何计入，原文说法不一、细则待公布（PD-029、PD-043）。"
+          ]
+        },
+        {
+          "id": "ES-ASYLUM-SUPPORT",
+          "title": "已偿还 asylum support 或按计划还款",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p8"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p39"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p47"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "申报已全额偿还 asylum support（p39）。",
+          "assumptions": [
+            "难民偿还义务与保障措施的细则将在实施前公布（PD-031）；偿还情况按你的申报判断。"
+          ]
+        }
+      ],
+      "assumptions": [
+        "Earned Settlement 已公布、尚未生效，按\\"假设在申请日适用\\"评估；规则依据为政府回应文件（SRC-001），不是已生效的 Immigration Rules（PD-001）。首批规则修改预计 2026 年 12 月起提交、2027 年 1 月生效，2027–2028 年继续修改（SRC-002 col 593；SRC-003 cols 1423–1424），具体生效日以届时的 Statement of Changes 为准（PD-003）。",
+        "难民定居路径的多项细则（路线推出时间、已有时间如何计入、public funds 与偿还安排、Article 31）将在实施前公布；本结果仅帮助理解已公布的政策，具体情况请咨询受监管的移民顾问。",
+        "\\"无政府债务\\"按用户申报判断；正在按还款计划偿还的非 asylum support 债务是否满足要求，原文未说明（PD-018）。",
+        "Core Protection 与 Protection Work and Study 尚未推出，启用日期未定（PD-034）；本工具按所填许可片段的日期计算。推出前已有的难民身份时间是否及如何计入，原文说法不一、细则待公布（PD-029、PD-043）。",
+        "难民偿还义务与保障措施的细则将在实施前公布（PD-031）；偿还情况按你的申报判断。",
+        "最早可申请日期按\\"自 2027-03-01 起持续居留、收入等状况不变、其余要求届时仍满足\\"推算，不是对未来的保证。"
+      ],
+      "routeGroup": "PROTECTION"
     }
   }
 }"
@@ -4939,7 +5927,7 @@ exports[`ES-OFFICIAL-P45-INDIVIDUAL-A default-locale output is unchanged 1`] = `
         },
         {
           "id": "ES-ENGLISH-B2",
-          "title": "英语达到 B2",
+          "title": "定居英语要求（B2；UKRS 难民 A2）",
           "sources": [
             {
               "srcId": "SRC-001",
@@ -5499,7 +6487,7 @@ exports[`ES-OFFICIAL-P45-INDIVIDUAL-B default-locale output is unchanged 1`] = `
         },
         {
           "id": "ES-ENGLISH-B2",
-          "title": "英语达到 B2",
+          "title": "定居英语要求（B2；UKRS 难民 A2）",
           "sources": [
             {
               "srcId": "SRC-001",
@@ -6056,7 +7044,7 @@ exports[`ES-OFFICIAL-P45-INDIVIDUAL-C default-locale output is unchanged 1`] = `
         },
         {
           "id": "ES-ENGLISH-B2",
-          "title": "英语达到 B2",
+          "title": "定居英语要求（B2；UKRS 难民 A2）",
           "sources": [
             {
               "srcId": "SRC-001",

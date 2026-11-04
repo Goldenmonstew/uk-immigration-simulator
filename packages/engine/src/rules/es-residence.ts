@@ -1,5 +1,6 @@
 import {
   currentLaw2026_11 as cl,
+  earnedSettlement2026_11 as es,
   ROUTE_GROUPS,
   routeGroupNames,
   routeNames,
@@ -21,6 +22,72 @@ export function groupsOf(route: Route): readonly RouteGroup[] {
   return ROUTE_GROUPS[route];
 }
 
+/**
+ * The arrival date of a UK Resettlement Scheme refugee who arrived before
+ * the legacy cut-off: Legacy Safe and Legal Routes, outside the framework
+ * (SRC-001 p26 note 13). The arrival is the start of the continuous Safe and
+ * Legal permission.
+ */
+export function legacyUkrsArrival(
+  timeline: PersonTimeline,
+  date: IsoDate,
+): IsoDate | undefined {
+  const episode = episodeOn(timeline, date);
+  if (
+    episode?.route !== 'SAFE_AND_LEGAL' ||
+    episode.resettlementScheme !== 'UK_RESETTLEMENT_SCHEME'
+  ) {
+    return undefined;
+  }
+  const arrival = continuousRun(
+    timeline,
+    date,
+    (e) => e.route === 'SAFE_AND_LEGAL',
+  ).episodes[0].validFrom;
+  return arrival < es.values.legacySafeAndLegalArrivalsBefore.value
+    ? arrival
+    : undefined;
+}
+
+/**
+ * The route the person is on for Earned Settlement on `date`: the episode's
+ * route, except that a legacy UK Resettlement Scheme arrival is on
+ * LEGACY_SAFE_AND_LEGAL.
+ */
+export function esRouteOn(
+  timeline: PersonTimeline,
+  date: IsoDate,
+): Route | undefined {
+  const episode = episodeOn(timeline, date);
+  if (!episode) return undefined;
+  return legacyUkrsArrival(timeline, date)
+    ? 'LEGACY_SAFE_AND_LEGAL'
+    : episode.route;
+}
+
+/**
+ * On Safe and Legal through the UK Resettlement Scheme (not legacy): A2
+ * English, Life in the UK test exempt for now (SRC-001 p21, p37, p39).
+ */
+export function ukrsRefugeeOn(
+  timeline: PersonTimeline,
+  date: IsoDate,
+): boolean {
+  return (
+    esRouteOn(timeline, date) === 'SAFE_AND_LEGAL' &&
+    episodeOn(timeline, date)?.resettlementScheme === 'UK_RESETTLEMENT_SCHEME'
+  );
+}
+
+/** The protection route the person is on, if any (SRC-001 Chapter 7). */
+export function esProtectionRouteOn(
+  timeline: PersonTimeline,
+  date: IsoDate,
+): Route | undefined {
+  const route = esRouteOn(timeline, date);
+  return route && groupsOf(route).includes('PROTECTION') ? route : undefined;
+}
+
 export const esRouteGroup = defineRule(
   {
     id: 'ES-ROUTE-GROUP',
@@ -33,12 +100,12 @@ export const esRouteGroup = defineRule(
       { srcId: 'SRC-001', locator: 'p25' },
       { srcId: 'SRC-001', locator: 'p26' },
     ],
-    pendingDetails: ['PD-022', 'PD-023'],
+    pendingDetails: ['PD-022', 'PD-023', 'PD-045'],
   },
   ({ timeline, simulationDate, locale }) => {
     const L = textFor({ locale });
-    const episode = episodeOn(timeline, simulationDate);
-    if (!episode) {
+    const route = esRouteOn(timeline, simulationDate);
+    if (!route) {
       return {
         status: 'UNKNOWN',
         explanation: L(
@@ -47,9 +114,25 @@ export const esRouteGroup = defineRule(
         ),
       };
     }
-    const { route } = episode;
     const groups = groupsOf(route);
     const rn = nameIn(L, routeNames[route]);
+    const arrival = legacyUkrsArrival(timeline, simulationDate);
+    if (arrival) {
+      return {
+        status: 'UNKNOWN',
+        explanation: L(
+          `经 UK Resettlement Scheme 于 ${arrival} 抵达，早于 ${es.values.legacySafeAndLegalArrivalsBefore.value}，属 Legacy Safe and Legal Routes（p26 注 13）：不在 Earned Settlement 框架内，继续按现有安排 5 年定居；但强化的犯罪记录与英语要求仍适用，除非有现有豁免或保障。`,
+          `Arrived through the UK Resettlement Scheme on ${arrival}, before ${es.values.legacySafeAndLegalArrivalsBefore.value}, so on the Legacy Safe and Legal Routes (p26 note 13): outside the Earned Settlement framework, keeping settlement after five years under the existing arrangements. The strengthened criminality and English requirements still apply, unless an existing exemption or protection applies.`,
+        ),
+        sources: [{ srcId: 'SRC-001', locator: 'p26' }],
+        assumptions: [
+          L(
+            `${es.values.legacySafeAndLegalArrivalsBefore.value} 前抵达的 UK Resettlement Scheme 难民须达 B2 还是 A2 英语，原文前后不一（PD-045）。`,
+            `Whether UK Resettlement Scheme refugees who arrived before ${es.values.legacySafeAndLegalArrivalsBefore.value} need English at B2 or A2 is inconsistent in the response (PD-045).`,
+          ),
+        ],
+      };
+    }
     if (groups.includes('OUTSIDE_FRAMEWORK')) {
       return {
         status: 'UNKNOWN',
@@ -61,11 +144,16 @@ export const esRouteGroup = defineRule(
     }
     if (groups.includes('PROTECTION')) {
       return {
-        status: 'UNKNOWN',
+        status: 'PASS',
         explanation: L(
-          `当前路线"${rn}"属保护类路线，定居路径另有规定（SRC-001 Chapter 7），本工具尚未建模。`,
-          `The current route, ${rn}, is a protection route with its own settlement pathway (SRC-001 Chapter 7), which this tool does not yet model.`,
+          `当前路线"${rn}"属保护类分组，计入定居，按难民定居路径（Table 2）计算；保护类时间不能与工作、家庭路线的时间合并（p25）。`,
+          `The current route, ${rn}, is in the Protection group and counts towards settlement under the refugee pathways (Table 2); time on protection routes cannot be combined with time on work or family routes (p25).`,
         ),
+        sources: [
+          { srcId: 'SRC-001', locator: 'p25' },
+          { srcId: 'SRC-001', locator: 'p47' },
+          { srcId: 'SRC-001', locator: 'p48' },
+        ],
       };
     }
     if (route === 'LEAVE_OUTSIDE_THE_RULES') {
@@ -117,14 +205,14 @@ export const esRouteGroup = defineRule(
   },
 );
 
-/** PROTECTION or OUTSIDE_FRAMEWORK for the episode on `date`, which short-circuit. */
+/** PROTECTION or OUTSIDE_FRAMEWORK for the route on `date` (see esRouteOn). */
 export function esCurrentGroup(
   timeline: PersonTimeline,
   date: IsoDate,
 ): 'PROTECTION' | 'OUTSIDE_FRAMEWORK' | undefined {
-  const episode = episodeOn(timeline, date);
-  if (!episode) return undefined;
-  const groups = groupsOf(episode.route);
+  const route = esRouteOn(timeline, date);
+  if (!route) return undefined;
+  const groups = groupsOf(route);
   if (groups.includes('OUTSIDE_FRAMEWORK')) return 'OUTSIDE_FRAMEWORK';
   if (groups.includes('PROTECTION')) return 'PROTECTION';
   return undefined;
@@ -132,6 +220,8 @@ export function esCurrentGroup(
 
 // Time on one kind of route cannot be combined with another (p25): work and
 // family routes, human-rights routes (Family and Private Life), protection.
+// Within protection only the same route counts: time on Core Protection does
+// not count towards Protection Work and Study (p38, p40 Individual B).
 type Kind = 'WORK_OR_FAMILY' | 'HUMAN_RIGHTS' | 'PROTECTION';
 
 function kindOf(route: Route): Kind | undefined {
@@ -159,13 +249,11 @@ export function esQualifyingResidence({
   timeline,
   simulationDate,
 }: RuleContext): QualifyingResidence | undefined {
-  const current = episodeOn(timeline, simulationDate);
-  const kind = current && kindOf(current.route);
+  const route = esRouteOn(timeline, simulationDate);
+  const kind = route && kindOf(route);
   if (!kind) return undefined;
-  const run = continuousRun(
-    timeline,
-    simulationDate,
-    (e) => kindOf(e.route) === kind,
+  const run = continuousRun(timeline, simulationDate, (e) =>
+    kind === 'PROTECTION' ? e.route === route : kindOf(e.route) === kind,
   );
   const start = restartAfterAbsences(
     run.episodes[0].validFrom,
@@ -199,6 +287,15 @@ function whyRunStarts(
   }
   const { route } = stoppedAt;
   const rn = nameIn(L, routeNames[route]);
+  if (kindOf(route) === 'PROTECTION' && kindOf(first.route) === 'PROTECTION') {
+    return [
+      L(
+        `此前在"${rn}"路线的时间不计入当前保护类路线的合格期，自 ${first.validFrom} 转入起重新起算（p38；p40 Individual B）。`,
+        `Earlier time on ${rn} does not count towards the qualifying period of the current protection route; the count restarts from the move on ${first.validFrom} (p38; p40 Individual B).`,
+      ),
+      false,
+    ];
+  }
   if (kindOf(route)) {
     return [
       L(
@@ -239,12 +336,19 @@ export const esResidence = defineRule(
       { srcId: 'SRC-001', locator: 'p25' },
       { srcId: 'SRC-008', locator: 'CR 3.1' },
     ],
-    pendingDetails: ['PD-022', 'PD-023', 'PD-025', 'PD-053', 'PD-054'],
+    pendingDetails: [
+      'PD-022',
+      'PD-023',
+      'PD-025',
+      'PD-053',
+      'PD-054',
+      'PD-064',
+    ],
   },
   (ctx) => {
     const { timeline, simulationDate } = ctx;
     const L = textFor(ctx);
-    const current = episodeOn(timeline, simulationDate);
+    const current = esRouteOn(timeline, simulationDate);
     if (!current) {
       return {
         status: 'UNKNOWN',
@@ -256,11 +360,11 @@ export const esResidence = defineRule(
     }
     const residence = esQualifyingResidence(ctx);
     if (!residence) {
-      const groups = groupsOf(current.route);
-      const rn = nameIn(L, routeNames[current.route]);
+      const groups = groupsOf(current);
+      const rn = nameIn(L, routeNames[current]);
       if (
         groups.includes('NOT_COUNTING') &&
-        current.route !== 'LEAVE_OUTSIDE_THE_RULES'
+        current !== 'LEAVE_OUTSIDE_THE_RULES'
       ) {
         return {
           status: 'FAIL',
@@ -285,11 +389,25 @@ export const esResidence = defineRule(
               `Whether the current route, ${rn}, counts towards settlement is not settled, so residence cannot be calculated.`,
             ),
             pendingDetails: [
-              current.route === 'LEAVE_OUTSIDE_THE_RULES' ? 'PD-022' : 'PD-023',
+              current === 'LEAVE_OUTSIDE_THE_RULES' ? 'PD-022' : 'PD-023',
             ],
           };
     }
     const { start, run } = residence;
+    if (
+      current === 'CORE_PROTECTION' &&
+      run.stoppedAt?.route === 'PROTECTION_WORK_AND_STUDY'
+    ) {
+      return {
+        status: 'UNKNOWN',
+        explanation: L(
+          `自 ${run.episodes[0].validFrom} 起从 Protection Work and Study 回到 Core Protection。原文只说 Core Protection 的时间不计入 Protection Work and Study，没有说回到 Core Protection 后此前的时间如何计入。`,
+          `Back on Core Protection from Protection Work and Study since ${run.episodes[0].validFrom}. The response only says that time on Core Protection does not count towards Protection Work and Study; it does not say how earlier time counts after moving back to Core Protection.`,
+        ),
+        sources: [{ srcId: 'SRC-001', locator: 'p38' }],
+        pendingDetails: ['PD-064'],
+      };
+    }
     const notes: string[] = [];
     const assumptions: string[] = [];
     const why = whyRunStarts(timeline, run, L);

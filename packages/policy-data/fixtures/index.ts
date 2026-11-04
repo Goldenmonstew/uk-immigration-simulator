@@ -10,6 +10,10 @@ import { esP31IndividualBPartnerJoinsLater } from './es-p31-individual-b-partner
 import { esP31IndividualCChildDependant } from './es-p31-individual-c-child-dependant';
 import { esP31IndividualDYoungAdultDependant } from './es-p31-individual-d-young-adult-dependant';
 import { esP31IndividualEDependantAt25 } from './es-p31-individual-e-dependant-at-25';
+import { esP40IndividualAUrsResettlement } from './es-p40-individual-a-urs-resettlement';
+import { esP40IndividualBCoreProtectionToWork } from './es-p40-individual-b-core-protection-to-work';
+import { esP40IndividualCIllegalEntryToWork } from './es-p40-individual-c-illegal-entry-to-work';
+import { esP40IndividualDIllegalEntryCoreProtection } from './es-p40-individual-d-illegal-entry-core-protection';
 import { esP45IndividualACareWorkerEligible } from './es-p45-individual-a-care-worker-eligible';
 import { esP45IndividualBCareWorkerIneligible } from './es-p45-individual-b-care-worker-ineligible';
 import { esP45IndividualCCareWorkerAfterCutoff } from './es-p45-individual-c-care-worker-after-cutoff';
@@ -26,6 +30,10 @@ export const fixtures: Fixture[] = [
   esP31IndividualCChildDependant,
   esP31IndividualDYoungAdultDependant,
   esP31IndividualEDependantAt25,
+  esP40IndividualAUrsResettlement,
+  esP40IndividualBCoreProtectionToWork,
+  esP40IndividualCIllegalEntryToWork,
+  esP40IndividualDIllegalEntryCoreProtection,
   esP45IndividualACareWorkerEligible,
   esP45IndividualBCareWorkerIneligible,
   esP45IndividualCCareWorkerAfterCutoff,

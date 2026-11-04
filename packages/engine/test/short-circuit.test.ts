@@ -42,6 +42,24 @@ describe('short circuits', () => {
     );
   });
 
+  test('a legacy UK Resettlement Scheme arrival is outside the framework', () => {
+    const r = result({
+      episodes: [
+        {
+          route: 'SAFE_AND_LEGAL',
+          role: 'MAIN',
+          validFrom: '2024-01-01',
+          validTo: '2029-01-01',
+          resettlementScheme: 'UK_RESETTLEMENT_SCHEME',
+        },
+      ],
+    });
+    expect(r.shortCircuit?.reason).toBe('OUTSIDE_FRAMEWORK');
+    expect(r.byRuleSet['earned-settlement-2026-11']?.outcome).toBe(
+      'REQUIRES_REGULATED_REVIEW',
+    );
+  });
+
   test("a principal's criminal record stops both of the dependant's columns", () => {
     const r = evaluate({
       timeline: timeline({ episodes: asDependant('PARTNER') }),

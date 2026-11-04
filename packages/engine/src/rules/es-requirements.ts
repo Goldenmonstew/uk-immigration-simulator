@@ -5,6 +5,11 @@ import {
 import { fullYears } from '../dates';
 import { episodeOn } from '../residence';
 import { defineRule, nameIn, textFor } from '../rule';
+import {
+  esProtectionRouteOn,
+  legacyUkrsArrival,
+  ukrsRefugeeOn,
+} from './es-residence';
 import type { Lang } from '../rule';
 import type { CefrLevel } from '@uk-immigration/policy-data';
 import type { IsoDate, PersonTimeline } from '../types';
@@ -149,14 +154,34 @@ export const esEnglishB2 = defineRule(
   {
     id: 'ES-ENGLISH-B2',
     ruleSetId: RULE_SET,
-    title: '英语达到 B2',
-    titleEn: `English at ${es.values.settlementEnglishLevel.value}`,
+    title: `定居英语要求（${es.values.settlementEnglishLevel.value}；UKRS 难民 ${es.values.ukrsEnglishLevel.value}）`,
+    titleEn: `English for settlement (${es.values.settlementEnglishLevel.value}; ${es.values.ukrsEnglishLevel.value} for UK Resettlement Scheme refugees)`,
     sources: [{ srcId: 'SRC-001', locator: 'p21' }],
-    pendingDetails: ['PD-019'],
+    pendingDetails: ['PD-019', 'PD-045'],
   },
   ({ timeline, simulationDate, locale }) => {
     const L = textFor({ locale });
-    const required = es.values.settlementEnglishLevel.value;
+    const ukrs = ukrsRefugeeOn(timeline, simulationDate);
+    const required = ukrs
+      ? es.values.ukrsEnglishLevel.value
+      : es.values.settlementEnglishLevel.value;
+    // UK Resettlement Scheme refugees need A2 (p21 note 7, p37, p39, p47).
+    const ukrsSources = ukrs
+      ? {
+          sources: [
+            { srcId: 'SRC-001', locator: 'p21' },
+            { srcId: 'SRC-001', locator: 'p37' },
+            { srcId: 'SRC-001', locator: 'p39' },
+            { srcId: 'SRC-001', locator: 'p47' },
+          ],
+        }
+      : {};
+    const ukrsNote = ukrs
+      ? L(
+          `经 UK Resettlement Scheme 入境的难民只需 ${required}（p37、p39）。`,
+          ` Refugees admitted through the UK Resettlement Scheme need ${required} only (p37, p39).`,
+        )
+      : '';
     if (ageExemptOn(timeline, simulationDate)) {
       return {
         status: 'PASS',
@@ -166,14 +191,32 @@ export const esEnglishB2 = defineRule(
         ),
       };
     }
+    const arrival = legacyUkrsArrival(timeline, simulationDate);
+    if (arrival) {
+      return {
+        status: 'UNKNOWN',
+        explanation: L(
+          `${arrival} 经 UK Resettlement Scheme 抵达，属 Legacy Safe and Legal Routes。框架外群体一般须达 ${es.values.settlementEnglishLevel.value}，第 7 章又说 UK Resettlement Scheme 难民只需 ${es.values.ukrsEnglishLevel.value}，原文不一致。`,
+          `Arrived through the UK Resettlement Scheme on ${arrival}, so on the Legacy Safe and Legal Routes. Groups outside the framework generally need ${es.values.settlementEnglishLevel.value}, while Chapter 7 says UK Resettlement Scheme refugees need ${es.values.ukrsEnglishLevel.value} only; the response is inconsistent.`,
+        ),
+        sources: [
+          { srcId: 'SRC-001', locator: 'p25' },
+          { srcId: 'SRC-001', locator: 'p26' },
+          { srcId: 'SRC-001', locator: 'p37' },
+          { srcId: 'SRC-001', locator: 'p39' },
+        ],
+        pendingDetails: ['PD-045'],
+      };
+    }
     const english = timeline.english;
     if (!english) {
       return {
         status: 'UNKNOWN',
         explanation: L(
-          `未填写英语水平。Earned Settlement 要求 CEFR ${required}（现有豁免保留）。`,
-          `English level not provided. Earned Settlement requires CEFR ${required} (existing exemptions are retained).`,
+          `未填写英语水平。Earned Settlement 要求 CEFR ${required}（现有豁免保留）。${ukrsNote}`,
+          `English level not provided. Earned Settlement requires CEFR ${required} (existing exemptions are retained).${ukrsNote}`,
         ),
+        ...ukrsSources,
       };
     }
     if ('exempt' in english) {
@@ -195,16 +238,18 @@ export const esEnglishB2 = defineRule(
       ? {
           status: 'PASS',
           explanation: L(
-            `英语 ${english.cefrLevel}，达到 ${required}。`,
-            `English at ${english.cefrLevel}, which meets ${required}.`,
+            `英语 ${english.cefrLevel}，达到 ${required}。${ukrsNote}`,
+            `English at ${english.cefrLevel}, which meets ${required}.${ukrsNote}`,
           ),
+          ...ukrsSources,
         }
       : {
           status: 'FAIL',
           explanation: L(
-            `英语 ${english.cefrLevel}，低于 Earned Settlement 要求的 ${required}。这是强制要求，不能用收入或其他贡献抵消。`,
-            `English at ${english.cefrLevel}, below the ${required} required by Earned Settlement. This is a mandatory requirement and cannot be offset by earnings or other contributions.`,
+            `英语 ${english.cefrLevel}，低于 Earned Settlement 要求的 ${required}。这是强制要求，不能用收入或其他贡献抵消。${ukrsNote}`,
+            `English at ${english.cefrLevel}, below the ${required} required by Earned Settlement. This is a mandatory requirement and cannot be offset by earnings or other contributions.${ukrsNote}`,
           ),
+          ...ukrsSources,
         };
   },
 );
@@ -216,7 +261,7 @@ export const esKol = defineRule(
     title: '通过 Life in the UK 考试',
     titleEn: 'Pass the Life in the UK test',
     sources: [{ srcId: 'SRC-001', locator: 'p21' }],
-    pendingDetails: ['PD-020'],
+    pendingDetails: ['PD-020', 'PD-021'],
   },
   ({ timeline, simulationDate, locale }) => {
     const L = textFor({ locale });
@@ -227,6 +272,25 @@ export const esKol = defineRule(
           `申请日未满 ${es.values.adultAge.value} 岁或已满 ${es.values.exemptionAge.value} 岁，豁免 Life in the UK 考试。`,
           `Under ${es.values.adultAge.value} or aged ${es.values.exemptionAge.value} or over on the date of application: exempt from the Life in the UK test.`,
         ),
+      };
+    }
+    if (ukrsRefugeeOn(timeline, simulationDate)) {
+      return {
+        status: 'PASS',
+        explanation: L(
+          '经 UK Resettlement Scheme 入境的难民在出现适合 A2 水平的考试版本前，暂免 Life in the UK 考试（p21 注 8、p39）。',
+          'Refugees admitted through the UK Resettlement Scheme are exempt from the Life in the UK test until a version suitable for A2 English is available (p21 note 8, p39).',
+        ),
+        sources: [
+          { srcId: 'SRC-001', locator: 'p21' },
+          { srcId: 'SRC-001', locator: 'p39' },
+        ],
+        assumptions: [
+          L(
+            'A2 版 Life in the UK 考试推出后，这一豁免可能改变；推出时间未公布（PD-021）。',
+            'This exemption may change once an A2 version of the Life in the UK test is available; no date has been given (PD-021).',
+          ),
+        ],
       };
     }
     const kol = timeline.lifeInTheUk;
@@ -277,21 +341,34 @@ export const esBreach = defineRule(
     title: '成年后无 qualifying immigration breach',
     titleEn: 'No qualifying immigration breach as an adult',
     sources: [{ srcId: 'SRC-001', locator: 'p13' }],
-    pendingDetails: ['PD-015', 'PD-016', 'PD-044'],
+    pendingDetails: ['PD-015', 'PD-016', 'PD-044', 'PD-065'],
   },
-  ({ timeline, locale }) => {
+  ({ timeline, simulationDate, locale }) => {
     const L = textFor({ locale });
-    const adult = timeline.immigrationBreaches.filter((b) =>
-      isAdultOn(timeline, b.date),
+    // On a protection route illegal entry adds 10 years instead
+    // (ES-PROTECTION-PATHWAY, Table 2 p48), so it is not a breach here.
+    const protection = esProtectionRouteOn(timeline, simulationDate);
+    const adult = timeline.immigrationBreaches.filter(
+      (b) =>
+        isAdultOn(timeline, b.date) &&
+        !(protection && b.type === 'ILLEGAL_ENTRY'),
     );
-    const minorNote =
-      adult.length < timeline.immigrationBreaches.length
+    const minorNote = timeline.immigrationBreaches.some(
+      (b) => !isAdultOn(timeline, b.date),
+    )
+      ? L(
+          `未满 ${es.values.adultAge.value} 岁时的违规不计入（p13）。`,
+          ` Breaches before age ${es.values.adultAge.value} do not count (p13).`,
+        )
+      : '';
+    const illegalNote =
+      protection && adultIllegalEntry(timeline)
         ? L(
-            `未满 ${es.values.adultAge.value} 岁时的违规不计入（p13）。`,
-            ` Breaches before age ${es.values.adultAge.value} do not count (p13).`,
+            '成年后非法入境在保护类路线上按 Table 2 额外加 10 年，见"难民定居路径与年限"，不在此计入。',
+            ' On a protection route illegal entry as an adult adds 10 years under Table 2 (see the refugee settlement pathway) and is not counted here.',
           )
         : '';
-    if (adultIllegalEntry(timeline)) {
+    if (adultIllegalEntry(timeline) && !protection) {
       return {
         status: 'UNKNOWN',
         explanation: L(
@@ -308,22 +385,30 @@ export const esBreach = defineRule(
       return {
         status: 'FAIL',
         explanation: L(
-          `成年后有 qualifying immigration breach（${types.join('、')}），不论收入多高都进入 20 年路径。${minorNote}`,
-          `Qualifying immigration breach as an adult (${types.join(', ')}): the 20-year pathway applies however high the earnings.${minorNote}`,
+          `成年后有 qualifying immigration breach（${types.join('、')}），不论收入多高都进入 20 年路径。${minorNote}${illegalNote}`,
+          `Qualifying immigration breach as an adult (${types.join(', ')}): the 20-year pathway applies however high the earnings.${minorNote}${illegalNote}`,
         ),
         assumptions: [
           L(
             '20 年按在 qualifying route 上的连续居留计算，违规不设时效（PD-016）。',
             'The 20 years count continuous residence on a qualifying route; breaches do not expire (PD-016).',
           ),
+          ...(protection
+            ? [
+                L(
+                  'Table 2 只规定非法入境的后果；其他 qualifying breach 按第 1 章与 Table 1"所有路径适用"进入 20 年路径（叠加非法入境的 10 年），自当前保护类路线的合格期起点起算（PD-065）。',
+                  'Table 2 only sets out the consequence of illegal entry; other qualifying breaches lead to the 20-year pathway under Chapter 1 and Table 1 (“apply to all”), plus 10 years for any illegal entry, counted from the start of the qualifying period on the current protection route (PD-065).',
+                ),
+              ]
+            : []),
         ],
       };
     }
     return {
       status: 'PASS',
       explanation: L(
-        `成年后无 qualifying immigration breach。${minorNote}`,
-        `No qualifying immigration breach as an adult.${minorNote}`,
+        `成年后无 qualifying immigration breach。${minorNote}${illegalNote}`,
+        `No qualifying immigration breach as an adult.${minorNote}${illegalNote}`,
       ),
     };
   },

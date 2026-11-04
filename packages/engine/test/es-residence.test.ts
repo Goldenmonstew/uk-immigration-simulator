@@ -37,19 +37,132 @@ describe('ES-ROUTE-GROUP', () => {
     ).toEqual(['PD-023']);
   });
 
-  test('outside framework and protection are unknown here and short-circuit in evaluate', () => {
+  test('outside framework is unknown here and short-circuits in evaluate', () => {
     expect(run(esRouteGroup, { episodes: [on('HONG_KONG_BNO')] }).status).toBe(
       'UNKNOWN',
     );
+  });
+
+  test('protection routes pass in the Protection group', () => {
+    const result = run(esRouteGroup, { episodes: [on('CORE_PROTECTION')] });
+    expect(result.status).toBe('PASS');
+    expect(result.explanation).toContain('保护类');
+  });
+
+  test('a UK Resettlement Scheme arrival before 2027-04-06 is Legacy Safe and Legal', () => {
+    const ukrs = (validFrom: string) => [
+      on('SAFE_AND_LEGAL', {
+        validFrom,
+        validTo: '2032-12-31',
+        resettlementScheme: 'UK_RESETTLEMENT_SCHEME',
+      }),
+    ];
+    const legacy = run(
+      esRouteGroup,
+      { episodes: ukrs('2027-04-05') },
+      '2028-01-01',
+    );
+    expect(legacy.status).toBe('UNKNOWN');
+    expect(legacy.explanation).toContain('Legacy Safe and Legal');
+    expect(legacy.assumptions?.[0]).toContain('PD-045');
+    // Boundary: arriving on the cut-off date is not legacy.
     expect(
-      run(esRouteGroup, { episodes: [on('CORE_PROTECTION')] }).status,
-    ).toBe('UNKNOWN');
+      run(esRouteGroup, { episodes: ukrs('2027-04-06') }, '2028-01-01').status,
+    ).toBe('PASS');
+    // Another designated route is not derived as legacy.
+    expect(
+      run(
+        esRouteGroup,
+        {
+          episodes: [
+            on('SAFE_AND_LEGAL', {
+              validFrom: '2025-01-01',
+              resettlementScheme: 'OTHER_DESIGNATED',
+            }),
+          ],
+        },
+        '2026-01-01',
+      ).status,
+    ).toBe('PASS');
   });
 
   test('an episode ending the day before the simulation date does not count', () => {
     const result = run(esRouteGroup, {
       episodes: [on('SKILLED_WORKER', { validTo: '2026-11-03' })],
     });
+    expect(result.status).toBe('UNKNOWN');
+    expect(result.pendingDetails).toBeUndefined();
+  });
+});
+
+describe('ES-RESIDENCE on protection routes', () => {
+  const core = on('CORE_PROTECTION', {
+    validFrom: '2027-03-01',
+    validTo: '2028-02-29',
+  });
+  const pws = on('PROTECTION_WORK_AND_STUDY', {
+    validFrom: '2028-03-01',
+    validTo: '2033-02-28',
+  });
+
+  test('moving from Core Protection to Protection Work and Study restarts the count', () => {
+    const result = run(esResidence, { episodes: [core, pws] }, '2030-01-01');
+    expect(result.status).toBe('PASS');
+    expect(result.explanation).toContain('自 2028-03-01 起');
+    expect(result.explanation).toContain('Individual B');
+  });
+
+  test('Core Protection alone counts from the grant', () => {
+    const result = run(
+      esResidence,
+      { episodes: [{ ...core, validTo: '2032-12-31' }] },
+      '2030-01-01',
+    );
+    expect(result.status).toBe('PASS');
+    expect(result.explanation).toContain('自 2027-03-01 起');
+  });
+
+  test('moving back to Core Protection is unknown', () => {
+    const back = on('CORE_PROTECTION', {
+      validFrom: '2033-03-01',
+      validTo: '2038-02-28',
+    });
+    const result = run(
+      esResidence,
+      { episodes: [core, pws, back] },
+      '2034-01-01',
+    );
+    expect(result.status).toBe('UNKNOWN');
+    expect(result.pendingDetails).toEqual(['PD-064']);
+  });
+
+  test('work-route time before a protection route does not count', () => {
+    const result = run(
+      esResidence,
+      {
+        episodes: [
+          on('SKILLED_WORKER', { validFrom: '2024-01-01', validTo: '2027-02-28' }),
+          { ...core, validTo: '2032-12-31' },
+        ],
+      },
+      '2030-01-01',
+    );
+    expect(result.explanation).toContain('自 2027-03-01 起');
+  });
+
+  test('a legacy UK Resettlement Scheme arrival is outside the framework', () => {
+    const result = run(
+      esResidence,
+      {
+        episodes: [
+          on('SAFE_AND_LEGAL', {
+            validFrom: '2025-01-01',
+            resettlementScheme: 'UK_RESETTLEMENT_SCHEME',
+          }),
+        ],
+      },
+      '2026-01-01',
+    );
     expect(result.status).toBe('UNKNOWN');
     expect(result.pendingDetails).toBeUndefined();
   });

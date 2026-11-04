@@ -85,16 +85,16 @@
 | PD-027 | 弱势群体的详细安排 | 政府将与受影响群体及相关机构沟通，详细安排在明年的指引中公布；这些群体"在适当情况下"仍须满足强化的犯罪与英语要求。 | p33；p34；p26 | 框架外弱势群体（丧偶伴侣、UASC、local authority care 儿童、在英长大的青年、家暴受害者）：短路到"现行安排"，但"是否须满足 B2 / 新犯罪要求"输出 `UNKNOWN`。 | 原文 "next year"，即 2027 年（以回应发布于 2026-11 推算） |
 | PD-028 | 强化要求对 Afghan schemes 与 Windrush 的适用 | 框架外一节开头概括说这些路线上的个人须满足强化的犯罪与 B2 要求（除非有现有豁免或保障）；而 Afghan schemes 为按资格立即定居，Windrush 为确认既有身份，二者如何叠加强化要求，原文没有逐项说明。 | p25；p26 | Afghan schemes 与 Windrush：短路到现行安排；"是否须满足强化要求"输出 `UNKNOWN`。 | 原文未提及 |
 
-### H. 难民（MVP-0 不做，路线枚举需保留）
+### H. 难民（任务 3.4 起建模，见 `docs/contracts.md` §11）
 
 | ID | 事项 | 原文怎么说 | 出处 | 对引擎的影响 | 预计何时明确 |
 |---|---|---|---|---|---|
-| PD-029 | Protection Work and Study 推出前已在英的时间 | 对于 Protection Work and Study 推出前已获保护身份的人，政府将进一步说明已在英时间是否以及如何计入。 | p38 | 此类用户的已有时间是否计入输出 `UNKNOWN`（另见 PD-043 的文内矛盾）。 | 原文未提及 |
-| PD-030 | Protection Work and Study 的 contribution 口径 | 通过工作证明 contribution 的须在三个 qualifying years 内年收入达 £12,571；未定义三年的观察窗口，也未定义"sustained work, education or training"及教育 / 培训者的 contribution 标准。 | p38；p47 | 工作年份计数可算，但观察窗口 `UNKNOWN`；教育 / 培训路径一律 `UNKNOWN`。 | 原文未提及 |
-| PD-031 | 难民的 public funds 与偿还安排细则 | 先沿用现行 public funds 定义；难民哪些福利可不计入、偿还义务与保障措施的细节在实施前公布。须清偿 asylum support 或遵守还款计划。 | p39 | 难民用过 public funds 时，是否触发 20 年输出 `UNKNOWN`；asylum support 偿还状态由用户自报。 | 实施前（p39） |
-| PD-032 | Article 31 保障如何运作 | 受 Refugee Convention Article 31 保护者不加 10 年；保障的具体运作在实施前公布。 | p39 | 非法入境 + 用户声称符合 Article 31 → `UNKNOWN`。 | 实施前（p39） |
-| PD-033 | designated Safe and Legal Routes 的清单 | 用于定居目的的 designated Safe and Legal Routes 包括 UK Resettlement Scheme 及"specified"的安置与担保路线；具体清单未列出。 | p37；p47 | 只把 UK Resettlement Scheme 识别为 Safe and Legal；其他安置 / 担保路线输出 `UNKNOWN`。 | 原文未提及 |
-| PD-034 | Protection Work and Study 与 Core Protection 的启用日期 | 2026-03-02 前申请庇护且非 Safe and Legal 的难民将转入 Core Protection；Protection Work and Study 的启用日期未给出。 | p38 注 14 | Protection Work and Study 启用日 = `UNKNOWN`。 | 原文未提及 |
+| PD-029 | Protection Work and Study 推出前已在英的时间 | 对于 Protection Work and Study 推出前已获保护身份的人，政府将进一步说明已在英时间是否以及如何计入。 | p38 | `ES-PROTECTION-PATHWAY` 按用户填写的片段起止日计算、照常 `PASS`，在假设中声明并列出 PD-029 / PD-034 / PD-043，不输出 `UNKNOWN`（否则 p40 案例无法复现）。（任务 3.4） | 原文未提及 |
+| PD-030 | Protection Work and Study 的 contribution 口径 | 通过工作证明 contribution 的须在三个 qualifying years 内年收入达 £12,571；未定义三年的观察窗口，也未定义"sustained work, education or training"及教育 / 培训者的 contribution 标准。 | p38；p47 | `ES-PROTECTION-CONTRIBUTION`：工作者数 Protection Work and Study 合格期内完整的 tax year（起点所在 tax year 不计，4 月 6 日起算除外），按"合格期内任意 3 年"计算并在假设中声明；不足而合格期未满 → `UNKNOWN`（PD-030）；满期仍不足 → `FAIL`；教育 / 培训 → `UNKNOWN`（PD-030）。（任务 3.4） | 原文未提及 |
+| PD-031 | 难民的 public funds 与偿还安排细则 | 先沿用现行 public funds 定义；难民哪些福利可不计入、偿还义务与保障措施的细节在实施前公布。须清偿 asylum support 或遵守还款计划。 | p39 | `ES-PUBLIC-FUNDS`：Protection Work and Study 照常按现行 public funds 定义判断，用过则只剩 20 年兜底，假设提 PD-031；Safe and Legal 豁免，Core Protection 不要求。asylum support 偿还由 `asylumSupportRepayment` 自报，`ES-ASYLUM-SUPPORT` 判断。（任务 3.4） | 实施前（p39） |
+| PD-032 | Article 31 保障如何运作 | 受 Refugee Convention Article 31 保护者不加 10 年；保障的具体运作在实施前公布。 | p39 | 成年后非法入境且全部声称 Article 31 → `ES-PROTECTION-PATHWAY` 输出 `UNKNOWN`（PD-032），候选按基础年限（不加 10 年）投影，解释另给加 10 年的年限与日期。（任务 3.4） | 实施前（p39） |
+| PD-033 | designated Safe and Legal Routes 的清单 | 用于定居目的的 designated Safe and Legal Routes 包括 UK Resettlement Scheme 及"specified"的安置与担保路线；具体清单未列出。 | p37；p47 | `resettlementScheme = OTHER_DESIGNATED` 按用户申报视为 Safe and Legal（5 年），假设说明清单未公布、Community Sponsorship 等属 Legacy；缺省 → `UNKNOWN`。（任务 3.4） | 原文未提及 |
+| PD-034 | Protection Work and Study 与 Core Protection 的启用日期 | 2026-03-02 前申请庇护且非 Safe and Legal 的难民将转入 Core Protection；Protection Work and Study 的启用日期未给出。 | p38 注 14 | 启用日未知：按所填片段日期计算，在 `ES-PROTECTION-PATHWAY` 的假设中声明（同 PD-029）。（任务 3.4） | 原文未提及 |
 
 ### I. 过渡安排细节（详见 `docs/transitional-arrangements.md`）
 
@@ -115,9 +115,9 @@
 |---|---|---|---|---|---|
 | PD-041 | 10 年路径的收入年数 | Contribution 一章先说须"至少 3 年"达到 £12,571，Annex B 也说"至少 3 年"；但同章 best years 段落与 Table 1 都写"申请前 7 年中 5 年"。 | p15、p52 vs p16、p46 | 按 Table 1 的"申请前 7 年中 5 年"判断（`ES-EARNINGS-10Y`，参数 `bestYears10Year`）：达标 < 5 年即 `FAIL`，不因 p15 的"至少 3 年"输出 `UNKNOWN`；结果中声明该假设并指出 p15 的另一说法。 | 原文未提及 |
 | PD-042 | 收入门槛挂钩的税种 | 个人门槛 £12,571 在正文说与所得税 basic rate 挂钩，Annex B 却说与 2026/27 NICs 门槛一致；家庭门槛 £25,142 说随 National Insurance 门槛变动。 | p15 vs p52；p17 | 当前两种门槛数值相同，不影响今天的判断；参数文件须为个人门槛与家庭门槛分别记录挂钩依据，两种税种门槛将来分离时输出 `UNKNOWN`。 | 原文未提及 |
-| PD-043 | 难民在新路线推出前的时间是否计入 | 注 14 说 2026-03-02 前申请庇护的（非 Safe and Legal）难民转入 Core Protection，有难民身份的时间"都会计入"；正文同页又说 Core Protection 时间不计入 Protection Work and Study 的 10 年，且已在英时间如何计入"将另行说明"。 | p38 注 14 vs p38 正文 | 2026-03-02 前申请庇护的难民：已有时间是否计入、计入哪条路径，输出 `UNKNOWN`。 | 原文未提及 |
-| PD-044 | 非法入境的后果：20 年 breach 路径还是加 10 年 | 第 1 章把成年时非法入境与 qualifying breach 并列，暗示进入 20 年路径，同时说第 7 章的非法入境处理适用于所有移民；第 7 章则说非法入境者无论走哪条路线都"额外加 10 年"。 | p13 vs p38；p47–p48 | 非难民路线 + 非法入境：结论输出 `UNKNOWN`，并同时展示两种读法（20 年 / 基础路径 + 10 年）；难民路线按 Table 2 计算。 | 原文未提及 |
-| PD-045 | 2027-04-06 前 URS 难民的英语标准 | Legacy Safe and Legal Routes（含 2027-04-06 前抵达的 URS 难民）属框架外，框架外群体一般须满足 B2（除非有现有豁免）；第 7 章又说 URS 难民只需 A2。 | p25、p26 注 13 vs p37、p39 | 2027-04-06 前抵达的 URS 难民：英语要求输出 `UNKNOWN`（A2 或 B2）。2027-04-06 后抵达者按 A2。 | 原文未提及 |
+| PD-043 | 难民在新路线推出前的时间是否计入 | 注 14 说 2026-03-02 前申请庇护的（非 Safe and Legal）难民转入 Core Protection，有难民身份的时间"都会计入"；正文同页又说 Core Protection 时间不计入 Protection Work and Study 的 10 年，且已在英时间如何计入"将另行说明"。 | p38 注 14 vs p38 正文 | 同 PD-029：按片段日期计算并声明。注 14 支持把 2026-03-02 前申请庇护者的现有难民许可按 `CORE_PROTECTION` 自获保护之日起填写。（任务 3.4） | 原文未提及 |
+| PD-044 | 非法入境的后果：20 年 breach 路径还是加 10 年 | 第 1 章把成年时非法入境与 qualifying breach 并列，暗示进入 20 年路径，同时说第 7 章的非法入境处理适用于所有移民；第 7 章则说非法入境者无论走哪条路线都"额外加 10 年"。 | p13 vs p38；p47–p48 | 非难民路线 + 成年后非法入境：短路 `IMMIGRATION_BREACH`，不作结论。保护类路线：按 Table 2 由 `ES-PROTECTION-PATHWAY` 加 10 年，不计入 `ES-BREACH`、不短路（任务 3.4）。 | 原文未提及 |
+| PD-045 | 2027-04-06 前 URS 难民的英语标准 | Legacy Safe and Legal Routes（含 2027-04-06 前抵达的 URS 难民）属框架外，框架外群体一般须满足 B2（除非有现有豁免）；第 7 章又说 URS 难民只需 A2。 | p25、p26 注 13 vs p37、p39 | 由 `resettlementScheme = UK_RESETTLEMENT_SCHEME` 与连续 Safe and Legal 段的起点推导：早于 2027-04-06 → Legacy Safe and Legal（框架外，短路 `OUTSIDE_FRAMEWORK`），`ES-ENGLISH-B2` 输出 `UNKNOWN`（PD-045）。2027-04-06 及以后抵达者按 A2。（任务 3.4） | 原文未提及 |
 | PD-046 | care worker 二次 Health and Care 签证后的定居年限 | 第 8 章说未达标者可再获 5 年 Health and Care 签证，之后"再次申请定居"；Annex A 把这部分人放在 10 年路径下估算，案例 B 只说会支持其转入真实的担保工作。 | p43、p45 vs p50 | 二次签证后的定居：按"总计满 10 年"展示并声明假设；是否仍属保留的 5 年 qualifying period 规则、是否适用 £25,000 等条件，输出 `UNKNOWN`。 | 原文未提及 |
 | PD-047 | public funds 回看期是否要求在 qualifying route 上 | 正文写"申请前紧接的 5 年"未使用 specified public funds；案例 D 写须在 qualifying route 上"连续 5 年"未使用。 | p18 vs p19 | 申请前 5 年内有部分时间不在 qualifying route 上时，输出 `UNKNOWN`；其余按正文判断。 | 原文未提及 |
 | PD-048 | 3 年 / 高人才的命名 | 第 4 章注 10 使用 "high talent group / high talent permission"（含 Skilled Worker）；Table 1 使用 "Highest Talent Group" 并注明待 MAC 审查。二者是否同一概念不明。 | p23 注 10 vs p46 注 16 | 路线分类表使用 "high talent permission"（注 10）；"Highest Talent Group" 资格按 PD-011 输出 `UNKNOWN`；持 Skilled Worker 不等于可走 3 年路径。 | MAC 报告后（p46），日期原文未提及 |
@@ -155,3 +155,13 @@ dependant 随主申请人定居（SRC-001 Ch.5）时，原文未规定、引擎�
 | ID | 事项 | 原文怎么说 | 出处 | 对引擎的影响 | 预计何时明确 |
 |---|---|---|---|---|---|
 | PD-063 | 主申请人已定居后其 dependant 如何定居 | Ch.5 只讲 dependant 与主申请人同时定居、后到伴侣须完成同样的合格期、18 岁以下子女随父母定居；没有说主申请人已经定居（或入籍）后，其伴侣 / 子女按什么路径与年限定居。现行规则对此有 SW 39.1(b)。 | p29–p31 | 主申请人时间线带 `settled`（且不晚于申请日）时，`ES-DEPENDANT-PATHWAY` 输出 `UNKNOWN`（PD-063），不给年限与日期；没有其他 `FAIL` 或用户漏填时结论为 `POTENTIALLY_ELIGIBLE`。现行法律栏按 SW 39.1(b) 照常判断。 | 原文未提及 |
+
+## 六、难民路径建模（任务 3.4 新增）
+
+| ID | 事项 | 原文怎么说 | 出处 | 对引擎的影响 | 预计何时明确 |
+|---|---|---|---|---|---|
+| PD-064 | 从 Protection Work and Study 回到 Core Protection | 原文只说从 Core Protection 转入 Protection Work and Study 时 10 年自转入起算、Core Protection 时间不计入；没有说失去工作等原因回到 Core Protection 后，此前的保护类时间如何计入 20 年。 | p38；p40 | 当前为 Core Protection 且紧接其前是 Protection Work and Study 时，`ES-RESIDENCE` 输出 `UNKNOWN`（PD-064）；年限仍按自回切起算的 20 年投影。 | 原文未提及 |
+| PD-065 | 有其他 qualifying breach 的难民 | 第 1 章说成年后的 qualifying breach（逾期停留、违反条件、欺骗、妨碍管制）让任何申请人进入 20 年路径，Table 1 注明"所有强制要求适用于所有路径"；Table 2 只列非法入境的后果，没有提其他 breach。 | p13；p46；p47–p48 | 保护类路线上的成年后非法入境只按 Table 2 加 10 年，不算 `ES-BREACH`；其他 breach 照常让 `ES-BREACH` `FAIL`：Safe and Legal 与 Protection Work and Study 落到 20 年兜底（叠加非法入境的 10 年），Core Protection 本来就是 20 年；兜底自当前保护类路线的合格期起点起算。 | 原文未提及 |
+| PD-066 | Protection Work and Study 用过 public funds 后的 20 年从何时起算 | 原文说难民须 5 年未用 public funds 才能走"短于 20 年"的路径，没有说这 20 年是否把此前的 Core Protection 时间算进去。 | p39；p38 | 按 p25 / p38 的"转入新路线重新起算"，20 年兜底自 Protection Work and Study 的合格期起点起算，假设说明。 | 原文未提及 |
+| PD-067 | 难民的 dependant | 第 7 章与 Table 2 只讲获保护的本人，没有说其伴侣、子女（如 family reunion）按什么路径定居；第 5 章的 dependant 规则是否适用于保护类路线未说明。 | p36–p40；p47–p48；p28–p31 | 申请日持保护类路线 `DEPENDANT` 许可：短路 `PROTECTION`，Earned Settlement 栏 `REQUIRES_REGULATED_REVIEW`，现行法律栏照常评估。 | 原文未提及 |
+| PD-068 | Safe and Legal 难民的 asylum support 偿还 | p8 注 1 与 p39 说领过 asylum support 且须偿还者须已偿还或按计划还款；Table 2 只在 Protection Work and Study 与 Core Protection 两行列出这一要求，Safe and Legal 一行没有。 | p8 注 1；p39；p47 | `ES-ASYLUM-SUPPORT` 只对 Protection Work and Study 与 Core Protection 运行；Safe and Legal 不评估（不出现在 `rules[]`）。 | 原文未提及 |
