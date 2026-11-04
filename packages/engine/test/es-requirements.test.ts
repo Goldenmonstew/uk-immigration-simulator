@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { esCriminality } from '../src/rules/es-requirements';
+import { esCriminality, esDebt } from '../src/rules/es-requirements';
 import { run } from './helpers';
 
 describe('ES-CRIMINALITY', () => {
@@ -22,5 +22,23 @@ describe('ES-CRIMINALITY', () => {
     expect(
       run(esCriminality, { criminalRecord: [{ date: '2008-01-15' }] }).status,
     ).toBe('FAIL');
+  });
+});
+
+describe('ES-DEBT', () => {
+  test('no outstanding debt passes', () => {
+    expect(run(esDebt).status).toBe('PASS');
+  });
+
+  test('outstanding debt fails', () => {
+    expect(run(esDebt, { governmentDebt: { outstanding: true } }).status).toBe(
+      'FAIL',
+    );
+  });
+
+  test('not answered is unknown from missing input', () => {
+    const result = run(esDebt, { governmentDebt: undefined });
+    expect(result.status).toBe('UNKNOWN');
+    expect(result.pendingDetails).toBeUndefined();
   });
 });
