@@ -102,20 +102,41 @@ export const CR_3_1 = {
 
 const ABSENCE_ASSUMPTION = `缺席按 Appendix Continuous Residence CR 3.1 计算，出境与入境当日都计入缺席；CR 3.4 的可豁免缺席理由未建模。`;
 
-/** Start of the continuous Skilled Worker period ending on the simulation date. */
+// SW 21.2(a)–(h): permission (not as a dependant) on any combination of these
+// routes counts towards the 5 years. Representative of an Overseas Business
+// and Tier 1 are not in Route; SW 21.2(i) is not modelled.
+const SW_QUALIFYING_ROUTES: Route[] = [
+  'SKILLED_WORKER',
+  'GLOBAL_TALENT',
+  'INNOVATOR_FOUNDER',
+  'MINISTER_OF_RELIGION',
+  'INTERNATIONAL_SPORTSPERSON',
+  'SCALE_UP',
+];
+
+const countsForSkilledWorker = (e: ImmigrationEpisode) =>
+  e.role === 'MAIN' && SW_QUALIFYING_ROUTES.includes(e.route);
+
+/**
+ * Start of the continuous SW 21.2 period ending on the simulation date, while
+ * on Skilled Worker.
+ */
 export function skilledWorkerStart({
   timeline,
   simulationDate,
 }: RuleContext): IsoDate | undefined {
-  const { episodes } = continuousRun(timeline, simulationDate, isSkilledWorker);
-  return episodes.length > 0
-    ? restartAfterAbsences(
-        episodes[0].validFrom,
-        simulationDate,
-        timeline.absences,
-        CR_3_1,
-      )
-    : undefined;
+  if (!onSkilledWorker(timeline, simulationDate)) return undefined;
+  const { episodes } = continuousRun(
+    timeline,
+    simulationDate,
+    countsForSkilledWorker,
+  );
+  return restartAfterAbsences(
+    episodes[0].validFrom,
+    simulationDate,
+    timeline.absences,
+    CR_3_1,
+  );
 }
 
 export const clSwResidence5Y = defineRule(
@@ -135,7 +156,7 @@ export const clSwResidence5Y = defineRule(
     const years = cl.values.skilledWorkerQualifyingYears.value;
     const start = skilledWorkerStart(ctx);
     const assumptions = [
-      '只计 Skilled Worker 主申请人许可，未合并 SW 21.2 列出的其他可计入路线（Global Talent、Innovator Founder 等）。',
+      '连续期合并 SW 21.2 列出的 Skilled Worker、Global Talent、Innovator Founder、T2 Minister of Religion、International Sportsperson、Scale-up 主申请人许可；Representative of an Overseas Business 与 Tier 1 本工具无法填写，不计入；SW 21.2(i) 的等待决定期间未建模。',
       ...(ctx.timeline.absences.length > 0 ? [ABSENCE_ASSUMPTION] : []),
     ];
     if (!start) {
@@ -149,12 +170,12 @@ export const clSwResidence5Y = defineRule(
     return due <= ctx.simulationDate
       ? {
           status: 'PASS',
-          explanation: `自 ${start} 起连续持 Skilled Worker 许可，已满 ${years} 年。`,
+          explanation: `自 ${start} 起连续持可计入 Skilled Worker 定居的许可（SW 21.2），已满 ${years} 年。`,
           assumptions,
         }
       : {
           status: 'FAIL',
-          explanation: `自 ${start} 起连续持 Skilled Worker 许可，截至 ${ctx.simulationDate} 满 ${fullYears(start, ctx.simulationDate)} 年；${due} 满 ${years} 年。`,
+          explanation: `自 ${start} 起连续持可计入 Skilled Worker 定居的许可（SW 21.2），截至 ${ctx.simulationDate} 满 ${fullYears(start, ctx.simulationDate)} 年；${due} 满 ${years} 年。`,
           assumptions,
         };
   },

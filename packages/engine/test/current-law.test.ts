@@ -68,6 +68,60 @@ describe('CL-SW-RESIDENCE-5Y', () => {
     expect(result.explanation).toContain('自 2021-11-01 起');
   });
 
+  test('SW 21.2: Global Talent then Skilled Worker counts from the Global Talent start', () => {
+    const episodes = [
+      episode({
+        route: 'GLOBAL_TALENT',
+        validFrom: '2022-03-01',
+        validTo: '2024-02-29',
+        salary: undefined,
+      }),
+      episode({ validFrom: '2024-03-01', validTo: '2029-02-28' }),
+    ];
+    const result = run(clSwResidence5Y, { episodes });
+    expect(result.status).toBe('FAIL');
+    expect(result.explanation).toContain('自 2022-03-01 起');
+    expect(
+      evaluate({
+        timeline: timeline({ episodes }),
+        simulationDate: SIMULATION_DATE,
+      }).byRuleSet['current-law-2026-11'],
+    ).toMatchObject({ pathwayYears: 5, earliestDate: '2027-03-01' });
+    expect(run(clSwResidence5Y, { episodes }, '2027-03-01').status).toBe(
+      'PASS',
+    );
+  });
+
+  test('SW 21.2: dependant time or a non-listed route breaks the run; the current permission must be Skilled Worker', () => {
+    const before = (
+      route: ImmigrationEpisode['route'],
+      role: 'MAIN' | 'DEPENDANT',
+    ) => [
+      episode({ route, role, validFrom: '2020-03-01', validTo: '2024-02-29' }),
+      episode({ validFrom: '2024-03-01', validTo: '2029-02-28' }),
+    ];
+    expect(
+      run(clSwResidence5Y, { episodes: before('GLOBAL_TALENT', 'DEPENDANT') })
+        .explanation,
+    ).toContain('自 2024-03-01 起');
+    expect(
+      run(clSwResidence5Y, { episodes: before('UK_ANCESTRY', 'MAIN') })
+        .explanation,
+    ).toContain('自 2024-03-01 起');
+    expect(
+      run(clSwResidence5Y, {
+        episodes: [
+          episode({ validFrom: '2019-03-01', validTo: '2022-02-28' }),
+          episode({
+            route: 'GLOBAL_TALENT',
+            validFrom: '2022-03-01',
+            validTo: '2027-02-28',
+          }),
+        ],
+      }).status,
+    ).toBe('FAIL');
+  });
+
   test('181 days abroad in 12 months restarts the period', () => {
     const result = run(clSwResidence5Y, {
       absences: [{ from: '2023-01-01', to: '2023-06-30' }],
