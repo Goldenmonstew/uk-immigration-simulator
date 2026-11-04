@@ -8,6 +8,7 @@
   },
   "scripts": {
     "build": "pnpm -r --workspace-concurrency=1 build",
+    "deploy:pages": "pnpm build && pnpm dlx wrangler@4.157.0 pages deploy apps/web/out --project-name \"${CF_PAGES_PROJECT:?set CF_PAGES_PROJECT}\"",
     "test": "pnpm -r --workspace-concurrency=1 test",
     "lint": "pnpm -r lint",
     "typecheck": "pnpm -r --workspace-concurrency=1 typecheck",
