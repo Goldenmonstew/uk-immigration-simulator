@@ -193,7 +193,8 @@ export const currentLaw2026_11 = {
       sources: [{ srcId: 'SRC-022', locator: 'SETF 3.1' }],
     },
     // B1 before 2027-03-26, B2 from then: SETF 5.1 for the 10-year route,
-    // Appendix KoLL (via E-ILRP.1.6) for the 5-year route.
+    // Appendix KoLL (via E-ILRP.1.6) for the 5-year route, and for the
+    // children of 5-year route partners aged 18 or over (Part 8 para 298(vii)).
     familyPartnerSettlementEnglishBefore: {
       value: 'B1',
       sources: [
@@ -201,6 +202,7 @@ export const currentLaw2026_11 = {
         { srcId: 'SRC-022', locator: 'SETF 15.1(a)' },
         { srcId: 'SRC-025', locator: 'KoLL 2.2(b)' },
         { srcId: 'SRC-025', locator: 'KoLL 2.2(c)(i)' },
+        { srcId: 'SRC-029', locator: 'para 298(vii)' },
       ],
     },
     familyPartnerSettlementEnglish: {
@@ -210,6 +212,7 @@ export const currentLaw2026_11 = {
         { srcId: 'SRC-022', locator: 'SETF 15.1(b)' },
         { srcId: 'SRC-025', locator: 'KoLL 2.2(ba)' },
         { srcId: 'SRC-025', locator: 'KoLL 2.2(c)(ii)' },
+        { srcId: 'SRC-029', locator: 'para 298(vii)' },
         { srcId: 'SRC-007', locator: 'EM 5.60' },
       ],
     },

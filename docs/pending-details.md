@@ -208,4 +208,4 @@ dependant 随主申请人定居（SRC-001 Ch.5）时，原文未规定、引擎�
 
 | ID | 事项 | 原文怎么说 | 出处 | 对引擎的影响 | 预计何时明确 |
 |---|---|---|---|---|---|
-| PD-074 | Appendix FM 5 年路线伴侣的子女如何定居 | D-LTRC.1.1 末句：随按 Appendix Settlement Family Life 申请的伴侣或父母定居的子女适用该 Appendix；否则适用 Immigration Rules Part 8 第 298 段。本仓库未登记 Part 8。 | SRC-024 D-LTRC.1.1 | 主申请人为 `PARTNER_FIVE_YEAR` 时，子女的现行法律栏 `CL-SCOPE` 输出 `UNKNOWN`（PD-074），结论"信息不足"，不给年限与日期。 | 待登记 Part 8 第 298 段后可建模 |
+| PD-074 | Appendix FM 5 年路线伴侣的子女如何定居 | D-LTRC.1.1 末句：随按 Appendix Settlement Family Life 申请的伴侣或父母定居的子女适用该 Appendix；否则适用 Immigration Rules Part 8 第 298 段。Part 8 已于任务 6.1 登记为 SRC-029。 | SRC-024 D-LTRC.1.1；SRC-029 para 298 | **已关闭（SRC-029，任务 6.2）**：按 para 298 建模（`docs/contracts.md` §16.5）。`CL-SCOPE` 对这类子女为 `PASS`；`CL-FAMILY-CHILD` 判断主申请人已定居或同时获批定居（298(i)），时点为主申请人现行法律栏的日期，子女本人没有合格期；已满 18 岁按 Appendix KoLL 核英语与 Life in the UK（298(vii)）。298(i) 的具体情形与 298(iii)–(v) 写进假设。不再输出 PD-074。 | 已明确：SRC-029（2026-08-03，HC 259） |

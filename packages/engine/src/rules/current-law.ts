@@ -213,8 +213,9 @@ export const clScope = defineRule(
       { srcId: 'SRC-021', locator: 'GT 27.1' },
       { srcId: 'SRC-022', locator: 'SETF 12.1' },
       { srcId: 'SRC-024', locator: 'D-LTRC.1.1' },
+      { srcId: 'SRC-029', locator: 'para 298' },
     ],
-    pendingDetails: ['PD-074'],
+    pendingDetails: [],
   },
   (ctx) => {
     const { timeline, simulationDate } = ctx;
@@ -343,17 +344,18 @@ export const clScope = defineRule(
         ),
       };
     }
-    const familyChild =
-      ctx.principal !== undefined && onFamilyChild(timeline, simulationDate);
-    const fiveYearChild =
-      familyChild && principalFamilyPermission(ctx) === 'PARTNER_FIVE_YEAR';
-    if (familyChild && !fiveYearChild) {
+    if (ctx.principal && onFamilyChild(timeline, simulationDate)) {
       return {
         status: 'PASS',
-        explanation: L(
-          '当前持 Appendix FM 伴侣或父母的 dependent child 许可，按 Appendix Settlement Family Life 的子女定居要求（SETF 10–SETF 17）与 Appendix Long Residence 评估。',
-          'Currently holds permission as the dependent child of an Appendix FM partner or parent; assessed under the child settlement requirements of Appendix Settlement Family Life (SETF 10–SETF 17) and Appendix Long Residence.',
-        ),
+        explanation: onFiveYearFamilyChild(ctx)
+          ? L(
+              '当前持 Appendix FM 5 年路线伴侣的 dependent child 许可，按 Immigration Rules Part 8 第 298 段的子女定居要求（D-LTRC.1.1 末句）与 Appendix Long Residence 评估。',
+              'Currently holds permission as the dependent child of a partner on the 5-year Appendix FM route; assessed under the child settlement requirements of paragraph 298 of Part 8 of the Immigration Rules (last sentence of D-LTRC.1.1) and Appendix Long Residence.',
+            )
+          : L(
+              '当前持 Appendix FM 伴侣或父母的 dependent child 许可，按 Appendix Settlement Family Life 的子女定居要求（SETF 10–SETF 17）与 Appendix Long Residence 评估。',
+              'Currently holds permission as the dependent child of an Appendix FM partner or parent; assessed under the child settlement requirements of Appendix Settlement Family Life (SETF 10–SETF 17) and Appendix Long Residence.',
+            ),
       };
     }
     if (longResidenceMet(ctx)) {
@@ -363,13 +365,6 @@ export const clScope = defineRule(
           '已满 10 年连续合法居留，按 Appendix Long Residence 评估。',
           '10 years of continuous lawful residence completed; assessed under Appendix Long Residence.',
         ),
-      };
-    }
-    if (fiveYearChild) {
-      return {
-        status: 'UNKNOWN',
-        explanation: PD_074(L),
-        pendingDetails: ['PD-074'],
       };
     }
     const current = episodeOn(timeline, simulationDate);
@@ -432,8 +427,8 @@ export const clScope = defineRule(
               'Currently holds Skilled Worker permission as a dependant; not provided whether this is as the principal applicant’s partner or child.',
             )
         : L(
-            '现行规则只建模了 Skilled Worker（主申请人及其 dependent partner / child）、Hong Kong BN(O) 与 Global Talent 主申请人及其 dependant、Appendix FM 伴侣及 10 年路线伴侣的子女、持 refugee status 或 humanitarian protection 的主申请人、UK Ancestry、Innovator Founder 与 Private Life 主申请人、Long Residence；当前路线不在其中，也不满足 Long Residence 的 10 年，无法判断其他路线的定居条件。',
-            'The current rules are modelled only for Skilled Worker (main applicants and their dependent partners / children), Hong Kong BN(O) and Global Talent main applicants and their dependants, Appendix FM partners and the children of 10-year route partners, main applicants with refugee status or humanitarian protection, UK Ancestry, Innovator Founder and Private Life main applicants, and Long Residence; the current route is none of these, and the 10 years for Long Residence are not met, so the settlement requirements of other routes cannot be assessed.',
+            '现行规则只建模了 Skilled Worker（主申请人及其 dependent partner / child）、Hong Kong BN(O) 与 Global Talent 主申请人及其 dependant、Appendix FM 伴侣及其子女（10 年路线按 Appendix Settlement Family Life，5 年路线的子女按 Immigration Rules Part 8 第 298 段）、持 refugee status 或 humanitarian protection 的主申请人、UK Ancestry、Innovator Founder 与 Private Life 主申请人、Long Residence；当前路线不在其中，也不满足 Long Residence 的 10 年，无法判断其他路线的定居条件。',
+            'The current rules are modelled only for Skilled Worker (main applicants and their dependent partners / children), Hong Kong BN(O) and Global Talent main applicants and their dependants, Appendix FM partners and their children (Appendix Settlement Family Life on the 10-year route; paragraph 298 of Part 8 of the Immigration Rules for the children of 5-year route partners), main applicants with refugee status or humanitarian protection, UK Ancestry, Innovator Founder and Private Life main applicants, and Long Residence; the current route is none of these, and the 10 years for Long Residence are not met, so the settlement requirements of other routes cannot be assessed.',
           );
     return { status: 'UNKNOWN', explanation };
   },
@@ -2774,13 +2769,133 @@ export function principalFamilyPermission(
     .at(-1)?.familyPermission;
 }
 
-const PD_074 = (L: Lang) =>
+/**
+ * The child of a 5-year route partner, who settles under Part 8 para 298
+ * (last sentence of D-LTRC.1.1, contracts §16.5). Needs the principal.
+ */
+export function onFiveYearFamilyChild(ctx: RuleContext): boolean {
+  return (
+    ctx.principal !== undefined &&
+    onFamilyChild(ctx.timeline, ctx.simulationDate) &&
+    principalFamilyPermission(ctx) === 'PARTNER_FIVE_YEAR'
+  );
+}
+
+const lastFamilyPermissionAssumption = (L: Lang) =>
   L(
-    '主申请人在 Appendix FM 的 5 年伴侣路线上：D-LTRC.1.1 末句规定，不随 Appendix Settlement Family Life 申请的子女按 Immigration Rules Part 8 第 298 段定居，该段本工具未登记（PD-074）。',
-    'The principal applicant is on the 5-year Appendix FM partner route: under the last sentence of D-LTRC.1.1, a child not applying with a parent under Appendix Settlement Family Life settles under paragraph 298 of Part 8 of the Immigration Rules, which this tool has not registered (PD-074).',
+    '主申请人已定居：按其定居日前最后一个 Appendix FM 主申请人片段的许可类型判断是 5 年还是 10 年路线。',
+    'The principal applicant has settled: whether they were on the 5-year or the 10-year route is taken from their last Appendix FM main applicant permission before settling.',
   );
 
-/** SETF 10.3, SETF 12.1, SETF 13.1: the child of a 10-year route partner. */
+/**
+ * Part 8 para 298: the child of a 5-year route partner settles once the
+ * parent is settled (298(i)(a)–(d)) or with them, when they are granted
+ * settlement on whichever pathway (298(i)(d)); no qualifying period of their
+ * own (contracts §16.5).
+ */
+function fiveYearChildPathway(
+  ctx: RuleContext,
+  settled: PersonTimeline['settled'],
+): DependantPathway {
+  const { timeline, simulationDate } = ctx;
+  const L = textFor(ctx);
+  const adultAge = cl.values.settlementMinorAge.value;
+  const minor = minorOn(timeline, simulationDate);
+  const age = minor
+    ? L(
+        `申请日未满 ${adultAge} 岁（298(ii)(a)）`,
+        `Under ${adultAge} on the date of application (para 298(ii)(a))`,
+      )
+    : L(
+        `申请日已满 ${adultAge} 岁，当前的 Appendix FM 子女许可按以定居为目的获批处理（298(ii)(b)）`,
+        `Aged ${adultAge} or over on the date of application, with the current Appendix FM child permission taken as granted with a view to settlement (para 298(ii)(b))`,
+      );
+  const assumptions = [
+    settled
+      ? L(
+          '298(i)：主申请人已定居，按 (a)–(d) 之一满足处理（另一位父母已定居或为英国公民、已去世、由主申请人独自抚养或子女与其同住，或另一位父母未持也不在获批英国限期许可）；(e) 近亲情形未建模。',
+          'Para 298(i): the principal applicant has settled, and one of (a)–(d) is assumed to be met (the other parent is settled or a British citizen, or has died; the principal applicant has sole responsibility or the child lives with them; or the other parent does not have, and is not being granted, limited leave in the UK); (e), a close relative, is not modelled.',
+        )
+      : L(
+          '298(i)：主申请人尚未定居，只有 (d)（与主申请人同时获批定居）适用；假设另一位父母未持、也不在获批英国限期许可，例如是主申请人的英国公民或已定居伴侣；(e) 近亲情形未建模。',
+          'Para 298(i): the principal applicant has not settled, so only (d), being granted settlement at the same time as them, applies; the other parent is assumed not to have, and not to be granted, limited leave in the UK, for example as the principal applicant’s British citizen or settled partner; (e), a close relative, is not modelled.',
+        ),
+    ...(minor
+      ? [
+          L(
+            `按申请日年龄判断：若到预计日期已满 ${adultAge} 岁，届时须按 298(vii) 满足英语与 Life in the UK。`,
+            `Age is taken on the date of application: if the child is ${adultAge} or over by the projected date, the English and Life in the UK requirements in para 298(vii) apply then.`,
+          ),
+        ]
+      : [
+          L(
+            '298(ii)(b)：当前的 Appendix FM 子女许可视为以定居为目的获批。仅因英语或 Life in the UK 不满足 298(vii) 时，可按 298A 获限期许可，但仍不符合定居。',
+            'Para 298(ii)(b): the current Appendix FM child permission is taken as granted with a view to settlement. If only the English or Life in the UK requirement in para 298(vii) is not met, limited leave may be granted under para 298A, but settlement is not.',
+          ),
+        ]),
+    L(
+      '未独立生活、未婚、未另组家庭（298(iii)），由父母提供足够的住宿与生活费、不依赖 public funds（298(iv)–(v)），按满足处理。',
+      'Not leading an independent life, being unmarried and not having formed an independent family unit (para 298(iii)), and adequate accommodation and maintenance from the parent without recourse to public funds (para 298(iv)–(v)), are assumed to be met.',
+    ),
+    settled ? lastFamilyPermissionAssumption(L) : notYetSettledAssumption(L),
+  ];
+  const years = cl.values.familyPartnerQualifyingYearsFive.value;
+  if (settled) {
+    return {
+      years,
+      start: addYears(simulationDate, -years),
+      result: {
+        status: 'PASS',
+        explanation: L(
+          `${age}；主申请人已于 ${settled.date} 定居（298(i)），可申请定居；子女本人没有合格期。`,
+          `${age}; the principal applicant settled on ${settled.date} (para 298(i)), so they can apply for settlement; the child has no qualifying period of their own.`,
+        ),
+        assumptions,
+      },
+    };
+  }
+  const p = ctx.principal!.result.byRuleSet[RULE_SET];
+  if (p?.earliestDate && p.pathwayYears) {
+    return {
+      years: p.pathwayYears,
+      start: addYears(p.earliestDate, -p.pathwayYears),
+      result: {
+        status: 'PASS',
+        explanation: L(
+          `${age}；随主申请人定居：主申请人 ${p.earliestDate} 可获批定居，届时同时申请（298(i)(d)）；子女本人没有合格期。`,
+          `${age}; settling with the principal applicant, who can be granted settlement on ${p.earliestDate}, when they apply together (para 298(i)(d)); the child has no qualifying period of their own.`,
+        ),
+        assumptions,
+      },
+    };
+  }
+  return {
+    years,
+    result:
+      p?.outcome === 'LIKELY_NOT_ELIGIBLE'
+        ? {
+            status: 'FAIL',
+            explanation: L(
+              '主申请人目前不能定居，本人不能按 298(i) 随其定居。',
+              'The principal applicant cannot currently settle, so this person cannot settle with them under para 298(i).',
+            ),
+            assumptions,
+          }
+        : {
+            status: 'UNKNOWN',
+            explanation: L(
+              '主申请人的信息不足以判断其何时定居。',
+              'The principal applicant’s details are not enough to determine when they can settle.',
+            ),
+            assumptions,
+          },
+  };
+}
+
+/**
+ * SETF 10.3, SETF 12.1, SETF 13.1: the child of a 10-year route partner; the
+ * child of a 5-year route partner settles under Part 8 para 298.
+ */
 export function familyChildPathway(
   ctx: RuleContext,
 ): DependantPathway | undefined {
@@ -2798,13 +2913,11 @@ export function familyChildPathway(
   ];
   if (!principal) return { years, result: needsPrincipal(L, assumptions) };
   const permission = principalFamilyPermission(ctx);
+  if (permission === 'PARTNER_FIVE_YEAR') {
+    return fiveYearChildPathway(ctx, settled);
+  }
   if (settled && permission !== 'NOT_ON_ROUTE') {
-    assumptions.push(
-      L(
-        '主申请人已定居：按其定居日前最后一个 Appendix FM 主申请人片段的许可类型判断是 5 年还是 10 年路线。',
-        'The principal applicant has settled: whether they were on the 5-year or the 10-year route is taken from their last Appendix FM main applicant permission before settling.',
-      ),
-    );
+    assumptions.push(lastFamilyPermissionAssumption(L));
   }
   if (permission === 'NOT_ON_ROUTE') {
     return settled
@@ -2828,17 +2941,6 @@ export function familyChildPathway(
             assumptions,
           ),
         };
-  }
-  if (permission === 'PARTNER_FIVE_YEAR') {
-    return {
-      years,
-      result: {
-        status: 'UNKNOWN',
-        explanation: PD_074(L),
-        pendingDetails: ['PD-074'],
-        assumptions,
-      },
-    };
   }
   if (permission !== 'PARTNER_TEN_YEAR') {
     return {
@@ -2920,8 +3022,15 @@ export const clFamilyChild = defineRule(
       { srcId: 'SRC-022', locator: 'SETF 13.2' },
       { srcId: 'SRC-022', locator: 'SETF 14.1' },
       { srcId: 'SRC-024', locator: 'D-LTRC.1.1' },
+      { srcId: 'SRC-029', locator: 'para 298(i)' },
+      { srcId: 'SRC-029', locator: 'para 298(ii)' },
+      { srcId: 'SRC-029', locator: 'para 298(iii)' },
+      { srcId: 'SRC-029', locator: 'para 298(iv)' },
+      { srcId: 'SRC-029', locator: 'para 298(v)' },
+      { srcId: 'SRC-029', locator: 'para 298(vii)' },
+      { srcId: 'SRC-029', locator: 'para 298A' },
     ],
-    pendingDetails: ['PD-074'],
+    pendingDetails: [],
   },
   (ctx) =>
     familyChildPathway(ctx)?.result ?? {
@@ -2960,6 +3069,8 @@ export const clEnglish = defineRule(
       { srcId: 'SRC-022', locator: 'SETF 15.1' },
       { srcId: 'SRC-024', locator: 'E-ILRP.1.6' },
       { srcId: 'SRC-025', locator: 'KoLL 2.2' },
+      { srcId: 'SRC-025', locator: 'KoLL 3.1' },
+      { srcId: 'SRC-029', locator: 'para 298(vii)' },
       { srcId: 'SRC-026', locator: 'UKA 15.1' },
       { srcId: 'SRC-028', locator: 'PL 16.1' },
       { srcId: 'SRC-007', locator: 'EM 5.60' },
@@ -2967,8 +3078,9 @@ export const clEnglish = defineRule(
     ],
     pendingDetails: ['PD-072'],
   },
-  ({ timeline, simulationDate, locale }) => {
-    const L = textFor({ locale });
+  (ctx) => {
+    const { timeline, simulationDate } = ctx;
+    const L = textFor(ctx);
     if (ageExempt(timeline, simulationDate)) {
       return {
         status: 'PASS',
@@ -3040,10 +3152,15 @@ export const clEnglish = defineRule(
             ` (Appendix Global Talent GT 32.1(${fromB2 ? 'b' : 'a'}), applications ${fromB2 ? 'from' : 'before'} ${b2.applicationsFrom})`,
           )
         : familyChild
-          ? L(
-              `（Appendix Settlement Family Life SETF 15.1(${fromB2 ? 'b' : 'a'})，${b2.applicationsFrom} ${fromB2 ? '起' : '前'}的申请）`,
-              ` (Appendix Settlement Family Life SETF 15.1(${fromB2 ? 'b' : 'a'}), applications ${fromB2 ? 'from' : 'before'} ${b2.applicationsFrom})`,
-            )
+          ? onFiveYearFamilyChild(ctx)
+            ? L(
+                `（Immigration Rules Part 8 第 298(vii) 段、Appendix KoLL 2.2，${b2.applicationsFrom} ${fromB2 ? '起' : '前'}的申请）`,
+                ` (paragraph 298(vii) of Part 8 of the Immigration Rules, Appendix KoLL 2.2; applications ${fromB2 ? 'from' : 'before'} ${b2.applicationsFrom})`,
+              )
+            : L(
+                `（Appendix Settlement Family Life SETF 15.1(${fromB2 ? 'b' : 'a'})，${b2.applicationsFrom} ${fromB2 ? '起' : '前'}的申请）`,
+                ` (Appendix Settlement Family Life SETF 15.1(${fromB2 ? 'b' : 'a'}), applications ${fromB2 ? 'from' : 'before'} ${b2.applicationsFrom})`,
+              )
           : gt
             ? L(
                 `（Appendix Global Talent GT 13.1(${fromB2 ? 'b' : 'a'})，${b2.applicationsFrom} ${fromB2 ? '起' : '前'}的申请）`,
@@ -3148,6 +3265,8 @@ export const clKol = defineRule(
       { srcId: 'SRC-022', locator: 'SETF 6.1' },
       { srcId: 'SRC-022', locator: 'SETF 16.1' },
       { srcId: 'SRC-025', locator: 'KoLL 2.3' },
+      { srcId: 'SRC-025', locator: 'KoLL 3.1' },
+      { srcId: 'SRC-029', locator: 'para 298(vii)' },
       { srcId: 'SRC-026', locator: 'UKA 16.1' },
       { srcId: 'SRC-027', locator: 'INNF 20.1' },
       { srcId: 'SRC-028', locator: 'PL 17.1' },
@@ -3156,8 +3275,9 @@ export const clKol = defineRule(
     ],
     pendingDetails: ['PD-072'],
   },
-  ({ timeline, simulationDate, locale }) => {
-    const L = textFor({ locale });
+  (ctx) => {
+    const { timeline, simulationDate } = ctx;
+    const L = textFor(ctx);
     if (ageExempt(timeline, simulationDate)) {
       return {
         status: 'PASS',
@@ -3173,7 +3293,12 @@ export const clKol = defineRule(
         : globalTalentDependant(timeline, simulationDate)
           ? L('（GT 33.1）', ' (GT 33.1)')
           : onFamilyChild(timeline, simulationDate)
-            ? L('（SETF 16.1）', ' (SETF 16.1)')
+            ? onFiveYearFamilyChild(ctx)
+              ? L(
+                  '（Immigration Rules Part 8 第 298(vii) 段、Appendix KoLL 2.3）',
+                  ' (paragraph 298(vii) of Part 8 of the Immigration Rules, Appendix KoLL 2.3)',
+                )
+              : L('（SETF 16.1）', ' (SETF 16.1)')
             : onGlobalTalent(timeline, simulationDate)
               ? L('（GT 14.1）', ' (GT 14.1)')
               : onUkAncestry(timeline, simulationDate)
