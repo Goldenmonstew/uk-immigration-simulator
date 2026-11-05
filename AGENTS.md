@@ -9,6 +9,7 @@
 - 一个 package 同一时间只有一个 writer：
   - `packages/engine` 与一切规则语义：仅 Opus
   - `apps/web`：仅 astra
+  - `packages/game`（游戏内容与纯逻辑）：仅 sol
   - 仓库脚手架、`packages/policy-data` 的 schema / 数据表 / fixtures 工具链、CI、lint：仅 sol
   - `docs/`、`policy-sources/`：按 brief 指定
 - 不要修改 `PROGRESS.md`（由 Fable 在合并时更新）。不要修改 `AGENTS.md` / `CLAUDE.md`。
