@@ -16,6 +16,11 @@
 }
 .heading {
   margin-bottom: 12px;
+  scroll-margin-top: 16px;
+}
+.columnNavigation,
+.columnJump {
+  display: none;
 }
 .outcome {
   background: #f3f2f1;
@@ -76,8 +81,9 @@
   margin: 24px 0;
 }
 .group h4 {
+  display: inline;
   font-size: 1.1rem;
-  margin: 0 0 12px;
+  margin: 0;
 }
 .rules {
   list-style: none;
@@ -107,6 +113,10 @@
   gap: 8px 16px;
   font-size: 0.95rem;
 }
+.sourceDetails > summary {
+  font-size: 0.95rem;
+  color: #1d70b8;
+}
 .assumptions {
   padding-left: 24px;
 }
@@ -114,6 +124,30 @@
   margin-bottom: 12px;
 }
 @media (max-width: 760px) {
+  .columnNavigation {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .columnNavigation button,
+  .columnJump {
+    min-height: 44px;
+    padding: 8px;
+    border: 1px solid #1d70b8;
+    background: #fff;
+    color: #1d70b8;
+    cursor: pointer;
+  }
+  .columnJump {
+    display: block;
+    border: 0;
+    padding: 8px 0;
+    margin-bottom: 12px;
+    text-align: left;
+    text-decoration: underline;
+    text-underline-offset: 0.18em;
+  }
   .columns {
     grid-template-columns: 1fr;
     gap: 24px;

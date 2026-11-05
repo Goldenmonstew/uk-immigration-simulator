@@ -22,6 +22,8 @@ test('homepage presents policy status, disclaimer, privacy and the questionnaire
     expect(html).toContain(text);
   expect(html).toContain('href="/simulate"');
   expect(html).not.toContain('mock=');
+  expect(html).toMatch(/<details[^>]*><summary>建模范围<\/summary>/);
+  expect(html).not.toMatch(/<details[^>]*\bopen/);
 });
 
 test('an empty rule list renders without implying eligibility', () => {
@@ -132,7 +134,19 @@ test('previews render rules, assumptions, dates, source links and group order', 
   expect(positive).toContain(routeGroupNames.CORE_PERMISSION['zh-CN']);
   expect(positive).toContain('政府未定细节：PD-012、PD-013');
   expect(positive).toContain('<details><summary>假设清单（2 条）</summary>');
-  expect(positive).not.toContain('<details open');
+  const groups = [
+    ...positive.matchAll(
+      /<details([^>]*)><summary><h4>(.*?)<\/h4><\/summary>/g,
+    ),
+  ];
+  expect(groups).toHaveLength(6);
+  for (const [index, group] of groups.entries())
+    expect(group[1].includes('open=""')).toBe(index % 3 !== 2);
+  const sources = [
+    ...positive.matchAll(/<details([^>]*)><summary>来源（(\d+)）<\/summary>/g),
+  ];
+  expect(sources.length).toBeGreaterThan(0);
+  for (const source of sources) expect(source[1]).not.toContain('open');
   const negative = renderToStaticMarkup(
     <ResultView result={mockResults['2']} mock />,
   );
