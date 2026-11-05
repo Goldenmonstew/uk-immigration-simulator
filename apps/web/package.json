@@ -15,6 +15,7 @@
     "@uk-immigration/game": "workspace:*",
     "@uk-immigration/policy-data": "workspace:*",
     "next": "16.4.5",
+    "phaser": "^3.90.0",
     "react": "19.3.1",
     "react-dom": "19.3.1"
   },
