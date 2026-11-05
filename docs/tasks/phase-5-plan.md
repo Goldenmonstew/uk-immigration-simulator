@@ -77,3 +77,15 @@ Wave 1 三个 writer 互不碰同一 package（sol 5.1；Opus 5.2 契约 + 难�
 3. **5.7 繁体中文**：不做。
 4. **5.9**：LICENSE 用 MIT（已加 `LICENSE`，版权署名 Goldenmonstew，快照部分注明 OGL / OPL）；PROGRESS 不精简。
 5. **分工**：后期多用 Codex 的模型（astra / sol）承担任务，规则语义仍由 Opus 负责；所有任务继续遵守"不过度工程化"（本阶段起 5.6 的测试由 sol 写、修复归 Opus；5.8 的修正归 astra）。
+
+## 5. 完成状态（2026-11-05）
+
+5.1–5.6、5.8 与 5.9 的 LICENSE 全部验收合并到 main（含补充任务 5.5b）；5.7 繁体中文按用户决定不做；5.9 的 PROGRESS 精简不做，12 月 Statement of Changes 落地后按 `docs/versioning.md` 另开任务。验收过程见 `PROGRESS.md` 第 63 行起与 `docs/tasks/reports/5.*.md`。
+
+- 现行法律栏：主申请人覆盖 Skilled Worker、Hong Kong BN(O)、Global Talent、Appendix FM 伴侣（5 / 10 年）、难民（Appendix Settlement Protection）、UK Ancestry、Innovator Founder、Private Life 与 Long Residence；dependant 覆盖 Skilled Worker、Hong Kong BN(O)（伴侣、子女、adult dependant relative）、Global Talent（伴侣、子女）与 Appendix FM 10 年路线伴侣的子女；新登记来源 SRC-026–028；契约 §14、§15；PD-069–074。
+- 结果页"还差什么"摘要与"去 What-if 试试"预填；问卷新输入（INNF 17.1(f) 七项背书条件、Private Life 许可依据、保护身份撤销、HK BN(O) adult dependant relative）与范围文案。
+- 引擎健壮性：`packages/engine/test/random.test.ts` 固定种子 2000 个随机请求，不抛错、不变量成立、中英输出结构一致；未发现引擎问题。
+- 视觉验收：375px 下首页、问卷各步、结果、What-if、/policy、/about 均无溢出（内置浏览器面板隐藏时 `resize_window` 仍可用，可作为 375px 证据）。
+- 分工：5.3、5.5、5.5b 由 astra，5.1、5.6 由 sol，5.2、5.4 由 Opus（规则语义）；Fable 写任务书、评审契约、独立验证、合并推送。
+
+留给下一阶段的候选（按价值）：登记 Immigration Rules Part 8 第 298 段并建模 Appendix FM 5 年路线伴侣的子女（PD-074，sol 登记 + Opus 规则）；dependant 判断里主申请人 SETF 10 年与 Long Residence 10 年用 `pathwayYears` 无法区分（5.4 报告 §4）；差距摘要会列出"替代路径"的 FAIL 规则（5.3）；Legacy UKRS 与非法入境短路的不一致（5.2 报告 §4）；`SimulationResult.policyAsOf` 固定值；保护类、UK Ancestry、Innovator Founder、Private Life 的 dependant；Appendix FM 伴侣的储蓄与 E-LTRP.3.3；PD-069"可定居路线"合并；12 月 Statement of Changes 落地后的规则集升级。
