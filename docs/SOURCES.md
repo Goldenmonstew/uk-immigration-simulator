@@ -46,6 +46,8 @@
 | SRC-027 | LAW | Immigration Rules: Appendix Innovator Founder（版本 2026-08-03，HC 259；主申请人 settlement 见 INNF 15.1–INNF 21.6，业务条件见 INNF 17.1–INNF 17.5） | https://www.gov.uk/guidance/immigration-rules/immigration-rules-appendix-innovator-founder | 2026-08-03 | 2026-11-04 | `policy-sources/2026-08-03-immigration-rules-appendix-innovator-founder.html`（sha256 `1853949fb4447bd0a0c8d76c79678aaf50947d02336e33f0c0867dbf55894418`） | archived |
 | SRC-028 | LAW | Immigration Rules: Appendix Private Life（版本 2026-10-08，HC 584；主申请人 settlement 见 PL 11.1–PL 18.5，合格期分流见 PL 13.1–PL 14.4） | https://www.gov.uk/guidance/immigration-rules/immigration-rules-appendix-private-life | 2026-10-08 | 2026-11-04 | `policy-sources/2026-10-08-immigration-rules-appendix-private-life.html`（sha256 `43a13c41406b8d7131d7f1e98addcd4afb597b04ea8dded55897ca3d4003e3ad`） | archived |
 | SRC-029 | LAW | Immigration Rules Part 8: family members（版本 2026-08-03，HC 259；child settlement 见 para 298–298A） | https://www.gov.uk/guidance/immigration-rules/immigration-rules-part-8-family-members | 2026-08-03 | 2026-11-05 | `policy-sources/2026-08-03-immigration-rules-part-8-family-members.html`（sha256 `66c523cc6f5d9c6370277ab972b9ab07c247090476b5e5c8009d78a88feb8d9f`） | archived |
+| SRC-030 | GUIDANCE | Skilled Worker visa: How much it costs（境内标准申请 ≤3 年 £943、IHS 通常每年 £1,035；动态 guide 子页） | https://www.gov.uk/skilled-worker-visa/how-much-it-costs | —（guide 元数据 public_updated_at 为 2024-10-31，非费用生效日） | 2026-11-05 | `policy-sources/2026-11-05-skilled-worker-visa-how-much-it-costs.html`（sha256 `55313dadb207b2caae7c5f77a5487791e61b4faf748b09b740b08b11511594ca`） | archived |
+| SRC-031 | GUIDANCE | Home Office immigration and nationality fees, 8 October 2026（ILR 申请费 £3,226） | https://www.gov.uk/government/publications/visa-regulations-revised-table/home-office-immigration-and-nationality-fees-8-october-2026 | 2026-09-10（表内费率自 2026-10-08） | 2026-11-05 | `policy-sources/2026-10-08-home-office-immigration-and-nationality-fees.html`（sha256 `3b4fbb59134f418352ed61e6744bdccbfd341c7467f3e5e0c327b22ab25d2d33`） | archived |
 
 ## 登记备注（按 SRC）
 
@@ -351,3 +353,16 @@
 - **Para 302 所在小节**：标题为 “Limited leave to enter or remain in the United Kingdom with a view to settlement as the child of a parent or parents given limited leave to enter or remain in the United Kingdom with a view to settlement”；para 302 为此类子女的限期许可条款，由 para 298(ii)(b) 引用。
 - **Appendix FM 交叉引用**：para A277、A277B(a)–(c)、A277C、A277D、A278、A280(a)–(b)、A280(d)(v)、A280(g)、A280B、277、298(ii)(b)、298(vii)（分别见过渡与相互适用条款、partner 定义及上述 child settlement 许可 / KoLL 入口；Appendix FM 见 SRC-024）。
 - **Appendix Settlement Family Life 交叉引用**：para A277B(c)（在该段指定情形下，将 Part 8 连续许可期间计入后续 indefinite leave to remain 的连续许可期间；该 Appendix 见 SRC-022）。
+
+## SRC-030 常用定位
+
+- **版本边界**：2026-11-05 抓取整页原始 HTML；GOV.UK Content API `/api/content/skilled-worker-visa` 的 `public_updated_at` 为 `2024-10-31T17:00:39+00:00`，guide 子页 API 同值且未列费用变更记录，不能将该日期当作费用生效日；本次费率使用抓取时正文，并与 SRC-031 的 2026-10-08 费用表 §7 交叉核对。
+- **境内标准申请费**：`Application fees` 小节中 “If you’re applying from inside the UK to extend, switch or update your visa” 后的列表：up to 3 years £943，more than 3 years £1,865；不是境外 £819 档。本页小节没有 HTML id，以标题与句子定位。
+- **IHS**：`How much it costs` 开头列表中 healthcare surcharge “usually £1,035 per year”；本游戏虚构的续签长度为 3 年，按标准成人 IHS 计，不模拟减免或附加服务。
+- **例外范围**：`If your job is on the immigration salary list` 为另一费率；游戏当前仅为林遥的普通 Skilled Worker 主申请人开放续签。本页无 ILR 费用，另见 SRC-031。
+
+## SRC-031 常用定位
+
+- **版本**：标题 “Home Office immigration and nationality fees, 8 October 2026”；页面 Updated 10 September 2026，API `public_updated_at` 为 `2026-09-10T16:15:37+01:00`；使用表格 “Fee from 8 October 2026” 列，而非旧版本表。`/visa-fees` 只提供费用查询入口，因此归档其对应的 GOV.UK 完整费用表。
+- **ILR**：§9 `Other applications made in the UK`（`#other-applications-made-in-the-uk`），行 “Indefinite leave to remain - main applicant and dependants”：£3,226（新旧列同值），不是境外 Route to Settlement 行。
+- **交叉核对境内 Skilled Worker**：§7 `Work – applications made in the UK`（`#work--applications-made-in-the-uk`），非 Immigration Salary List、非 Health and Care 的 three years or less 行 £943，over three years 行 £1,865。
