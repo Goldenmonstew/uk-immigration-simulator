@@ -596,6 +596,11 @@ export default function SimulatePage() {
                               <option value="PARENT">
                                 {t('episodes.childDependant')}
                               </option>
+                              {episode.route === 'HONG_KONG_BNO' && (
+                                <option value="RELATIVE">
+                                  {t('episodes.relativeDependant')}
+                                </option>
+                              )}
                             </select>
                           </Field>
                         )}

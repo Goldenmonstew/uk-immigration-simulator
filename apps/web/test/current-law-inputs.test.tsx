@@ -11,6 +11,7 @@ import {
   activePersonDraft,
   createDraft,
   draftReducer,
+  needsPrincipal,
   runPrincipalSimulation,
   runSimulation,
 } from '../lib/questionnaire';
@@ -169,6 +170,112 @@ test('unspecified Global Talent and family permission inputs remain insufficient
   }
 });
 
+test('HK adult dependant relative reaches the engine with the principal and renders English rules', () => {
+  let draft = currentLawDraft({ ...episodes[2], role: 'DEPENDANT' });
+  draft = draftReducer(draft, {
+    type: 'episode',
+    index: 0,
+    patch: { dependantOf: 'RELATIVE' },
+  });
+  expect(needsPrincipal(draft)).toBe(true);
+  draft = draftReducer(draft, { type: 'principal-start' });
+  draft = draftReducer(draft, {
+    type: 'timeline',
+    patch: currentLawDraft(episodes[2]).timeline,
+  });
+  draft = draftReducer(draft, { type: 'principal-return', completed: true });
+  const evaluate = vi.spyOn(engine, 'evaluate');
+  try {
+    const result = runSimulation(draft, 'en');
+    expect(evaluate).toHaveBeenCalledExactlyOnceWith(
+      expect.objectContaining({
+        timeline: expect.objectContaining({
+          episodes: [expect.objectContaining({ dependantOf: 'RELATIVE' })],
+        }),
+        principal: expect.objectContaining({ episodes: [episodes[2]] }),
+      }),
+    );
+    const current = result.byRuleSet['current-law-2026-11']!;
+    // SRC-020 HK 59.1(a), HK 62.1(b): both applicants have completed the qualifying period.
+    expect(current.outcome).toBe('LIKELY_ELIGIBLE');
+    expect(
+      current.rules.find((rule) => rule.id === 'CL-HKBNO-DEPENDANT'),
+    ).toMatchObject({
+      status: 'PASS',
+      explanation: expect.stringContaining('HK 59.1(a)'),
+    });
+    const html = renderToStaticMarkup(
+      <LocaleContext value={{ locale: 'en', setLocale: () => {} }}>
+        <ResultView result={result} draft={draft} />
+      </LocaleContext>,
+    );
+    expect(html).toContain('adult dependant relative');
+    expect(html).not.toMatch(/[\u3400-\u9fff]/);
+  } finally {
+    evaluate.mockRestore();
+  }
+});
+
+test.each([false, true])(
+  'leaving HK clears only RELATIVE on the edited episode, principal = %s',
+  (principal) => {
+    for (const dependantOf of ['RELATIVE', 'PARTNER', 'PARENT'] as const) {
+      const episode = {
+        ...episodes[2],
+        role: 'DEPENDANT' as const,
+        dependantOf,
+      };
+      let draft = currentLawDraft(episode);
+      if (principal) {
+        draft = draftReducer(draft, { type: 'principal-start' });
+        draft = draftReducer(draft, {
+          type: 'timeline',
+          patch: currentLawDraft(episode).timeline,
+        });
+      }
+      activePersonDraft(draft).timeline.episodes.push({ ...episode });
+      const unchanged = draftReducer(draft, {
+        type: 'episode',
+        index: 0,
+        patch: { validTo: '2036-11-04' },
+      });
+      expect(
+        activePersonDraft(unchanged).timeline.episodes[0].dependantOf,
+      ).toBe(dependantOf);
+      const changed = draftReducer(draft, {
+        type: 'episode',
+        index: 0,
+        patch: { route: 'GLOBAL_TALENT' },
+      });
+      const expected = dependantOf === 'RELATIVE' ? undefined : dependantOf;
+      expect(activePersonDraft(changed).timeline.episodes[0].dependantOf).toBe(
+        expected,
+      );
+      expect(activePersonDraft(changed).timeline.episodes[1]).toEqual(episode);
+      expect(principal ? changed.timeline : changed.principal).toEqual(
+        principal ? draft.timeline : draft.principal,
+      );
+      const returned = draftReducer(changed, {
+        type: 'episode',
+        index: 0,
+        patch: { route: 'HONG_KONG_BNO' },
+      });
+      expect(activePersonDraft(returned).timeline.episodes[0].dependantOf).toBe(
+        expected,
+      );
+      const main = draftReducer(draft, {
+        type: 'episode',
+        index: 0,
+        patch: { role: 'MAIN' },
+      });
+      expect(
+        activePersonDraft(main).timeline.episodes[0].dependantOf,
+      ).toBeUndefined();
+      expect(activePersonDraft(draft).timeline.episodes[0]).toEqual(episode);
+    }
+  },
+);
+
 test.each([false, true])(
   'changing route or role clears route inputs only on the edited episode, principal = %s',
   (principal) => {
@@ -248,6 +355,7 @@ test.each(['zh-CN', 'en'] as const)(
   (locale) => {
     const cases: engine.ImmigrationEpisode[] = [
       ...episodes,
+      { ...episodes[2], route: 'SKILLED_WORKER', role: 'DEPENDANT' },
       ...([undefined, []] as const).map((criteria) => ({
         ...episodes[3],
         innovatorSettlementCriteria: criteria === undefined ? undefined : [],
@@ -293,6 +401,11 @@ test.each(['zh-CN', 'en'] as const)(
               episode.globalTalentEndorsement === 'TECH_NATION'),
         );
         expect(html.includes('id="episode-0-familyPermission"')).toBe(family);
+        const relative =
+          episode.route === 'HONG_KONG_BNO' && episode.role === 'DEPENDANT';
+        expect(html.includes('<option value="RELATIVE">')).toBe(relative);
+        if (relative)
+          expect(html).toContain(t('episodes.relativeDependant', locale));
         const innovator =
           episode.route === 'INNOVATOR_FOUNDER' && episode.role === 'MAIN';
         expect(html.includes('id="episode-0-innovator-unknown"')).toBe(

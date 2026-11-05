@@ -197,6 +197,11 @@ export function draftReducer(state: Draft, action: Action): Draft {
                 dependantOf: undefined,
                 immigrationSalaryList: undefined,
               }),
+              ...(routeChanged &&
+                action.patch.route !== 'HONG_KONG_BNO' &&
+                episode.dependantOf === 'RELATIVE' && {
+                  dependantOf: undefined,
+                }),
               ...((routeChanged || roleChanged) && {
                 globalTalentEndorsement: undefined,
                 globalTalentCriteria: undefined,

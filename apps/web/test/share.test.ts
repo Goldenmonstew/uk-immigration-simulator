@@ -267,6 +267,7 @@ test('sharing rejects invalid current law values on either timeline', () => {
     'globalTalentEndorsement',
     'globalTalentCriteria',
     'familyPermission',
+    'dependantOf',
   ]) {
     for (const value of [
       '',
@@ -293,6 +294,26 @@ test('sharing rejects invalid current law values on either timeline', () => {
     }
   }
 });
+
+test.each([undefined, 'PARTNER', 'PARENT', 'RELATIVE'] as const)(
+  'sharing preserves dependantOf = %s on both timelines',
+  (dependantOf) => {
+    const draft = createDraft();
+    draft.timeline.episodes = [
+      {
+        route: 'HONG_KONG_BNO',
+        role: 'DEPENDANT',
+        validFrom: '2021-11-04',
+        validTo: '2035-11-04',
+        dependantOf,
+      },
+    ];
+    draft.principal = structuredClone(draft.timeline);
+    expect(decodeDraft(encodeDraft(draft))).toEqual(
+      JSON.parse(JSON.stringify(draft)),
+    );
+  },
+);
 
 test('sharing preserves all extension two values, including empty criteria and omitted inputs, on both timelines', () => {
   const draft = createDraft();
