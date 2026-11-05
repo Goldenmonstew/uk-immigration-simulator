@@ -181,11 +181,14 @@ describe('additional character timelines and decisions', () => {
     expect(
       scene(jobless, 'family-five-year-folder', 'review').timeline.incomeYears,
     ).toEqual(jobless.timeline.incomeYears);
-    let bno = scene(
+    const contracted = scene(
       clear(newGame('hong-kong-bno', 1)),
-      'bno-cafe-manager',
+      'bno-own-contract',
       'first',
     );
+    let bno = scene(contracted, 'bno-cafe-manager', 'first');
+    expect(bno.timeline.episodes).toEqual(contracted.timeline.episodes);
+    expect(bno.timeline.incomeYears.at(-1)?.earnings).toBe(40000);
     for (const id of [
       'bno-salary-review',
       'bno-shorter-hours',
@@ -194,7 +197,7 @@ describe('additional character timelines and decisions', () => {
     ]) {
       const kept = scene(bno, id, 'second');
       expect(kept.timeline.incomeYears).toEqual(bno.timeline.incomeYears);
-      expect(kept.timeline.episodes[0].salary).toBe(40000);
+      expect(kept.timeline.episodes[0].salary).toBe(35000);
       bno = kept;
     }
   });

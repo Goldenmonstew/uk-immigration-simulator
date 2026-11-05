@@ -208,6 +208,7 @@ const events: GameEvent[] = [
           { type: 'timeline', patch: { cashSavings: 19000 } },
           { type: 'stat', key: 'mood', delta: 6 },
         ],
+        sets: ['used-car-bought'],
         note: financialNote,
       },
       {
@@ -268,13 +269,14 @@ const events: GameEvent[] = [
     ),
     weight: 3,
     once: true,
+    forbids: ['family-pip-advice', 'family-pip-applied'],
     when: [{ yearMin: 2 }],
     choices: [
       {
         id: 'budget',
         label: t(
-          '记录杰米缩减工时，年薪降至一万六',
-          'Record Jamie’s reduced hours at sixteen thousand a year',
+          '一起按杰米年薪一万六的减班安排算账',
+          'Budget together for Jamie’s reduced hours at sixteen thousand a year',
         ),
         effects: [
           { type: 'income', taxYear: 'current', partnerEarnings: 16000 },
@@ -300,13 +302,14 @@ const events: GameEvent[] = [
     ),
     weight: 4,
     once: true,
+    forbids: ['family-pip-advice', 'family-pip-applied'],
     requires: ['family-job-worry'],
     choices: [
       {
         id: 'record',
         label: t(
-          '记录失业，重新安排家用',
-          'Record the job loss and redraw the household budget',
+          '先重新安排家用',
+          'Redraw the household budget after the job loss',
         ),
         effects: [
           { type: 'income', taxYear: 'current', partnerEarnings: 0 },
@@ -317,10 +320,7 @@ const events: GameEvent[] = [
       },
       {
         id: 'help',
-        label: t(
-          '记录失业，陪他找招聘信息',
-          'Record the job loss and search listings with him',
-        ),
+        label: t('陪他找找新的招聘信息', 'Search new job listings with him'),
         effects: [
           { type: 'income', taxYear: 'current', partnerEarnings: 0 },
           { type: 'stat', key: 'health', delta: -3 },
@@ -345,8 +345,8 @@ const events: GameEvent[] = [
       {
         id: 'rehearse',
         label: t(
-          '记录零工年收入六千，再陪他练问答',
-          'Record six thousand a year from casual work and rehearse together',
+          '靠年入六千的零工过渡，一起练问答',
+          'Manage on six thousand a year from casual work and rehearse together',
         ),
         effects: [
           { type: 'income', taxYear: 'current', partnerEarnings: 6000 },
@@ -358,8 +358,8 @@ const events: GameEvent[] = [
       {
         id: 'tea',
         label: t(
-          '记录零工收入，泡茶让他准备',
-          'Record the casual earnings and make tea while he prepares',
+          '泡壶茶，让他忙完零工再准备',
+          'Make tea and let him prepare after his casual shift',
         ),
         effects: [
           { type: 'income', taxYear: 'current', partnerEarnings: 6000 },
@@ -384,8 +384,8 @@ const events: GameEvent[] = [
       {
         id: 'accept',
         label: t(
-          '记录杰米年薪两万的新工作',
-          'Record Jamie’s new job at twenty thousand a year',
+          '陪杰米庆祝年薪两万的新工作',
+          'Celebrate Jamie’s new job at twenty thousand a year',
         ),
         effects: [
           { type: 'income', taxYear: 'current', partnerEarnings: 20000 },
@@ -416,13 +416,14 @@ const events: GameEvent[] = [
     ),
     weight: 3,
     once: true,
+    forbids: ['family-job-worry', 'family-jamie-unemployed'],
     when: [{ yearMin: 2 }],
     choices: [
       {
         id: 'advice',
         label: t(
-          '杰米减少工作，记录年收入八千',
-          'Record Jamie reducing work to eight thousand a year',
+          '陪杰米把工作减到年入八千的工时',
+          'Support Jamie in reducing work to eight thousand a year',
         ),
         effects: [
           { type: 'income', taxYear: 'current', partnerEarnings: 8000 },
@@ -448,6 +449,7 @@ const events: GameEvent[] = [
     ),
     weight: 4,
     once: true,
+    forbids: ['family-job-worry', 'family-jamie-unemployed'],
     requires: ['family-pip-advice'],
     choices: [
       {
@@ -561,6 +563,7 @@ const events: GameEvent[] = [
     ),
     weight: 3,
     once: true,
+    when: [{ yearMin: 2 }],
     choices: [
       {
         id: 'study',
@@ -575,8 +578,8 @@ const events: GameEvent[] = [
         ],
         sets: ['family-b2-plan'],
         note: t(
-          `SRC-025 KoLL 2.2(ba)：伴侣定居自 ${law.familyPartnerSettlementEnglish.value.applicationsFrom} 起要求 ${law.familyPartnerSettlementEnglish.value.cefrLevel}，豁免另计。`,
-          `SRC-025 KoLL 2.2(ba): partner settlement requires ${law.familyPartnerSettlementEnglish.value.cefrLevel} from ${law.familyPartnerSettlementEnglish.value.applicationsFrom}, subject to exemptions.`,
+          `SRC-025 KoLL 2.2(c)(ii)：伴侣定居自 ${law.familyPartnerSettlementEnglish.value.applicationsFrom} 起要求 ${law.familyPartnerSettlementEnglish.value.cefrLevel}，豁免另计。`,
+          `SRC-025 KoLL 2.2(c)(ii): partner settlement requires ${law.familyPartnerSettlementEnglish.value.cefrLevel} from ${law.familyPartnerSettlementEnglish.value.applicationsFrom}, subject to exemptions.`,
         ),
       },
       {
@@ -640,8 +643,8 @@ const events: GameEvent[] = [
           { type: 'stat', key: 'mood', delta: 4 },
         ],
         note: t(
-          'SRC-025 KoLL 2.2(ba)：本情节记录通过的 B2 英语证明。',
-          'SRC-025 KoLL 2.2(ba): this scenario records passed B2 English evidence.',
+          'SRC-025 KoLL 2.2(c)(ii)：本情节记录通过的 B2 英语证明。',
+          'SRC-025 KoLL 2.2(c)(ii): this scenario records passed B2 English evidence.',
         ),
       },
       {
@@ -652,8 +655,8 @@ const events: GameEvent[] = [
           { type: 'stat', key: 'mood', delta: 3 },
         ],
         note: t(
-          'SRC-025 KoLL 2.2(ba)：本情节记录通过的 B2 英语证明。',
-          'SRC-025 KoLL 2.2(ba): this scenario records passed B2 English evidence.',
+          'SRC-025 KoLL 2.2(c)(ii)：本情节记录通过的 B2 英语证明。',
+          'SRC-025 KoLL 2.2(c)(ii): this scenario records passed B2 English evidence.',
         ),
       },
     ],
@@ -750,8 +753,8 @@ const events: GameEvent[] = [
     id: 'family-parents-call',
     title: t('电话里的背景声', 'Sounds behind the call'),
     text: t(
-      '母亲说家里一切都好，索菲娅却听见父亲咳嗽的声音。',
-      'Her mother says everything is fine at home, but Sofia hears her father coughing in the background.',
+      '探亲回来，索菲娅和母亲通电话，回顾这次父亲咳嗽时大家怎样照顾。',
+      'Back from the family visit, Sofia calls her mother to recall how they cared for her father during his cough.',
     ),
     weight: 3,
     once: true,
@@ -760,8 +763,8 @@ const events: GameEvent[] = [
       {
         id: 'arrange',
         label: t(
-          '记下刚结束的两周海外探亲，再商量安排',
-          'Record the completed two-week family visit abroad, then plan care',
+          '聊聊刚结束的两周探亲，再商量照顾',
+          'Talk over the completed two-week visit abroad and plan care',
         ),
         effects: [
           { type: 'absence', startOffsetDays: -14, days: 14 },
@@ -770,8 +773,8 @@ const events: GameEvent[] = [
         ],
         sets: ['family-care-planned'],
         note: t(
-          'SRC-008 CR 3.1：回顾已经结束的两周离境，后续照顾另记。',
-          'SRC-008 CR 3.1: records a completed two-week absence; any later care visit is separate.',
+          '记录已结束的离境；现行法律栏的伴侣 5 年路线不按 CR 3.1 重新起算，Long Residence 候选与改革栏按引擎假设处理。',
+          'Records a completed absence; the current-law five-year partner route does not restart under CR 3.1, while the Long Residence candidate and reform column follow engine assumptions.',
         ),
       },
       {
@@ -795,7 +798,10 @@ const events: GameEvent[] = [
     choices: [
       {
         id: 'long',
-        label: t('记下四个月的海外照顾', 'Record four months caring abroad'),
+        label: t(
+          '在海外陪家人住了四个月',
+          'Spent four months abroad caring for family',
+        ),
         effects: [
           { type: 'absence', startOffsetDays: -120, days: 120 },
           { type: 'money', delta: -900 },
@@ -803,8 +809,8 @@ const events: GameEvent[] = [
         ],
         sets: ['family-care-returned'],
         note: t(
-          'SRC-008 CR 3.1：回顾已发生的离境；连续居留后果由引擎按日期计算。',
-          'SRC-008 CR 3.1: records a completed absence; the engine calculates continuous residence from the dates.',
+          '记录已结束的离境；现行法律栏的伴侣 5 年路线不按 CR 3.1 重新起算，Long Residence 候选与改革栏按引擎假设处理。',
+          'Records a completed absence; the current-law five-year partner route does not restart under CR 3.1, while the Long Residence candidate and reform column follow engine assumptions.',
         ),
       },
       {
@@ -820,8 +826,8 @@ const events: GameEvent[] = [
         ],
         sets: ['family-care-returned'],
         note: t(
-          'SRC-008 CR 3.1：仅记录本次已经结束的离境。',
-          'SRC-008 CR 3.1: records only this completed absence.',
+          '记录已结束的离境；现行法律栏的伴侣 5 年路线不按 CR 3.1 重新起算，Long Residence 候选与改革栏按引擎假设处理。',
+          'Records a completed absence; the current-law five-year partner route does not restart under CR 3.1, while the Long Residence candidate and reform column follow engine assumptions.',
         ),
       },
     ],
@@ -874,6 +880,7 @@ const events: GameEvent[] = [
     ),
     weight: 3,
     once: true,
+    forbids: ['family-full-time'],
     when: [{ yearMin: 2 }],
     choices: [
       {
@@ -888,7 +895,7 @@ const events: GameEvent[] = [
           { type: 'income', taxYear: 'current', earnings: 0 },
           { type: 'stat', key: 'mood', delta: 5 },
         ],
-        sets: ['family-baby-prepared'],
+        sets: ['family-baby-prepared', 'family-work-paused'],
         note: financialNote,
       },
       {
@@ -950,15 +957,22 @@ const events: GameEvent[] = [
     ),
     weight: 3,
     once: true,
-    requires: ['family-baby-arrived'],
+    requires: ['family-baby-arrived', 'family-work-paused'],
+    forbids: ['family-full-time'],
     choices: [
       {
         id: 'clear',
-        label: t('整理走廊，腾出位置', 'Clear a proper space in the hallway'),
+        label: t(
+          '腾出走廊，重新开始年薪一万二的兼职',
+          'Clear the hallway and resume part-time work at twelve thousand a year',
+        ),
         effects: [
+          { type: 'episode', patch: { salary: 12000 } },
+          { type: 'income', taxYear: 'current', earnings: 12000 },
           { type: 'stat', key: 'health', delta: 3 },
           { type: 'stat', key: 'mood', delta: 3 },
         ],
+        note: financialNote,
       },
       {
         id: 'fold',
@@ -1160,8 +1174,8 @@ const events: GameEvent[] = [
     id: 'family-uc-scenario',
     title: t('账本上的两种写法', 'Two versions of the ledger'),
     text: t(
-      '索菲娅回看这一季的账本，决定记录哪一种虚构经历。',
-      'Sofia looks back over the quarter’s ledger and chooses which fictional experience to record.',
+      '索菲娅和杰米把这季的账单摊在桌上，茶凉了，计算器还没歇。',
+      'Sofia and Jamie spread the quarter’s bills across the table. The tea goes cold; the calculator keeps going.',
     ),
     weight: 3,
     once: true,
@@ -1255,7 +1269,7 @@ const events: GameEvent[] = [
           { type: 'timeline', patch: { cashSavings: 0 } },
           { type: 'stat', key: 'mood', delta: 5 },
         ],
-        sets: ['quarter-housing-change'],
+        sets: ['quarter-housing-change', 'rent-rise-family-ended'],
         note: financialNote,
       },
       {
@@ -1282,8 +1296,8 @@ const events: GameEvent[] = [
       {
         id: 'cook',
         label: t(
-          '记下刚结束的两周海外纪念旅行',
-          'Record the completed two-week anniversary trip abroad',
+          '回味刚结束的两周海外纪念旅行',
+          'Look back on the completed two-week anniversary trip abroad',
         ),
         effects: [
           { type: 'absence', startOffsetDays: -14, days: 14 },
@@ -1292,8 +1306,8 @@ const events: GameEvent[] = [
         ],
         sets: ['family-anniversary-kept'],
         note: t(
-          'SRC-008 CR 3.1：这趟纪念旅行已经结束，日期记入离境记录。',
-          'SRC-008 CR 3.1: this anniversary trip is complete and its dates enter the absence record.',
+          '记录已结束的离境；现行法律栏的伴侣 5 年路线不按 CR 3.1 重新起算，Long Residence 候选与改革栏按引擎假设处理。',
+          'Records a completed absence; the current-law five-year partner route does not restart under CR 3.1, while the Long Residence candidate and reform column follow engine assumptions.',
         ),
       },
       {
@@ -1361,8 +1375,8 @@ const events: GameEvent[] = [
       {
         id: 'save',
         label: t(
-          '补记上月一起出国的七天行程',
-          'Add last month’s seven-day trip abroad together',
+          '翻翻上月一起出国那七天的照片',
+          'Look through photos of last month’s seven-day trip abroad together',
         ),
         effects: [
           { type: 'absence', startOffsetDays: -30, days: 7 },
@@ -1959,6 +1973,7 @@ const events: GameEvent[] = [
     ),
     weight: 2,
     once: true,
+    forbids: ['used-car-bought'],
     choices: [
       {
         id: 'repair',
@@ -2055,7 +2070,7 @@ const events: GameEvent[] = [
       },
       {
         id: 'walk',
-        label: t('既然醒了，出去走走', 'Since you are awake, go for a walk'),
+        label: t('既然醒了，出去走走', 'Go for a walk now that Sofia is awake'),
         effects: [
           { type: 'stat', key: 'health', delta: 4 },
           { type: 'stat', key: 'mood', delta: 2 },
@@ -2316,7 +2331,7 @@ const events: GameEvent[] = [
     id: 'family-heating',
     title: t('暖气旋钮', 'The heating dial'),
     text: t(
-      '杰米把暖气调低一点，索菲娅把毛衣加厚一点，猫占了最暖的位置。',
+      '杰米把暖气调低一点，索菲娅把毛衣加厚一点，来串门的猫占了最暖的位置。',
       'Jamie turns the heating down, Sofia adds a thicker jumper, and the visiting cat claims the warmest spot.',
     ),
     weight: 2,

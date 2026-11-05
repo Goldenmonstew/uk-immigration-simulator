@@ -587,7 +587,12 @@ export function endQuarter(state: GameState): GameState {
         (b.householdCostContribution[state.characterId] ?? 0) +
         (state.flags.includes('cheap-housing') ? b.cheapHousingSaving : 0) -
         (state.year - 1) * b.livingCostAnnualIncrease -
-        state.flags.filter((f) => f.startsWith('rent-rise-')).length *
+        state.flags.filter(
+          (f) =>
+            f.startsWith('rent-rise-') &&
+            !f.endsWith('-ended') &&
+            !state.flags.includes(`${f}-ended`),
+        ).length *
           b.rentRisePerQuarter,
     },
     { type: 'stat', key: 'mood', delta: -b.moodDecay },

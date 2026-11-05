@@ -191,7 +191,10 @@ describe('v2 content contract', () => {
         ),
       );
       expect(pure.length / c.events.length).toBeGreaterThanOrEqual(0.4);
-      expect(pure.length / c.events.length).toBeLessThanOrEqual(0.65);
+      // 8.3b makes the three BN(O) partner-work cards narrative only (53/80).
+      expect(pure.length / c.events.length).toBeLessThanOrEqual(
+        c.id === 'hong-kong-bno' ? 2 / 3 : 0.65,
+      );
     }
     for (const a of locationActions) {
       checkText(a.label);

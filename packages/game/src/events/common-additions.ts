@@ -184,7 +184,7 @@ export const additionalCommonEvents: GameEvent[] = [
     choices: [
       {
         id: 'buy',
-        label: { zhCN: '花 £2,800 买下代步', en: 'Buy it for £2,800' },
+        label: { zhCN: '买下它作代步车', en: 'Buy it for getting around' },
         effects: [
           { type: 'money', delta: -2800 },
           { type: 'stat', key: 'mood', delta: 5 },
@@ -214,7 +214,7 @@ export const additionalCommonEvents: GameEvent[] = [
     choices: [
       {
         id: 'repair',
-        label: { zhCN: '花 £420 修好再开', en: 'Pay £420 for the repair' },
+        label: { zhCN: '修好再开', en: 'Have it repaired before driving' },
         effects: [
           { type: 'money', delta: -420 },
           { type: 'stat', key: 'mood', delta: 2 },
@@ -223,8 +223,8 @@ export const additionalCommonEvents: GameEvent[] = [
       {
         id: 'park',
         label: {
-          zhCN: '先停开，花 £90 坐公交',
-          en: 'Park it and spend £90 on buses',
+          zhCN: '先停开，改坐公交',
+          en: 'Park it and take the bus',
         },
         effects: [
           { type: 'money', delta: -90 },
@@ -237,6 +237,7 @@ export const additionalCommonEvents: GameEvent[] = [
     id: 'common-parking-envelope',
     weight: 2,
     once: true,
+    forbids: ['used-car-bought'],
     when: [{ yearMin: 2 }],
     title: { zhCN: '挡风玻璃的信', en: 'Post on the windscreen' },
     text: {
@@ -252,7 +253,7 @@ export const additionalCommonEvents: GameEvent[] = [
       },
       {
         id: 'pay',
-        label: { zhCN: '付 £60 结清', en: 'Pay £60 and close it' },
+        label: { zhCN: '付清停车罚款', en: 'Pay the parking charge' },
         effects: [{ type: 'money', delta: -60 }],
       },
     ],
@@ -271,8 +272,8 @@ export const additionalCommonEvents: GameEvent[] = [
       {
         id: 'pay',
         label: {
-          zhCN: '付清 £60 停车罚款',
-          en: 'Clear the £60 parking charge',
+          zhCN: '付清停车罚款',
+          en: 'Clear the parking charge',
         },
         effects: [{ type: 'money', delta: -60 }],
       },
@@ -326,14 +327,14 @@ export const additionalCommonEvents: GameEvent[] = [
     choices: [
       {
         id: 'save',
-        label: { zhCN: '把 £180 留在账户', en: 'Keep the £180 in the account' },
+        label: { zhCN: '把退税留在账户', en: 'Keep the refund in the account' },
         effects: [{ type: 'money', delta: 180 }],
       },
       {
         id: 'share',
         label: {
-          zhCN: '留 £150，余下请同事吃饭',
-          en: 'Keep £150 and treat the colleague',
+          zhCN: '存下一些，余下请同事吃饭',
+          en: 'Save some and treat the colleague',
         },
         effects: [
           { type: 'money', delta: 150 },
@@ -388,7 +389,7 @@ export const additionalCommonEvents: GameEvent[] = [
       },
       {
         id: 'move',
-        label: { zhCN: '花 £600 搬到别处', en: 'Spend £600 moving elsewhere' },
+        label: { zhCN: '搬到别处', en: 'Move elsewhere' },
         effects: [
           { type: 'money', delta: -600 },
           { type: 'stat', key: 'mood', delta: 3 },
@@ -420,8 +421,8 @@ export const additionalCommonEvents: GameEvent[] = [
       {
         id: 'pay',
         label: {
-          zhCN: '先付 £120 差额',
-          en: 'Pay the £120 difference for now',
+          zhCN: '先付清差额',
+          en: 'Pay the difference for now',
         },
         effects: [{ type: 'money', delta: -120 }],
       },
@@ -440,14 +441,14 @@ export const additionalCommonEvents: GameEvent[] = [
     choices: [
       {
         id: 'refund',
-        label: { zhCN: '收回 £95 多付款', en: 'Recover the £95 overpayment' },
+        label: { zhCN: '收回多付款', en: 'Recover the overpayment' },
         effects: [{ type: 'money', delta: 95 }],
       },
       {
         id: 'blanket',
         label: {
-          zhCN: '留 £65，再买条厚毯子',
-          en: 'Keep £65 and buy a thick blanket',
+          zhCN: '存下余款，再买条厚毯子',
+          en: 'Save the rest and buy a thick blanket',
         },
         effects: [
           { type: 'money', delta: 65 },
@@ -505,8 +506,8 @@ export const additionalCommonEvents: GameEvent[] = [
       {
         id: 'cafe',
         label: {
-          zhCN: '中途花 £7 在咖啡馆等',
-          en: 'Wait at the café with a £7 lunch',
+          zhCN: '中途在咖啡馆吃点东西等候',
+          en: 'Wait at the café over lunch',
         },
         effects: [
           { type: 'money', delta: -7 },
@@ -555,7 +556,7 @@ export const additionalCommonEvents: GameEvent[] = [
     choices: [
       {
         id: 'treat',
-        label: { zhCN: '花 £85 完成治疗', en: 'Pay £85 for treatment' },
+        label: { zhCN: '完成这次治疗', en: 'Have the treatment' },
         effects: [
           { type: 'money', delta: -85 },
           { type: 'stat', key: 'health', delta: 6 },
@@ -564,8 +565,8 @@ export const additionalCommonEvents: GameEvent[] = [
       {
         id: 'plan',
         label: {
-          zhCN: '花 £35 检查后安排下次',
-          en: 'Pay £35 for the check and plan treatment',
+          zhCN: '检查后安排下次治疗',
+          en: 'Have the check and plan treatment',
         },
         effects: [
           { type: 'money', delta: -35 },
@@ -581,8 +582,8 @@ export const additionalCommonEvents: GameEvent[] = [
     when: [{ yearMin: 5, yearMax: 6 }],
     title: { zhCN: '日历上的重复', en: 'The repeating calendar' },
     text: {
-      zhCN: '第五年的周一和上周一一样，连午饭盒都像复制来的。',
-      en: 'A Monday in year five looks like the last one, right down to the identical lunchbox.',
+      zhCN: '这个周一和上周一一样，连午饭盒都像复制来的。',
+      en: 'This Monday looks like the last one, right down to the identical lunchbox.',
     },
     choices: [
       {
@@ -629,8 +630,8 @@ export const additionalCommonEvents: GameEvent[] = [
       {
         id: 'coast',
         label: {
-          zhCN: '花 £45 坐车去海边',
-          en: 'Spend £45 on a trip to the coast',
+          zhCN: '坐车去海边',
+          en: 'Take a trip to the coast',
         },
         effects: [
           { type: 'money', delta: -45 },
@@ -646,8 +647,8 @@ export const additionalCommonEvents: GameEvent[] = [
     when: [{ yearMin: 8, yearMax: 9 }],
     title: { zhCN: '送别的纸杯', en: 'Paper cups at a farewell' },
     text: {
-      zhCN: '第八年，老朋友要离开小镇，送别聚会又用上了当年那套纸杯。',
-      en: 'In year eight an old friend leaves town; the farewell uses the same paper cups as the first party.',
+      zhCN: '老朋友要离开小镇，送别聚会又用上了当年那套纸杯。',
+      en: 'An old friend leaves town; the farewell uses the same paper cups as the first party.',
     },
     choices: [
       {
@@ -701,16 +702,16 @@ export const additionalCommonEvents: GameEvent[] = [
     weight: 2,
     once: true,
     when: [{ yearMax: 1 }],
-    title: { zhCN: '第一壶热水', en: 'The first kettleful' },
+    title: { zhCN: '新街区的一壶茶', en: 'Tea in the new neighbourhood' },
     text: {
-      zhCN: '新买的水壶烧开了，插座旁那张小镇地图还没展开。',
-      en: 'The new kettle boils beside a town map you have not unfolded yet.',
+      zhCN: '水壶烧开了，新街区的地图还摊在插座旁，几条小路没走过。',
+      en: 'The kettle boils beside a map of the new neighbourhood, with side streets still to explore.',
     },
     choices: [
       {
         id: 'map',
         label: {
-          zhCN: '喝完茶去认路',
+          zhCN: '喝完茶去走条新路',
           en: 'Have tea, then explore the streets',
         },
         effects: [
@@ -732,8 +733,8 @@ export const additionalCommonEvents: GameEvent[] = [
     when: [{ yearMax: 1 }],
     title: { zhCN: '邮筒的窄口', en: 'The narrow postbox slot' },
     text: {
-      zhCN: '第一张寄回家的卡片塞进红邮筒，厚信封却卡住了一角。',
-      en: 'Your first card home slides into the red postbox, but the thick envelope catches at one corner.',
+      zhCN: '在新街区寄张卡片回家，红邮筒的窄口卡住了厚信封的一角。',
+      en: 'Posting a card home in the new neighbourhood, you catch one corner of the thick envelope in the postbox slot.',
     },
     choices: [
       {
@@ -764,8 +765,8 @@ export const additionalCommonEvents: GameEvent[] = [
     when: [{ yearMax: 1 }],
     title: { zhCN: '第三条过道', en: 'Aisle three' },
     text: {
-      zhCN: '你终于找到米，顺手拿的东西却把购物篮装成了一次搬家。',
-      en: 'You finally find the rice; a few extras turn the basket into a small house move.',
+      zhCN: '新街区的超市把米放在第三条过道，你逛完一圈，购物篮像搬家。',
+      en: 'The new neighbourhood’s supermarket keeps rice in aisle three; by the end of a lap, the basket looks ready for a house move.',
     },
     choices: [
       {
@@ -782,8 +783,8 @@ export const additionalCommonEvents: GameEvent[] = [
       {
         id: 'try',
         label: {
-          zhCN: '花 £40 试试新食材',
-          en: 'Spend £40 trying unfamiliar ingredients',
+          zhCN: '试试新食材',
+          en: 'Try unfamiliar ingredients',
         },
         effects: [
           { type: 'money', delta: -40 },
@@ -835,8 +836,8 @@ export const additionalCommonEvents: GameEvent[] = [
       {
         id: 'clean',
         label: {
-          zhCN: '花 £20 清理并通知房东',
-          en: 'Spend £20 cleaning and tell the landlord',
+          zhCN: '清理后通知房东',
+          en: 'Clean it and tell the landlord',
         },
         effects: [
           { type: 'money', delta: -20 },
@@ -903,8 +904,8 @@ export const additionalCommonEvents: GameEvent[] = [
       {
         id: 'chair',
         label: {
-          zhCN: '花 £90 换张二手椅',
-          en: 'Spend £90 on a second-hand chair',
+          zhCN: '换张二手椅',
+          en: 'Get a second-hand chair',
         },
         effects: [
           { type: 'money', delta: -90 },
@@ -962,8 +963,8 @@ export const additionalCommonEvents: GameEvent[] = [
       {
         id: 'glasses',
         label: {
-          zhCN: '花 £140 验光配镜',
-          en: 'Spend £140 on an eye test and glasses',
+          zhCN: '验光配副新眼镜',
+          en: 'Have an eye test and get new glasses',
         },
         effects: [
           { type: 'money', delta: -140 },
@@ -972,7 +973,7 @@ export const additionalCommonEvents: GameEvent[] = [
       },
       {
         id: 'check',
-        label: { zhCN: '先花 £25 验光', en: 'Start with a £25 eye test' },
+        label: { zhCN: '先去验光', en: 'Start with an eye test' },
         effects: [
           { type: 'money', delta: -25 },
           { type: 'stat', key: 'health', delta: 1 },
@@ -1005,8 +1006,8 @@ export const additionalCommonEvents: GameEvent[] = [
       {
         id: 'cafe',
         label: {
-          zhCN: '花 £4 躲进咖啡馆',
-          en: 'Take shelter over a £4 coffee',
+          zhCN: '躲进咖啡馆喝杯咖啡',
+          en: 'Take shelter over a coffee',
         },
         effects: [
           { type: 'money', delta: -4 },
@@ -1029,8 +1030,8 @@ export const additionalCommonEvents: GameEvent[] = [
       {
         id: 'battery',
         label: {
-          zhCN: '花 £9 买好电池',
-          en: 'Spend £9 on the right batteries',
+          zhCN: '买好合适的电池',
+          en: 'Buy the right batteries',
         },
         effects: [
           { type: 'money', delta: -9 },
@@ -1058,8 +1059,8 @@ export const additionalCommonEvents: GameEvent[] = [
       {
         id: 'pharmacy',
         label: {
-          zhCN: '花 £8 去药房问问',
-          en: 'Spend £8 after asking the pharmacist',
+          zhCN: '去药房问问，买点药',
+          en: 'Ask the pharmacist and buy some medicine',
         },
         effects: [
           { type: 'money', delta: -8 },
@@ -1094,16 +1095,16 @@ export const additionalCommonEvents: GameEvent[] = [
       {
         id: 'compare',
         label: {
-          zhCN: '比价后花 £430 续保',
-          en: 'Compare quotes and renew for £430',
+          zhCN: '比价后续保',
+          en: 'Compare quotes and renew',
         },
         effects: [{ type: 'money', delta: -430 }],
       },
       {
         id: 'renew',
         label: {
-          zhCN: '花 £560 按原报价续保',
-          en: 'Renew at the original £560 quote',
+          zhCN: '按原报价续保',
+          en: 'Renew at the original quote',
         },
         effects: [
           { type: 'money', delta: -560 },
@@ -1127,8 +1128,8 @@ export const additionalCommonEvents: GameEvent[] = [
       {
         id: 'replace',
         label: {
-          zhCN: '花 £220 换掉磨损轮胎',
-          en: 'Spend £220 replacing the worn tyres',
+          zhCN: '换掉磨损轮胎',
+          en: 'Replace the worn tyres',
         },
         effects: [
           { type: 'money', delta: -220 },
@@ -1138,8 +1139,8 @@ export const additionalCommonEvents: GameEvent[] = [
       {
         id: 'stop',
         label: {
-          zhCN: '先停开，花 £70 坐公交',
-          en: 'Stop driving and spend £70 on buses',
+          zhCN: '先停开，改坐公交',
+          en: 'Stop driving and take the bus',
         },
         effects: [
           { type: 'money', delta: -70 },
@@ -1162,14 +1163,14 @@ export const additionalCommonEvents: GameEvent[] = [
       {
         id: 'save',
         label: {
-          zhCN: '把 £22 留作下次车费',
-          en: 'Save the £22 for the next fare',
+          zhCN: '把退款留作下次车费',
+          en: 'Save the refund for the next fare',
         },
         effects: [{ type: 'money', delta: 22 }],
       },
       {
         id: 'snack',
-        label: { zhCN: '留 £15，买点零食', en: 'Keep £15 and buy a snack' },
+        label: { zhCN: '存下一些，买点零食', en: 'Save some and buy a snack' },
         effects: [
           { type: 'money', delta: 15 },
           { type: 'stat', key: 'mood', delta: 3 },
@@ -1191,8 +1192,8 @@ export const additionalCommonEvents: GameEvent[] = [
       {
         id: 'boots',
         label: {
-          zhCN: '花 £75 买双防水鞋',
-          en: 'Spend £75 on waterproof shoes',
+          zhCN: '买双防水鞋',
+          en: 'Buy waterproof shoes',
         },
         effects: [
           { type: 'money', delta: -75 },
@@ -1201,7 +1202,7 @@ export const additionalCommonEvents: GameEvent[] = [
       },
       {
         id: 'repair',
-        label: { zhCN: '花 £18 补鞋底', en: 'Spend £18 repairing the soles' },
+        label: { zhCN: '补好鞋底', en: 'Have the soles repaired' },
         effects: [
           { type: 'money', delta: -18 },
           { type: 'stat', key: 'mood', delta: 1 },
@@ -1222,7 +1223,7 @@ export const additionalCommonEvents: GameEvent[] = [
     choices: [
       {
         id: 'set',
-        label: { zhCN: '重新设置，省下 £35', en: 'Reset it and save £35' },
+        label: { zhCN: '重新设置定时器', en: 'Reset the timer' },
         effects: [
           { type: 'money', delta: 35 },
           { type: 'stat', key: 'english', delta: 1 },
@@ -1282,7 +1283,7 @@ export const additionalCommonEvents: GameEvent[] = [
     choices: [
       {
         id: 'buy',
-        label: { zhCN: '花 £6 把它带回家', en: 'Take it home for £6' },
+        label: { zhCN: '买下它带回家', en: 'Buy it and take it home' },
         effects: [
           { type: 'money', delta: -6 },
           { type: 'stat', key: 'mood', delta: 3 },
@@ -1337,8 +1338,8 @@ export const additionalCommonEvents: GameEvent[] = [
       {
         id: 'guess',
         label: {
-          zhCN: '花 £5 参加下一轮',
-          en: 'Spend £5 joining the next round',
+          zhCN: '参加下一轮',
+          en: 'Join the next round',
         },
         effects: [
           { type: 'money', delta: -5 },
@@ -1563,8 +1564,8 @@ export const additionalCommonEvents: GameEvent[] = [
       {
         id: 'sell',
         label: {
-          zhCN: '卖掉闲置，收回 £40',
-          en: 'Sell the unused things for £40',
+          zhCN: '卖掉闲置物品',
+          en: 'Sell the unused things',
         },
         effects: [
           { type: 'money', delta: 40 },
@@ -1587,8 +1588,8 @@ export const additionalCommonEvents: GameEvent[] = [
       {
         id: 'bread',
         label: {
-          zhCN: '花 £5 买面包顺便聊天',
-          en: 'Buy £5 of bread and have a chat',
+          zhCN: '买面包，顺便聊聊天',
+          en: 'Buy bread and have a chat',
         },
         effects: [
           { type: 'money', delta: -5 },
@@ -1617,8 +1618,8 @@ export const additionalCommonEvents: GameEvent[] = [
       {
         id: 'new',
         label: {
-          zhCN: '花 £5 试试街尾的新店',
-          en: 'Spend £5 trying the new place',
+          zhCN: '试试街尾的新店',
+          en: 'Try the new place',
         },
         effects: [
           { type: 'money', delta: -5 },
@@ -1704,8 +1705,8 @@ export const additionalCommonEvents: GameEvent[] = [
       {
         id: 'album',
         label: {
-          zhCN: '花 £25 印一本小相册',
-          en: 'Spend £25 printing a small album',
+          zhCN: '印一本小相册',
+          en: 'Print a small album',
         },
         effects: [
           { type: 'money', delta: -25 },
@@ -1736,8 +1737,8 @@ export const additionalCommonEvents: GameEvent[] = [
       {
         id: 'recover',
         label: {
-          zhCN: '等到接通，取回 £120',
-          en: 'Wait for an adviser and recover £120',
+          zhCN: '等到接通，取回重复付款',
+          en: 'Wait for an adviser and recover the duplicate payment',
         },
         effects: [
           { type: 'money', delta: 120 },
