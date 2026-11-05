@@ -16,6 +16,39 @@ export interface TownCanvasProps {
   destination?: { location: LocationId; request: number };
 }
 
+export function observeTownSize(
+  element: HTMLDivElement,
+  createGame: (type: number) => Phaser.Game,
+) {
+  let game: Phaser.Game | undefined;
+  let started = false;
+  const resize = () => {
+    const { clientWidth: width, clientHeight: height } = element;
+    if (width <= 0 || height <= 0 || document.readyState === 'loading') return;
+    if (game) {
+      game.scale.resize(width, height);
+    } else if (!started) {
+      started = true;
+      // With the DOM ready, Phaser boots synchronously inside the factory.
+      try {
+        game = createGame(Phaser.AUTO);
+      } catch {
+        game = createGame(Phaser.CANVAS);
+      }
+    }
+  };
+  const observer = new ResizeObserver(resize);
+  observer.observe(element);
+  document.addEventListener('DOMContentLoaded', resize, { once: true });
+  return () => {
+    observer.disconnect();
+    document.removeEventListener('DOMContentLoaded', resize);
+    started = true;
+    game?.destroy(true);
+    game = undefined;
+  };
+}
+
 export default function TownCanvas(props: TownCanvasProps) {
   const { t } = useTranslation();
   const host = useRef<HTMLDivElement>(null);
@@ -25,32 +58,29 @@ export default function TownCanvas(props: TownCanvasProps) {
 
   useEffect(() => {
     const element = host.current!;
-    const town = new TownScene(props.sprite, latest.current, (id) =>
-      latest.current.onLocation(id),
-    );
-    scene.current = town;
-    const game = new Phaser.Game({
-      type: Phaser.AUTO,
-      parent: element,
-      width: element.clientWidth,
-      height: element.clientHeight,
-      backgroundColor: '#a8c580',
-      pixelArt: true,
-      roundPixels: true,
-      input: { keyboard: { target: element } },
-      scale: { mode: Phaser.Scale.RESIZE },
-      scene: town,
-      banner: false,
-      audio: { noAudio: true },
+    const stop = observeTownSize(element, (type) => {
+      const town = new TownScene(props.sprite, latest.current, (id) =>
+        latest.current.onLocation(id),
+      );
+      scene.current = town;
+      if (latest.current.destination)
+        town.walkToLocation(latest.current.destination.location);
+      return new Phaser.Game({
+        type,
+        parent: element,
+        backgroundColor: '#a8c580',
+        pixelArt: true,
+        roundPixels: true,
+        input: { keyboard: { target: element } },
+        scale: { mode: Phaser.Scale.RESIZE, width: '100%', height: '100%' },
+        scene: town,
+        banner: false,
+        audio: { noAudio: true },
+      });
     });
-    const observer = new ResizeObserver(() => {
-      game.scale.resize(element.clientWidth, element.clientHeight);
-    });
-    observer.observe(element);
     return () => {
-      observer.disconnect();
+      stop();
       scene.current = undefined;
-      game.destroy(true);
     };
   }, [props.sprite]);
 
