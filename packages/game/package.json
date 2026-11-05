@@ -1,0 +1,19 @@
+{
+  "name": "@uk-immigration/game",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "test": "vitest run",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@uk-immigration/engine": "workspace:*",
+    "@uk-immigration/policy-data": "workspace:*"
+  }
+}
