@@ -5,7 +5,8 @@ export function gapRules(assessment: SettlementAssessment) {
     assessment.outcome === 'LIKELY_NOT_ELIGIBLE' && !!assessment.earliestDate;
   return assessment.rules.filter(
     (rule) =>
-      rule.status === 'FAIL' || (!onlyFailures && rule.status === 'UNKNOWN'),
+      (!assessment.decidedBy || assessment.decidedBy.includes(rule.id)) &&
+      (rule.status === 'FAIL' || (!onlyFailures && rule.status === 'UNKNOWN')),
   );
 }
 
