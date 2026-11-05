@@ -144,7 +144,7 @@ export interface GameState {
   /** Initial seed, unchanged throughout play. */
   seed: number;
   locale: Locale;
-  /** One-based game year, 1–10; final quarter retains year 10 / quarter 4. */
+  /** One-based game year, 1–10; four elapsed quarters per game year. */
   year: number;
   quarter: Quarter;
   date: IsoDate;

@@ -1,4 +1,5 @@
 import { currentLaw2026_11 } from '@uk-immigration/policy-data';
+import type { Route } from '@uk-immigration/engine';
 import { balance as b } from './balance';
 import type { Location, LocationAction } from './types';
 
@@ -17,6 +18,29 @@ const fees = currentLaw2026_11.values;
 export const extensionCost =
   fees.skilledWorkerExtensionFeeInUk.value +
   fees.immigrationHealthSurchargePerYear.value * (b.extensionMonths / 12);
+
+// The two additional scenarios use the 30-month permission named in SRC-031
+// (BN(O)) and SRC-024 D-LTRP.1.1 (partner); only the player is charged.
+export function extensionFor(route: Route) {
+  if (route === 'SKILLED_WORKER')
+    return { months: b.extensionMonths, cost: extensionCost };
+  const months = 30;
+  if (route === 'HONG_KONG_BNO')
+    return {
+      months,
+      cost:
+        fees.hongKongBnoExtensionFee.value +
+        (fees.immigrationHealthSurchargePerYear.value * months) / 12,
+    };
+  if (route === 'FAMILY_PARTNER_OR_PARENT')
+    return {
+      months,
+      cost:
+        fees.familyPartnerExtensionFee.value +
+        (fees.immigrationHealthSurchargePerYear.value * months) / 12,
+    };
+  return undefined;
+}
 
 /** Dynamic evidence, renewal episode and calendar travel dates are filled by actions(). */
 export const locationActions: LocationAction[] = [
@@ -96,10 +120,7 @@ export const locationActions: LocationAction[] = [
     id: 'extend',
     location: 'visa',
     label: { zhCN: '续签', en: 'Extend permission' },
-    when: [
-      { route: 'SKILLED_WORKER' },
-      { visaMonthsLeftMax: b.renewalWindowMonths },
-    ],
+    when: [{ visaMonthsLeftMax: b.renewalWindowMonths }],
     effects: [{ type: 'money', delta: -extensionCost }],
   },
   {

@@ -1,4 +1,5 @@
 import type { GameEvent } from '../types';
+import { additionalCommonEvents } from './common-additions';
 
 // Fictional amounts and durations describe individual stories, not policy thresholds.
 export const commonEvents: GameEvent[] = [
@@ -198,6 +199,7 @@ export const commonEvents: GameEvent[] = [
       en: 'The landlord studies a carpet mark; you find the check-in photographs.',
     },
     weight: 2,
+    forbids: ['quarter-housing-change'],
     choices: [
       {
         id: 'plan',
@@ -212,10 +214,11 @@ export const commonEvents: GameEvent[] = [
             delta: 2,
           },
         ],
-        sets: ['deposit-planned'],
+        sets: ['deposit-planned', 'quarter-housing-change'],
       },
       {
         id: 'skip',
+        sets: ['quarter-housing-change'],
         label: {
           zhCN: '不想再耗下去',
           en: 'Let the argument go',
@@ -243,9 +246,11 @@ export const commonEvents: GameEvent[] = [
       en: 'The photographs help recover part of the deposit, without an apology.',
     },
     weight: 2,
+    forbids: ['quarter-housing-change'],
     choices: [
       {
         id: 'follow',
+        sets: ['quarter-housing-change'],
         label: {
           zhCN: '放回应急金',
           en: 'Keep it for emergencies',
@@ -259,6 +264,7 @@ export const commonEvents: GameEvent[] = [
       },
       {
         id: 'other',
+        sets: ['quarter-housing-change'],
         label: {
           zhCN: '添置二手书桌',
           en: 'Buy a used desk',
@@ -1594,6 +1600,7 @@ export const commonEvents: GameEvent[] = [
       en: 'The new flat overlooks a park; the overshoes slide you all the way to the kitchen.',
     },
     weight: 2,
+    forbids: ['quarter-housing-change'],
     choices: [
       {
         id: 'plan',
@@ -1608,10 +1615,11 @@ export const commonEvents: GameEvent[] = [
             delta: 2,
           },
         ],
-        sets: ['flat-planned'],
+        sets: ['flat-planned', 'quarter-housing-change'],
       },
       {
         id: 'skip',
+        sets: ['quarter-housing-change'],
         label: {
           zhCN: '留在原处',
           en: 'Stay where you are',
@@ -1639,9 +1647,11 @@ export const commonEvents: GameEvent[] = [
       en: 'Boxes remain unpacked, but a plant is already on the windowsill.',
     },
     weight: 2,
+    forbids: ['quarter-housing-change'],
     choices: [
       {
         id: 'move',
+        sets: ['quarter-housing-change'],
         label: {
           zhCN: '搬进新家',
           en: 'Move in',
@@ -1660,6 +1670,7 @@ export const commonEvents: GameEvent[] = [
       },
       {
         id: 'other',
+        sets: ['quarter-housing-change'],
         label: {
           zhCN: '放弃这次搬家',
           en: 'Cancel the move',
@@ -1687,6 +1698,7 @@ export const commonEvents: GameEvent[] = [
       en: 'A flatmate is moving out; an unopened doormat appears in the hallway.',
     },
     weight: 2,
+    forbids: ['quarter-housing-change'],
     choices: [
       {
         id: 'plan',
@@ -1701,10 +1713,11 @@ export const commonEvents: GameEvent[] = [
             delta: 2,
           },
         ],
-        sets: ['keys-planned'],
+        sets: ['keys-planned', 'quarter-housing-change'],
       },
       {
         id: 'skip',
+        sets: ['quarter-housing-change'],
         label: {
           zhCN: '留下找新室友',
           en: 'Stay and find another flatmate',
@@ -1732,9 +1745,11 @@ export const commonEvents: GameEvent[] = [
       en: 'The new place is nearer the bus stop; the removal van still gets lost.',
     },
     weight: 2,
+    forbids: ['quarter-housing-change'],
     choices: [
       {
         id: 'move',
+        sets: ['quarter-housing-change'],
         label: {
           zhCN: '搬去车站旁',
           en: 'Move beside the stop',
@@ -1753,6 +1768,7 @@ export const commonEvents: GameEvent[] = [
       },
       {
         id: 'other',
+        sets: ['quarter-housing-change'],
         label: {
           zhCN: '仍住旧房间',
           en: 'Keep the old room',
@@ -1780,6 +1796,7 @@ export const commonEvents: GameEvent[] = [
       en: 'A rent-rise email sends you digging for the calculator.',
     },
     weight: 2,
+    forbids: ['quarter-housing-change'],
     choices: [
       {
         id: 'plan',
@@ -1794,10 +1811,11 @@ export const commonEvents: GameEvent[] = [
             delta: 2,
           },
         ],
-        sets: ['rent-planned'],
+        sets: ['rent-planned', 'quarter-housing-change'],
       },
       {
         id: 'skip',
+        sets: ['quarter-housing-change', 'rent-rise-1'],
         label: {
           zhCN: '接受新租金',
           en: 'Accept the new rent',
@@ -1830,9 +1848,11 @@ export const commonEvents: GameEvent[] = [
       en: 'The smaller place has just one window, but generous sunshine.',
     },
     weight: 2,
+    forbids: ['quarter-housing-change'],
     choices: [
       {
         id: 'move',
+        sets: ['quarter-housing-change', 'cheap-housing'],
         label: {
           zhCN: '搬去便宜住处',
           en: 'Move to the cheaper place',
@@ -1851,6 +1871,7 @@ export const commonEvents: GameEvent[] = [
       },
       {
         id: 'other',
+        sets: ['quarter-housing-change'],
         label: {
           zhCN: '这回先不搬',
           en: 'Postpone the move',
@@ -3009,6 +3030,7 @@ export const commonEvents: GameEvent[] = [
     ],
     season: 4,
   },
+  ...additionalCommonEvents,
 ];
 
 export const systemEvents: GameEvent[] = [
@@ -3166,6 +3188,7 @@ export const systemEvents: GameEvent[] = [
   },
   {
     id: 'system-debt',
+    forbids: ['quarter-housing-change'],
     title: {
       zhCN: '余额又红了',
       en: 'In the red again',
@@ -3179,6 +3202,7 @@ export const systemEvents: GameEvent[] = [
     choices: [
       {
         id: 'borrow',
+        sets: ['quarter-housing-change'],
         label: {
           zhCN: '向朋友借钱周转',
           en: 'Borrow from a friend',
@@ -3212,7 +3236,7 @@ export const systemEvents: GameEvent[] = [
             delta: 4,
           },
         ],
-        sets: ['cheap-housing'],
+        sets: ['cheap-housing', 'quarter-housing-change'],
       },
     ],
   },

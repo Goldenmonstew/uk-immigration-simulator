@@ -26,6 +26,28 @@ export const currentLaw2026_11 = {
         },
       ],
     },
+    // GBP, in-country BN(O) permission for 30 months, per applicant.
+    hongKongBnoExtensionFee: {
+      value: 206,
+      sources: [
+        {
+          srcId: 'SRC-031',
+          locator:
+            '9. Other applications made in the UK: Hong Kong British National (In-Country) for 30 months - main applicant and dependants; Fee from 8 October 2026',
+        },
+      ],
+    },
+    // GBP, in-country partner extension under Leave to remain - Other.
+    familyPartnerExtensionFee: {
+      value: 1407,
+      sources: [
+        {
+          srcId: 'SRC-031',
+          locator:
+            '9. Other applications made in the UK: Leave to remain - Other; Fee from 8 October 2026',
+        },
+      ],
+    },
     settlementApplicationFee: {
       value: 3226,
       sources: [

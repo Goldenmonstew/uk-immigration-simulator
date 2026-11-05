@@ -8,8 +8,10 @@ import { RULE_SET_IDS } from '@uk-immigration/policy-data';
 import { balance as b } from './balance';
 import { achievements } from './achievements';
 import { skilledWorker } from './characters/skilled-worker';
+import { hongKongBno } from './characters/hong-kong-bno';
+import { familyPartner } from './characters/family-partner';
 import { commonEvents, systemEvents } from './events/common';
-import { extensionCost, locationActions } from './locations';
+import { extensionFor, locationActions } from './locations';
 import type {
   Condition,
   Effect,
@@ -22,7 +24,7 @@ import type {
   Text,
 } from './types';
 
-export const characters = [skilledWorker];
+export const characters = [skilledWorker, hongKongBno, familyPartner];
 const dayMs = 86_400_000;
 const addDays = (date: IsoDate, days: number): IsoDate =>
   new Date(Date.parse(date) + days * dayMs).toISOString().slice(0, 10);
@@ -56,7 +58,7 @@ function pool(state: GameState) {
     ...systemEvents,
   ];
 }
-/** Complete calendar months plus a fractional remaining month; zero on last valid day. */
+/** Remaining calendar months rounded down; zero on the last valid day. */
 export function visaMonthsLeft(state: GameState): number {
   const episode = episodeAt(state);
   if (!episode) return 0;
@@ -68,7 +70,9 @@ export function visaMonthsLeft(state: GameState): number {
   const anchor = addMonths(state.date, full);
   return Math.max(
     0,
-    full + (Date.parse(episode.validTo) - Date.parse(anchor)) / dayMs / 31,
+    Math.floor(
+      full + (Date.parse(episode.validTo) - Date.parse(anchor)) / dayMs / 31,
+    ),
   );
 }
 function matches(state: GameState, conditions: Condition[] = []): boolean {
@@ -114,6 +118,14 @@ function draw(state: GameState, count: number) {
     ].filter(
       (e) =>
         available(state, e) &&
+        ![state.pendingEvent, ...state.eventQueue].some((id) =>
+          pool(state)
+            .find((scheduled) => scheduled.id === id)
+            ?.forbids?.some(
+              (flag) =>
+                flag.startsWith('quarter-') && e.forbids?.includes(flag),
+            ),
+        ) &&
         !state.eventQueue.includes(e.id) &&
         e.id !== state.pendingEvent,
     );
@@ -347,6 +359,17 @@ function applyEffects(state: GameState, effects: Effect[]): boolean {
   }
   for (const key of ['mood', 'health', 'english', 'career'] as const)
     state.stats[key] = Math.max(0, Math.min(100, state.stats[key]));
+  // A declared savings pot cannot retain money the household has spent.
+  if (state.timeline.cashSavings !== undefined) {
+    const savings = Math.min(
+      state.timeline.cashSavings,
+      Math.max(0, state.stats.money),
+    );
+    if (savings !== state.timeline.cashSavings) {
+      state.timeline.cashSavings = savings;
+      changedTimeline = true;
+    }
+  }
   return changedTimeline;
 }
 function deltas(before: GameState, after: GameState) {
@@ -369,7 +392,9 @@ export function newGame(
     seed,
     locale,
     year: 1,
-    quarter: 1,
+    quarter: Math.ceil(
+      Number(character.startDate.slice(5, 7)) / 3,
+    ) as GameState['quarter'],
     date: character.startDate,
     timeline,
     stats: { ...character.stats },
@@ -397,9 +422,13 @@ export function actions(state: GameState): LocationAction[] {
       if (a.id === 'extend')
         return (
           current?.role === 'MAIN' &&
-          !current.immigrationSalaryList &&
+          !!extensionFor(current.route) &&
+          (current.route !== 'SKILLED_WORKER' ||
+            !current.immigrationSalaryList) &&
+          (current.route !== 'FAMILY_PARTNER_OR_PARENT' ||
+            current.familyPermission === 'PARTNER_FIVE_YEAR') &&
           !state.timeline.episodes.some((e) => e.validFrom > state.date) &&
-          state.stats.money >= extensionCost
+          state.stats.money >= extensionFor(current.route)!.cost
         );
       if (a.id === 'settle')
         return (
@@ -423,13 +452,15 @@ export function actions(state: GameState): LocationAction[] {
           },
         ];
       if (a.id === 'extend' && current) {
+        const terms = extensionFor(current.route)!;
+        action.effects = [{ type: 'money', delta: -terms.cost }];
         const { validFrom: _from, validTo: _to, ...episode } = current;
         void _from;
         void _to;
         action.effects.push({
           type: 'newEpisode',
           episode,
-          durationMonths: b.extensionMonths,
+          durationMonths: terms.months,
           start: 'afterCurrent',
         });
       }
@@ -466,7 +497,14 @@ export function act(state: GameState, actionId: string): GameState {
   if (changed) recalculate(next);
   if (!isOver(next)) {
     if (action.id === 'mail') draw(next, 1);
-    if (action.id === 'exam' && state.stats.english < b.englishB1)
+    if (
+      action.id === 'exam' &&
+      (state.stats.english < b.englishB1 ||
+        (state.timeline.english &&
+          'cefrLevel' in state.timeline.english &&
+          state.timeline.english.cefrLevel === 'B1' &&
+          state.stats.english < b.englishB2))
+    )
       next.eventQueue.unshift('system-exam-failed');
     pressure(next);
     nextEvent(next);
@@ -524,17 +562,36 @@ export function endQuarter(state: GameState): GameState {
   const income = next.timeline.incomeYears.find(
     (y) => y.taxYear === taxYearOf(state.date),
   );
+  const partnerEarnings = [...next.timeline.incomeYears]
+    .filter(
+      (y) =>
+        y.taxYear <= taxYearOf(state.date) && y.partnerEarnings !== undefined,
+    )
+    .sort((a, c) => c.taxYear.localeCompare(a.taxYear))[0]?.partnerEarnings;
   if (income?.earnings === undefined && current?.salary !== undefined)
     recordIncome(next, state.date, salary);
+  if (income?.partnerEarnings === undefined && partnerEarnings !== undefined)
+    recordIncome(next, state.date, undefined, partnerEarnings);
+  const householdSalary =
+    salary +
+    (current?.route === 'FAMILY_PARTNER_OR_PARENT'
+      ? (partnerEarnings ?? 0)
+      : 0);
   applyEffects(next, [
     {
       type: 'money',
       delta:
-        salary / b.quartersPerYear -
+        householdSalary / b.quartersPerYear -
         b.livingCosts +
-        (state.flags.includes('cheap-housing') ? b.cheapHousingSaving : 0),
+        (b.householdCostContribution[state.characterId] ?? 0) +
+        (state.flags.includes('cheap-housing') ? b.cheapHousingSaving : 0) -
+        (state.year - 1) * b.livingCostAnnualIncrease -
+        state.flags.filter((f) => f.startsWith('rent-rise-')).length *
+          b.rentRisePerQuarter,
     },
     { type: 'stat', key: 'mood', delta: -b.moodDecay },
+    { type: 'stat', key: 'english', delta: -b.englishDecay },
+    { type: 'stat', key: 'career', delta: -b.careerDecay },
     {
       type: 'stat',
       key: 'health',
@@ -584,12 +641,15 @@ export function endQuarter(state: GameState): GameState {
   // Engine short circuits only adult illegal entry, not OVERSTAYING.
   // Expiry ends this game; the two assessments remain unmodified engine output.
   if (coveredUntil < next.date) finish(next, 'overstayed');
-  if (state.quarter === 4) award(next);
-  if (!isOver(next) && state.year === b.years && state.quarter === 4)
+  const completedQuarters = next.log.filter((e) => e.kind === 'quarter').length;
+  if (completedQuarters % b.quartersPerYear === 0) award(next);
+  if (!isOver(next) && completedQuarters === b.years * b.quartersPerYear)
     finish(next, 'timeout');
   if (!isOver(next)) {
+    next.flags = next.flags.filter((f) => !f.startsWith('quarter-'));
     next.quarter = ((state.quarter % 4) + 1) as GameState['quarter'];
-    next.year = state.year + (state.quarter === 4 ? 1 : 0);
+    next.year =
+      state.year + (completedQuarters % b.quartersPerYear === 0 ? 1 : 0);
     next.actionsLeft = b.actionsPerQuarter;
     if (next.stats.money < 0) {
       if (next.flags.includes('negative-last-quarter')) {
@@ -628,7 +688,7 @@ export function progress(state: GameState): Progress {
         {
           outcome: result?.outcome ?? 'INSUFFICIENT_INFORMATION',
           ...(result?.earliestDate && { earliestDate: result.earliestDate }),
-          percent: Math.max(0, Math.min(100, percent)),
+          percent: Math.round(Math.max(0, Math.min(100, percent))),
         },
       ];
     }),
@@ -641,7 +701,7 @@ export function narrative(state: GameState): Text[] {
   const name = characterOf(state.characterId).name;
   const sentences: Text[] = [
     {
-      zhCN: `${name.zhCN}在${characterOf(state.characterId).startDate}开始记录小镇生活。`,
+      zhCN: `${name.zhCN}在 ${characterOf(state.characterId).startDate} 开始记录小镇生活。`,
       en: `${name.en} began keeping a town diary on ${characterOf(state.characterId).startDate}.`,
     },
   ];
@@ -700,12 +760,12 @@ export function narrative(state: GameState): Text[] {
   }
   const quarters = state.log.filter((e) => e.kind === 'quarter').length;
   sentences.push({
-    zhCN: `日记写过${quarters}个季度，雨伞换了位置，生活没有停。`,
+    zhCN: `日记写过 ${quarters} 个季度，雨伞换了位置，生活没有停。`,
     en: `The diary spans ${quarters} quarters; umbrellas moved, and life kept going.`,
   });
   sentences.push({
-    zhCN: `账本最后留下£${Math.round(state.stats.money)}，还有没写进账本的牵挂。`,
-    en: `The ledger holds £${Math.round(state.stats.money)}, alongside things it cannot count.`,
+    zhCN: `账本最后留下 £${Math.round(state.stats.money).toLocaleString('en-GB')}，还有没写进账本的牵挂。`,
+    en: `The ledger holds £${Math.round(state.stats.money).toLocaleString('en-GB')}, alongside things it cannot count.`,
   });
   const fillers: Text[] = [
     {
