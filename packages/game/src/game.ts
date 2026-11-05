@@ -577,6 +577,7 @@ export function endQuarter(state: GameState): GameState {
     (current?.route === 'FAMILY_PARTNER_OR_PARENT'
       ? (partnerEarnings ?? 0)
       : 0);
+  const played = state.log.filter((e) => e.kind === 'quarter').length;
   applyEffects(next, [
     {
       type: 'money',
@@ -590,8 +591,9 @@ export function endQuarter(state: GameState): GameState {
           b.rentRisePerQuarter,
     },
     { type: 'stat', key: 'mood', delta: -b.moodDecay },
-    { type: 'stat', key: 'english', delta: -b.englishDecay },
-    { type: 'stat', key: 'career', delta: -b.careerDecay },
+    // Slow skills fade a whole point every other quarter so stats stay integers.
+    { type: 'stat', key: 'english', delta: played % 2 ? 0 : -b.englishDecay },
+    { type: 'stat', key: 'career', delta: played % 2 ? 0 : -b.careerDecay },
     {
       type: 'stat',
       key: 'health',
