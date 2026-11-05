@@ -116,6 +116,8 @@ test.each([0, 1, 2, 10])(
     draft.timeline.incomeYears = [
       { taxYear: '2024-25', earnings: 0, partnerEarnings: 0 },
     ];
+    // No savings declared, so the shortfall fails (contracts §17.3).
+    draft.timeline.cashSavings = 0;
     const before = runSimulation(draft).byRuleSet['current-law-2026-11']!;
     expect(
       before.rules.find((r) => r.id === 'CL-FAMILY-FINANCIAL')?.status,

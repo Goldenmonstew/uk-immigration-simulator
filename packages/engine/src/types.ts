@@ -60,6 +60,17 @@ export interface PersonTimeline {
    * Settlement Protection STP 4.1). Missing = not revoked or renounced.
    */
   protectionStatusRevoked?: boolean;
+  /**
+   * Current law, 5-year Appendix FM partner route: cash savings of the
+   * applicant and partner combined, including those of a dependent child
+   * aged 18 or over (E-LTRP.3.2(g)), in GBP. Missing = not provided.
+   */
+  cashSavings?: number;
+  /**
+   * Current law, 5-year Appendix FM partner route: the partner receives one
+   * of the benefits listed in E-LTRP.3.3(a). Missing = no.
+   */
+  partnerSpecifiedBenefit?: boolean;
 }
 
 export interface ImmigrationEpisode {

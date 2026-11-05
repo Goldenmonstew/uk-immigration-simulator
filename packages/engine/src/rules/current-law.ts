@@ -1063,11 +1063,12 @@ export const clFamilyFinancial = defineRule(
       { srcId: 'SRC-024', locator: 'E-ILRP.1.3(1A)' },
       { srcId: 'SRC-024', locator: 'E-LTRP.3.1' },
       { srcId: 'SRC-024', locator: 'E-LTRP.3.2' },
+      { srcId: 'SRC-024', locator: 'E-LTRP.3.3' },
       { srcId: 'SRC-024', locator: 'E-LTRP.3.5' },
       { srcId: 'SRC-024', locator: 'E-LTRP.3.7' },
       { srcId: 'SRC-024', locator: 'E-LTRP.3.8' },
     ],
-    pendingDetails: [],
+    pendingDetails: ['PD-075'],
   },
   (ctx) => {
     const L = textFor(ctx);
@@ -1080,56 +1081,121 @@ export const clFamilyFinancial = defineRule(
         ),
       };
     }
+    const v = cl.values;
     const { threshold, transitional, children } = familyIncomeThreshold(ctx);
-    const before = cl.values.familyPartnerTransitionalBefore.value;
+    const before = v.familyPartnerTransitionalBefore.value;
+    const base = v.familyPartnerSavingsBase.value;
     const basis = transitional
       ? L(
-          `过渡门槛（E-LTRP.3.5、E-LTRP.3.7(a)，${children} 名子女，最高 ${gbp(cl.values.familyPartnerMinimumIncome.value)}）`,
-          `the transitional requirement (E-LTRP.3.5, E-LTRP.3.7(a); ${children} ${children === 1 ? 'child' : 'children'}, capped at ${gbp(cl.values.familyPartnerMinimumIncome.value)})`,
+          `过渡门槛（E-LTRP.3.5、E-LTRP.3.7(a)，${children} 名子女，最高 ${gbp(v.familyPartnerMinimumIncome.value)}）`,
+          `the transitional requirement (E-LTRP.3.5, E-LTRP.3.7(a); ${children} ${children === 1 ? 'child' : 'children'}, capped at ${gbp(v.familyPartnerMinimumIncome.value)})`,
         )
       : L(
           '一般门槛（E-LTRP.3.1(a)）',
           'the general requirement (E-LTRP.3.1(a))',
         );
+    // E-LTRP.3.1 / 3.7: income (a), savings (b) or the partner's benefit (c).
+    const savingsBasis = transitional ? 'E-LTRP.3.7(b)' : 'E-LTRP.3.1(b)';
+    const benefitBasis = transitional ? 'E-LTRP.3.7(c)' : 'E-LTRP.3.1(c)';
     const assumptions = [
       L(
-        `是否适用过渡门槛按连续伴侣许可的起点是否早于 ${before} 判断（E-LTRP.3.5 看的是首次申请日；获批在此后而申请在此前的，也适用过渡门槛）；子女按"关系"里身份为其他的子女计。储蓄（E-LTRP.3.1(b)）、伴侣领取特定福利（E-LTRP.3.3）与 Appendix FM-SE 的证据规则未建模。`,
-        `Whether the transitional requirement applies is judged by whether the continuous partner permission started before ${before} (E-LTRP.3.5 looks at the date of the first application, so an application made before that date and granted after it also qualifies); children are those listed under relationships with another status. Savings (E-LTRP.3.1(b)), the partner receiving specified benefits (E-LTRP.3.3) and the evidence rules in Appendix FM-SE are not modelled.`,
+        `是否适用过渡门槛按连续伴侣许可的起点是否早于 ${before} 判断（E-LTRP.3.5 看的是首次申请日；获批在此后而申请在此前的，也适用过渡门槛）；子女按"关系"里身份为其他的子女计。`,
+        `Whether the transitional requirement applies is judged by whether the continuous partner permission started before ${before} (E-LTRP.3.5 looks at the date of the first application, so an application made before that date and granted after it also qualifies); children are those listed under relationships with another status.`,
       ),
+      L(
+        '储蓄按申报的合计现金储蓄计；Appendix FM-SE 的持有期与证据规则、E-LTRP.3.2 的收入与储蓄来源种类未核对；伴侣领取的福利按申报；住宿要求（E-LTRP.3.4、E-LTRP.3.9）与 EX.1 未建模。',
+        'Savings are the combined cash savings as declared; the holding period and evidence rules in Appendix FM-SE and the kinds of income and savings sources in E-LTRP.3.2 are not checked; any benefit the partner receives is taken as declared; the accommodation requirement (E-LTRP.3.4, E-LTRP.3.9) and EX.1 are not modelled.',
+      ),
+      // A transitional amount above £29,000 is capped (E-LTRP.3.8).
+      ...(transitional && threshold === v.familyPartnerMinimumIncome.value
+        ? [
+            L(
+              `过渡门槛按 E-LTRP.3.8 封顶为 ${gbp(threshold)}，储蓄补足的缺口也按封顶后的门槛计算。`,
+              `The transitional requirement is capped at ${gbp(threshold)} under E-LTRP.3.8, and the shortfall that savings make up is counted against the capped amount.`,
+            ),
+          ]
+        : []),
     ];
     const [taxYear] = taxYearsBefore(ctx.simulationDate, 1);
     const income = ctx.timeline.incomeYears.find((i) => i.taxYear === taxYear);
-    if (
-      !income ||
-      (income.earnings === undefined && income.partnerEarnings === undefined)
-    ) {
+    const total =
+      income &&
+      (income.earnings !== undefined || income.partnerEarnings !== undefined)
+        ? (income.earnings ?? 0) + (income.partnerEarnings ?? 0)
+        : undefined;
+    if (total !== undefined && total >= threshold) {
       return {
-        status: 'UNKNOWN',
+        status: 'PASS',
         explanation: L(
-          `未填写 ${taxYear} 纳税年度本人与伴侣的收入；按${basis}须合计至少 ${gbp(threshold)}。`,
-          `Earnings of the applicant and partner for the ${taxYear} tax year not provided; ${basis} requires at least ${gbp(threshold)} combined.`,
+          `${taxYear} 纳税年度本人与伴侣收入合计 ${gbp(total)}，达到${basis}的 ${gbp(threshold)}。`,
+          `Combined earnings of the applicant and partner in the ${taxYear} tax year are ${gbp(total)}, which meets the ${gbp(threshold)} of ${basis}.`,
         ),
         assumptions,
       };
     }
-    const total = (income.earnings ?? 0) + (income.partnerEarnings ?? 0);
-    return total >= threshold
-      ? {
-          status: 'PASS',
-          explanation: L(
-            `${taxYear} 纳税年度本人与伴侣收入合计 ${gbp(total)}，达到${basis}的 ${gbp(threshold)}。`,
-            `Combined earnings of the applicant and partner in the ${taxYear} tax year are ${gbp(total)}, which meets the ${gbp(threshold)} of ${basis}.`,
-          ),
-          assumptions,
-        }
-      : {
-          status: 'FAIL',
-          explanation: L(
-            `${taxYear} 纳税年度本人与伴侣收入合计 ${gbp(total)}，低于${basis}的 ${gbp(threshold)}。`,
-            `Combined earnings of the applicant and partner in the ${taxYear} tax year are ${gbp(total)}, below the ${gbp(threshold)} of ${basis}.`,
-          ),
-          assumptions,
-        };
+    // Savings make up the shortfall; without income, the whole threshold.
+    const gap = threshold - (total ?? 0);
+    const needed = base + gap;
+    const savings = ctx.timeline.cashSavings;
+    const short =
+      total === undefined
+        ? L(
+            `未填写 ${taxYear} 纳税年度本人与伴侣的收入`,
+            `Earnings of the applicant and partner for the ${taxYear} tax year are not provided`,
+          )
+        : L(
+            `${taxYear} 纳税年度本人与伴侣收入合计 ${gbp(total)}，低于${basis}的 ${gbp(threshold)}，缺口 ${gbp(gap)}`,
+            `Combined earnings of the applicant and partner in the ${taxYear} tax year are ${gbp(total)}, below the ${gbp(threshold)} of ${basis}: a shortfall of ${gbp(gap)}`,
+          );
+    if (savings !== undefined && savings >= needed) {
+      return {
+        status: 'PASS',
+        explanation: L(
+          `${short}；现金储蓄 ${gbp(savings)}，达到 ${gbp(base)} 加${total === undefined ? '整个门槛' : '缺口'}共 ${gbp(needed)}（${savingsBasis}；定居申请按 E-ILRP.1.3(1A) 不乘 2.5）。`,
+          `${short}; cash savings of ${gbp(savings)} meet ${gbp(base)} plus the ${total === undefined ? 'whole requirement' : 'shortfall'}, ${gbp(needed)} in all (${savingsBasis}; for settlement, E-ILRP.1.3(1A) disregards “2.5 times”).`,
+        ),
+        assumptions,
+      };
+    }
+    if (ctx.timeline.partnerSpecifiedBenefit) {
+      return {
+        status: 'UNKNOWN',
+        explanation: L(
+          `${short}；伴侣领取 E-LTRP.3.3(a) 所列福利（按申报），可改为证明伴侣能在不依赖 public funds 的情况下充分供养与安置其本人、申请人与 dependants（${benefitBasis}、E-LTRP.3.3(b)）。这一要求没有数字门槛，计算口径本工具未登记（PD-075）。`,
+          `${short}; the partner receives a benefit listed in E-LTRP.3.3(a), as declared, so the applicant can instead show that the partner can maintain and accommodate themselves, the applicant and any dependants adequately without recourse to public funds (${benefitBasis}, E-LTRP.3.3(b)). This requirement has no set figure, and how it is calculated is not registered in this tool (PD-075).`,
+        ),
+        pendingDetails: ['PD-075'],
+        assumptions,
+      };
+    }
+    if (total === undefined) {
+      return {
+        status: 'UNKNOWN',
+        explanation: L(
+          `未填写 ${taxYear} 纳税年度本人与伴侣的收入；按${basis}须合计至少 ${gbp(threshold)}，也可用储蓄补足：至少 ${gbp(base)} 加收入缺口（${savingsBasis}）。`,
+          `Earnings of the applicant and partner for the ${taxYear} tax year not provided; ${basis} requires at least ${gbp(threshold)} combined, or savings can make up the difference: at least ${gbp(base)} plus the shortfall (${savingsBasis}).`,
+        ),
+        assumptions,
+      };
+    }
+    if (savings === undefined) {
+      return {
+        status: 'UNKNOWN',
+        explanation: L(
+          `${short}；现金储蓄至少 ${gbp(needed)}（${gbp(base)} 加缺口，${savingsBasis}；E-ILRP.1.3(1A)）即可满足，未填写储蓄。`,
+          `${short}; cash savings of at least ${gbp(needed)} (${gbp(base)} plus the shortfall, ${savingsBasis}; E-ILRP.1.3(1A)) would meet it, and no savings have been provided.`,
+        ),
+        assumptions,
+      };
+    }
+    return {
+      status: 'FAIL',
+      explanation: L(
+        `${short}；现金储蓄 ${gbp(savings)}，不足 ${gbp(base)} 加缺口共 ${gbp(needed)}，还差 ${gbp(needed - savings)}（${savingsBasis}；E-ILRP.1.3(1A)）。若伴侣领取 E-LTRP.3.3(a) 所列福利，可改按 E-LTRP.3.3 判断。`,
+        `${short}; cash savings of ${gbp(savings)} are below ${gbp(base)} plus the shortfall, ${gbp(needed)} in all, by ${gbp(needed - savings)} (${savingsBasis}; E-ILRP.1.3(1A)). If the partner receives a benefit listed in E-LTRP.3.3(a), E-LTRP.3.3 can apply instead.`,
+      ),
+      assumptions,
+    };
   },
 );
 
