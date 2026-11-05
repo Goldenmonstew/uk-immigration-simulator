@@ -2,11 +2,18 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { expect, test } from 'vitest';
 import type { RuleOutcome, SettlementAssessment } from '@uk-immigration/engine';
 import { GapSummary } from '../components/gap-summary';
+import { ResultView } from '../components/result-view';
+import { clHkbnoFiveYears } from '../../../packages/policy-data/fixtures/cl-hkbno-five-years';
+import { clFamilyFiveYearChildProjected } from '../../../packages/policy-data/fixtures/cl-family-five-year-child-projected';
 import { esP45IndividualCCareWorkerAfterCutoff as skilledWorker } from '../../../packages/policy-data/fixtures/es-p45-individual-c-care-worker-after-cutoff';
-import { createDraft, runSimulation } from '../lib/questionnaire';
+import {
+  createDraft,
+  runPrincipalSimulation,
+  runSimulation,
+} from '../lib/questionnaire';
 import { LocaleContext } from '../i18n/locale';
 import { t } from '../i18n';
-import { firstSentence, remainingTime } from '../lib/gap-summary';
+import { firstSentence, gapRules, remainingTime } from '../lib/gap-summary';
 
 const rule = (
   id: string,
@@ -81,6 +88,102 @@ test('a projected date shows the wait from the simulation date and only failed r
   expect(html).toContain('ES-EARNINGS-10Y');
   expect(html).not.toContain('CL-ENGLISH');
 });
+
+test.each(['POTENTIALLY_ELIGIBLE', 'LIKELY_NOT_ELIGIBLE'] as const)(
+  '%s with decidedBy only lists gaps from the selected pathway in rule order',
+  (outcome) => {
+    const value = assessment({
+      outcome,
+      earliestDate: '2028-01-04',
+      pathwayYears: 5,
+      decidedBy: ['CL-SW-RESIDENCE-5Y', 'CL-ENGLISH', 'CL-KOL'],
+      rules: [
+        rule('CL-LR-RESIDENCE-10Y', 'FAIL'),
+        rule('CL-SW-RESIDENCE-5Y', 'FAIL'),
+        ...rules.slice(1),
+      ],
+    });
+    expect(gapRules(value).map((item) => item.id)).toEqual(
+      outcome === 'LIKELY_NOT_ELIGIBLE'
+        ? ['CL-SW-RESIDENCE-5Y']
+        : ['CL-SW-RESIDENCE-5Y', 'CL-ENGLISH'],
+    );
+    const html = render(value);
+    expect(html).toContain('CL-SW-RESIDENCE-5Y');
+    expect(html).toContain('href="/whatif?focus=date"');
+    expect(html).not.toContain('CL-LR-RESIDENCE-10Y');
+    expect(html).not.toContain('ES-PUBLIC-FUNDS');
+    expect(html).not.toContain('CL-KOL');
+  },
+);
+
+test('without decidedBy all rules remain eligible for the summary', () => {
+  expect(gapRules(assessment())).toEqual(rules.slice(0, 3));
+  expect(
+    gapRules(
+      assessment({
+        outcome: 'LIKELY_NOT_ELIGIBLE',
+        earliestDate: '2028-01-04',
+      }),
+    ),
+  ).toEqual([rules[0]]);
+});
+
+test.each(['zh-CN', 'en'] as const)(
+  'HK BN(O) before five years keeps Long Residence in why but not the %s gap summary',
+  (locale) => {
+    const draft = {
+      ...createDraft(),
+      ...structuredClone(clHkbnoFiveYears.request),
+      simulationDate: '2026-01-31',
+      completed: true,
+    };
+    const result = runSimulation(draft, locale);
+    const current = result.byRuleSet['current-law-2026-11']!;
+    expect(current.outcome).toBe('LIKELY_NOT_ELIGIBLE');
+    expect(gapRules(current).map((item) => item.id)).toEqual([
+      'CL-HKBNO-RESIDENCE-5Y',
+    ]);
+    const alternative = current.rules.find(
+      (item) => item.id === 'CL-LR-RESIDENCE-10Y',
+    )!;
+    expect(alternative.status).toBe('FAIL');
+    expect(render(current, locale)).not.toContain(alternative.title);
+    const html = renderToStaticMarkup(
+      <LocaleContext value={{ locale, setLocale: () => {} }}>
+        <ResultView result={result} draft={draft} />
+      </LocaleContext>,
+    );
+    expect(html).toContain(alternative.title);
+    if (locale === 'en') expect(html).not.toMatch(/[\u3400-\u9fff：、（）]/);
+  },
+);
+
+test.each(['zh-CN', 'en'] as const)(
+  'a five-year partner child summary follows the parent date in %s',
+  (locale) => {
+    const draft = {
+      ...createDraft(),
+      ...structuredClone(clFamilyFiveYearChildProjected.request),
+      completed: true,
+    };
+    const current = runSimulation(draft, locale).byRuleSet[
+      'current-law-2026-11'
+    ]!;
+    const parent = runPrincipalSimulation(draft, locale)!.byRuleSet[
+      'current-law-2026-11'
+    ]!;
+    const date = clFamilyFiveYearChildProjected.expected.earliestDate!;
+    expect(current.outcome).toBe('LIKELY_NOT_ELIGIBLE');
+    expect(current.earliestDate).toBe(date);
+    expect(current.earliestDate).toBe(parent.earliestDate);
+    expect(current.decidedBy).toContain('CL-FAMILY-CHILD');
+    const html = render(current, locale);
+    expect(html).toContain(t('gap.earliest', locale).replace('{date}', date));
+    expect(html).not.toContain('Long Residence');
+    if (locale === 'en') expect(html).not.toMatch(/[\u3400-\u9fff：、（）]/);
+  },
+);
 
 test.each(['REQUIRES_REGULATED_REVIEW', 'POLICY_NOT_YET_IN_FORCE'] as const)(
   '%s does not get an actionable summary',

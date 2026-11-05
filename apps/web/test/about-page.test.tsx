@@ -76,6 +76,30 @@ test('about exports static social metadata', () => {
 });
 
 test.each(['zh-CN', 'en'] as const)(
+  'home and about include five-year partner children in the %s current-law scope',
+  (locale) => {
+    const coverage =
+      locale === 'zh-CN'
+        ? 'Appendix FM 5 年路线伴侣的子女（Immigration Rules Part 8 第 298 段）'
+        : 'children of Appendix FM partners on the 5-year route (paragraph 298 of Part 8 of the Immigration Rules)';
+    const outdated =
+      locale === 'zh-CN'
+        ? 'Appendix FM 5 年路线伴侣的子女、其余路线'
+        : 'The separate settlement requirements of children of Appendix FM partners on the 5-year route';
+    for (const page of [<Home key="home" />, <AboutPage key="about" />]) {
+      const html = renderToStaticMarkup(
+        <LocaleContext value={{ locale, setLocale: () => {} }}>
+          {page}
+        </LocaleContext>,
+      );
+      expect(html).toContain(coverage);
+      expect(html).not.toContain(outdated);
+      if (locale === 'en') expect(html).not.toMatch(/[\u3400-\u9fff：、（）]/);
+    }
+  },
+);
+
+test.each(['zh-CN', 'en'] as const)(
   'home and result disclaimers link to about in %s, including short circuits',
   (locale) => {
     const draft = createDraft();
