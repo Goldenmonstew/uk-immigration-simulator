@@ -24,12 +24,11 @@ export function observeTownSize(
   let started = false;
   const resize = () => {
     const { clientWidth: width, clientHeight: height } = element;
-    if (width <= 0 || height <= 0 || document.readyState === 'loading') return;
+    if (width <= 0 || height <= 0) return;
     if (game) {
       game.scale.resize(width, height);
     } else if (!started) {
       started = true;
-      // With the DOM ready, Phaser boots synchronously inside the factory.
       try {
         game = createGame(Phaser.AUTO);
       } catch {
@@ -39,10 +38,11 @@ export function observeTownSize(
   };
   const observer = new ResizeObserver(resize);
   observer.observe(element);
-  document.addEventListener('DOMContentLoaded', resize, { once: true });
+  resize();
+  const frame = requestAnimationFrame(resize);
   return () => {
     observer.disconnect();
-    document.removeEventListener('DOMContentLoaded', resize);
+    cancelAnimationFrame(frame);
     started = true;
     game?.destroy(true);
     game = undefined;
