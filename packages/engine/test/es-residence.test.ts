@@ -141,7 +141,10 @@ describe('ES-RESIDENCE on protection routes', () => {
       esResidence,
       {
         episodes: [
-          on('SKILLED_WORKER', { validFrom: '2024-01-01', validTo: '2027-02-28' }),
+          on('SKILLED_WORKER', {
+            validFrom: '2024-01-01',
+            validTo: '2027-02-28',
+          }),
           { ...core, validTo: '2032-12-31' },
         ],
       },
