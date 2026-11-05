@@ -23,6 +23,7 @@ import type {
   IsoDate,
   PersonTimeline,
   RuleContext,
+  RuleId,
   RuleResult,
 } from '../types';
 
@@ -2001,22 +2002,25 @@ export const clSwGoingRate = defineRule(
 );
 
 /**
- * The start of P's Skilled Worker period when P has a 5-year Skilled Worker
- * pathway in this column, so the dependant can settle at the same time as P
+ * P's current-law result rests on the candidate whose residence rule is
+ * `residence`, so P settles on that route (contracts §16.2).
+ */
+const principalSettlesBy = (ctx: RuleContext, residence: RuleId) =>
+  ctx.principal?.result.byRuleSet[RULE_SET]?.decidedBy?.includes(residence) ??
+  false;
+
+/**
+ * The start of P's Skilled Worker period when P's result rests on the
+ * Skilled Worker pathway, so the dependant can settle at the same time as P
  * (SW 39.1(a)).
  */
-function principalSkilledWorkerStart({
-  simulationDate,
-  principal,
-}: RuleContext): IsoDate | undefined {
-  if (!principal) return undefined;
+function principalSkilledWorkerStart(ctx: RuleContext): IsoDate | undefined {
+  if (!ctx.principal) return undefined;
   const start = skilledWorkerStart({
-    timeline: principal.timeline,
-    simulationDate,
+    timeline: ctx.principal.timeline,
+    simulationDate: ctx.simulationDate,
   });
-  return start &&
-    principal.result.byRuleSet[RULE_SET]?.pathwayYears ===
-      cl.values.skilledWorkerQualifyingYears.value
+  return start && principalSettlesBy(ctx, 'CL-SW-RESIDENCE-5Y')
     ? start
     : undefined;
 }
@@ -2094,8 +2098,8 @@ function withoutPrincipalPathway(
       assumptions,
     };
   }
-  return principal!.result.byRuleSet[RULE_SET]?.outcome ===
-    'LIKELY_NOT_ELIGIBLE'
+  const result = principal!.result.byRuleSet[RULE_SET];
+  return result?.outcome === 'LIKELY_NOT_ELIGIBLE'
     ? {
         status: 'FAIL',
         explanation: L(
@@ -2106,10 +2110,16 @@ function withoutPrincipalPathway(
       }
     : {
         status: 'UNKNOWN',
-        explanation: L(
-          '主申请人的信息不足以判断其能否作为 Skilled Worker 定居。',
-          'The principal applicant’s details are not enough to determine whether they can settle as a Skilled Worker.',
-        ),
+        // With decidedBy, P's result rests on another pathway (§16.2).
+        explanation: result?.decidedBy
+          ? L(
+              `主申请人的现行法律结论不是按 Skilled Worker 路线得出的（例如按 Long Residence），${who} 随其按 SW 39.1(a) 定居的时间无法判断。`,
+              `The principal applicant’s current-rules result is not on the Skilled Worker route (for example, it is under Long Residence), so when the ${who} could settle with them under SW 39.1(a) cannot be determined.`,
+            )
+          : L(
+              '主申请人的信息不足以判断其能否作为 Skilled Worker 定居。',
+              'The principal applicant’s details are not enough to determine whether they can settle as a Skilled Worker.',
+            ),
         assumptions,
       };
 }
@@ -2379,8 +2389,8 @@ function principalNotReady(
       assumptions,
     };
   }
-  return ctx.principal!.result.byRuleSet[RULE_SET]?.outcome ===
-    'LIKELY_NOT_ELIGIBLE'
+  const result = ctx.principal!.result.byRuleSet[RULE_SET];
+  return result?.outcome === 'LIKELY_NOT_ELIGIBLE'
     ? {
         status: 'FAIL',
         explanation: L(
@@ -2391,17 +2401,19 @@ function principalNotReady(
       }
     : {
         status: 'UNKNOWN',
-        explanation: L(
-          `主申请人的信息不足以判断其能否按 ${route} 路线定居。`,
-          `The principal applicant’s details are not enough to determine whether they can settle on the ${route} route.`,
-        ),
+        // With decidedBy, P's result rests on another pathway (§16.2).
+        explanation: result?.decidedBy
+          ? L(
+              `主申请人的现行法律结论不是按 ${route} 路线得出的（例如按 Long Residence），本人随其按 ${route} 路线定居的时间无法判断。`,
+              `The principal applicant’s current-rules result is not on the ${route} route (for example, it is under Long Residence), so when this person could settle with them on the ${route} route cannot be determined.`,
+            )
+          : L(
+              `主申请人的信息不足以判断其能否按 ${route} 路线定居。`,
+              `The principal applicant’s details are not enough to determine whether they can settle on the ${route} route.`,
+            ),
         assumptions,
       };
 }
-
-/** P's current-law pathway is `years` long, so P settles on this route. */
-const principalPathwayIs = (ctx: RuleContext, years: number) =>
-  ctx.principal?.result.byRuleSet[RULE_SET]?.pathwayYears === years;
 
 const later = (a: IsoDate, b: IsoDate) => (a > b ? a : b);
 
@@ -2475,7 +2487,7 @@ export function hongKongBnoDependantPathway(
     current?.route === 'HONG_KONG_BNO' &&
     (current.role === 'MAIN' || current.dependantOf === 'PARTNER');
   const principalStart =
-    onRoute && principalPathwayIs(ctx, years)
+    onRoute && principalSettlesBy(ctx, 'CL-HKBNO-RESIDENCE-5Y')
       ? hongKongBnoStart({ timeline: principal.timeline, simulationDate })
           ?.start
       : undefined;
@@ -2624,6 +2636,12 @@ export function globalTalentDependantPathway(
       .sort((a, b) => (a.validFrom < b.validFrom ? -1 : 1))
       .at(-1);
     const period = last && globalTalentPeriod(last);
+    assumptions.push(
+      L(
+        '主申请人已定居：按其最后一个 Global Talent 主申请人片段的背书确定路径年限（GT 11.1–11.2）。',
+        'The principal applicant has settled: their pathway length is taken from the endorsement on their last Global Talent main applicant permission (GT 11.1–11.2).',
+      ),
+    );
     if (!period) {
       return {
         years: partnerYears,
@@ -2655,7 +2673,7 @@ export function globalTalentDependantPathway(
     simulationDate,
   });
   const period = q?.period;
-  if (!q || !period || !principalPathwayIs(ctx, period.years)) {
+  if (!q || !period || !principalSettlesBy(ctx, 'CL-GT-RESIDENCE')) {
     return {
       years: period?.years ?? partnerYears,
       result: principalNotReady(
@@ -2780,6 +2798,14 @@ export function familyChildPathway(
   ];
   if (!principal) return { years, result: needsPrincipal(L, assumptions) };
   const permission = principalFamilyPermission(ctx);
+  if (settled && permission !== 'NOT_ON_ROUTE') {
+    assumptions.push(
+      L(
+        '主申请人已定居：按其定居日前最后一个 Appendix FM 主申请人片段的许可类型判断是 5 年还是 10 年路线。',
+        'The principal applicant has settled: whether they were on the 5-year or the 10-year route is taken from their last Appendix FM main applicant permission before settling.',
+      ),
+    );
+  }
   if (permission === 'NOT_ON_ROUTE') {
     return settled
       ? {
@@ -2850,7 +2876,7 @@ export function familyChildPathway(
       },
     };
   }
-  const principalStart = principalPathwayIs(ctx, years)
+  const principalStart = principalSettlesBy(ctx, 'CL-FAMILY-RESIDENCE')
     ? familyTenYearStart({ timeline: principal.timeline, simulationDate })
         ?.start
     : undefined;

@@ -265,6 +265,34 @@ describe('Global Talent dependants (SRC-021)', () => {
     ).toBe('INSUFFICIENT_INFORMATION');
   });
 
+  test('child of a settled principal: years from the last Global Talent permission (assumption)', () => {
+    const child = {
+      dateOfBirth: '2015-03-01',
+      episodes: [
+        ep('GLOBAL_TALENT', 'DEPENDANT', '2020-06-01', {
+          dependantOf: 'PARENT',
+        }),
+      ],
+      english: undefined,
+      lifeInTheUk: undefined,
+    };
+    const result = currentLaw(
+      child,
+      {
+        ...principal('2020-06-01'),
+        settled: { date: '2023-06-01', route: 'GLOBAL_TALENT' },
+      },
+      '2026-06-01',
+    );
+    expect(result).toMatchObject({
+      outcome: 'LIKELY_ELIGIBLE',
+      pathwayYears: 3,
+    });
+    expect(result.assumptions.join('')).toContain(
+      '最后一个 Global Talent 主申请人片段',
+    );
+  });
+
   test('a principal settled from another route fails GT 27.1(b)', () => {
     const result = currentLaw(
       partner('2021-06-01'),
@@ -336,6 +364,45 @@ describe('children of Appendix FM partners (SRC-022, SRC-024)', () => {
   test('without the principal: insufficient information', () => {
     expect(currentLaw(child, undefined, '2026-03-01').outcome).toBe(
       'INSUFFICIENT_INFORMATION',
+    );
+  });
+
+  // Contracts §16.2 (5.4 report §4): Long Residence also reaches 10 years,
+  // but the principal's result rests on it, not on SETF.
+  test('the principal settles under Long Residence, not SETF: the child no longer settles with them', () => {
+    const notSetf = {
+      ...principal('2016-03-01'),
+      relationships: [
+        { type: 'PARTNER' as const, otherPartyStatus: 'OTHER' as const },
+      ],
+    };
+    const p = evaluate({
+      timeline: timeline(notSetf),
+      simulationDate: '2026-03-01',
+    }).byRuleSet['current-law-2026-11']!;
+    expect(p).toMatchObject({ outcome: 'LIKELY_ELIGIBLE', pathwayYears: 10 });
+    expect(p.decidedBy).toContain('CL-LR-RESIDENCE-10Y');
+    expect(p.decidedBy).not.toContain('CL-FAMILY-RESIDENCE');
+    const result = currentLaw(child, notSetf, '2026-03-01');
+    expect(rule(result, 'CL-FAMILY-CHILD').status).toBe('UNKNOWN');
+    expect(rule(result, 'CL-FAMILY-CHILD').explanation).toContain(
+      '例如按 Long Residence',
+    );
+    expect(result.outcome).toBe('INSUFFICIENT_INFORMATION');
+  });
+
+  test('a settled principal: the route is read from the last Appendix FM permission (assumption)', () => {
+    const result = currentLaw(
+      child,
+      {
+        ...principal('2014-03-01'),
+        settled: { date: '2024-03-01', route: 'FAMILY_PARTNER_OR_PARENT' },
+      },
+      '2026-03-01',
+    );
+    expect(rule(result, 'CL-FAMILY-CHILD').status).toBe('PASS');
+    expect(result.assumptions.join('')).toContain(
+      '定居日前最后一个 Appendix FM 主申请人片段',
     );
   });
 
