@@ -8,6 +8,11 @@ exports[`CL-FAMILY-CHILD-TEN-YEAR default-locale output is unchanged 1`] = `
       "outcome": "LIKELY_ELIGIBLE",
       "pathwayYears": 10,
       "earliestDate": "2026-03-01",
+      "decidedBy": [
+        "CL-FAMILY-CHILD",
+        "CL-ENGLISH",
+        "CL-KOL"
+      ],
       "rules": [
         {
           "id": "CL-SCOPE",
@@ -506,6 +511,13 @@ exports[`CL-FAMILY-PARTNER-FIVE-YEARS default-locale output is unchanged 1`] = `
       "outcome": "LIKELY_ELIGIBLE",
       "pathwayYears": 5,
       "earliestDate": "2026-03-01",
+      "decidedBy": [
+        "CL-FAMILY-RESIDENCE",
+        "CL-FAMILY-RELATIONSHIP",
+        "CL-FAMILY-FINANCIAL",
+        "CL-ENGLISH",
+        "CL-KOL"
+      ],
       "rules": [
         {
           "id": "CL-SCOPE",
@@ -1203,6 +1215,11 @@ exports[`CL-GLOBAL-TALENT-PARTNER-FIVE-YEARS default-locale output is unchanged 
       "outcome": "LIKELY_ELIGIBLE",
       "pathwayYears": 5,
       "earliestDate": "2026-06-01",
+      "decidedBy": [
+        "CL-GT-DEPENDANT",
+        "CL-ENGLISH",
+        "CL-KOL"
+      ],
       "rules": [
         {
           "id": "CL-SCOPE",
@@ -1732,6 +1749,11 @@ exports[`CL-GLOBAL-TALENT-THREE-YEARS default-locale output is unchanged 1`] = `
       "outcome": "LIKELY_ELIGIBLE",
       "pathwayYears": 3,
       "earliestDate": "2026-11-04",
+      "decidedBy": [
+        "CL-GT-RESIDENCE",
+        "CL-ENGLISH",
+        "CL-KOL"
+      ],
       "rules": [
         {
           "id": "CL-SCOPE",
@@ -2359,6 +2381,11 @@ exports[`CL-HKBNO-CHILD-WITH-PARENT default-locale output is unchanged 1`] = `
       "outcome": "LIKELY_ELIGIBLE",
       "pathwayYears": 5,
       "earliestDate": "2026-02-01",
+      "decidedBy": [
+        "CL-HKBNO-DEPENDANT",
+        "CL-ENGLISH",
+        "CL-KOL"
+      ],
       "rules": [
         {
           "id": "CL-SCOPE",
@@ -2860,6 +2887,11 @@ exports[`CL-HKBNO-FIVE-YEARS default-locale output is unchanged 1`] = `
       "outcome": "LIKELY_ELIGIBLE",
       "pathwayYears": 5,
       "earliestDate": "2026-02-01",
+      "decidedBy": [
+        "CL-HKBNO-RESIDENCE-5Y",
+        "CL-ENGLISH",
+        "CL-KOL"
+      ],
       "rules": [
         {
           "id": "CL-SCOPE",
@@ -3476,6 +3508,11 @@ exports[`CL-INNOVATOR-FOUNDER-THREE-YEARS default-locale output is unchanged 1`]
       "outcome": "LIKELY_ELIGIBLE",
       "pathwayYears": 3,
       "earliestDate": "2026-05-01",
+      "decidedBy": [
+        "CL-INNOVATOR-RESIDENCE-3Y",
+        "CL-INNOVATOR-ENDORSEMENT",
+        "CL-KOL"
+      ],
       "rules": [
         {
           "id": "CL-SCOPE",
@@ -4122,6 +4159,11 @@ exports[`CL-PRIVATE-LIFE-YOUNG-ADULT-FIVE-YEARS default-locale output is unchang
       "outcome": "LIKELY_ELIGIBLE",
       "pathwayYears": 5,
       "earliestDate": "2026-07-01",
+      "decidedBy": [
+        "CL-PRIVATE-LIFE-RESIDENCE",
+        "CL-ENGLISH",
+        "CL-KOL"
+      ],
       "rules": [
         {
           "id": "CL-SCOPE",
@@ -4751,6 +4793,10 @@ exports[`CL-REFUGEE-FIVE-YEARS default-locale output is unchanged 1`] = `
       "outcome": "LIKELY_ELIGIBLE",
       "pathwayYears": 5,
       "earliestDate": "2026-03-01",
+      "decidedBy": [
+        "CL-PROTECTION-RESIDENCE-5Y",
+        "CL-PROTECTION-STATUS"
+      ],
       "rules": [
         {
           "id": "CL-SCOPE",
@@ -5035,6 +5081,16 @@ exports[`CL-REFUGEE-FIVE-YEARS default-locale output is unchanged 1`] = `
       "outcome": "LIKELY_NOT_ELIGIBLE",
       "pathwayYears": 20,
       "earliestDate": "2041-03-01",
+      "decidedBy": [
+        "ES-CRIMINALITY",
+        "ES-DEBT",
+        "ES-ENGLISH-B2",
+        "ES-KOL",
+        "ES-ROUTE-GROUP",
+        "ES-RESIDENCE",
+        "ES-PROTECTION-PATHWAY",
+        "ES-ASYLUM-SUPPORT"
+      ],
       "rules": [
         {
           "id": "ES-CRIMINALITY",
@@ -5233,6 +5289,11 @@ exports[`CL-UK-ANCESTRY-FIVE-YEARS default-locale output is unchanged 1`] = `
       "outcome": "LIKELY_ELIGIBLE",
       "pathwayYears": 5,
       "earliestDate": "2026-09-01",
+      "decidedBy": [
+        "CL-ANCESTRY-RESIDENCE-5Y",
+        "CL-ENGLISH",
+        "CL-KOL"
+      ],
       "rules": [
         {
           "id": "CL-SCOPE",
@@ -5858,6 +5919,11 @@ exports[`ES-OFFICIAL-INDIVIDUAL-C default-locale output is unchanged 1`] = `
       "outcome": "LIKELY_ELIGIBLE",
       "pathwayYears": 10,
       "earliestDate": "2026-11-04",
+      "decidedBy": [
+        "CL-ENGLISH",
+        "CL-KOL",
+        "CL-LR-RESIDENCE-10Y"
+      ],
       "rules": [
         {
           "id": "CL-SCOPE",
@@ -6128,6 +6194,18 @@ exports[`ES-OFFICIAL-INDIVIDUAL-C default-locale output is unchanged 1`] = `
       "outcome": "LIKELY_ELIGIBLE",
       "pathwayYears": 10,
       "earliestDate": "2026-11-04",
+      "decidedBy": [
+        "ES-CRIMINALITY",
+        "ES-DEBT",
+        "ES-ENGLISH-B2",
+        "ES-KOL",
+        "ES-ROUTE-GROUP",
+        "ES-RESIDENCE",
+        "ES-EARNINGS-10Y",
+        "ES-PUBLIC-FUNDS",
+        "ES-BREACH",
+        "ES-ASYLUM-SUPPORT"
+      ],
       "rules": [
         {
           "id": "ES-CRIMINALITY",
@@ -6487,6 +6565,11 @@ exports[`ES-OFFICIAL-INDIVIDUAL-D default-locale output is unchanged 1`] = `
       "outcome": "LIKELY_ELIGIBLE",
       "pathwayYears": 10,
       "earliestDate": "2026-11-04",
+      "decidedBy": [
+        "CL-ENGLISH",
+        "CL-KOL",
+        "CL-LR-RESIDENCE-10Y"
+      ],
       "rules": [
         {
           "id": "CL-SCOPE",
@@ -6761,6 +6844,16 @@ exports[`ES-OFFICIAL-INDIVIDUAL-D default-locale output is unchanged 1`] = `
       "outcome": "LIKELY_NOT_ELIGIBLE",
       "pathwayYears": 20,
       "earliestDate": "2035-06-01",
+      "decidedBy": [
+        "ES-CRIMINALITY",
+        "ES-DEBT",
+        "ES-ENGLISH-B2",
+        "ES-KOL",
+        "ES-ROUTE-GROUP",
+        "ES-RESIDENCE",
+        "ES-EARNINGS-10Y",
+        "ES-ASYLUM-SUPPORT"
+      ],
       "rules": [
         {
           "id": "ES-CRIMINALITY",
@@ -7126,6 +7219,11 @@ exports[`ES-OFFICIAL-P16-MATERNITY-BEST-YEARS default-locale output is unchanged
       "outcome": "LIKELY_ELIGIBLE",
       "pathwayYears": 10,
       "earliestDate": "2026-04-06",
+      "decidedBy": [
+        "CL-ENGLISH",
+        "CL-KOL",
+        "CL-LR-RESIDENCE-10Y"
+      ],
       "rules": [
         {
           "id": "CL-SCOPE",
@@ -7396,6 +7494,18 @@ exports[`ES-OFFICIAL-P16-MATERNITY-BEST-YEARS default-locale output is unchanged
       "outcome": "LIKELY_ELIGIBLE",
       "pathwayYears": 10,
       "earliestDate": "2026-04-06",
+      "decidedBy": [
+        "ES-CRIMINALITY",
+        "ES-DEBT",
+        "ES-ENGLISH-B2",
+        "ES-KOL",
+        "ES-ROUTE-GROUP",
+        "ES-RESIDENCE",
+        "ES-EARNINGS-10Y",
+        "ES-PUBLIC-FUNDS",
+        "ES-BREACH",
+        "ES-ASYLUM-SUPPORT"
+      ],
       "rules": [
         {
           "id": "ES-CRIMINALITY",
@@ -8085,6 +8195,18 @@ exports[`ES-OFFICIAL-P19-INDIVIDUAL-A default-locale output is unchanged 1`] = `
       "outcome": "LIKELY_ELIGIBLE",
       "pathwayYears": 5,
       "earliestDate": "2026-11-04",
+      "decidedBy": [
+        "ES-CRIMINALITY",
+        "ES-DEBT",
+        "ES-ENGLISH-B2",
+        "ES-KOL",
+        "ES-ROUTE-GROUP",
+        "ES-RESIDENCE",
+        "ES-PUBLIC-FUNDS",
+        "ES-BREACH",
+        "ES-ASYLUM-SUPPORT",
+        "ES-PUBLIC-SERVICE"
+      ],
       "rules": [
         {
           "id": "ES-CRIMINALITY",
@@ -8711,6 +8833,18 @@ exports[`ES-OFFICIAL-P19-INDIVIDUAL-B default-locale output is unchanged 1`] = `
       "outcome": "LIKELY_ELIGIBLE",
       "pathwayYears": 5,
       "earliestDate": "2026-11-04",
+      "decidedBy": [
+        "ES-CRIMINALITY",
+        "ES-DEBT",
+        "ES-ENGLISH-B2",
+        "ES-KOL",
+        "ES-ROUTE-GROUP",
+        "ES-RESIDENCE",
+        "ES-BRITISH-CONNECTION",
+        "ES-PUBLIC-FUNDS",
+        "ES-BREACH",
+        "ES-ASYLUM-SUPPORT"
+      ],
       "rules": [
         {
           "id": "ES-CRIMINALITY",
@@ -9068,6 +9202,11 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-A default-locale output is unchanged 1`] = `
       "outcome": "LIKELY_ELIGIBLE",
       "pathwayYears": 5,
       "earliestDate": "2026-04-06",
+      "decidedBy": [
+        "CL-SW-PARTNER-5Y",
+        "CL-ENGLISH",
+        "CL-KOL"
+      ],
       "rules": [
         {
           "id": "CL-SCOPE",
@@ -9336,6 +9475,17 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-A default-locale output is unchanged 1`] = `
       "outcome": "LIKELY_ELIGIBLE",
       "pathwayYears": 5,
       "earliestDate": "2026-04-06",
+      "decidedBy": [
+        "ES-CRIMINALITY",
+        "ES-DEBT",
+        "ES-ENGLISH-B2",
+        "ES-KOL",
+        "ES-ROUTE-GROUP",
+        "ES-RESIDENCE",
+        "ES-EARNINGS-10Y",
+        "ES-ASYLUM-SUPPORT",
+        "ES-DEPENDANT-PATHWAY"
+      ],
       "rules": [
         {
           "id": "ES-CRIMINALITY",
@@ -9909,6 +10059,18 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-B default-locale output is unchanged 1`] = `
       "outcome": "LIKELY_ELIGIBLE",
       "pathwayYears": 5,
       "earliestDate": "2026-04-06",
+      "decidedBy": [
+        "ES-CRIMINALITY",
+        "ES-DEBT",
+        "ES-ENGLISH-B2",
+        "ES-KOL",
+        "ES-ROUTE-GROUP",
+        "ES-RESIDENCE",
+        "ES-EARNINGS-5Y",
+        "ES-PUBLIC-FUNDS",
+        "ES-BREACH",
+        "ES-ASYLUM-SUPPORT"
+      ],
       "rules": [
         {
           "id": "ES-CRIMINALITY",
@@ -10267,6 +10429,11 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-B-PARTNER default-locale output is unchanged
       "outcome": "LIKELY_NOT_ELIGIBLE",
       "pathwayYears": 5,
       "earliestDate": "2028-04-06",
+      "decidedBy": [
+        "CL-SW-PARTNER-5Y",
+        "CL-ENGLISH",
+        "CL-KOL"
+      ],
       "rules": [
         {
           "id": "CL-SCOPE",
@@ -10537,6 +10704,17 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-B-PARTNER default-locale output is unchanged
       "outcome": "LIKELY_NOT_ELIGIBLE",
       "pathwayYears": 5,
       "earliestDate": "2028-04-06",
+      "decidedBy": [
+        "ES-CRIMINALITY",
+        "ES-DEBT",
+        "ES-ENGLISH-B2",
+        "ES-KOL",
+        "ES-ROUTE-GROUP",
+        "ES-RESIDENCE",
+        "ES-EARNINGS-10Y",
+        "ES-ASYLUM-SUPPORT",
+        "ES-DEPENDANT-PATHWAY"
+      ],
       "rules": [
         {
           "id": "ES-CRIMINALITY",
@@ -10781,6 +10959,11 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-C default-locale output is unchanged 1`] = `
       "outcome": "LIKELY_ELIGIBLE",
       "pathwayYears": 5,
       "earliestDate": "2026-04-06",
+      "decidedBy": [
+        "CL-SW-CHILD",
+        "CL-ENGLISH",
+        "CL-KOL"
+      ],
       "rules": [
         {
           "id": "CL-SCOPE",
@@ -11061,6 +11244,17 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-C default-locale output is unchanged 1`] = `
       "outcome": "LIKELY_ELIGIBLE",
       "pathwayYears": 5,
       "earliestDate": "2026-04-06",
+      "decidedBy": [
+        "ES-CRIMINALITY",
+        "ES-DEBT",
+        "ES-ENGLISH-B2",
+        "ES-KOL",
+        "ES-ROUTE-GROUP",
+        "ES-RESIDENCE",
+        "ES-EARNINGS-10Y",
+        "ES-ASYLUM-SUPPORT",
+        "ES-DEPENDANT-PATHWAY"
+      ],
       "rules": [
         {
           "id": "ES-CRIMINALITY",
@@ -11290,6 +11484,11 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-D default-locale output is unchanged 1`] = `
       "outcome": "LIKELY_ELIGIBLE",
       "pathwayYears": 5,
       "earliestDate": "2026-04-06",
+      "decidedBy": [
+        "CL-SW-CHILD",
+        "CL-ENGLISH",
+        "CL-KOL"
+      ],
       "rules": [
         {
           "id": "CL-SCOPE",
@@ -11568,6 +11767,17 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-D default-locale output is unchanged 1`] = `
       "outcome": "LIKELY_ELIGIBLE",
       "pathwayYears": 5,
       "earliestDate": "2026-04-06",
+      "decidedBy": [
+        "ES-CRIMINALITY",
+        "ES-DEBT",
+        "ES-ENGLISH-B2",
+        "ES-KOL",
+        "ES-ROUTE-GROUP",
+        "ES-RESIDENCE",
+        "ES-EARNINGS-10Y",
+        "ES-ASYLUM-SUPPORT",
+        "ES-DEPENDANT-PATHWAY"
+      ],
       "rules": [
         {
           "id": "ES-CRIMINALITY",
@@ -11794,6 +12004,11 @@ exports[`ES-OFFICIAL-P31-INDIVIDUAL-E default-locale output is unchanged 1`] = `
       "outcome": "LIKELY_NOT_ELIGIBLE",
       "pathwayYears": 10,
       "earliestDate": "2031-04-06",
+      "decidedBy": [
+        "CL-ENGLISH",
+        "CL-KOL",
+        "CL-LR-RESIDENCE-10Y"
+      ],
       "rules": [
         {
           "id": "CL-SCOPE",
@@ -12297,6 +12512,10 @@ exports[`ES-OFFICIAL-P40-INDIVIDUAL-A default-locale output is unchanged 1`] = `
       "outcome": "LIKELY_ELIGIBLE",
       "pathwayYears": 5,
       "earliestDate": "2032-06-01",
+      "decidedBy": [
+        "CL-PROTECTION-RESIDENCE-5Y",
+        "CL-PROTECTION-STATUS"
+      ],
       "rules": [
         {
           "id": "CL-SCOPE",
@@ -12581,6 +12800,16 @@ exports[`ES-OFFICIAL-P40-INDIVIDUAL-A default-locale output is unchanged 1`] = `
       "outcome": "LIKELY_ELIGIBLE",
       "pathwayYears": 5,
       "earliestDate": "2032-06-01",
+      "decidedBy": [
+        "ES-CRIMINALITY",
+        "ES-DEBT",
+        "ES-ENGLISH-B2",
+        "ES-KOL",
+        "ES-ROUTE-GROUP",
+        "ES-RESIDENCE",
+        "ES-BREACH",
+        "ES-PROTECTION-PATHWAY"
+      ],
       "rules": [
         {
           "id": "ES-CRIMINALITY",
@@ -12771,6 +13000,10 @@ exports[`ES-OFFICIAL-P40-INDIVIDUAL-B default-locale output is unchanged 1`] = `
       "outcome": "LIKELY_NOT_ELIGIBLE",
       "pathwayYears": 5,
       "earliestDate": "2032-03-01",
+      "decidedBy": [
+        "CL-PROTECTION-RESIDENCE-5Y",
+        "CL-PROTECTION-STATUS"
+      ],
       "rules": [
         {
           "id": "CL-SCOPE",
@@ -13056,6 +13289,19 @@ exports[`ES-OFFICIAL-P40-INDIVIDUAL-B default-locale output is unchanged 1`] = `
       "outcome": "LIKELY_NOT_ELIGIBLE",
       "pathwayYears": 10,
       "earliestDate": "2038-03-01",
+      "decidedBy": [
+        "ES-CRIMINALITY",
+        "ES-DEBT",
+        "ES-ENGLISH-B2",
+        "ES-KOL",
+        "ES-ROUTE-GROUP",
+        "ES-RESIDENCE",
+        "ES-PUBLIC-FUNDS",
+        "ES-BREACH",
+        "ES-PROTECTION-PATHWAY",
+        "ES-PROTECTION-CONTRIBUTION",
+        "ES-ASYLUM-SUPPORT"
+      ],
       "rules": [
         {
           "id": "ES-CRIMINALITY",
@@ -13286,6 +13532,10 @@ exports[`ES-OFFICIAL-P40-INDIVIDUAL-C default-locale output is unchanged 1`] = `
       "outcome": "LIKELY_NOT_ELIGIBLE",
       "pathwayYears": 5,
       "earliestDate": "2032-03-01",
+      "decidedBy": [
+        "CL-PROTECTION-RESIDENCE-5Y",
+        "CL-PROTECTION-STATUS"
+      ],
       "rules": [
         {
           "id": "CL-SCOPE",
@@ -13571,6 +13821,19 @@ exports[`ES-OFFICIAL-P40-INDIVIDUAL-C default-locale output is unchanged 1`] = `
       "outcome": "LIKELY_NOT_ELIGIBLE",
       "pathwayYears": 20,
       "earliestDate": "2048-03-01",
+      "decidedBy": [
+        "ES-CRIMINALITY",
+        "ES-DEBT",
+        "ES-ENGLISH-B2",
+        "ES-KOL",
+        "ES-ROUTE-GROUP",
+        "ES-RESIDENCE",
+        "ES-PUBLIC-FUNDS",
+        "ES-BREACH",
+        "ES-PROTECTION-PATHWAY",
+        "ES-PROTECTION-CONTRIBUTION",
+        "ES-ASYLUM-SUPPORT"
+      ],
       "rules": [
         {
           "id": "ES-CRIMINALITY",
@@ -13805,6 +14068,10 @@ exports[`ES-OFFICIAL-P40-INDIVIDUAL-D default-locale output is unchanged 1`] = `
       "outcome": "LIKELY_NOT_ELIGIBLE",
       "pathwayYears": 5,
       "earliestDate": "2032-03-01",
+      "decidedBy": [
+        "CL-PROTECTION-RESIDENCE-5Y",
+        "CL-PROTECTION-STATUS"
+      ],
       "rules": [
         {
           "id": "CL-SCOPE",
@@ -14090,6 +14357,16 @@ exports[`ES-OFFICIAL-P40-INDIVIDUAL-D default-locale output is unchanged 1`] = `
       "outcome": "LIKELY_NOT_ELIGIBLE",
       "pathwayYears": 30,
       "earliestDate": "2057-03-01",
+      "decidedBy": [
+        "ES-CRIMINALITY",
+        "ES-DEBT",
+        "ES-ENGLISH-B2",
+        "ES-KOL",
+        "ES-ROUTE-GROUP",
+        "ES-RESIDENCE",
+        "ES-PROTECTION-PATHWAY",
+        "ES-ASYLUM-SUPPORT"
+      ],
       "rules": [
         {
           "id": "ES-CRIMINALITY",
@@ -14296,6 +14573,13 @@ exports[`ES-OFFICIAL-P45-INDIVIDUAL-A default-locale output is unchanged 1`] = `
       "outcome": "LIKELY_ELIGIBLE",
       "pathwayYears": 5,
       "earliestDate": "2028-04-06",
+      "decidedBy": [
+        "CL-SW-RESIDENCE-5Y",
+        "CL-SW-SALARY",
+        "CL-SW-GOING-RATE",
+        "CL-ENGLISH",
+        "CL-KOL"
+      ],
       "rules": [
         {
           "id": "CL-SCOPE",
@@ -14630,6 +14914,18 @@ exports[`ES-OFFICIAL-P45-INDIVIDUAL-A default-locale output is unchanged 1`] = `
       "outcome": "LIKELY_ELIGIBLE",
       "pathwayYears": 5,
       "earliestDate": "2028-04-06",
+      "decidedBy": [
+        "ES-CRIMINALITY",
+        "ES-DEBT",
+        "ES-ENGLISH-B2",
+        "ES-KOL",
+        "ES-ROUTE-GROUP",
+        "ES-RESIDENCE",
+        "ES-PUBLIC-FUNDS",
+        "ES-BREACH",
+        "ES-ASYLUM-SUPPORT",
+        "ES-TRANSITIONAL-CARE-WORKER"
+      ],
       "rules": [
         {
           "id": "ES-CRIMINALITY",
@@ -14995,6 +15291,11 @@ exports[`ES-OFFICIAL-P45-INDIVIDUAL-B default-locale output is unchanged 1`] = `
       "outcome": "LIKELY_NOT_ELIGIBLE",
       "pathwayYears": 10,
       "earliestDate": "2033-04-06",
+      "decidedBy": [
+        "CL-ENGLISH",
+        "CL-KOL",
+        "CL-LR-RESIDENCE-10Y"
+      ],
       "rules": [
         {
           "id": "CL-SCOPE",
@@ -15330,6 +15631,18 @@ exports[`ES-OFFICIAL-P45-INDIVIDUAL-B default-locale output is unchanged 1`] = `
       "outcome": "LIKELY_NOT_ELIGIBLE",
       "pathwayYears": 10,
       "earliestDate": "2033-04-06",
+      "decidedBy": [
+        "ES-CRIMINALITY",
+        "ES-DEBT",
+        "ES-ENGLISH-B2",
+        "ES-KOL",
+        "ES-ROUTE-GROUP",
+        "ES-RESIDENCE",
+        "ES-EARNINGS-10Y",
+        "ES-PUBLIC-FUNDS",
+        "ES-BREACH",
+        "ES-ASYLUM-SUPPORT"
+      ],
       "rules": [
         {
           "id": "ES-CRIMINALITY",
@@ -15693,6 +16006,11 @@ exports[`ES-OFFICIAL-P45-INDIVIDUAL-C default-locale output is unchanged 1`] = `
       "outcome": "LIKELY_ELIGIBLE",
       "pathwayYears": 10,
       "earliestDate": "2035-06-06",
+      "decidedBy": [
+        "CL-ENGLISH",
+        "CL-KOL",
+        "CL-LR-RESIDENCE-10Y"
+      ],
       "rules": [
         {
           "id": "CL-SCOPE",
@@ -16027,6 +16345,18 @@ exports[`ES-OFFICIAL-P45-INDIVIDUAL-C default-locale output is unchanged 1`] = `
       "outcome": "LIKELY_ELIGIBLE",
       "pathwayYears": 10,
       "earliestDate": "2035-06-06",
+      "decidedBy": [
+        "ES-CRIMINALITY",
+        "ES-DEBT",
+        "ES-ENGLISH-B2",
+        "ES-KOL",
+        "ES-ROUTE-GROUP",
+        "ES-RESIDENCE",
+        "ES-EARNINGS-10Y",
+        "ES-PUBLIC-FUNDS",
+        "ES-BREACH",
+        "ES-ASYLUM-SUPPORT"
+      ],
       "rules": [
         {
           "id": "ES-CRIMINALITY",

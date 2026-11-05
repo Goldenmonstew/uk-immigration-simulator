@@ -50,6 +50,7 @@ import type {
   IsoDate,
   Rule,
   RuleContext,
+  RuleId,
   RuleOutcome,
   RuleSet,
   SettlementAssessment,
@@ -63,11 +64,16 @@ interface Candidate {
   years: number;
   start?: IsoDate;
   rules: RuleOutcome[];
+  /**
+   * The display-only residence rule that gives `start` (contracts §12.4,
+   * §16.1): part of `decidedBy`, not of the candidate's status.
+   */
+  residence?: RuleId;
 }
 
 type Decision = Pick<
   SettlementAssessment,
-  'outcome' | 'pathwayYears' | 'earliestDate'
+  'outcome' | 'pathwayYears' | 'earliestDate' | 'decidedBy'
 > & {
   /** Start of the residence the earliest date was projected from. */
   projectedFrom?: IsoDate;
@@ -81,6 +87,12 @@ function statusOf(c: Candidate): RuleOutcome['status'] {
 
 const dueOf = (c: Candidate) => c.start && addYears(c.start, c.years);
 
+/** The rule ids `c` rests on; toAssessment puts them in `rules` order. */
+const basisOf = (c: Candidate): RuleId[] => [
+  ...c.rules.map((r) => r.id),
+  ...(c.residence ? [c.residence] : []),
+];
+
 /**
  * - Some candidate passes with enough residence → LIKELY_ELIGIBLE (shortest).
  * - Otherwise some candidate with enough residence (or unknown residence) is
@@ -88,6 +100,7 @@ const dueOf = (c: Candidate) => c.start && addYears(c.start, c.years);
  *   is a pending detail, else INSUFFICIENT_INFORMATION (no pathway).
  * - Otherwise LIKELY_NOT_ELIGIBLE, with the earliest date of the candidates
  *   that have not failed, assuming circumstances stay the same.
+ * Whenever a pathway is given, `decidedBy` names its candidate (§16.1).
  */
 function decide(candidates: Candidate[], simulationDate: IsoDate): Decision {
   const met = (c: Candidate) => {
@@ -104,6 +117,7 @@ function decide(candidates: Candidate[], simulationDate: IsoDate): Decision {
       outcome: 'LIKELY_ELIGIBLE',
       pathwayYears: now.years,
       earliestDate: simulationDate,
+      decidedBy: basisOf(now),
     };
   }
 
@@ -116,7 +130,11 @@ function decide(candidates: Candidate[], simulationDate: IsoDate): Decision {
     );
     // A pathway is only shown when the user has given everything they can.
     return unknown.every((r) => r.pendingDetails?.length)
-      ? { outcome: 'POTENTIALLY_ELIGIBLE', pathwayYears: maybe[0].years }
+      ? {
+          outcome: 'POTENTIALLY_ELIGIBLE',
+          pathwayYears: maybe[0].years,
+          decidedBy: basisOf(maybe[0]),
+        }
       : { outcome: 'INSUFFICIENT_INFORMATION' };
   }
 
@@ -131,6 +149,7 @@ function decide(candidates: Candidate[], simulationDate: IsoDate): Decision {
         outcome: 'LIKELY_NOT_ELIGIBLE',
         pathwayYears: next.years,
         earliestDate: dueOf(next),
+        decidedBy: basisOf(next),
         projectedFrom: next.start,
       }
     : { outcome: 'LIKELY_NOT_ELIGIBLE' };
@@ -148,13 +167,16 @@ function projection(projectedFrom: IsoDate | undefined, L: Lang): string[] {
 }
 
 function toAssessment(
-  { projectedFrom, ...decision }: Decision,
+  { projectedFrom, decidedBy, ...decision }: Decision,
   rules: RuleOutcome[],
   assumptions: string[],
   L: Lang,
 ): SettlementAssessment {
   return {
     ...decision,
+    ...(decidedBy && {
+      decidedBy: rules.map((r) => r.id).filter((id) => decidedBy.includes(id)),
+    }),
     rules,
     assumptions: [
       ...new Set([
@@ -604,6 +626,7 @@ function assessCurrentLaw(
               'CL-ENGLISH',
               'CL-KOL',
             ),
+            residence: 'CL-SW-RESIDENCE-5Y',
           },
         ]
       : []),
@@ -614,6 +637,7 @@ function assessCurrentLaw(
             years: cl.values.hongKongBnoQualifyingYears.value,
             start: hkOwn?.start,
             rules: pick('CL-ENGLISH', 'CL-KOL'),
+            residence: 'CL-HKBNO-RESIDENCE-5Y',
           },
         ]
       : []),
@@ -630,6 +654,11 @@ function assessCurrentLaw(
               years: pathway.years,
               start: pathway.start,
               rules: pick(id, 'CL-ENGLISH', 'CL-KOL'),
+              // An adult dependant relative also needs their own 5 years.
+              ...(hkKind === 'RELATIVE' &&
+                id === 'CL-HKBNO-DEPENDANT' && {
+                  residence: 'CL-HKBNO-RESIDENCE-5Y',
+                }),
             },
           ]
         : [],
@@ -648,6 +677,7 @@ function assessCurrentLaw(
             rules: gt.period
               ? pick('CL-ENGLISH', 'CL-KOL')
               : pick('CL-GT-RESIDENCE', 'CL-ENGLISH', 'CL-KOL'),
+            residence: 'CL-GT-RESIDENCE',
           },
         ]
       : []),
@@ -664,6 +694,7 @@ function assessCurrentLaw(
               'CL-ENGLISH',
               'CL-KOL',
             ),
+            residence: 'CL-FAMILY-RESIDENCE',
           },
         ]
       : []),
@@ -673,6 +704,7 @@ function assessCurrentLaw(
             years: cl.values.familyPartnerQualifyingYearsTen.value,
             start: familyTen.start,
             rules: pick('CL-FAMILY-RELATIONSHIP', 'CL-ENGLISH', 'CL-KOL'),
+            residence: 'CL-FAMILY-RESIDENCE',
           },
         ]
       : family && !familyFive
@@ -691,6 +723,7 @@ function assessCurrentLaw(
             years: cl.values.protectionQualifyingYears.value,
             start: protectionStart(ctx),
             rules: pick('CL-PROTECTION-STATUS'),
+            residence: 'CL-PROTECTION-RESIDENCE-5Y',
           },
         ]
       : []),
@@ -700,6 +733,7 @@ function assessCurrentLaw(
             years: cl.values.ukAncestryQualifyingYears.value,
             start: ukAncestryStart(ctx),
             rules: pick('CL-ENGLISH', 'CL-KOL'),
+            residence: 'CL-ANCESTRY-RESIDENCE-5Y',
           },
         ]
       : []),
@@ -710,6 +744,7 @@ function assessCurrentLaw(
             years: cl.values.innovatorFounderQualifyingYears.value,
             start: innovatorFounderStart(ctx),
             rules: pick('CL-INNOVATOR-ENDORSEMENT', 'CL-KOL'),
+            residence: 'CL-INNOVATOR-RESIDENCE-3Y',
           },
         ]
       : []),
@@ -725,6 +760,7 @@ function assessCurrentLaw(
             rules: privateLife.period
               ? pick('CL-ENGLISH', 'CL-KOL')
               : pick('CL-PRIVATE-LIFE-RESIDENCE', 'CL-ENGLISH', 'CL-KOL'),
+            residence: 'CL-PRIVATE-LIFE-RESIDENCE',
           },
         ]
       : []),
@@ -750,6 +786,7 @@ function assessCurrentLaw(
       years: cl.values.longResidenceQualifyingYears.value,
       start: longResidenceStart(ctx),
       rules: [lrEnglish, ...pick('CL-KOL')],
+      residence: 'CL-LR-RESIDENCE-10Y',
     },
   ];
   const decision = decide(candidates, ctx.simulationDate);

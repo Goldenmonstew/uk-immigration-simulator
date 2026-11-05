@@ -142,6 +142,7 @@ export function evaluate(
     if (stopped) {
       delete assessment.pathwayYears;
       delete assessment.earliestDate;
+      delete assessment.decidedBy;
       assessment.outcome = 'REQUIRES_REGULATED_REVIEW';
     }
     byRuleSet[id] = assessment;
