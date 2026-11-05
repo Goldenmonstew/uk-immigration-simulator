@@ -11,7 +11,7 @@ export const zhCN = {
   'about.currentLaw':
     '现行法律栏依据已登记的 Immigration Rules 当前版本，评估模拟日期下可能适用的定居条件。',
   'about.currentLawScope':
-    '现行法律栏建模 Skilled Worker（含其 dependant），Hong Kong BN(O)、Global Talent、Appendix FM 伴侣（5 年 / 10 年路线）、难民（Appendix Settlement Protection）、UK Ancestry、Innovator Founder 与 Private Life 的主申请人，以及 Long Residence。其余路线，以及上述路线中除 Skilled Worker 外的 dependant，其独立定居条件仍显示“信息不足”；这不表示该路线没有定居路径。',
+    '现行法律栏建模 Skilled Worker、Hong Kong BN(O)、Global Talent、Appendix FM 伴侣（5 年 / 10 年路线）、难民（Appendix Settlement Protection）、UK Ancestry、Innovator Founder 与 Private Life 的主申请人，以及 Long Residence。dependant 覆盖 Skilled Worker、Hong Kong BN(O)（伴侣、子女、adult dependant relative）、Global Talent（伴侣、子女）与 Appendix FM 10 年路线伴侣的子女。Appendix FM 5 年路线伴侣的子女、其余路线及其 dependant 的独立定居条件仍显示“信息不足”；这不表示该路线没有定居路径。',
   'about.reforms':
     '已公布改革栏依据 Earned Settlement 政策，标记为“已公布、未生效”。计算假设该规则集在模拟日期适用，不代表改革已经实施或未来一定按此实施。',
   'about.reformScope':
@@ -72,6 +72,8 @@ export const zhCN = {
   'episodes.dependantOf': '作为谁的 dependant',
   'episodes.partnerDependant': '伴侣的 dependant（本人为伴侣）',
   'episodes.childDependant': '父母的 dependant（本人为子女）',
+  'episodes.relativeDependant':
+    '主申请人的其他亲属（adult dependant relative：主申请人是我的子女、孙子女、兄弟姐妹或父母，HK 59.1）',
   'result.principal': '主申请人的评估',
   'site.navigation': '主要导航',
   'site.policy': '政策依据 · Policy',
@@ -96,7 +98,7 @@ export const zhCN = {
   'home.title': '了解可能适用的移民路径',
   'home.intro': '从你的时间线出发，查看可能适用的路径、关键条件与未定事项。',
   'home.scope':
-    '比较现行 settlement 路径与已公布的 Earned Settlement 改革。现行法律栏建模 Skilled Worker（含其 dependant），Hong Kong BN(O)、Global Talent、Appendix FM 伴侣（5 年 / 10 年路线）、难民（Appendix Settlement Protection）、UK Ancestry、Innovator Founder 与 Private Life 的主申请人，以及 Long Residence。其余路线，以及上述路线中除 Skilled Worker 外的 dependant，其独立定居条件仍显示“信息不足”。',
+    '比较现行 settlement 路径与已公布的 Earned Settlement 改革。现行法律栏建模 Skilled Worker、Hong Kong BN(O)、Global Talent、Appendix FM 伴侣（5 年 / 10 年路线）、难民（Appendix Settlement Protection）、UK Ancestry、Innovator Founder 与 Private Life 的主申请人，以及 Long Residence。dependant 覆盖 Skilled Worker、Hong Kong BN(O)（伴侣、子女、adult dependant relative）、Global Talent（伴侣、子女）与 Appendix FM 10 年路线伴侣的子女。Appendix FM 5 年路线伴侣的子女、其余路线及其 dependant 的独立定居条件仍显示“信息不足”。',
   'home.start': '开始模拟',
   'home.before': '开始前',
   'home.prepare':

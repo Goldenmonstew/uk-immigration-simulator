@@ -85,6 +85,10 @@ function validTimeline(value: unknown): boolean {
     ) ||
     !(timeline.episodes as Record<string, unknown>[]).every(
       (episode) =>
+        (episode.dependantOf === undefined ||
+          ['PARTNER', 'PARENT', 'RELATIVE'].includes(
+            episode.dependantOf as string,
+          )) &&
         (episode.immigrationSalaryList === undefined ||
           typeof episode.immigrationSalaryList === 'boolean') &&
         (episode.resettlementScheme === undefined ||
