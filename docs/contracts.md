@@ -723,3 +723,153 @@ export const currentLaw2027_01 = {
 
 - 当前片段为 `HONG_KONG_BNO` + `DEPENDANT` 时，`dependantOf` 增加"adult dependant relative（主申请人是我的子女、孙子女、兄弟姐妹或父母）"选项（`'RELATIVE'`）。
 - 这三条路线的 dependant 需要填主申请人信息，HK BN(O) 18 岁以上伴侣 / 子女除外。
+
+## 16. 引擎一致性与 PD-074（Phase 6.2）
+
+收掉 Phase 5 报告 §4 的四处一致性问题（16.1–16.4），并按 Immigration Rules Part 8 第 298 段建模 Appendix FM 5 年路线伴侣的子女（16.5，关闭 PD-074）。只新增一个可选输出字段 `SettlementAssessment.decidedBy`；输入字段、`Route`、`RouteGroup`、规则 ID 都不变。§8 的"`SettlementAssessment` 不加字段"与 §13.2 的"`policyAsOf` 不变"由本节取代。Earned Settlement 栏的判断不变：只多出 `decidedBy`，另有 16.3 的短路原因变化。原有 fixture 的 `expected` 不改。`bilingual` 快照的变化限于三类：各栏多出 `decidedBy`（16.1）；16.5 给 `CL-SCOPE`、`CL-ENGLISH`、`CL-KOL`、`CL-FAMILY-CHILD` 补的来源（结果默认引用 `meta.sources`）；现行法律栏的建模范围句补上 5 年路线子女。结论、年限、日期与规则状态都不变。
+
+来源：SRC-029 Immigration Rules Part 8（2026-08-03，HC 259；6.1 已登记）para 298、298A；SRC-024 D-LTRC.1.1 末句；SRC-025 Appendix KoLL 2.2、2.3、3.1。段号已按快照核对。
+
+### 16.1 结论依据：`SettlementAssessment.decidedBy`
+
+| 字段 | 取值 | 含义 |
+|---|---|---|
+| `SettlementAssessment.decidedBy?` | `RuleId[]` | 该栏结论所依据的那条候选路径（§7）的规则 ID，按该栏 `rules[]` 的顺序，不重复 |
+
+`decide()` 除结论外返回所选的候选：
+
+| `outcome` | `decidedBy` |
+|---|---|
+| `LIKELY_ELIGIBLE` | 全部 `PASS` 且已满期的候选中年限最短的一条（给出 `pathwayYears` 的那条） |
+| `POTENTIALLY_ELIGIBLE` | `maybe[0]`（给出 `pathwayYears` 的那条） |
+| `LIKELY_NOT_ELIGIBLE`，有 `earliestDate` | 投影出该日期的候选 |
+| `LIKELY_NOT_ELIGIBLE`，无 `earliestDate` | 缺省 |
+| `INSUFFICIENT_INFORMATION` | 缺省 |
+| `REQUIRES_REGULATED_REVIEW`（短路栏） | 缺省：与 `pathwayYears`、`earliestDate` 一起删除 |
+
+缺省的理由：这几种结论不落在某一条候选上。无日期的 `LIKELY_NOT_ELIGIBLE` 是每条候选都有 `FAIL`（或没有起点）。`INSUFFICIENT_INFORMATION` 有两种来源：没有可评估的候选（`CL-SCOPE` 不通过，或 dependant 缺主申请人 / `dependantOf`）；或几条候选都缺用户输入，补哪一项会改变适用哪条候选（`decide()` 本来就看全部 `maybe` 候选的 `UNKNOWN`）。只取其中一条会漏掉其他候选的 `FAIL` / `UNKNOWN`，所以这几种结论的依据就是整个 `rules[]`。短路栏不作结论。由此 `decidedBy` 与 `pathwayYears` 总是同时出现、同时缺省。
+
+现行法律栏有些居留规则"只用于展示"（§12.4、§14.4、§15.4：不进候选，年限由起点计算）。它们给出候选的起点，所以列入该候选的 `decidedBy`，但不参与候选的状态判断：
+
+| 候选 | 一并列入的居留规则 |
+|---|---|
+| Skilled Worker 5 年 | `CL-SW-RESIDENCE-5Y` |
+| HK BN(O) 本人 5 年（主申请人、伴侣、已满 18 岁的子女）；adult dependant relative | `CL-HKBNO-RESIDENCE-5Y` |
+| Global Talent 主申请人（背书已填） | `CL-GT-RESIDENCE` |
+| 家庭伴侣 5 年 / 10 年（`familyPermission` 已填） | `CL-FAMILY-RESIDENCE` |
+| 难民 5 年 | `CL-PROTECTION-RESIDENCE-5Y` |
+| UK Ancestry 5 年 | `CL-ANCESTRY-RESIDENCE-5Y` |
+| Innovator Founder 3 年 | `CL-INNOVATOR-RESIDENCE-3Y` |
+| Private Life（`privateLifeRoute` 已填） | `CL-PRIVATE-LIFE-RESIDENCE` |
+| Long Residence 10 年 | `CL-LR-RESIDENCE-10Y` |
+
+- 背书、`familyPermission`、`privateLifeRoute` 缺省时，对应的居留规则本来就在候选里（`UNKNOWN`）。Skilled Worker、HK BN(O) 未满 18 岁子女、Global Talent 与家庭子女这几类 dependant 候选没有单独的居留规则：时点已经在 `CL-SW-PARTNER-5Y`、`CL-SW-CHILD`、`CL-HKBNO-DEPENDANT`、`CL-GT-DEPENDANT`、`CL-FAMILY-CHILD` 里。Earned Settlement 栏的 `ES-RESIDENCE` 本来就在每条候选里，不需要补。
+- 补上居留规则后，每条现行法律候选都能由 `decidedBy` 区分。只看候选规则时，Long Residence、HK BN(O)、UK Ancestry 都是 `CL-ENGLISH` + `CL-KOL`。16.2 据此判断主申请人走哪条路线。差距摘要也能列出"居留未满"这一条：未满期时该规则为 `FAIL`。
+- Long Residence 候选的英语按 LR 13.1 单独核对（§7）。`decidedBy` 里的 `CL-ENGLISH` 指 `rules[]` 中按当前路线核对的那一条；两者状态不同时，`assumptions` 里已有说明。
+
+实现：`Candidate` 加可选字段 `residence?: RuleId`，取值见上表；`decide()` 返回所选候选的规则 ID 加 `residence`；`toAssessment` 按 `rules[]` 过滤并排序。不另建候选 ID。Earned Settlement 的 dependant（§8）只有一条候选；主申请人年限未知时（`esDependantSettlement` 无结果），结论不经 `decide()`，没有 `decidedBy`，此时也没有 `pathwayYears`。
+
+性质（由测试断言；6.7 扩展随机测试时照此写）：
+
+- 有值时非空、不重复，每个 ID 都在该栏 `rules[]` 里，顺序与 `rules[]` 相同；
+- 有 `pathwayYears` 当且仅当有 `decidedBy`；
+- `LIKELY_ELIGIBLE` 时，`decidedBy` 里的规则在 `rules[]` 中都是 `PASS`；
+- 与 `locale` 无关，中英输出相同。
+
+`Fixture.expected` 不加这个字段。
+
+给 6.3（web 差距摘要）：有 `decidedBy` 时只列其中的 `FAIL` / `UNKNOWN` 规则，其他候选的失败不再出现在"还差什么"里；没有时保持现状，即按整个 `rules[]` 列。"为什么"列表仍显示完整的 `rules[]`。
+
+### 16.2 dependant 判断主申请人走哪条路线
+
+§9、§15.3 的"主申请人时点"原来在"主申请人现行法律栏的 `pathwayYears` 等于本路线年限"时成立。SETF 10 年与 Long Residence 10 年无法用年限区分（5.4 报告 §4）。现改为读主申请人该栏的 `decidedBy`。`principal.result` 已经带着这个字段，所以不另在 `RuleContext.principal` 里传候选。
+
+| dependant | 主申请人时点成立的条件：主申请人现行法律栏的 `decidedBy` 含 |
+|---|---|
+| Skilled Worker 的伴侣、子女（`principalSkilledWorkerStart`） | `CL-SW-RESIDENCE-5Y` |
+| HK BN(O) 未满 18 岁的子女、adult dependant relative | `CL-HKBNO-RESIDENCE-5Y` |
+| Global Talent 的伴侣、子女 | `CL-GT-RESIDENCE` |
+| 家庭 10 年路线的子女（主申请人为 `PARTNER_TEN_YEAR`） | `CL-FAMILY-RESIDENCE` |
+
+- 起点算法不变，仍是主申请人本路线的起点。
+- 不成立时的处理不变（`withoutPrincipalPathway` / `principalNotReady`）：主申请人不在该路线 → `UNKNOWN`；其结论为 `LIKELY_NOT_ELIGIBLE` → `FAIL`；否则 `UNKNOWN`。最后一种情形下，如果主申请人该栏有 `decidedBy`，说明其结论依据的是其他路径（例如 Long Residence）。这时解释改写为"主申请人的现行法律结论不是按本路线得出的（例如按 Long Residence），本人随其按本路线定居的时间无法判断"，不再说"主申请人的信息不足"。
+- 5 年路线的子女（16.5）不看主申请人走哪条路线：para 298 只要求父母已定居或同时获批定居。
+- 主申请人已定居时，有两处读其"最后一个主申请人片段"，写进对应规则的假设（只在实际读取时加）：
+  - `CL-GT-DEPENDANT`（子女）：按主申请人最后一个 Global Talent 主申请人片段的背书定年限（GT 11.1–11.2）；
+  - `CL-FAMILY-CHILD`：按主申请人定居日前最后一个 Appendix FM 主申请人片段的 `familyPermission`，判断其走 10 年路线（SETF 12.1(b)）还是 5 年路线（para 298）。
+  - HK BN(O) 只读用户填的 `settled.route`，不读片段，不加假设。
+- 回归用例：主申请人为 `PARTNER_TEN_YEAR`，SETF 候选不通过，而 Long Residence 恰满 10 年。主申请人 `LIKELY_ELIGIBLE`，`decidedBy` 含 `CL-LR-RESIDENCE-10Y`。子女的 `CL-FAMILY-CHILD` 改为 `UNKNOWN`（解释如上），不再被判随行。
+
+### 16.3 Legacy Safe and Legal 的成年后非法入境：只短路改革栏
+
+`shortCircuitOf` 的 `IMMIGRATION_BREACH`（成年后非法入境，§11.5）原来只放过 Earned Settlement 的 `PROTECTION` 组。Legacy Safe and Legal Routes 属 `OUTSIDE_FRAMEWORK` 组，所以两栏都被短路，现行法律栏没有结论。这与现行法律下同属保护类路线（§14.3）的其他路线不一致（5.2 报告 §4）。
+
+- 改为：申请日当天的 Earned Settlement 路线（`esRouteOn`）为 `LEGACY_SAFE_AND_LEGAL` 时，也不触发 `IMMIGRATION_BREACH`。这包括两种情形：用户填的 `LEGACY_SAFE_AND_LEGAL` 片段，以及由 UKRS 推导出的 Legacy（`legacyUkrsArrival`，§11.3）。两者在现行法律下都是保护类路线。与 `PROTECTION` 组一样不看 `role`。
+- 其他 `OUTSIDE_FRAMEWORK` 路线（HK BN(O)、Afghan schemes 等）的成年后非法入境照旧两栏短路。
+- 不再触发 `IMMIGRATION_BREACH` 后，结果落到 `OUTSIDE_FRAMEWORK`，文案不变：推导出的 Legacy UKRS 用提到 PD-045 的那段，用户填的 `LEGACY_SAFE_AND_LEGAL` 用一般的框架外文案。`CRIMINALITY` 仍优先。
+
+| 情形 | Earned Settlement 栏 | 现行法律栏 |
+|---|---|---|
+| Legacy 主申请人，成年后非法入境 | `REQUIRES_REGULATED_REVIEW`（`OUTSIDE_FRAMEWORK`）。规则照常运行：`ES-ROUTE-GROUP` 为 Legacy / 框架外的 `UNKNOWN`，`ES-BREACH` 为 PD-044 的 `UNKNOWN`。不给年限、日期与 `decidedBy` | 照常评估：`CL-SCOPE` `PASS`，STP 5 年候选与 Long Residence 并列，给出结论。非法入境不在现行法律栏判断（Part Suitability 未建模），同其他保护类路线 |
+| Legacy dependant，成年后非法入境 | 同上 | 照常评估：`CL-SCOPE` `UNKNOWN`（保护类路线的 dependant 未建模，§14），结论 `INSUFFICIENT_INFORMATION` |
+| 上述 Legacy 主申请人的 dependant | 复制主申请人的 `OUTSIDE_FRAMEWORK`（§8 复制规则不变），只停改革栏 | 照常评估 |
+
+测试：Legacy 主申请人成年后非法入境 → `shortCircuit.reason` 为 `OUTSIDE_FRAMEWORK`，改革栏 `REQUIRES_REGULATED_REVIEW`，现行法律栏给出 STP 结论（满 5 年 → `LIKELY_ELIGIBLE`、5 年）。分两例：UKRS 于 2027-04-06 前抵达；用户直接填 `LEGACY_SAFE_AND_LEGAL`。另测 HK BN(O) 主申请人成年后非法入境仍为 `IMMIGRATION_BREACH`。
+
+### 16.4 `SimulationResult.policyAsOf`
+
+- 改为本次评估的规则集（经 `ruleSetIds` 过滤）的 `PARAMETERS[id].asOf` 中较晚的一个。原来固定取 `earnedSettlement2026_11.asOf`。web 按所显示两栏自行计算（§13.6），不受影响。
+- 测试注入的合成规则集（§13.3）没有参数文件，不参与比较。如果本次评估的规则集都没有参数文件（`ruleSetIds: []`，或只评估合成规则集），取全部参数文件中较晚的一个。合成规则集的规则读的就是现有参数文件（§13.4）。
+- 两个参数文件现在都是 `2026-11-04`，输出值不变。
+- 测试：只评估一栏时取该栏参数的 `asOf`；在测试内把一个参数文件的 `asOf` 临时改晚（用后恢复），默认评估取到它，只评估另一栏时取不到；传合成 registry 时结果与不传时相同。
+
+### 16.5 PD-074：Appendix FM 5 年路线伴侣的子女（Part 8 para 298）
+
+D-LTRC.1.1 末句：伴侣或父母的子女申请 indefinite leave to remain 时，若随按 Appendix Settlement Family Life 申请的父母定居，适用该 Appendix；否则适用 para 298。5 年路线的伴侣按 Appendix FM（E-ILRP）定居，不经 SETF，所以其子女适用 para 298。
+
+para 298 要点（SRC-029）：
+
+- (i) 与父母或近亲同住，属下列情形之一：(a) 父母双方已定居；(b) 一方已定居、另一方已去世；(c) 一方已定居，且独自抚养，或子女通常与其同住；(d) 一方已定居**或同时获批定居**，另一方未持、也不在获批英国限期许可（另有 serious and compelling reasons 例外）；(e) 近亲已定居，且英国没有其他家人可照料。
+- (ii) 持有或曾持有限期许可，并且 (a) 未满 18 岁；或 (b) 以定居为目的获批 para 302 或 Appendix FM 许可；(c)–(f) 为难民子女（319R、319X）、298A、Appendix Adoption。
+- (iii) 未独立生活、未婚、未另组家庭；(iv)、(v) 由所投靠的父母或近亲提供住宿与生活费，不依赖 public funds；(vi) Part Suitability。
+- (vii) 已满 18 岁、且按 para 302 / Appendix FM / 319R / 319X 入境者，须按 Appendix KoLL 满足英语与 Life in the UK。
+- 子女本人没有合格期。另有 298A：仅因 (vi) 中 SUI 5.3 所述情形、或已满 18 岁不满足 (vii) 而不符合时，可获不超过 30 个月的限期许可。
+
+适用：申请日当天为 `FAMILY_PARTNER_OR_PARENT` + `DEPENDANT` + `dependantOf = 'PARENT'`，带 `principal`，且主申请人的 Appendix FM 许可为 `PARTNER_FIVE_YEAR`。主申请人的许可由 `principalFamilyPermission` 读取：未定居时读当前片段，已定居时读定居前最后一个 FM 主申请人片段（16.2）。
+
+| 规则 | 判断 |
+|---|---|
+| `CL-SCOPE`（改） | 上述子女 → `PASS`，解释"按 Immigration Rules Part 8 第 298 段（D-LTRC.1.1 末句）与 Appendix Long Residence 评估"。缺 `principal` → `UNKNOWN`，解释"填写主申请人信息后可判断"，同其他 dependant。不再输出 PD-074，`meta.pendingDetails` 去掉 PD-074。来源补 SRC-029 para 298。 |
+| `CL-FAMILY-CHILD`（改；ID、标题不变） | 主申请人为 `PARTNER_FIVE_YEAR` 时按 para 298 判断。主申请人已定居 → `PASS`，可立即申请（298(i)，具体情形见假设）。未定居、但其现行法律栏有 `earliestDate` → `PASS`，时点即该日期（298(i)(d)：同时获批定居，不论主申请人按哪条路线）。其结论为无日期的 `LIKELY_NOT_ELIGIBLE` → `FAIL`。其余（`INSUFFICIENT_INFORMATION`、短路）→ `UNKNOWN`。年龄：申请日未满 18 岁 → 298(ii)(a)；已满 18 岁 → 当前的 Appendix FM 子女许可视为以定居为目的获批（298(ii)(b)，写进假设）。10 年路线（SETF）、主申请人为 `PARENT` 或缺省、主申请人不在该路线这几种情形的处理不变。`meta.pendingDetails` 去掉 PD-074；来源补 SRC-029 para 298(i)、(ii)、(iii)、(iv)、(v)、(vii) 与 para 298A。 |
+| `CL-ENGLISH`（改） | 上述子女申请日已满 18 岁（且未满 65 岁）时按 298(vii) → Appendix KoLL 2.2：2027-03-26 前为 B1，此后为 B2。复用 `familyPartnerSettlementEnglishBefore` / `familyPartnerSettlementEnglish`，两者来源已含 KoLL 2.2，补 SRC-029 para 298(vii)。解释写"Part 8 第 298(vii) 段、Appendix KoLL 2.2"。未满 18 岁时 298(vii) 不适用，沿用 `ageExempt`（与 KoLL 3.1(a)(b) 一致）→ `PASS`。规则来源补 SRC-029 para 298(vii)、SRC-025 KoLL 3.1。 |
+| `CL-KOL`（改） | 同上：已满 18 岁按 KoLL 2.3，解释写"298(vii)、Appendix KoLL 2.3"；未满 18 岁 → `PASS`。来源补 SRC-029 para 298(vii)、SRC-025 KoLL 3.1。 |
+
+候选（§15.4 的补充）：
+
+| 当前（`DEPENDANT`） | 候选 | 年限 | 起点 |
+|---|---|---|---|
+| 家庭 `PARENT`，主申请人在 5 年路线 | `CL-FAMILY-CHILD` + `CL-ENGLISH` + `CL-KOL` | 主申请人现行法律栏的 `pathwayYears`；主申请人已定居 → 5（`familyPartnerQualifyingYearsFive`） | 主申请人的 `earliestDate` 减去年限，即时点等于主申请人的 `earliestDate`；主申请人已定居 → 申请日减 5 年 |
+| 都有 | Long Residence 10 年候选照常并列 | 10 | 不变 |
+
+- 不成立（缺 `principal`，或主申请人没有日期）时候选不给起点，同 `CL-SW-CHILD`。
+- 投影日期在 2027-03-26 之后、届时须 B2 的假设，依据写"KoLL 2.2"（经 298(vii)）。
+- `clBaseAssumption` 与 `CL-SCOPE` 的范围外解释补上"Appendix FM 5 年路线伴侣的子女（Immigration Rules Part 8 第 298 段）"。
+
+`CL-FAMILY-CHILD` 的假设（5 年路线）：
+
+- 298(i)：主申请人已定居时，按 (a)–(d) 之一满足处理（另一位父母已定居或为英国公民、已去世、由主申请人独自抚养或子女与其同住，或另一位父母未持也不在获批英国限期许可）。尚未定居时只有 (d)（同时获批）适用，假设另一位父母未持、也不在获批英国限期许可，例如是主申请人的英国公民或已定居伴侣。(e) 近亲情形未建模。
+- 298(ii)(b)：已满 18 岁的子女，当前的 Appendix FM 子女许可视为以定居为目的获批。
+- 298(iii)–(v) 按满足处理：未独立生活、未婚、未另组家庭；父母提供足够的住宿与生活费，不依赖 public funds。298(vi) 的 Part Suitability 已由建模范围句覆盖。
+- 已满 18 岁、仅因英语或 Life in the UK 不满足 298(vii) 时，可按 298A 获不超过 30 个月的限期许可，但仍不符合定居。
+- 按申请日年龄判断；如果到预计日期已满 18 岁，届时须满足 298(vii)。
+- 主申请人已定居时的读法见 16.2。
+
+不建模（写进假设，不设 PD）：298(ii)(c)–(f)（难民子女、298A、Adoption 的既往许可）与 para 297（入境）不适用于本路径。10 年路线的主申请人改按 Long Residence 等其他路线定居时，依 D-LTRC.1.1 其子女同样适用 para 298；本任务不改这部分，仍按 16.2 输出 `UNKNOWN`（写进 6.2 报告 §4）。
+
+PD-074 在 `docs/pending-details.md` 中标"已关闭（SRC-029，任务 6.2）"，不删行；"对引擎的影响"改写为现在的建模方式。不新增 PD。
+
+fixtures（自拟，文件头注明不是官方案例）与测试：
+
+- `cl-family-five-year-child-projected.ts`：主申请人为 `PARTNER_FIVE_YEAR`，差一天满 5 年，其他要求都满足，结论为 `LIKELY_NOT_ELIGIBLE` 并投影到次日。未满 18 岁的子女 → `LIKELY_NOT_ELIGIBLE`、5 年、同一日期。
+- `cl-family-five-year-adult-child-english.ts`：主申请人已满 5 年（`LIKELY_ELIGIBLE`）；子女已满 18 岁，已通过 Life in the UK，未填英语 → `INSUFFICIENT_INFORMATION`，`mustUnknown: ['CL-ENGLISH']`。
+- `current-law-dependants.test.ts`：原用例"5 年路线子女 → `CL-SCOPE` `UNKNOWN` + PD-074"改为新行为。补充用例：到期当天同时获批；主申请人已定居；缺 `principal`；主申请人为无日期的 `LIKELY_NOT_ELIGIBLE` → `FAIL`；18 岁以上英语 B1 → `PASS`；未满 18 岁豁免。

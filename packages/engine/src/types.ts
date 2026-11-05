@@ -307,6 +307,11 @@ export interface SettlementAssessment {
   routeGroup?: RouteGroup;
   pathwayYears?: number;
   earliestDate?: IsoDate;
+  /**
+   * The rules of the candidate pathway the outcome rests on, in `rules`
+   * order (contracts §16.1). Present exactly when `pathwayYears` is.
+   */
+  decidedBy?: RuleId[];
   /** Every rule that ran, in order, with explanation and sources. */
   rules: RuleOutcome[];
   assumptions: string[];

@@ -1,9 +1,13 @@
-import { earnedSettlement2026_11 } from '@uk-immigration/policy-data';
+import { PARAMETERS, RULE_SET_IDS } from '@uk-immigration/policy-data';
 import type { RuleSetId } from '@uk-immigration/policy-data';
 import { assess } from './aggregate';
 import { adultIllegalEntry } from './rules/es-requirements';
 import { episodeOn } from './residence';
-import { esCurrentGroup, legacyUkrsArrival } from './rules/es-residence';
+import {
+  esCurrentGroup,
+  esRouteOn,
+  legacyUkrsArrival,
+} from './rules/es-residence';
 import { textFor } from './rule';
 import { RULES } from './rules';
 import type {
@@ -31,6 +35,13 @@ export const RULE_SETS: Record<RuleSetId, RuleSet> = {
 
 type ShortCircuit = NonNullable<SimulationResult['shortCircuit']>;
 
+/** The latest `asOf` of these rule sets' parameter files, skipping any without one. */
+const latestAsOf = (ids: readonly RuleSetId[]) =>
+  ids
+    .flatMap((id) => PARAMETERS[id]?.asOf ?? [])
+    .sort()
+    .at(-1);
+
 function shortCircuitOf(ctx: RuleContext): ShortCircuit | undefined {
   const { timeline, simulationDate } = ctx;
   const L = textFor(ctx);
@@ -45,8 +56,14 @@ function shortCircuitOf(ctx: RuleContext): ShortCircuit | undefined {
   }
   const group = esCurrentGroup(timeline, simulationDate);
   // On a protection route illegal entry adds 10 years (Table 2, p48) and is
-  // assessed; elsewhere its consequence is inconsistent (PD-044).
-  if (adultIllegalEntry(timeline) && group !== 'PROTECTION') {
+  // assessed; elsewhere its consequence is inconsistent (PD-044). Legacy Safe
+  // and Legal Routes are protection routes under current law: they fall
+  // through to OUTSIDE_FRAMEWORK, which stops only Earned Settlement (§16.3).
+  if (
+    adultIllegalEntry(timeline) &&
+    group !== 'PROTECTION' &&
+    esRouteOn(timeline, simulationDate) !== 'LEGACY_SAFE_AND_LEGAL'
+  ) {
     return {
       reason: 'IMMIGRATION_BREACH',
       message: L(
@@ -142,12 +159,15 @@ export function evaluate(
     if (stopped) {
       delete assessment.pathwayYears;
       delete assessment.earliestDate;
+      delete assessment.decidedBy;
       assessment.outcome = 'REQUIRES_REGULATED_REVIEW';
     }
     byRuleSet[id] = assessment;
   }
   return {
-    policyAsOf: earnedSettlement2026_11.asOf,
+    // Synthetic rule sets in tests have no parameter file; with no file at
+    // all, every parameter file counts (contracts §16.4).
+    policyAsOf: latestAsOf(ids) ?? latestAsOf(RULE_SET_IDS)!,
     byRuleSet,
     ...(shortCircuit && { shortCircuit }),
   };

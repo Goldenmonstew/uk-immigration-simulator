@@ -698,6 +698,31 @@ describe('Skilled Worker dependent child (SW 39.1, SW 41A.1)', () => {
       'FAIL',
     );
   });
+
+  // Contracts §16.2: the principal's result rests on Long Residence.
+  test('a principal settling under Long Residence, not as a Skilled Worker: the child’s timing is not given', () => {
+    const viaLongResidence = {
+      episodes: [
+        {
+          route: 'STUDENT' as const,
+          role: 'MAIN' as const,
+          validFrom: '2015-09-01',
+          validTo: '2019-10-31',
+        },
+        episode({ salary: 20000, socCode: '2136' }),
+      ],
+    };
+    const principal = cl(viaLongResidence, null);
+    expect(principal).toMatchObject({
+      outcome: 'LIKELY_ELIGIBLE',
+      pathwayYears: 10,
+    });
+    expect(principal.decidedBy).toContain('CL-LR-RESIDENCE-10Y');
+    const a = cl(child(), viaLongResidence);
+    expect(rule(a).status).toBe('UNKNOWN');
+    expect(rule(a).explanation).toContain('不是按 Skilled Worker 路线得出的');
+    expect(a.outcome).toBe('INSUFFICIENT_INFORMATION');
+  });
 });
 
 describe('principal already settled (SW 39.1(b))', () => {

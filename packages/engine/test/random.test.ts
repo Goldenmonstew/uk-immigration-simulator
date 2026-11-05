@@ -308,6 +308,24 @@ describe('random timelines (fixed Mulberry32 seeds)', () => {
           }
           const ruleIds = assessment.rules.map((rule) => rule.id);
           expect(new Set(ruleIds).size).toBe(ruleIds.length);
+          // Contracts §16.1: with the pathway; part of rules[], in its order.
+          const { decidedBy } = assessment;
+          expect(decidedBy !== undefined).toBe(
+            assessment.pathwayYears !== undefined,
+          );
+          if (decidedBy) {
+            expect(decidedBy.length).toBeGreaterThan(0);
+            expect(decidedBy).toEqual(
+              ruleIds.filter((ruleId) => decidedBy.includes(ruleId)),
+            );
+            if (assessment.outcome === 'LIKELY_ELIGIBLE') {
+              for (const rule of assessment.rules) {
+                if (decidedBy.includes(rule.id)) {
+                  expect(rule.status).toBe('PASS');
+                }
+              }
+            }
+          }
           for (const rule of assessment.rules) {
             expect(['PASS', 'FAIL', 'UNKNOWN']).toContain(rule.status);
             expect(typeof rule.explanation).toBe('string');
@@ -335,6 +353,7 @@ describe('random timelines (fixed Mulberry32 seeds)', () => {
             expect(assessment.outcome).toBe('REQUIRES_REGULATED_REVIEW');
             expect(assessment).not.toHaveProperty('pathwayYears');
             expect(assessment).not.toHaveProperty('earliestDate');
+            expect(assessment).not.toHaveProperty('decidedBy');
           }
         }
       }
@@ -348,6 +367,7 @@ describe('random timelines (fixed Mulberry32 seeds)', () => {
           routeGroup: other.routeGroup,
           pathwayYears: other.pathwayYears,
           earliestDate: other.earliestDate,
+          decidedBy: other.decidedBy,
           rules: other.rules.map(({ id, status, sources, pendingDetails }) => ({
             id,
             status,
@@ -359,6 +379,7 @@ describe('random timelines (fixed Mulberry32 seeds)', () => {
           routeGroup: original.routeGroup,
           pathwayYears: original.pathwayYears,
           earliestDate: original.earliestDate,
+          decidedBy: original.decidedBy,
           rules: original.rules.map(
             ({ id, status, sources, pendingDetails }) => ({
               id,

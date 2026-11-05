@@ -1,5 +1,6 @@
 import { describe, expect, test } from 'vitest';
 import { evaluate } from '../src/evaluate';
+import { RULES } from '../src/rules';
 import type { ImmigrationEpisode, PersonTimeline } from '../src/types';
 import { timeline } from './helpers';
 
@@ -265,6 +266,34 @@ describe('Global Talent dependants (SRC-021)', () => {
     ).toBe('INSUFFICIENT_INFORMATION');
   });
 
+  test('child of a settled principal: years from the last Global Talent permission (assumption)', () => {
+    const child = {
+      dateOfBirth: '2015-03-01',
+      episodes: [
+        ep('GLOBAL_TALENT', 'DEPENDANT', '2020-06-01', {
+          dependantOf: 'PARENT',
+        }),
+      ],
+      english: undefined,
+      lifeInTheUk: undefined,
+    };
+    const result = currentLaw(
+      child,
+      {
+        ...principal('2020-06-01'),
+        settled: { date: '2023-06-01', route: 'GLOBAL_TALENT' },
+      },
+      '2026-06-01',
+    );
+    expect(result).toMatchObject({
+      outcome: 'LIKELY_ELIGIBLE',
+      pathwayYears: 3,
+    });
+    expect(result.assumptions.join('')).toContain(
+      '最后一个 Global Talent 主申请人片段',
+    );
+  });
+
   test('a principal settled from another route fails GT 27.1(b)', () => {
     const result = currentLaw(
       partner('2021-06-01'),
@@ -339,16 +368,174 @@ describe('children of Appendix FM partners (SRC-022, SRC-024)', () => {
     );
   });
 
-  test('5-year route: Part 8 para 298 is not registered (PD-074)', () => {
-    const result = currentLaw(
-      child,
-      principal('2021-03-01', 'PARTNER_FIVE_YEAR'),
-      '2026-03-01',
+  // Contracts §16.2 (5.4 report §4): Long Residence also reaches 10 years,
+  // but the principal's result rests on it, not on SETF.
+  test('the principal settles under Long Residence, not SETF: the child no longer settles with them', () => {
+    const notSetf = {
+      ...principal('2016-03-01'),
+      relationships: [
+        { type: 'PARTNER' as const, otherPartyStatus: 'OTHER' as const },
+      ],
+    };
+    const p = evaluate({
+      timeline: timeline(notSetf),
+      simulationDate: '2026-03-01',
+    }).byRuleSet['current-law-2026-11']!;
+    expect(p).toMatchObject({ outcome: 'LIKELY_ELIGIBLE', pathwayYears: 10 });
+    expect(p.decidedBy).toContain('CL-LR-RESIDENCE-10Y');
+    expect(p.decidedBy).not.toContain('CL-FAMILY-RESIDENCE');
+    const result = currentLaw(child, notSetf, '2026-03-01');
+    expect(rule(result, 'CL-FAMILY-CHILD').status).toBe('UNKNOWN');
+    expect(rule(result, 'CL-FAMILY-CHILD').explanation).toContain(
+      '例如按 Long Residence',
     );
     expect(result.outcome).toBe('INSUFFICIENT_INFORMATION');
-    expect(result.pathwayYears).toBeUndefined();
-    const scope = rule(result, 'CL-SCOPE');
-    expect(scope.status).toBe('UNKNOWN');
-    expect(scope.pendingDetails).toEqual(['PD-074']);
+  });
+
+  test('a settled principal: the route is read from the last Appendix FM permission (assumption)', () => {
+    const result = currentLaw(
+      child,
+      {
+        ...principal('2014-03-01'),
+        settled: { date: '2024-03-01', route: 'FAMILY_PARTNER_OR_PARENT' },
+      },
+      '2026-03-01',
+    );
+    expect(rule(result, 'CL-FAMILY-CHILD').status).toBe('PASS');
+    expect(result.assumptions.join('')).toContain(
+      '定居日前最后一个 Appendix FM 主申请人片段',
+    );
+  });
+
+  describe('5-year route: Part 8 para 298 (SRC-029, contracts §16.5)', () => {
+    const fivePrincipal = (validFrom: string) =>
+      principal(validFrom, 'PARTNER_FIVE_YEAR');
+    const fiveChild = {
+      dateOfBirth: '2012-07-15',
+      episodes: [
+        ep('FAMILY_PARTNER_OR_PARENT', 'DEPENDANT', '2021-06-01', {
+          dependantOf: 'PARENT',
+        }),
+      ],
+      english: undefined,
+      lifeInTheUk: undefined,
+    };
+
+    test('settles with the principal on their day (298(i)(d)), with no period of their own', () => {
+      const result = currentLaw(
+        fiveChild,
+        fivePrincipal('2021-06-01'),
+        '2026-06-01',
+      );
+      expect(result).toMatchObject({
+        outcome: 'LIKELY_ELIGIBLE',
+        pathwayYears: 5,
+        earliestDate: '2026-06-01',
+      });
+      const scope = rule(result, 'CL-SCOPE');
+      expect(scope.status).toBe('PASS');
+      expect(scope.explanation).toContain('第 298 段');
+      expect(scope.pendingDetails).toBeUndefined();
+      expect(rule(result, 'CL-FAMILY-CHILD').explanation).toContain(
+        '298(i)(d)',
+      );
+      expect(result.decidedBy).toEqual([
+        'CL-FAMILY-CHILD',
+        'CL-ENGLISH',
+        'CL-KOL',
+      ]);
+      // Under 18: para 298(vii) does not apply.
+      expect(rule(result, 'CL-ENGLISH').status).toBe('PASS');
+      expect(rule(result, 'CL-KOL').status).toBe('PASS');
+    });
+
+    test('a day short: the principal’s projected date', () => {
+      expect(
+        currentLaw(fiveChild, fivePrincipal('2021-06-02'), '2026-06-01'),
+      ).toMatchObject({
+        outcome: 'LIKELY_NOT_ELIGIBLE',
+        pathwayYears: 5,
+        earliestDate: '2026-06-02',
+      });
+      // Projected past 2027-03-26: B2 under Appendix KoLL 2.2.
+      const later = currentLaw(
+        fiveChild,
+        fivePrincipal('2022-06-01'),
+        '2026-06-01',
+      );
+      expect(later.earliestDate).toBe('2027-06-01');
+      expect(later.assumptions.join('')).toContain('KoLL 2.2、LR 13.1(b)');
+    });
+
+    test('a settled principal: the child can apply now (298(i))', () => {
+      const result = currentLaw(
+        fiveChild,
+        {
+          ...fivePrincipal('2019-06-01'),
+          settled: { date: '2024-06-01', route: 'FAMILY_PARTNER_OR_PARENT' },
+        },
+        '2026-06-01',
+      );
+      expect(result).toMatchObject({
+        outcome: 'LIKELY_ELIGIBLE',
+        pathwayYears: 5,
+        earliestDate: '2026-06-01',
+      });
+      expect(result.assumptions.join('')).toContain(
+        '定居日前最后一个 Appendix FM 主申请人片段',
+      );
+    });
+
+    test('a principal who cannot settle fails the child; insufficient details leave it unknown', () => {
+      const cannot = currentLaw(
+        fiveChild,
+        { ...fivePrincipal('2021-06-01'), english: { cefrLevel: 'A2' } },
+        '2026-06-01',
+      );
+      expect(rule(cannot, 'CL-FAMILY-CHILD').status).toBe('FAIL');
+      const unknown = currentLaw(
+        fiveChild,
+        { ...fivePrincipal('2021-06-01'), english: undefined },
+        '2026-06-01',
+      );
+      expect(rule(unknown, 'CL-FAMILY-CHILD').status).toBe('UNKNOWN');
+      expect(unknown.outcome).toBe('INSUFFICIENT_INFORMATION');
+      expect(currentLaw(fiveChild, undefined, '2026-06-01').outcome).toBe(
+        'INSUFFICIENT_INFORMATION',
+      );
+    });
+
+    test('18 or over: English and Life in the UK under Appendix KoLL (298(vii))', () => {
+      const adult = {
+        ...fiveChild,
+        dateOfBirth: '2007-01-01',
+        english: { cefrLevel: 'B1' as const },
+        lifeInTheUk: { passed: true as const },
+      };
+      const result = currentLaw(
+        adult,
+        fivePrincipal('2021-06-01'),
+        '2026-06-01',
+      );
+      expect(result.outcome).toBe('LIKELY_ELIGIBLE');
+      expect(rule(result, 'CL-FAMILY-CHILD').explanation).toContain(
+        '298(ii)(b)',
+      );
+      expect(rule(result, 'CL-ENGLISH').explanation).toContain('298(vii)');
+      expect(rule(result, 'CL-KOL').explanation).toContain('KoLL 2.3');
+      const missing = currentLaw(
+        { ...adult, english: undefined },
+        fivePrincipal('2021-06-01'),
+        '2026-06-01',
+      );
+      expect(missing.outcome).toBe('INSUFFICIENT_INFORMATION');
+      expect(rule(missing, 'CL-ENGLISH').status).toBe('UNKNOWN');
+    });
+
+    test('PD-074 is closed', () => {
+      for (const r of RULES['current-law-2026-11']) {
+        expect(r.meta.pendingDetails).not.toContain('PD-074');
+      }
+    });
   });
 });

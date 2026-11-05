@@ -1,6 +1,11 @@
+import { RULE_SET_IDS } from '@uk-immigration/policy-data';
 import { describe, expect, test } from 'vitest';
 import { evaluate } from '../src/evaluate';
-import type { ImmigrationEpisode, PersonTimeline } from '../src/types';
+import type {
+  ImmigrationEpisode,
+  PersonTimeline,
+  SettlementAssessment,
+} from '../src/types';
 import { SIMULATION_DATE, timeline } from './helpers';
 
 function es(overrides: Partial<PersonTimeline>) {
@@ -299,5 +304,117 @@ describe('dependants', () => {
     expect(es({}).rules.some((r) => r.id === 'ES-DEPENDANT-PATHWAY')).toBe(
       false,
     );
+  });
+});
+
+describe('decidedBy (contracts §16.1)', () => {
+  const statuses = (a: SettlementAssessment) =>
+    a.decidedBy?.map((id) => a.rules.find((r) => r.id === id)?.status);
+  const swBasis = [
+    'CL-SW-RESIDENCE-5Y',
+    'CL-SW-SALARY',
+    'CL-SW-GOING-RATE',
+    'CL-ENGLISH',
+    'CL-KOL',
+  ];
+
+  test('the passing candidate with its display-only residence rule, all PASS, on the day 5 years are completed', () => {
+    const a = cl({ episodes: [sw('2021-11-04')] });
+    expect(a.outcome).toBe('LIKELY_ELIGIBLE');
+    expect(a.decidedBy).toEqual(swBasis);
+    expect(statuses(a)).toEqual(swBasis.map(() => 'PASS'));
+  });
+
+  test('the projected candidate, without the pathways that fail', () => {
+    const a = cl({ episodes: [sw('2025-02-01')] });
+    expect(a.outcome).toBe('LIKELY_NOT_ELIGIBLE');
+    expect(a.decidedBy).toEqual(swBasis);
+    expect(statuses(a)?.[0]).toBe('FAIL');
+    expect(a.rules.find((r) => r.id === 'CL-LR-RESIDENCE-10Y')?.status).toBe(
+      'FAIL',
+    );
+  });
+
+  test('Long Residence names its own residence rule', () => {
+    const a = cl({
+      episodes: [
+        {
+          route: 'STUDENT',
+          role: 'MAIN',
+          validFrom: '2015-09-01',
+          validTo: '2021-01-31',
+        },
+        {
+          route: 'GRADUATE',
+          role: 'MAIN',
+          validFrom: '2021-02-01',
+          validTo: '2027-01-31',
+        },
+      ],
+    });
+    expect(a.decidedBy).toEqual([
+      'CL-ENGLISH',
+      'CL-KOL',
+      'CL-LR-RESIDENCE-10Y',
+    ]);
+  });
+
+  test('Earned Settlement: the 5-year earnings pathway, in rules order', () => {
+    const a = es({});
+    expect(a.pathwayYears).toBe(5);
+    expect(a.decidedBy).toContain('ES-EARNINGS-5Y');
+    expect(a.decidedBy).not.toContain('ES-EARNINGS-3Y');
+    expect(a.decidedBy).not.toContain('ES-EARNINGS-10Y');
+    expect(a.decidedBy).toEqual(
+      a.rules.map((r) => r.id).filter((id) => a.decidedBy!.includes(id)),
+    );
+    expect(new Set(statuses(a))).toEqual(new Set(['PASS']));
+  });
+
+  test('a pending detail: the candidate that gives the pathway', () => {
+    const a = es({
+      episodes: [
+        sw('2019-11-01', { validTo: '2022-10-31', salary: 35000 }),
+        sw('2022-11-01', { socCode: '2231', salary: 35000 }),
+      ],
+      incomeYears: [
+        '2019-20',
+        '2020-21',
+        '2021-22',
+        '2022-23',
+        '2023-24',
+        '2024-25',
+        '2025-26',
+      ].map((taxYear) => ({ taxYear, earnings: 35000 })),
+    });
+    expect(a.outcome).toBe('POTENTIALLY_ELIGIBLE');
+    expect(a.decidedBy).toContain('ES-PUBLIC-SERVICE');
+    expect(a.decidedBy).not.toContain('ES-EARNINGS-5Y');
+  });
+
+  test('no pathway, no decidedBy', () => {
+    expect(es({ lifeInTheUk: undefined })).not.toHaveProperty('decidedBy');
+    expect(es({ english: { cefrLevel: 'B1' } })).not.toHaveProperty(
+      'decidedBy',
+    );
+    const stopped = evaluate({
+      timeline: timeline({ criminalRecord: [{ date: '2021-05-01' }] }),
+      simulationDate: SIMULATION_DATE,
+    });
+    for (const id of RULE_SET_IDS) {
+      expect(stopped.byRuleSet[id]).not.toHaveProperty('decidedBy');
+    }
+  });
+
+  test('the same in English', () => {
+    const request = {
+      timeline: timeline({ episodes: [sw('2025-02-01')] }),
+      simulationDate: SIMULATION_DATE,
+    };
+    const zh = evaluate(request);
+    const en = evaluate({ ...request, locale: 'en' });
+    for (const id of RULE_SET_IDS) {
+      expect(en.byRuleSet[id]?.decidedBy).toEqual(zh.byRuleSet[id]?.decidedBy);
+    }
   });
 });

@@ -65,6 +65,84 @@ describe('short circuits', () => {
     );
   });
 
+  // Contracts §16.3 (5.2 report §4): Legacy Safe and Legal is a protection
+  // route under current law, so illegal entry only stops Earned Settlement.
+  describe('illegal entry as an adult on Legacy Safe and Legal Routes', () => {
+    const illegalEntry = [
+      { type: 'ILLEGAL_ENTRY' as const, date: '2021-10-01' },
+    ];
+    const legacyUkrs = {
+      route: 'SAFE_AND_LEGAL' as const,
+      role: 'MAIN' as const,
+      validFrom: '2021-11-04',
+      validTo: '2029-01-01',
+      resettlementScheme: 'UK_RESETTLEMENT_SCHEME' as const,
+    };
+
+    test.each([
+      ['a UK Resettlement Scheme arrival before 2027-04-06', legacyUkrs],
+      [
+        'a Legacy Safe and Legal permission entered as such',
+        {
+          route: 'LEGACY_SAFE_AND_LEGAL' as const,
+          role: 'MAIN' as const,
+          validFrom: '2021-11-04',
+          validTo: '2029-01-01',
+        },
+      ],
+    ])(
+      '%s: outside the framework; current law gives the STP result',
+      (_, episode) => {
+        const r = result({
+          episodes: [episode],
+          immigrationBreaches: illegalEntry,
+        });
+        expect(r.shortCircuit?.reason).toBe('OUTSIDE_FRAMEWORK');
+        expect(r.byRuleSet['earned-settlement-2026-11']?.outcome).toBe(
+          'REQUIRES_REGULATED_REVIEW',
+        );
+        expect(r.byRuleSet['current-law-2026-11']).toMatchObject({
+          outcome: 'LIKELY_ELIGIBLE',
+          pathwayYears: 5,
+        });
+      },
+    );
+
+    test("a dependant copies the principal's OUTSIDE_FRAMEWORK, not IMMIGRATION_BREACH", () => {
+      const r = evaluate({
+        timeline: timeline({ episodes: asDependant('PARTNER') }),
+        principal: timeline({
+          episodes: [legacyUkrs],
+          immigrationBreaches: illegalEntry,
+        }),
+        simulationDate: SIMULATION_DATE,
+      });
+      expect(r.shortCircuit?.reason).toBe('OUTSIDE_FRAMEWORK');
+      expect(r.shortCircuit?.message).toMatch(/^主申请人：/);
+      expect(r.byRuleSet['current-law-2026-11']?.outcome).not.toBe(
+        'REQUIRES_REGULATED_REVIEW',
+      );
+    });
+
+    test('other routes outside the framework still stop both columns', () => {
+      const r = result({
+        episodes: [
+          {
+            route: 'HONG_KONG_BNO',
+            role: 'MAIN',
+            validFrom: '2021-11-04',
+            validTo: '2029-01-01',
+          },
+        ],
+        immigrationBreaches: illegalEntry,
+      });
+      expect(r.shortCircuit?.reason).toBe('IMMIGRATION_BREACH');
+      expect(r.byRuleSet['current-law-2026-11']?.outcome).toBe(
+        'REQUIRES_REGULATED_REVIEW',
+      );
+    });
+  });
+
   test("a principal's criminal record stops both of the dependant's columns", () => {
     const r = evaluate({
       timeline: timeline({ episodes: asDependant('PARTNER') }),
