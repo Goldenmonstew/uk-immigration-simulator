@@ -2,6 +2,9 @@ import type { Fixture } from '../../engine/src/types';
 import { clFamilyChildTenYear } from './cl-family-child-ten-year';
 import { clFamilyFiveYearAdultChildEnglish } from './cl-family-five-year-adult-child-english';
 import { clFamilyFiveYearChildProjected } from './cl-family-five-year-child-projected';
+import { clFamilyFiveYearPartnerBenefit } from './cl-family-five-year-partner-benefit';
+import { clFamilyFiveYearSavingsPass } from './cl-family-five-year-savings-pass';
+import { clFamilyFiveYearSavingsShort } from './cl-family-five-year-savings-short';
 import { clFamilyPartnerFiveYears } from './cl-family-partner-five-years';
 import { clGlobalTalentPartnerFiveYears } from './cl-global-talent-partner-five-years';
 import { clGlobalTalentThreeYears } from './cl-global-talent-three-years';
@@ -61,4 +64,7 @@ export const fixtures: Fixture[] = [
   clFamilyChildTenYear,
   clFamilyFiveYearChildProjected,
   clFamilyFiveYearAdultChildEnglish,
+  clFamilyFiveYearSavingsPass,
+  clFamilyFiveYearSavingsShort,
+  clFamilyFiveYearPartnerBenefit,
 ];

@@ -462,8 +462,10 @@ describe('family partner, 5-year route (SRC-024, SRC-025)', () => {
   });
 
   test('£29,000 from 2024-04-11; the transitional £18,600 plus children before, capped at £29,000', () => {
+    // No savings declared (contracts §17.3), so a shortfall fails.
     const income = (earnings: number, extra: Partial<PersonTimeline> = {}) => ({
       incomeYears: [{ taxYear: '2025-26', earnings }],
+      cashSavings: 0,
       ...extra,
     });
     const at = (validFrom: string, extra: Partial<PersonTimeline>) =>
@@ -504,16 +506,24 @@ describe('family partner, 5-year route (SRC-024, SRC-025)', () => {
     );
   });
 
-  test('combined income below the threshold fails the pathway; missing income is unknown', () => {
+  test('combined income below the threshold fails with no savings, is unknown without savings provided; missing income is unknown', () => {
     const low = five('2021-11-04', {
       incomeYears: [
         { taxYear: '2025-26', earnings: 12000, partnerEarnings: 5000 },
       ],
+      cashSavings: 0,
     });
     expect(run(clFamilyFinancial, low, '2026-11-04').status).toBe('FAIL');
     expect(currentLaw(low, '2026-11-04')).toMatchObject({
       outcome: 'LIKELY_NOT_ELIGIBLE',
     });
+    const noSavings = { ...low, cashSavings: undefined };
+    const unknown = run(clFamilyFinancial, noSavings, '2026-11-04');
+    expect(unknown.status).toBe('UNKNOWN');
+    expect(unknown.pendingDetails).toBeUndefined();
+    expect(currentLaw(noSavings, '2026-11-04').outcome).toBe(
+      'INSUFFICIENT_INFORMATION',
+    );
     const missing = five('2021-11-04', { incomeYears: [] });
     expect(run(clFamilyFinancial, missing, '2026-11-04').status).toBe(
       'UNKNOWN',
@@ -521,6 +531,102 @@ describe('family partner, 5-year route (SRC-024, SRC-025)', () => {
     expect(currentLaw(missing, '2026-11-04').outcome).toBe(
       'INSUFFICIENT_INFORMATION',
     );
+  });
+
+  // Contracts §17.3: savings (E-LTRP.3.1(b) / 3.7(b)), without "2.5 times" at
+  // settlement (E-ILRP.1.3(1A)), and the partner's benefit (E-LTRP.3.3).
+  describe('savings and the partner’s specified benefit (§17)', () => {
+    const financial = (validFrom: string, extra: Partial<PersonTimeline>) =>
+      run(clFamilyFinancial, five(validFrom, extra), '2026-11-04');
+    const earnings = (amount: number) => ({
+      incomeYears: [{ taxYear: '2025-26', earnings: amount }],
+    });
+
+    test('£16,000 plus the shortfall: exactly enough passes, £1 short fails, missing is unknown', () => {
+      // £29,000 rules: £20,000 leaves a £9,000 shortfall.
+      const enough = financial('2024-04-11', {
+        ...earnings(20000),
+        cashSavings: 25000,
+      });
+      expect(enough.status).toBe('PASS');
+      expect(enough.explanation).toContain('E-LTRP.3.1(b)');
+      expect(enough.explanation).toContain('E-ILRP.1.3(1A)');
+      const short = financial('2024-04-11', {
+        ...earnings(20000),
+        cashSavings: 24999,
+      });
+      expect(short.status).toBe('FAIL');
+      expect(short.explanation).toContain('还差 £1');
+      expect(financial('2024-04-11', { ...earnings(20000) }).status).toBe(
+        'UNKNOWN',
+      );
+    });
+
+    test('the transitional shortfall is counted against £18,600 plus children', () => {
+      // £18,600 + £3,800 for one child; £15,000 leaves £7,400.
+      const oneChild = {
+        relationships: [
+          {
+            type: 'PARTNER' as const,
+            otherPartyStatus: 'BRITISH_CITIZEN' as const,
+          },
+          { type: 'CHILD' as const, otherPartyStatus: 'OTHER' as const },
+        ],
+        ...earnings(15000),
+      };
+      const enough = financial('2022-01-01', {
+        ...oneChild,
+        cashSavings: 23400,
+      });
+      expect(enough.status).toBe('PASS');
+      expect(enough.explanation).toContain('E-LTRP.3.7(b)');
+      expect(
+        financial('2022-01-01', { ...oneChild, cashSavings: 23399 }).status,
+      ).toBe('FAIL');
+    });
+
+    test('savings covering the whole threshold pass without income', () => {
+      const noIncome = { incomeYears: [] };
+      expect(
+        financial('2024-04-11', { ...noIncome, cashSavings: 45000 }).status,
+      ).toBe('PASS');
+      const less = financial('2024-04-11', { ...noIncome, cashSavings: 44999 });
+      expect(less.status).toBe('UNKNOWN');
+      expect(less.pendingDetails).toBeUndefined();
+    });
+
+    test('a partner’s specified benefit: adequate maintenance, unknown under PD-075 only when income and savings fall short', () => {
+      const benefit = { partnerSpecifiedBenefit: true };
+      const unknown = financial('2024-04-11', {
+        ...earnings(20000),
+        ...benefit,
+      });
+      expect(unknown.status).toBe('UNKNOWN');
+      expect(unknown.pendingDetails).toEqual(['PD-075']);
+      expect(unknown.explanation).toContain('E-LTRP.3.3(b)');
+      // Without income too: the benefit route still applies.
+      expect(
+        financial('2024-04-11', { incomeYears: [], ...benefit }).pendingDetails,
+      ).toEqual(['PD-075']);
+      // Income or savings that meet the requirement pass regardless.
+      expect(
+        financial('2024-04-11', { ...earnings(29000), ...benefit }).status,
+      ).toBe('PASS');
+      expect(
+        financial('2024-04-11', {
+          ...earnings(20000),
+          cashSavings: 25000,
+          ...benefit,
+        }).status,
+      ).toBe('PASS');
+      // Everything else met: potentially eligible on the 5-year pathway.
+      expect(
+        currentLaw(
+          five('2021-11-04', { ...earnings(10000), ...benefit }),
+          '2026-11-04',
+        ),
+      ).toMatchObject({ outcome: 'POTENTIALLY_ELIGIBLE', pathwayYears: 5 });
+    });
   });
 
   test('E-LTRP.1.2: British citizen or settled partner passes; OTHER is unknown', () => {

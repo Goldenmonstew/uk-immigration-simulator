@@ -1647,6 +1647,2239 @@ exports[`CL-FAMILY-FIVE-YEAR-CHILD-PROJECTED default-locale output is unchanged 
 }"
 `;
 
+exports[`CL-FAMILY-FIVE-YEAR-PARTNER-BENEFIT default-locale output is unchanged 1`] = `
+"{
+  "policyAsOf": "2026-11-04",
+  "byRuleSet": {
+    "current-law-2026-11": {
+      "outcome": "POTENTIALLY_ELIGIBLE",
+      "pathwayYears": 5,
+      "decidedBy": [
+        "CL-FAMILY-RESIDENCE",
+        "CL-FAMILY-RELATIONSHIP",
+        "CL-FAMILY-FINANCIAL",
+        "CL-ENGLISH",
+        "CL-KOL"
+      ],
+      "rules": [
+        {
+          "id": "CL-SCOPE",
+          "title": "在现行规则的建模范围内",
+          "sources": [
+            {
+              "srcId": "SRC-004",
+              "locator": "SW 21.1"
+            },
+            {
+              "srcId": "SRC-004",
+              "locator": "SW 39.1"
+            },
+            {
+              "srcId": "SRC-004",
+              "locator": "SW 41A.1"
+            },
+            {
+              "srcId": "SRC-005",
+              "locator": "LR 11.1"
+            },
+            {
+              "srcId": "SRC-020",
+              "locator": "HK 62.1"
+            },
+            {
+              "srcId": "SRC-021",
+              "locator": "GT 11.1"
+            },
+            {
+              "srcId": "SRC-022",
+              "locator": "SETF 1.3"
+            },
+            {
+              "srcId": "SRC-023",
+              "locator": "STP 1.3"
+            },
+            {
+              "srcId": "SRC-026",
+              "locator": "UKA 13.1"
+            },
+            {
+              "srcId": "SRC-027",
+              "locator": "INNF 18.1"
+            },
+            {
+              "srcId": "SRC-028",
+              "locator": "PL 14.1"
+            },
+            {
+              "srcId": "SRC-020",
+              "locator": "HK 57.1"
+            },
+            {
+              "srcId": "SRC-021",
+              "locator": "GT 27.1"
+            },
+            {
+              "srcId": "SRC-022",
+              "locator": "SETF 12.1"
+            },
+            {
+              "srcId": "SRC-024",
+              "locator": "D-LTRC.1.1"
+            },
+            {
+              "srcId": "SRC-029",
+              "locator": "para 298"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "当前持 Appendix FM 的伴侣许可，按伴侣的定居要求与 Appendix Long Residence 评估。"
+        },
+        {
+          "id": "CL-FAMILY-RESIDENCE",
+          "title": "家庭伴侣路线的连续居留",
+          "sources": [
+            {
+              "srcId": "SRC-022",
+              "locator": "SETF 3.1"
+            },
+            {
+              "srcId": "SRC-022",
+              "locator": "SETF 3.2"
+            },
+            {
+              "srcId": "SRC-022",
+              "locator": "SETF 4.1"
+            },
+            {
+              "srcId": "SRC-024",
+              "locator": "E-ILRP.1.3"
+            },
+            {
+              "srcId": "SRC-024",
+              "locator": "E-ILRP.1.4"
+            },
+            {
+              "srcId": "SRC-008",
+              "locator": "CR 3.1"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "5 年伴侣路线：自 2024-06-01 起连续持伴侣许可，已满 5 年（E-ILRP.1.3）。",
+          "assumptions": [
+            "E-ILRP.1.3 只计 5 年路线的伴侣许可（D-ECP.1.1 / D-LTRP.1.1），不计 fiancé(e) 期间；各段按同属 5 年路线、同一伴侣（E-ILRP.1.4）计算。"
+          ]
+        },
+        {
+          "id": "CL-FAMILY-RELATIONSHIP",
+          "title": "伴侣为 British citizen 或已定居",
+          "sources": [
+            {
+              "srcId": "SRC-022",
+              "locator": "SETF 7.1"
+            },
+            {
+              "srcId": "SRC-022",
+              "locator": "SETF 7.2"
+            },
+            {
+              "srcId": "SRC-022",
+              "locator": "SETF 7.3"
+            },
+            {
+              "srcId": "SRC-024",
+              "locator": "E-ILRP.1.3(1A)"
+            },
+            {
+              "srcId": "SRC-024",
+              "locator": "E-LTRP.1.2"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "伴侣为 British citizen（E-LTRP.1.2(a)）。",
+          "assumptions": [
+            "按关系真实且持续、双方打算永久共同生活（E-LTRP.1.7–E-LTRP.1.10）处理，本工具未核对。"
+          ]
+        },
+        {
+          "id": "CL-FAMILY-FINANCIAL",
+          "title": "5 年伴侣路线的财务要求",
+          "sources": [
+            {
+              "srcId": "SRC-024",
+              "locator": "E-ILRP.1.3(1A)"
+            },
+            {
+              "srcId": "SRC-024",
+              "locator": "E-LTRP.3.1"
+            },
+            {
+              "srcId": "SRC-024",
+              "locator": "E-LTRP.3.2"
+            },
+            {
+              "srcId": "SRC-024",
+              "locator": "E-LTRP.3.3"
+            },
+            {
+              "srcId": "SRC-024",
+              "locator": "E-LTRP.3.5"
+            },
+            {
+              "srcId": "SRC-024",
+              "locator": "E-LTRP.3.7"
+            },
+            {
+              "srcId": "SRC-024",
+              "locator": "E-LTRP.3.8"
+            }
+          ],
+          "status": "UNKNOWN",
+          "explanation": "2028-29 纳税年度本人与伴侣收入合计 £20,000，低于一般门槛（E-LTRP.3.1(a)）的 £29,000，缺口 £9,000；伴侣领取 E-LTRP.3.3(a) 所列福利（按申报），可改为证明伴侣能在不依赖 public funds 的情况下充分供养与安置其本人、申请人与 dependants（E-LTRP.3.1(c)、E-LTRP.3.3(b)）。这一要求没有数字门槛，计算口径本工具未登记（PD-075）。",
+          "pendingDetails": [
+            "PD-075"
+          ],
+          "assumptions": [
+            "是否适用过渡门槛按连续伴侣许可的起点是否早于 2024-04-11 判断（E-LTRP.3.5 看的是首次申请日；获批在此后而申请在此前的，也适用过渡门槛）；子女按\\"关系\\"里身份为其他的子女计。",
+            "储蓄按申报的合计现金储蓄计；Appendix FM-SE 的持有期与证据规则、E-LTRP.3.2 的收入与储蓄来源种类未核对；伴侣领取的福利按申报；住宿要求（E-LTRP.3.4、E-LTRP.3.9）与 EX.1 未建模。"
+          ]
+        },
+        {
+          "id": "CL-ENGLISH",
+          "title": "定居英语要求",
+          "sources": [
+            {
+              "srcId": "SRC-004",
+              "locator": "SW 22A.1"
+            },
+            {
+              "srcId": "SRC-004",
+              "locator": "SW 44.1"
+            },
+            {
+              "srcId": "SRC-007",
+              "locator": "p24"
+            },
+            {
+              "srcId": "SRC-005",
+              "locator": "LR 13.1"
+            },
+            {
+              "srcId": "SRC-020",
+              "locator": "HK 60.1"
+            },
+            {
+              "srcId": "SRC-021",
+              "locator": "GT 13.1"
+            },
+            {
+              "srcId": "SRC-021",
+              "locator": "GT 32.1"
+            },
+            {
+              "srcId": "SRC-022",
+              "locator": "SETF 5.1"
+            },
+            {
+              "srcId": "SRC-022",
+              "locator": "SETF 15.1"
+            },
+            {
+              "srcId": "SRC-024",
+              "locator": "E-ILRP.1.6"
+            },
+            {
+              "srcId": "SRC-025",
+              "locator": "KoLL 2.2"
+            },
+            {
+              "srcId": "SRC-025",
+              "locator": "KoLL 3.1"
+            },
+            {
+              "srcId": "SRC-029",
+              "locator": "para 298(vii)"
+            },
+            {
+              "srcId": "SRC-026",
+              "locator": "UKA 15.1"
+            },
+            {
+              "srcId": "SRC-028",
+              "locator": "PL 16.1"
+            },
+            {
+              "srcId": "SRC-007",
+              "locator": "EM 5.60"
+            },
+            {
+              "srcId": "SRC-014",
+              "locator": "EL 1.1"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "英语 B2，达到定居要求的 B2（Appendix KoLL 2.2，经 E-ILRP.1.6；2027-03-26 起的申请）。"
+        },
+        {
+          "id": "CL-KOL",
+          "title": "通过 Life in the UK 考试",
+          "sources": [
+            {
+              "srcId": "SRC-004",
+              "locator": "SW 23.1"
+            },
+            {
+              "srcId": "SRC-004",
+              "locator": "SW 45.1"
+            },
+            {
+              "srcId": "SRC-005",
+              "locator": "LR 14.1"
+            },
+            {
+              "srcId": "SRC-020",
+              "locator": "HK 61.1"
+            },
+            {
+              "srcId": "SRC-021",
+              "locator": "GT 14.1"
+            },
+            {
+              "srcId": "SRC-021",
+              "locator": "GT 33.1"
+            },
+            {
+              "srcId": "SRC-022",
+              "locator": "SETF 6.1"
+            },
+            {
+              "srcId": "SRC-022",
+              "locator": "SETF 16.1"
+            },
+            {
+              "srcId": "SRC-025",
+              "locator": "KoLL 2.3"
+            },
+            {
+              "srcId": "SRC-025",
+              "locator": "KoLL 3.1"
+            },
+            {
+              "srcId": "SRC-029",
+              "locator": "para 298(vii)"
+            },
+            {
+              "srcId": "SRC-026",
+              "locator": "UKA 16.1"
+            },
+            {
+              "srcId": "SRC-027",
+              "locator": "INNF 20.1"
+            },
+            {
+              "srcId": "SRC-028",
+              "locator": "PL 17.1"
+            },
+            {
+              "srcId": "SRC-015",
+              "locator": "KOL 1.1"
+            },
+            {
+              "srcId": "SRC-015",
+              "locator": "KOL 2.1"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "已通过 Life in the UK 考试（Appendix KoLL 2.3，经 E-ILRP.1.6）。"
+        },
+        {
+          "id": "CL-LR-RESIDENCE-10Y",
+          "title": "Long Residence 连续合法居留 10 年",
+          "sources": [
+            {
+              "srcId": "SRC-005",
+              "locator": "LR 11.1"
+            },
+            {
+              "srcId": "SRC-005",
+              "locator": "LR 11.2"
+            },
+            {
+              "srcId": "SRC-008",
+              "locator": "CR 3.1"
+            },
+            {
+              "srcId": "SRC-008",
+              "locator": "CR 3.3"
+            }
+          ],
+          "status": "FAIL",
+          "explanation": "自 2024-06-01 起连续合法居留，截至 2029-06-01 满 5 年；2034-06-01 满 10 年。",
+          "assumptions": [
+            "连续合法居留计入学生、毕业生等临时路线，不计访问、季节性工作者、乌克兰计划（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。"
+          ]
+        }
+      ],
+      "assumptions": [
+        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人及其 dependant（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人及其 dependent partner / child（Appendix Global Talent）、Appendix FM 伴侣（10 年路线按 Appendix Settlement Family Life，5 年路线按 Appendix FM）及其子女（10 年路线按 Appendix Settlement Family Life，5 年路线按 Immigration Rules Part 8 第 298 段）、持 refugee status 或 humanitarian protection 的主申请人（Appendix Settlement Protection）、UK Ancestry 主申请人（Appendix UK Ancestry）、Innovator Founder 主申请人（Appendix Innovator Founder）、Private Life 主申请人（Appendix Private Life）与 Long Residence（Appendix Long Residence）；Part Suitability、STP 2.1 的 suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
+        "E-ILRP.1.3 只计 5 年路线的伴侣许可（D-ECP.1.1 / D-LTRP.1.1），不计 fiancé(e) 期间；各段按同属 5 年路线、同一伴侣（E-ILRP.1.4）计算。",
+        "按关系真实且持续、双方打算永久共同生活（E-LTRP.1.7–E-LTRP.1.10）处理，本工具未核对。",
+        "是否适用过渡门槛按连续伴侣许可的起点是否早于 2024-04-11 判断（E-LTRP.3.5 看的是首次申请日；获批在此后而申请在此前的，也适用过渡门槛）；子女按\\"关系\\"里身份为其他的子女计。",
+        "储蓄按申报的合计现金储蓄计；Appendix FM-SE 的持有期与证据规则、E-LTRP.3.2 的收入与储蓄来源种类未核对；伴侣领取的福利按申报；住宿要求（E-LTRP.3.4、E-LTRP.3.9）与 EX.1 未建模。",
+        "连续合法居留计入学生、毕业生等临时路线，不计访问、季节性工作者、乌克兰计划（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。"
+      ]
+    },
+    "earned-settlement-2026-11": {
+      "outcome": "LIKELY_ELIGIBLE",
+      "pathwayYears": 5,
+      "earliestDate": "2029-06-01",
+      "decidedBy": [
+        "ES-CRIMINALITY",
+        "ES-DEBT",
+        "ES-ENGLISH-B2",
+        "ES-KOL",
+        "ES-ROUTE-GROUP",
+        "ES-RESIDENCE",
+        "ES-BRITISH-CONNECTION",
+        "ES-PUBLIC-FUNDS",
+        "ES-BREACH",
+        "ES-ASYLUM-SUPPORT"
+      ],
+      "rules": [
+        {
+          "id": "ES-CRIMINALITY",
+          "title": "无犯罪记录",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p12"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "未申报犯罪记录。"
+        },
+        {
+          "id": "ES-DEBT",
+          "title": "无未清偿的政府债务",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p12"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p29"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "申报无未清偿的政府债务。",
+          "assumptions": [
+            "\\"无政府债务\\"按用户申报判断；正在按还款计划偿还的非 asylum support 债务是否满足要求，原文未说明（PD-018）。"
+          ]
+        },
+        {
+          "id": "ES-ENGLISH-B2",
+          "title": "定居英语要求（B2；UKRS 难民 A2）",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p21"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "英语 B2，达到 B2。"
+        },
+        {
+          "id": "ES-KOL",
+          "title": "通过 Life in the UK 考试",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p21"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "已通过 Life in the UK 考试。"
+        },
+        {
+          "id": "ES-ROUTE-GROUP",
+          "title": "当前路线计入定居",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p23"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p24"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p25"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p26"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "当前路线\\"家庭伴侣或父母\\"属核心许可 / 英国联系分组，计入定居。"
+        },
+        {
+          "id": "ES-RESIDENCE",
+          "title": "计入定居的连续居留",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p22"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p23"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p24"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p25"
+            },
+            {
+              "srcId": "SRC-008",
+              "locator": "CR 3.1"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "计入定居的连续居留自 2024-06-01 起，截至 2029-06-01 满 5 年。",
+          "assumptions": []
+        },
+        {
+          "id": "ES-EARNINGS-3Y",
+          "title": "3 年路径收入：4 年中 3 年达到 £125,141",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p15"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p16"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p46"
+            }
+          ],
+          "status": "UNKNOWN",
+          "explanation": "2025-26 至 2028-29 这 4 个 tax year 中，有 0 年收入达到 £125,141，需要 3 年；3 年未填写收入。",
+          "assumptions": [
+            "收入按英国 tax year 的税前收入计算，窗口为申请日所在 tax year 之前的完整 tax year；各年份统一按现行门槛比较（PD-005 / PD-006 / PD-007）。"
+          ]
+        },
+        {
+          "id": "ES-EARNINGS-5Y",
+          "title": "5 年路径收入：5 年中 3 年达到 £50,271",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p15"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p16"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p46"
+            }
+          ],
+          "status": "UNKNOWN",
+          "explanation": "2024-25 至 2028-29 这 5 个 tax year 中，有 0 年收入达到 £50,271，需要 3 年；4 年未填写收入。",
+          "assumptions": [
+            "收入按英国 tax year 的税前收入计算，窗口为申请日所在 tax year 之前的完整 tax year；各年份统一按现行门槛比较（PD-005 / PD-006 / PD-007）。"
+          ]
+        },
+        {
+          "id": "ES-EARNINGS-10Y",
+          "title": "最低收入：7 年中 5 年达到 £12,571（或家庭合计 £25,142）",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p15"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p16"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p46"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p17"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p30"
+            }
+          ],
+          "status": "UNKNOWN",
+          "explanation": "2022-23 至 2028-29 这 7 个 tax year 中，有 1 年收入达到 £12,571，需要 5 年；6 年未填写收入。",
+          "assumptions": [
+            "收入按英国 tax year 的税前收入计算，窗口为申请日所在 tax year 之前的完整 tax year；各年份统一按现行门槛比较（PD-005 / PD-006 / PD-007）。",
+            "最低收入按 p16 与 Table 1 的\\"申请前 7 年中 5 年\\"计算；p15 另有\\"至少 3 年\\"的说法（PD-041）。"
+          ]
+        },
+        {
+          "id": "ES-BRITISH-CONNECTION",
+          "title": "British connection（5 年路径）",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p18"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "以 British citizen 的伴侣、父母或子女身份持家庭签证，属 recognised British connection，可走 5 年路径。"
+        },
+        {
+          "id": "ES-PUBLIC-FUNDS",
+          "title": "申请前 5 年未使用 public funds",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p18"
+            },
+            {
+              "srcId": "SRC-006",
+              "locator": "#benefits-open-to-new-claims"
+            },
+            {
+              "srcId": "SRC-006",
+              "locator": "#contributory-benefits-and-statutory-payments"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "申请前 5 年内未领取 public funds。",
+          "assumptions": []
+        },
+        {
+          "id": "ES-BREACH",
+          "title": "成年后无 qualifying immigration breach",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p13"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "成年后无 qualifying immigration breach。"
+        },
+        {
+          "id": "ES-ASYLUM-SUPPORT",
+          "title": "已偿还 asylum support 或按计划还款",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p8"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p39"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p47"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "未申报 asylum support 的偿还情况，按未领取 asylum support 处理（领过且须偿还的，定居前须已全额偿还或按约定还款计划持续履行，p8 注 1）。"
+        },
+        {
+          "id": "ES-TRANSITIONAL-CARE-WORKER",
+          "title": "care worker 过渡安排（保留 5 年）",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p42"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p43"
+            },
+            {
+              "srcId": "SRC-012",
+              "locator": "cover"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p42"
+            },
+            {
+              "srcId": "SRC-004",
+              "locator": "SW 6.1B"
+            }
+          ],
+          "status": "FAIL",
+          "explanation": "当前不是 care worker（SOC 2020 6135 / 6136）的 Skilled Worker 签证，不适用 care worker 过渡安排。"
+        },
+        {
+          "id": "ES-TRANSITIONAL-HEALTH-EDUCATION",
+          "title": "RQF6 以下国家薪级医疗 / 教育岗位过渡安排（保留 5 年）",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p44"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p42"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p46"
+            },
+            {
+              "srcId": "SRC-012",
+              "locator": "cover"
+            },
+            {
+              "srcId": "SRC-017",
+              "locator": "Table 3a"
+            }
+          ],
+          "status": "FAIL",
+          "explanation": "当前不是 RQF6 以下、国家薪级的医疗 / 教育职业（Appendix Skilled Occupations Table 3a）的 Skilled Worker 签证，不适用该过渡安排。"
+        },
+        {
+          "id": "ES-PUBLIC-SERVICE",
+          "title": "公共服务职业满 5 年（5 年路径）",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p16"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p46 fn 17"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p58"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p59"
+            },
+            {
+              "srcId": "SRC-004",
+              "locator": "SW 16.1"
+            }
+          ],
+          "status": "FAIL",
+          "explanation": "当前工作不在 Annex C 公共服务职业表中，不走这条 5 年路径。"
+        }
+      ],
+      "assumptions": [
+        "Earned Settlement 已公布、尚未生效，按\\"假设在申请日适用\\"评估；规则依据为政府回应文件（SRC-001），不是已生效的 Immigration Rules（PD-001）。首批规则修改预计 2026 年 12 月起提交、2027 年 1 月生效，2027–2028 年继续修改（SRC-002 col 593；SRC-003 cols 1423–1424），具体生效日以届时的 Statement of Changes 为准（PD-003）。",
+        "\\"无政府债务\\"按用户申报判断；正在按还款计划偿还的非 asylum support 债务是否满足要求，原文未说明（PD-018）。",
+        "收入按英国 tax year 的税前收入计算，窗口为申请日所在 tax year 之前的完整 tax year；各年份统一按现行门槛比较（PD-005 / PD-006 / PD-007）。",
+        "最低收入按 p16 与 Table 1 的\\"申请前 7 年中 5 年\\"计算；p15 另有\\"至少 3 年\\"的说法（PD-041）。"
+      ],
+      "routeGroup": "CORE_PERMISSION"
+    }
+  }
+}"
+`;
+
+exports[`CL-FAMILY-FIVE-YEAR-SAVINGS-PASS default-locale output is unchanged 1`] = `
+"{
+  "policyAsOf": "2026-11-04",
+  "byRuleSet": {
+    "current-law-2026-11": {
+      "outcome": "LIKELY_ELIGIBLE",
+      "pathwayYears": 5,
+      "earliestDate": "2029-06-01",
+      "decidedBy": [
+        "CL-FAMILY-RESIDENCE",
+        "CL-FAMILY-RELATIONSHIP",
+        "CL-FAMILY-FINANCIAL",
+        "CL-ENGLISH",
+        "CL-KOL"
+      ],
+      "rules": [
+        {
+          "id": "CL-SCOPE",
+          "title": "在现行规则的建模范围内",
+          "sources": [
+            {
+              "srcId": "SRC-004",
+              "locator": "SW 21.1"
+            },
+            {
+              "srcId": "SRC-004",
+              "locator": "SW 39.1"
+            },
+            {
+              "srcId": "SRC-004",
+              "locator": "SW 41A.1"
+            },
+            {
+              "srcId": "SRC-005",
+              "locator": "LR 11.1"
+            },
+            {
+              "srcId": "SRC-020",
+              "locator": "HK 62.1"
+            },
+            {
+              "srcId": "SRC-021",
+              "locator": "GT 11.1"
+            },
+            {
+              "srcId": "SRC-022",
+              "locator": "SETF 1.3"
+            },
+            {
+              "srcId": "SRC-023",
+              "locator": "STP 1.3"
+            },
+            {
+              "srcId": "SRC-026",
+              "locator": "UKA 13.1"
+            },
+            {
+              "srcId": "SRC-027",
+              "locator": "INNF 18.1"
+            },
+            {
+              "srcId": "SRC-028",
+              "locator": "PL 14.1"
+            },
+            {
+              "srcId": "SRC-020",
+              "locator": "HK 57.1"
+            },
+            {
+              "srcId": "SRC-021",
+              "locator": "GT 27.1"
+            },
+            {
+              "srcId": "SRC-022",
+              "locator": "SETF 12.1"
+            },
+            {
+              "srcId": "SRC-024",
+              "locator": "D-LTRC.1.1"
+            },
+            {
+              "srcId": "SRC-029",
+              "locator": "para 298"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "当前持 Appendix FM 的伴侣许可，按伴侣的定居要求与 Appendix Long Residence 评估。"
+        },
+        {
+          "id": "CL-FAMILY-RESIDENCE",
+          "title": "家庭伴侣路线的连续居留",
+          "sources": [
+            {
+              "srcId": "SRC-022",
+              "locator": "SETF 3.1"
+            },
+            {
+              "srcId": "SRC-022",
+              "locator": "SETF 3.2"
+            },
+            {
+              "srcId": "SRC-022",
+              "locator": "SETF 4.1"
+            },
+            {
+              "srcId": "SRC-024",
+              "locator": "E-ILRP.1.3"
+            },
+            {
+              "srcId": "SRC-024",
+              "locator": "E-ILRP.1.4"
+            },
+            {
+              "srcId": "SRC-008",
+              "locator": "CR 3.1"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "5 年伴侣路线：自 2024-06-01 起连续持伴侣许可，已满 5 年（E-ILRP.1.3）。",
+          "assumptions": [
+            "E-ILRP.1.3 只计 5 年路线的伴侣许可（D-ECP.1.1 / D-LTRP.1.1），不计 fiancé(e) 期间；各段按同属 5 年路线、同一伴侣（E-ILRP.1.4）计算。"
+          ]
+        },
+        {
+          "id": "CL-FAMILY-RELATIONSHIP",
+          "title": "伴侣为 British citizen 或已定居",
+          "sources": [
+            {
+              "srcId": "SRC-022",
+              "locator": "SETF 7.1"
+            },
+            {
+              "srcId": "SRC-022",
+              "locator": "SETF 7.2"
+            },
+            {
+              "srcId": "SRC-022",
+              "locator": "SETF 7.3"
+            },
+            {
+              "srcId": "SRC-024",
+              "locator": "E-ILRP.1.3(1A)"
+            },
+            {
+              "srcId": "SRC-024",
+              "locator": "E-LTRP.1.2"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "伴侣为 British citizen（E-LTRP.1.2(a)）。",
+          "assumptions": [
+            "按关系真实且持续、双方打算永久共同生活（E-LTRP.1.7–E-LTRP.1.10）处理，本工具未核对。"
+          ]
+        },
+        {
+          "id": "CL-FAMILY-FINANCIAL",
+          "title": "5 年伴侣路线的财务要求",
+          "sources": [
+            {
+              "srcId": "SRC-024",
+              "locator": "E-ILRP.1.3(1A)"
+            },
+            {
+              "srcId": "SRC-024",
+              "locator": "E-LTRP.3.1"
+            },
+            {
+              "srcId": "SRC-024",
+              "locator": "E-LTRP.3.2"
+            },
+            {
+              "srcId": "SRC-024",
+              "locator": "E-LTRP.3.3"
+            },
+            {
+              "srcId": "SRC-024",
+              "locator": "E-LTRP.3.5"
+            },
+            {
+              "srcId": "SRC-024",
+              "locator": "E-LTRP.3.7"
+            },
+            {
+              "srcId": "SRC-024",
+              "locator": "E-LTRP.3.8"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "2028-29 纳税年度本人与伴侣收入合计 £20,000，低于一般门槛（E-LTRP.3.1(a)）的 £29,000，缺口 £9,000；现金储蓄 £25,000，达到 £16,000 加缺口共 £25,000（E-LTRP.3.1(b)；定居申请按 E-ILRP.1.3(1A) 不乘 2.5）。",
+          "assumptions": [
+            "是否适用过渡门槛按连续伴侣许可的起点是否早于 2024-04-11 判断（E-LTRP.3.5 看的是首次申请日；获批在此后而申请在此前的，也适用过渡门槛）；子女按\\"关系\\"里身份为其他的子女计。",
+            "储蓄按申报的合计现金储蓄计；Appendix FM-SE 的持有期与证据规则、E-LTRP.3.2 的收入与储蓄来源种类未核对；伴侣领取的福利按申报；住宿要求（E-LTRP.3.4、E-LTRP.3.9）与 EX.1 未建模。"
+          ]
+        },
+        {
+          "id": "CL-ENGLISH",
+          "title": "定居英语要求",
+          "sources": [
+            {
+              "srcId": "SRC-004",
+              "locator": "SW 22A.1"
+            },
+            {
+              "srcId": "SRC-004",
+              "locator": "SW 44.1"
+            },
+            {
+              "srcId": "SRC-007",
+              "locator": "p24"
+            },
+            {
+              "srcId": "SRC-005",
+              "locator": "LR 13.1"
+            },
+            {
+              "srcId": "SRC-020",
+              "locator": "HK 60.1"
+            },
+            {
+              "srcId": "SRC-021",
+              "locator": "GT 13.1"
+            },
+            {
+              "srcId": "SRC-021",
+              "locator": "GT 32.1"
+            },
+            {
+              "srcId": "SRC-022",
+              "locator": "SETF 5.1"
+            },
+            {
+              "srcId": "SRC-022",
+              "locator": "SETF 15.1"
+            },
+            {
+              "srcId": "SRC-024",
+              "locator": "E-ILRP.1.6"
+            },
+            {
+              "srcId": "SRC-025",
+              "locator": "KoLL 2.2"
+            },
+            {
+              "srcId": "SRC-025",
+              "locator": "KoLL 3.1"
+            },
+            {
+              "srcId": "SRC-029",
+              "locator": "para 298(vii)"
+            },
+            {
+              "srcId": "SRC-026",
+              "locator": "UKA 15.1"
+            },
+            {
+              "srcId": "SRC-028",
+              "locator": "PL 16.1"
+            },
+            {
+              "srcId": "SRC-007",
+              "locator": "EM 5.60"
+            },
+            {
+              "srcId": "SRC-014",
+              "locator": "EL 1.1"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "英语 B2，达到定居要求的 B2（Appendix KoLL 2.2，经 E-ILRP.1.6；2027-03-26 起的申请）。"
+        },
+        {
+          "id": "CL-KOL",
+          "title": "通过 Life in the UK 考试",
+          "sources": [
+            {
+              "srcId": "SRC-004",
+              "locator": "SW 23.1"
+            },
+            {
+              "srcId": "SRC-004",
+              "locator": "SW 45.1"
+            },
+            {
+              "srcId": "SRC-005",
+              "locator": "LR 14.1"
+            },
+            {
+              "srcId": "SRC-020",
+              "locator": "HK 61.1"
+            },
+            {
+              "srcId": "SRC-021",
+              "locator": "GT 14.1"
+            },
+            {
+              "srcId": "SRC-021",
+              "locator": "GT 33.1"
+            },
+            {
+              "srcId": "SRC-022",
+              "locator": "SETF 6.1"
+            },
+            {
+              "srcId": "SRC-022",
+              "locator": "SETF 16.1"
+            },
+            {
+              "srcId": "SRC-025",
+              "locator": "KoLL 2.3"
+            },
+            {
+              "srcId": "SRC-025",
+              "locator": "KoLL 3.1"
+            },
+            {
+              "srcId": "SRC-029",
+              "locator": "para 298(vii)"
+            },
+            {
+              "srcId": "SRC-026",
+              "locator": "UKA 16.1"
+            },
+            {
+              "srcId": "SRC-027",
+              "locator": "INNF 20.1"
+            },
+            {
+              "srcId": "SRC-028",
+              "locator": "PL 17.1"
+            },
+            {
+              "srcId": "SRC-015",
+              "locator": "KOL 1.1"
+            },
+            {
+              "srcId": "SRC-015",
+              "locator": "KOL 2.1"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "已通过 Life in the UK 考试（Appendix KoLL 2.3，经 E-ILRP.1.6）。"
+        },
+        {
+          "id": "CL-LR-RESIDENCE-10Y",
+          "title": "Long Residence 连续合法居留 10 年",
+          "sources": [
+            {
+              "srcId": "SRC-005",
+              "locator": "LR 11.1"
+            },
+            {
+              "srcId": "SRC-005",
+              "locator": "LR 11.2"
+            },
+            {
+              "srcId": "SRC-008",
+              "locator": "CR 3.1"
+            },
+            {
+              "srcId": "SRC-008",
+              "locator": "CR 3.3"
+            }
+          ],
+          "status": "FAIL",
+          "explanation": "自 2024-06-01 起连续合法居留，截至 2029-06-01 满 5 年；2034-06-01 满 10 年。",
+          "assumptions": [
+            "连续合法居留计入学生、毕业生等临时路线，不计访问、季节性工作者、乌克兰计划（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。"
+          ]
+        }
+      ],
+      "assumptions": [
+        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人及其 dependant（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人及其 dependent partner / child（Appendix Global Talent）、Appendix FM 伴侣（10 年路线按 Appendix Settlement Family Life，5 年路线按 Appendix FM）及其子女（10 年路线按 Appendix Settlement Family Life，5 年路线按 Immigration Rules Part 8 第 298 段）、持 refugee status 或 humanitarian protection 的主申请人（Appendix Settlement Protection）、UK Ancestry 主申请人（Appendix UK Ancestry）、Innovator Founder 主申请人（Appendix Innovator Founder）、Private Life 主申请人（Appendix Private Life）与 Long Residence（Appendix Long Residence）；Part Suitability、STP 2.1 的 suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
+        "E-ILRP.1.3 只计 5 年路线的伴侣许可（D-ECP.1.1 / D-LTRP.1.1），不计 fiancé(e) 期间；各段按同属 5 年路线、同一伴侣（E-ILRP.1.4）计算。",
+        "按关系真实且持续、双方打算永久共同生活（E-LTRP.1.7–E-LTRP.1.10）处理，本工具未核对。",
+        "是否适用过渡门槛按连续伴侣许可的起点是否早于 2024-04-11 判断（E-LTRP.3.5 看的是首次申请日；获批在此后而申请在此前的，也适用过渡门槛）；子女按\\"关系\\"里身份为其他的子女计。",
+        "储蓄按申报的合计现金储蓄计；Appendix FM-SE 的持有期与证据规则、E-LTRP.3.2 的收入与储蓄来源种类未核对；伴侣领取的福利按申报；住宿要求（E-LTRP.3.4、E-LTRP.3.9）与 EX.1 未建模。",
+        "连续合法居留计入学生、毕业生等临时路线，不计访问、季节性工作者、乌克兰计划（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。"
+      ]
+    },
+    "earned-settlement-2026-11": {
+      "outcome": "LIKELY_ELIGIBLE",
+      "pathwayYears": 5,
+      "earliestDate": "2029-06-01",
+      "decidedBy": [
+        "ES-CRIMINALITY",
+        "ES-DEBT",
+        "ES-ENGLISH-B2",
+        "ES-KOL",
+        "ES-ROUTE-GROUP",
+        "ES-RESIDENCE",
+        "ES-BRITISH-CONNECTION",
+        "ES-PUBLIC-FUNDS",
+        "ES-BREACH",
+        "ES-ASYLUM-SUPPORT"
+      ],
+      "rules": [
+        {
+          "id": "ES-CRIMINALITY",
+          "title": "无犯罪记录",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p12"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "未申报犯罪记录。"
+        },
+        {
+          "id": "ES-DEBT",
+          "title": "无未清偿的政府债务",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p12"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p29"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "申报无未清偿的政府债务。",
+          "assumptions": [
+            "\\"无政府债务\\"按用户申报判断；正在按还款计划偿还的非 asylum support 债务是否满足要求，原文未说明（PD-018）。"
+          ]
+        },
+        {
+          "id": "ES-ENGLISH-B2",
+          "title": "定居英语要求（B2；UKRS 难民 A2）",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p21"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "英语 B2，达到 B2。"
+        },
+        {
+          "id": "ES-KOL",
+          "title": "通过 Life in the UK 考试",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p21"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "已通过 Life in the UK 考试。"
+        },
+        {
+          "id": "ES-ROUTE-GROUP",
+          "title": "当前路线计入定居",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p23"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p24"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p25"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p26"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "当前路线\\"家庭伴侣或父母\\"属核心许可 / 英国联系分组，计入定居。"
+        },
+        {
+          "id": "ES-RESIDENCE",
+          "title": "计入定居的连续居留",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p22"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p23"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p24"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p25"
+            },
+            {
+              "srcId": "SRC-008",
+              "locator": "CR 3.1"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "计入定居的连续居留自 2024-06-01 起，截至 2029-06-01 满 5 年。",
+          "assumptions": []
+        },
+        {
+          "id": "ES-EARNINGS-3Y",
+          "title": "3 年路径收入：4 年中 3 年达到 £125,141",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p15"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p16"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p46"
+            }
+          ],
+          "status": "UNKNOWN",
+          "explanation": "2025-26 至 2028-29 这 4 个 tax year 中，有 0 年收入达到 £125,141，需要 3 年；3 年未填写收入。",
+          "assumptions": [
+            "收入按英国 tax year 的税前收入计算，窗口为申请日所在 tax year 之前的完整 tax year；各年份统一按现行门槛比较（PD-005 / PD-006 / PD-007）。"
+          ]
+        },
+        {
+          "id": "ES-EARNINGS-5Y",
+          "title": "5 年路径收入：5 年中 3 年达到 £50,271",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p15"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p16"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p46"
+            }
+          ],
+          "status": "UNKNOWN",
+          "explanation": "2024-25 至 2028-29 这 5 个 tax year 中，有 0 年收入达到 £50,271，需要 3 年；4 年未填写收入。",
+          "assumptions": [
+            "收入按英国 tax year 的税前收入计算，窗口为申请日所在 tax year 之前的完整 tax year；各年份统一按现行门槛比较（PD-005 / PD-006 / PD-007）。"
+          ]
+        },
+        {
+          "id": "ES-EARNINGS-10Y",
+          "title": "最低收入：7 年中 5 年达到 £12,571（或家庭合计 £25,142）",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p15"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p16"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p46"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p17"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p30"
+            }
+          ],
+          "status": "UNKNOWN",
+          "explanation": "2022-23 至 2028-29 这 7 个 tax year 中，有 1 年收入达到 £12,571，需要 5 年；6 年未填写收入。",
+          "assumptions": [
+            "收入按英国 tax year 的税前收入计算，窗口为申请日所在 tax year 之前的完整 tax year；各年份统一按现行门槛比较（PD-005 / PD-006 / PD-007）。",
+            "最低收入按 p16 与 Table 1 的\\"申请前 7 年中 5 年\\"计算；p15 另有\\"至少 3 年\\"的说法（PD-041）。"
+          ]
+        },
+        {
+          "id": "ES-BRITISH-CONNECTION",
+          "title": "British connection（5 年路径）",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p18"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "以 British citizen 的伴侣、父母或子女身份持家庭签证，属 recognised British connection，可走 5 年路径。"
+        },
+        {
+          "id": "ES-PUBLIC-FUNDS",
+          "title": "申请前 5 年未使用 public funds",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p18"
+            },
+            {
+              "srcId": "SRC-006",
+              "locator": "#benefits-open-to-new-claims"
+            },
+            {
+              "srcId": "SRC-006",
+              "locator": "#contributory-benefits-and-statutory-payments"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "申请前 5 年内未领取 public funds。",
+          "assumptions": []
+        },
+        {
+          "id": "ES-BREACH",
+          "title": "成年后无 qualifying immigration breach",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p13"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "成年后无 qualifying immigration breach。"
+        },
+        {
+          "id": "ES-ASYLUM-SUPPORT",
+          "title": "已偿还 asylum support 或按计划还款",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p8"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p39"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p47"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "未申报 asylum support 的偿还情况，按未领取 asylum support 处理（领过且须偿还的，定居前须已全额偿还或按约定还款计划持续履行，p8 注 1）。"
+        },
+        {
+          "id": "ES-TRANSITIONAL-CARE-WORKER",
+          "title": "care worker 过渡安排（保留 5 年）",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p42"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p43"
+            },
+            {
+              "srcId": "SRC-012",
+              "locator": "cover"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p42"
+            },
+            {
+              "srcId": "SRC-004",
+              "locator": "SW 6.1B"
+            }
+          ],
+          "status": "FAIL",
+          "explanation": "当前不是 care worker（SOC 2020 6135 / 6136）的 Skilled Worker 签证，不适用 care worker 过渡安排。"
+        },
+        {
+          "id": "ES-TRANSITIONAL-HEALTH-EDUCATION",
+          "title": "RQF6 以下国家薪级医疗 / 教育岗位过渡安排（保留 5 年）",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p44"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p42"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p46"
+            },
+            {
+              "srcId": "SRC-012",
+              "locator": "cover"
+            },
+            {
+              "srcId": "SRC-017",
+              "locator": "Table 3a"
+            }
+          ],
+          "status": "FAIL",
+          "explanation": "当前不是 RQF6 以下、国家薪级的医疗 / 教育职业（Appendix Skilled Occupations Table 3a）的 Skilled Worker 签证，不适用该过渡安排。"
+        },
+        {
+          "id": "ES-PUBLIC-SERVICE",
+          "title": "公共服务职业满 5 年（5 年路径）",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p16"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p46 fn 17"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p58"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p59"
+            },
+            {
+              "srcId": "SRC-004",
+              "locator": "SW 16.1"
+            }
+          ],
+          "status": "FAIL",
+          "explanation": "当前工作不在 Annex C 公共服务职业表中，不走这条 5 年路径。"
+        }
+      ],
+      "assumptions": [
+        "Earned Settlement 已公布、尚未生效，按\\"假设在申请日适用\\"评估；规则依据为政府回应文件（SRC-001），不是已生效的 Immigration Rules（PD-001）。首批规则修改预计 2026 年 12 月起提交、2027 年 1 月生效，2027–2028 年继续修改（SRC-002 col 593；SRC-003 cols 1423–1424），具体生效日以届时的 Statement of Changes 为准（PD-003）。",
+        "\\"无政府债务\\"按用户申报判断；正在按还款计划偿还的非 asylum support 债务是否满足要求，原文未说明（PD-018）。",
+        "收入按英国 tax year 的税前收入计算，窗口为申请日所在 tax year 之前的完整 tax year；各年份统一按现行门槛比较（PD-005 / PD-006 / PD-007）。",
+        "最低收入按 p16 与 Table 1 的\\"申请前 7 年中 5 年\\"计算；p15 另有\\"至少 3 年\\"的说法（PD-041）。"
+      ],
+      "routeGroup": "CORE_PERMISSION"
+    }
+  }
+}"
+`;
+
+exports[`CL-FAMILY-FIVE-YEAR-SAVINGS-SHORT default-locale output is unchanged 1`] = `
+"{
+  "policyAsOf": "2026-11-04",
+  "byRuleSet": {
+    "current-law-2026-11": {
+      "outcome": "LIKELY_NOT_ELIGIBLE",
+      "pathwayYears": 10,
+      "earliestDate": "2034-06-01",
+      "decidedBy": [
+        "CL-ENGLISH",
+        "CL-KOL",
+        "CL-LR-RESIDENCE-10Y"
+      ],
+      "rules": [
+        {
+          "id": "CL-SCOPE",
+          "title": "在现行规则的建模范围内",
+          "sources": [
+            {
+              "srcId": "SRC-004",
+              "locator": "SW 21.1"
+            },
+            {
+              "srcId": "SRC-004",
+              "locator": "SW 39.1"
+            },
+            {
+              "srcId": "SRC-004",
+              "locator": "SW 41A.1"
+            },
+            {
+              "srcId": "SRC-005",
+              "locator": "LR 11.1"
+            },
+            {
+              "srcId": "SRC-020",
+              "locator": "HK 62.1"
+            },
+            {
+              "srcId": "SRC-021",
+              "locator": "GT 11.1"
+            },
+            {
+              "srcId": "SRC-022",
+              "locator": "SETF 1.3"
+            },
+            {
+              "srcId": "SRC-023",
+              "locator": "STP 1.3"
+            },
+            {
+              "srcId": "SRC-026",
+              "locator": "UKA 13.1"
+            },
+            {
+              "srcId": "SRC-027",
+              "locator": "INNF 18.1"
+            },
+            {
+              "srcId": "SRC-028",
+              "locator": "PL 14.1"
+            },
+            {
+              "srcId": "SRC-020",
+              "locator": "HK 57.1"
+            },
+            {
+              "srcId": "SRC-021",
+              "locator": "GT 27.1"
+            },
+            {
+              "srcId": "SRC-022",
+              "locator": "SETF 12.1"
+            },
+            {
+              "srcId": "SRC-024",
+              "locator": "D-LTRC.1.1"
+            },
+            {
+              "srcId": "SRC-029",
+              "locator": "para 298"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "当前持 Appendix FM 的伴侣许可，按伴侣的定居要求与 Appendix Long Residence 评估。"
+        },
+        {
+          "id": "CL-FAMILY-RESIDENCE",
+          "title": "家庭伴侣路线的连续居留",
+          "sources": [
+            {
+              "srcId": "SRC-022",
+              "locator": "SETF 3.1"
+            },
+            {
+              "srcId": "SRC-022",
+              "locator": "SETF 3.2"
+            },
+            {
+              "srcId": "SRC-022",
+              "locator": "SETF 4.1"
+            },
+            {
+              "srcId": "SRC-024",
+              "locator": "E-ILRP.1.3"
+            },
+            {
+              "srcId": "SRC-024",
+              "locator": "E-ILRP.1.4"
+            },
+            {
+              "srcId": "SRC-008",
+              "locator": "CR 3.1"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "5 年伴侣路线：自 2024-06-01 起连续持伴侣许可，已满 5 年（E-ILRP.1.3）。",
+          "assumptions": [
+            "E-ILRP.1.3 只计 5 年路线的伴侣许可（D-ECP.1.1 / D-LTRP.1.1），不计 fiancé(e) 期间；各段按同属 5 年路线、同一伴侣（E-ILRP.1.4）计算。"
+          ]
+        },
+        {
+          "id": "CL-FAMILY-RELATIONSHIP",
+          "title": "伴侣为 British citizen 或已定居",
+          "sources": [
+            {
+              "srcId": "SRC-022",
+              "locator": "SETF 7.1"
+            },
+            {
+              "srcId": "SRC-022",
+              "locator": "SETF 7.2"
+            },
+            {
+              "srcId": "SRC-022",
+              "locator": "SETF 7.3"
+            },
+            {
+              "srcId": "SRC-024",
+              "locator": "E-ILRP.1.3(1A)"
+            },
+            {
+              "srcId": "SRC-024",
+              "locator": "E-LTRP.1.2"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "伴侣为 British citizen（E-LTRP.1.2(a)）。",
+          "assumptions": [
+            "按关系真实且持续、双方打算永久共同生活（E-LTRP.1.7–E-LTRP.1.10）处理，本工具未核对。"
+          ]
+        },
+        {
+          "id": "CL-FAMILY-FINANCIAL",
+          "title": "5 年伴侣路线的财务要求",
+          "sources": [
+            {
+              "srcId": "SRC-024",
+              "locator": "E-ILRP.1.3(1A)"
+            },
+            {
+              "srcId": "SRC-024",
+              "locator": "E-LTRP.3.1"
+            },
+            {
+              "srcId": "SRC-024",
+              "locator": "E-LTRP.3.2"
+            },
+            {
+              "srcId": "SRC-024",
+              "locator": "E-LTRP.3.3"
+            },
+            {
+              "srcId": "SRC-024",
+              "locator": "E-LTRP.3.5"
+            },
+            {
+              "srcId": "SRC-024",
+              "locator": "E-LTRP.3.7"
+            },
+            {
+              "srcId": "SRC-024",
+              "locator": "E-LTRP.3.8"
+            }
+          ],
+          "status": "FAIL",
+          "explanation": "2028-29 纳税年度本人与伴侣收入合计 £20,000，低于一般门槛（E-LTRP.3.1(a)）的 £29,000，缺口 £9,000；现金储蓄 £24,000，不足 £16,000 加缺口共 £25,000，还差 £1,000（E-LTRP.3.1(b)；E-ILRP.1.3(1A)）。若伴侣领取 E-LTRP.3.3(a) 所列福利，可改按 E-LTRP.3.3 判断。",
+          "assumptions": [
+            "是否适用过渡门槛按连续伴侣许可的起点是否早于 2024-04-11 判断（E-LTRP.3.5 看的是首次申请日；获批在此后而申请在此前的，也适用过渡门槛）；子女按\\"关系\\"里身份为其他的子女计。",
+            "储蓄按申报的合计现金储蓄计；Appendix FM-SE 的持有期与证据规则、E-LTRP.3.2 的收入与储蓄来源种类未核对；伴侣领取的福利按申报；住宿要求（E-LTRP.3.4、E-LTRP.3.9）与 EX.1 未建模。"
+          ]
+        },
+        {
+          "id": "CL-ENGLISH",
+          "title": "定居英语要求",
+          "sources": [
+            {
+              "srcId": "SRC-004",
+              "locator": "SW 22A.1"
+            },
+            {
+              "srcId": "SRC-004",
+              "locator": "SW 44.1"
+            },
+            {
+              "srcId": "SRC-007",
+              "locator": "p24"
+            },
+            {
+              "srcId": "SRC-005",
+              "locator": "LR 13.1"
+            },
+            {
+              "srcId": "SRC-020",
+              "locator": "HK 60.1"
+            },
+            {
+              "srcId": "SRC-021",
+              "locator": "GT 13.1"
+            },
+            {
+              "srcId": "SRC-021",
+              "locator": "GT 32.1"
+            },
+            {
+              "srcId": "SRC-022",
+              "locator": "SETF 5.1"
+            },
+            {
+              "srcId": "SRC-022",
+              "locator": "SETF 15.1"
+            },
+            {
+              "srcId": "SRC-024",
+              "locator": "E-ILRP.1.6"
+            },
+            {
+              "srcId": "SRC-025",
+              "locator": "KoLL 2.2"
+            },
+            {
+              "srcId": "SRC-025",
+              "locator": "KoLL 3.1"
+            },
+            {
+              "srcId": "SRC-029",
+              "locator": "para 298(vii)"
+            },
+            {
+              "srcId": "SRC-026",
+              "locator": "UKA 15.1"
+            },
+            {
+              "srcId": "SRC-028",
+              "locator": "PL 16.1"
+            },
+            {
+              "srcId": "SRC-007",
+              "locator": "EM 5.60"
+            },
+            {
+              "srcId": "SRC-014",
+              "locator": "EL 1.1"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "英语 B2，达到定居要求的 B2（Appendix KoLL 2.2，经 E-ILRP.1.6；2027-03-26 起的申请）。"
+        },
+        {
+          "id": "CL-KOL",
+          "title": "通过 Life in the UK 考试",
+          "sources": [
+            {
+              "srcId": "SRC-004",
+              "locator": "SW 23.1"
+            },
+            {
+              "srcId": "SRC-004",
+              "locator": "SW 45.1"
+            },
+            {
+              "srcId": "SRC-005",
+              "locator": "LR 14.1"
+            },
+            {
+              "srcId": "SRC-020",
+              "locator": "HK 61.1"
+            },
+            {
+              "srcId": "SRC-021",
+              "locator": "GT 14.1"
+            },
+            {
+              "srcId": "SRC-021",
+              "locator": "GT 33.1"
+            },
+            {
+              "srcId": "SRC-022",
+              "locator": "SETF 6.1"
+            },
+            {
+              "srcId": "SRC-022",
+              "locator": "SETF 16.1"
+            },
+            {
+              "srcId": "SRC-025",
+              "locator": "KoLL 2.3"
+            },
+            {
+              "srcId": "SRC-025",
+              "locator": "KoLL 3.1"
+            },
+            {
+              "srcId": "SRC-029",
+              "locator": "para 298(vii)"
+            },
+            {
+              "srcId": "SRC-026",
+              "locator": "UKA 16.1"
+            },
+            {
+              "srcId": "SRC-027",
+              "locator": "INNF 20.1"
+            },
+            {
+              "srcId": "SRC-028",
+              "locator": "PL 17.1"
+            },
+            {
+              "srcId": "SRC-015",
+              "locator": "KOL 1.1"
+            },
+            {
+              "srcId": "SRC-015",
+              "locator": "KOL 2.1"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "已通过 Life in the UK 考试（Appendix KoLL 2.3，经 E-ILRP.1.6）。"
+        },
+        {
+          "id": "CL-LR-RESIDENCE-10Y",
+          "title": "Long Residence 连续合法居留 10 年",
+          "sources": [
+            {
+              "srcId": "SRC-005",
+              "locator": "LR 11.1"
+            },
+            {
+              "srcId": "SRC-005",
+              "locator": "LR 11.2"
+            },
+            {
+              "srcId": "SRC-008",
+              "locator": "CR 3.1"
+            },
+            {
+              "srcId": "SRC-008",
+              "locator": "CR 3.3"
+            }
+          ],
+          "status": "FAIL",
+          "explanation": "自 2024-06-01 起连续合法居留，截至 2029-06-01 满 5 年；2034-06-01 满 10 年。",
+          "assumptions": [
+            "连续合法居留计入学生、毕业生等临时路线，不计访问、季节性工作者、乌克兰计划（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。"
+          ]
+        }
+      ],
+      "assumptions": [
+        "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人及其 dependant（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人及其 dependent partner / child（Appendix Global Talent）、Appendix FM 伴侣（10 年路线按 Appendix Settlement Family Life，5 年路线按 Appendix FM）及其子女（10 年路线按 Appendix Settlement Family Life，5 年路线按 Immigration Rules Part 8 第 298 段）、持 refugee status 或 humanitarian protection 的主申请人（Appendix Settlement Protection）、UK Ancestry 主申请人（Appendix UK Ancestry）、Innovator Founder 主申请人（Appendix Innovator Founder）、Private Life 主申请人（Appendix Private Life）与 Long Residence（Appendix Long Residence）；Part Suitability、STP 2.1 的 suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
+        "E-ILRP.1.3 只计 5 年路线的伴侣许可（D-ECP.1.1 / D-LTRP.1.1），不计 fiancé(e) 期间；各段按同属 5 年路线、同一伴侣（E-ILRP.1.4）计算。",
+        "按关系真实且持续、双方打算永久共同生活（E-LTRP.1.7–E-LTRP.1.10）处理，本工具未核对。",
+        "是否适用过渡门槛按连续伴侣许可的起点是否早于 2024-04-11 判断（E-LTRP.3.5 看的是首次申请日；获批在此后而申请在此前的，也适用过渡门槛）；子女按\\"关系\\"里身份为其他的子女计。",
+        "储蓄按申报的合计现金储蓄计；Appendix FM-SE 的持有期与证据规则、E-LTRP.3.2 的收入与储蓄来源种类未核对；伴侣领取的福利按申报；住宿要求（E-LTRP.3.4、E-LTRP.3.9）与 EX.1 未建模。",
+        "连续合法居留计入学生、毕业生等临时路线，不计访问、季节性工作者、乌克兰计划（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。",
+        "最早可申请日期按\\"自 2024-06-01 起持续居留、收入等状况不变、其余要求届时仍满足\\"推算，不是对未来的保证。"
+      ]
+    },
+    "earned-settlement-2026-11": {
+      "outcome": "LIKELY_ELIGIBLE",
+      "pathwayYears": 5,
+      "earliestDate": "2029-06-01",
+      "decidedBy": [
+        "ES-CRIMINALITY",
+        "ES-DEBT",
+        "ES-ENGLISH-B2",
+        "ES-KOL",
+        "ES-ROUTE-GROUP",
+        "ES-RESIDENCE",
+        "ES-BRITISH-CONNECTION",
+        "ES-PUBLIC-FUNDS",
+        "ES-BREACH",
+        "ES-ASYLUM-SUPPORT"
+      ],
+      "rules": [
+        {
+          "id": "ES-CRIMINALITY",
+          "title": "无犯罪记录",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p12"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "未申报犯罪记录。"
+        },
+        {
+          "id": "ES-DEBT",
+          "title": "无未清偿的政府债务",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p12"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p29"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "申报无未清偿的政府债务。",
+          "assumptions": [
+            "\\"无政府债务\\"按用户申报判断；正在按还款计划偿还的非 asylum support 债务是否满足要求，原文未说明（PD-018）。"
+          ]
+        },
+        {
+          "id": "ES-ENGLISH-B2",
+          "title": "定居英语要求（B2；UKRS 难民 A2）",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p21"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "英语 B2，达到 B2。"
+        },
+        {
+          "id": "ES-KOL",
+          "title": "通过 Life in the UK 考试",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p21"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "已通过 Life in the UK 考试。"
+        },
+        {
+          "id": "ES-ROUTE-GROUP",
+          "title": "当前路线计入定居",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p23"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p24"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p25"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p26"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "当前路线\\"家庭伴侣或父母\\"属核心许可 / 英国联系分组，计入定居。"
+        },
+        {
+          "id": "ES-RESIDENCE",
+          "title": "计入定居的连续居留",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p22"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p23"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p24"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p25"
+            },
+            {
+              "srcId": "SRC-008",
+              "locator": "CR 3.1"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "计入定居的连续居留自 2024-06-01 起，截至 2029-06-01 满 5 年。",
+          "assumptions": []
+        },
+        {
+          "id": "ES-EARNINGS-3Y",
+          "title": "3 年路径收入：4 年中 3 年达到 £125,141",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p15"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p16"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p46"
+            }
+          ],
+          "status": "UNKNOWN",
+          "explanation": "2025-26 至 2028-29 这 4 个 tax year 中，有 0 年收入达到 £125,141，需要 3 年；3 年未填写收入。",
+          "assumptions": [
+            "收入按英国 tax year 的税前收入计算，窗口为申请日所在 tax year 之前的完整 tax year；各年份统一按现行门槛比较（PD-005 / PD-006 / PD-007）。"
+          ]
+        },
+        {
+          "id": "ES-EARNINGS-5Y",
+          "title": "5 年路径收入：5 年中 3 年达到 £50,271",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p15"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p16"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p46"
+            }
+          ],
+          "status": "UNKNOWN",
+          "explanation": "2024-25 至 2028-29 这 5 个 tax year 中，有 0 年收入达到 £50,271，需要 3 年；4 年未填写收入。",
+          "assumptions": [
+            "收入按英国 tax year 的税前收入计算，窗口为申请日所在 tax year 之前的完整 tax year；各年份统一按现行门槛比较（PD-005 / PD-006 / PD-007）。"
+          ]
+        },
+        {
+          "id": "ES-EARNINGS-10Y",
+          "title": "最低收入：7 年中 5 年达到 £12,571（或家庭合计 £25,142）",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p15"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p16"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p46"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p17"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p30"
+            }
+          ],
+          "status": "UNKNOWN",
+          "explanation": "2022-23 至 2028-29 这 7 个 tax year 中，有 1 年收入达到 £12,571，需要 5 年；6 年未填写收入。",
+          "assumptions": [
+            "收入按英国 tax year 的税前收入计算，窗口为申请日所在 tax year 之前的完整 tax year；各年份统一按现行门槛比较（PD-005 / PD-006 / PD-007）。",
+            "最低收入按 p16 与 Table 1 的\\"申请前 7 年中 5 年\\"计算；p15 另有\\"至少 3 年\\"的说法（PD-041）。"
+          ]
+        },
+        {
+          "id": "ES-BRITISH-CONNECTION",
+          "title": "British connection（5 年路径）",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p18"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "以 British citizen 的伴侣、父母或子女身份持家庭签证，属 recognised British connection，可走 5 年路径。"
+        },
+        {
+          "id": "ES-PUBLIC-FUNDS",
+          "title": "申请前 5 年未使用 public funds",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p18"
+            },
+            {
+              "srcId": "SRC-006",
+              "locator": "#benefits-open-to-new-claims"
+            },
+            {
+              "srcId": "SRC-006",
+              "locator": "#contributory-benefits-and-statutory-payments"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "申请前 5 年内未领取 public funds。",
+          "assumptions": []
+        },
+        {
+          "id": "ES-BREACH",
+          "title": "成年后无 qualifying immigration breach",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p13"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "成年后无 qualifying immigration breach。"
+        },
+        {
+          "id": "ES-ASYLUM-SUPPORT",
+          "title": "已偿还 asylum support 或按计划还款",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p8"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p39"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p47"
+            }
+          ],
+          "status": "PASS",
+          "explanation": "未申报 asylum support 的偿还情况，按未领取 asylum support 处理（领过且须偿还的，定居前须已全额偿还或按约定还款计划持续履行，p8 注 1）。"
+        },
+        {
+          "id": "ES-TRANSITIONAL-CARE-WORKER",
+          "title": "care worker 过渡安排（保留 5 年）",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p42"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p43"
+            },
+            {
+              "srcId": "SRC-012",
+              "locator": "cover"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p42"
+            },
+            {
+              "srcId": "SRC-004",
+              "locator": "SW 6.1B"
+            }
+          ],
+          "status": "FAIL",
+          "explanation": "当前不是 care worker（SOC 2020 6135 / 6136）的 Skilled Worker 签证，不适用 care worker 过渡安排。"
+        },
+        {
+          "id": "ES-TRANSITIONAL-HEALTH-EDUCATION",
+          "title": "RQF6 以下国家薪级医疗 / 教育岗位过渡安排（保留 5 年）",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p44"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p42"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p46"
+            },
+            {
+              "srcId": "SRC-012",
+              "locator": "cover"
+            },
+            {
+              "srcId": "SRC-017",
+              "locator": "Table 3a"
+            }
+          ],
+          "status": "FAIL",
+          "explanation": "当前不是 RQF6 以下、国家薪级的医疗 / 教育职业（Appendix Skilled Occupations Table 3a）的 Skilled Worker 签证，不适用该过渡安排。"
+        },
+        {
+          "id": "ES-PUBLIC-SERVICE",
+          "title": "公共服务职业满 5 年（5 年路径）",
+          "sources": [
+            {
+              "srcId": "SRC-001",
+              "locator": "p16"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p46 fn 17"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p58"
+            },
+            {
+              "srcId": "SRC-001",
+              "locator": "p59"
+            },
+            {
+              "srcId": "SRC-004",
+              "locator": "SW 16.1"
+            }
+          ],
+          "status": "FAIL",
+          "explanation": "当前工作不在 Annex C 公共服务职业表中，不走这条 5 年路径。"
+        }
+      ],
+      "assumptions": [
+        "Earned Settlement 已公布、尚未生效，按\\"假设在申请日适用\\"评估；规则依据为政府回应文件（SRC-001），不是已生效的 Immigration Rules（PD-001）。首批规则修改预计 2026 年 12 月起提交、2027 年 1 月生效，2027–2028 年继续修改（SRC-002 col 593；SRC-003 cols 1423–1424），具体生效日以届时的 Statement of Changes 为准（PD-003）。",
+        "\\"无政府债务\\"按用户申报判断；正在按还款计划偿还的非 asylum support 债务是否满足要求，原文未说明（PD-018）。",
+        "收入按英国 tax year 的税前收入计算，窗口为申请日所在 tax year 之前的完整 tax year；各年份统一按现行门槛比较（PD-005 / PD-006 / PD-007）。",
+        "最低收入按 p16 与 Table 1 的\\"申请前 7 年中 5 年\\"计算；p15 另有\\"至少 3 年\\"的说法（PD-041）。"
+      ],
+      "routeGroup": "CORE_PERMISSION"
+    }
+  }
+}"
+`;
+
 exports[`CL-FAMILY-PARTNER-FIVE-YEARS default-locale output is unchanged 1`] = `
 "{
   "policyAsOf": "2026-11-04",
@@ -1819,6 +4052,10 @@ exports[`CL-FAMILY-PARTNER-FIVE-YEARS default-locale output is unchanged 1`] = `
             },
             {
               "srcId": "SRC-024",
+              "locator": "E-LTRP.3.3"
+            },
+            {
+              "srcId": "SRC-024",
               "locator": "E-LTRP.3.5"
             },
             {
@@ -1833,7 +4070,8 @@ exports[`CL-FAMILY-PARTNER-FIVE-YEARS default-locale output is unchanged 1`] = `
           "status": "PASS",
           "explanation": "2024-25 纳税年度本人与伴侣收入合计 £22,000，达到过渡门槛（E-LTRP.3.5、E-LTRP.3.7(a)，0 名子女，最高 £29,000）的 £18,600。",
           "assumptions": [
-            "是否适用过渡门槛按连续伴侣许可的起点是否早于 2024-04-11 判断（E-LTRP.3.5 看的是首次申请日；获批在此后而申请在此前的，也适用过渡门槛）；子女按\\"关系\\"里身份为其他的子女计。储蓄（E-LTRP.3.1(b)）、伴侣领取特定福利（E-LTRP.3.3）与 Appendix FM-SE 的证据规则未建模。"
+            "是否适用过渡门槛按连续伴侣许可的起点是否早于 2024-04-11 判断（E-LTRP.3.5 看的是首次申请日；获批在此后而申请在此前的，也适用过渡门槛）；子女按\\"关系\\"里身份为其他的子女计。",
+            "储蓄按申报的合计现金储蓄计；Appendix FM-SE 的持有期与证据规则、E-LTRP.3.2 的收入与储蓄来源种类未核对；伴侣领取的福利按申报；住宿要求（E-LTRP.3.4、E-LTRP.3.9）与 EX.1 未建模。"
           ]
         },
         {
@@ -2016,7 +4254,8 @@ exports[`CL-FAMILY-PARTNER-FIVE-YEARS default-locale output is unchanged 1`] = `
         "现行规则只建模 Skilled Worker 主申请人及其 dependent partner / child（Appendix Skilled Worker、Appendix Children）、Hong Kong BN(O) 主申请人及其 dependant（Appendix Hong Kong British National (Overseas)）、Global Talent 主申请人及其 dependent partner / child（Appendix Global Talent）、Appendix FM 伴侣（10 年路线按 Appendix Settlement Family Life，5 年路线按 Appendix FM）及其子女（10 年路线按 Appendix Settlement Family Life，5 年路线按 Immigration Rules Part 8 第 298 段）、持 refugee status 或 humanitarian protection 的主申请人（Appendix Settlement Protection）、UK Ancestry 主申请人（Appendix UK Ancestry）、Innovator Founder 主申请人（Appendix Innovator Founder）、Private Life 主申请人（Appendix Private Life）与 Long Residence（Appendix Long Residence）；Part Suitability、STP 2.1 的 suitability、担保方仍获批准（SW 24.1–24.2）等其他要求未建模。",
         "E-ILRP.1.3 只计 5 年路线的伴侣许可（D-ECP.1.1 / D-LTRP.1.1），不计 fiancé(e) 期间；各段按同属 5 年路线、同一伴侣（E-ILRP.1.4）计算。",
         "按关系真实且持续、双方打算永久共同生活（E-LTRP.1.7–E-LTRP.1.10）处理，本工具未核对。",
-        "是否适用过渡门槛按连续伴侣许可的起点是否早于 2024-04-11 判断（E-LTRP.3.5 看的是首次申请日；获批在此后而申请在此前的，也适用过渡门槛）；子女按\\"关系\\"里身份为其他的子女计。储蓄（E-LTRP.3.1(b)）、伴侣领取特定福利（E-LTRP.3.3）与 Appendix FM-SE 的证据规则未建模。",
+        "是否适用过渡门槛按连续伴侣许可的起点是否早于 2024-04-11 判断（E-LTRP.3.5 看的是首次申请日；获批在此后而申请在此前的，也适用过渡门槛）；子女按\\"关系\\"里身份为其他的子女计。",
+        "储蓄按申报的合计现金储蓄计；Appendix FM-SE 的持有期与证据规则、E-LTRP.3.2 的收入与储蓄来源种类未核对；伴侣领取的福利按申报；住宿要求（E-LTRP.3.4、E-LTRP.3.9）与 EX.1 未建模。",
         "连续合法居留计入学生、毕业生等临时路线，不计访问、季节性工作者、乌克兰计划（LR 11.1(a)）；LR 11.2 不计入的期间（immigration bail 等）与 LR 11.3 的 12 个月要求未建模。"
       ]
     },

@@ -253,6 +253,15 @@ export const currentLaw2026_11 = {
       value: 2400,
       sources: [{ srcId: 'SRC-024', locator: 'E-LTRP.3.7(a)(iii)' }],
     },
+    // Savings that make up an income shortfall: this amount plus the
+    // shortfall, not 2.5 times it, at settlement (E-ILRP.1.3(1A)).
+    familyPartnerSavingsBase: {
+      value: 16000,
+      sources: [
+        { srcId: 'SRC-024', locator: 'E-LTRP.3.1(b)(i)' },
+        { srcId: 'SRC-024', locator: 'E-LTRP.3.7(b)(i)' },
+      ],
+    },
     // Continuous years in the UK with refugee status or humanitarian
     // protection. Appendix Settlement Protection sets no English or Life in
     // the UK requirement (PD-072).

@@ -181,7 +181,7 @@ dependant 随主申请人定居（SRC-001 Ch.5）时，原文未规定、引擎�
 - Global Talent 的 GT 10.1（背书未被撤回）与 GT 10.2（上一段许可期间在背书或奖项领域有收入）：按满足处理，写进 `CL-GT-RESIDENCE` 的假设。
 - GT 11.3(f)(h) 的 Tier 1 与 Representative of an Overseas Business：`Route` 中没有，不计入，写进假设。
 - 家庭伴侣 10 年路线的 SETF 3.1(e)（基于 Article 8 的 Leave Outside the Rules）：无法与其他 Leave Outside the Rules 区分，不计入；SETF 7.2–7.3（关系真实持续、以当前关系持许可满 1 年）按满足处理。
-- 家庭伴侣 5 年路线的财务要求只按申请日前最近一个完整纳税年度的本人加伴侣收入判断：储蓄（E-LTRP.3.1(b)）、E-LTRP.3.3（伴侣领取特定福利）、Appendix FM-SE 证据规则与住宿要求（E-LTRP.3.4）未建模；过渡门槛按连续伴侣许可的起点近似"首次申请日"；同一伴侣（E-ILRP.1.4、E-LTRP.3.6）与关系真实持续（E-LTRP.1.7–1.10）按满足处理。
+- 家庭伴侣 5 年路线的财务要求按申请日前最近一个完整纳税年度的本人加伴侣收入判断；收入不足时可用储蓄补足（E-LTRP.3.1(b) / 3.7(b)，任务 6.4 起建模，见 `docs/contracts.md` §17），伴侣领取 E-LTRP.3.3(a) 所列福利时见 PD-075；Appendix FM-SE 证据规则、E-LTRP.3.2 的来源种类与住宿要求（E-LTRP.3.4）未建模；过渡门槛按连续伴侣许可的起点近似"首次申请日"；同一伴侣（E-ILRP.1.4、E-LTRP.3.6）与关系真实持续（E-LTRP.1.7–1.10）按满足处理。
 - HC 1691 不覆盖 Appendix Hong Kong BN(O)：已由 SRC-007 EM 5.60 确认（列出升 B2 的 Appendix 中没有它），HK 60.1 一律 B1，不是待定事项。
 
 ## 八、现行法律栏扩展二（任务 5.2 新增）
