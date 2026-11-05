@@ -12,6 +12,7 @@ import type { Route } from '@uk-immigration/policy-data';
 import { describe, expect, test } from 'vitest';
 import { taxYearsBefore } from '../src/dates';
 import { evaluate, RULE_SETS } from '../src/evaluate';
+import { episodeOn } from '../src/residence';
 import type {
   ImmigrationBreach,
   ImmigrationEpisode,
@@ -59,28 +60,34 @@ function generateRequest(seed: number): SimulationRequest {
   const simulationDate = date(2026, 2040);
   const simulationMs = Date.parse(simulationDate);
 
-  const timeline = (): PersonTimeline => {
+  const timeline = (principalRoute?: Route): PersonTimeline => {
     const dateOfBirth = date(1950, 2010);
     const birthMs = Date.parse(dateOfBirth);
     const eventDate = () =>
       iso(birthMs + int(0, (simulationMs - birthMs) / DAY_MS) * DAY_MS);
     const episodes: ImmigrationEpisode[] = [];
-    const episodeCount = int(0, 4);
+    const episodeCount = principalRoute === undefined ? int(0, 4) : 1;
     let from = Math.max(birthMs, simulationMs - int(365, 30 * 365) * DAY_MS);
     for (let index = 0; index < episodeCount; index++) {
       const duration = int(30, 10 * 365);
       const to =
-        index === episodeCount - 1 && chance(0.75)
+        index === episodeCount - 1 &&
+        (principalRoute !== undefined || chance(0.75))
           ? Math.max(from, simulationMs + int(0, 4 * 365) * DAY_MS)
           : from + duration * DAY_MS;
       const episode: ImmigrationEpisode = {
-        route: pick(routes),
-        role: pick(['MAIN', 'DEPENDANT'] as const),
+        route: principalRoute ?? pick(routes),
+        role:
+          principalRoute === undefined
+            ? pick(['MAIN', 'DEPENDANT'] as const)
+            : 'MAIN',
         validFrom: iso(from),
         validTo: iso(to),
       };
       if (episode.role === 'DEPENDANT') {
-        episode.dependantOf = optional(pick(['PARTNER', 'PARENT', 'RELATIVE'] as const));
+        episode.dependantOf = optional(
+          pick(['PARTNER', 'PARENT', 'RELATIVE'] as const),
+        );
       }
       if (episode.route === 'SKILLED_WORKER' && episode.role === 'MAIN') {
         episode.socCode = optional(
@@ -129,9 +136,13 @@ function generateRequest(seed: number): SimulationRequest {
         episode.route === 'FAMILY_PARTNER_OR_PARENT' &&
         episode.role === 'MAIN'
       ) {
-        episode.familyPermission = optional(
-          pick(['PARTNER_FIVE_YEAR', 'PARTNER_TEN_YEAR', 'PARENT'] as const),
-        );
+        const permission = pick([
+          'PARTNER_FIVE_YEAR',
+          'PARTNER_TEN_YEAR',
+          'PARENT',
+        ] as const);
+        episode.familyPermission =
+          principalRoute === undefined ? optional(permission) : permission;
       }
       if (episode.route === 'INNOVATOR_FOUNDER' && episode.role === 'MAIN') {
         episode.innovatorSettlementCriteria = optional(
@@ -178,6 +189,8 @@ function generateRequest(seed: number): SimulationRequest {
         earnings: optional(pick([0, int(1, 200000)])),
         partnerEarnings: optional(pick([0, int(1, 100000)])),
       })),
+      cashSavings: optional(pick([0, int(0, 60000)])),
+      partnerSpecifiedBenefit: optional(chance()),
       benefits: Array.from({ length: chance(0.6) ? 0 : int(1, 3) }, () => {
         const from = eventDate();
         return {
@@ -220,7 +233,10 @@ function generateRequest(seed: number): SimulationRequest {
         },
       ),
       governmentDebt: optional({ outstanding: chance(0.25) }),
-      settled: optional({ date: eventDate(), route: pick(routes) }),
+      settled:
+        principalRoute === undefined
+          ? optional({ date: eventDate(), route: pick(routes) })
+          : undefined,
       asylumSupportRepayment: optional(
         pick(
           Object.keys(asylumSupportRepaymentNames) as NonNullable<
@@ -236,7 +252,12 @@ function generateRequest(seed: number): SimulationRequest {
     simulationDate,
     locale: pick(['zh-CN', 'en'] as const),
   };
-  if (chance(0.3)) request.principal = timeline();
+  if (chance(0.3)) {
+    const current = episodeOn(request.timeline, simulationDate);
+    request.principal = timeline(
+      current?.role === 'DEPENDANT' && chance() ? current.route : undefined,
+    );
+  }
   switch (int(0, 5)) {
     case 1:
       request.ruleSetIds = [];
@@ -313,8 +334,9 @@ describe('random timelines (fixed Mulberry32 seeds)', () => {
           expect(decidedBy !== undefined).toBe(
             assessment.pathwayYears !== undefined,
           );
-          if (decidedBy) {
+          if (decidedBy !== undefined) {
             expect(decidedBy.length).toBeGreaterThan(0);
+            expect(new Set(decidedBy).size).toBe(decidedBy.length);
             expect(decidedBy).toEqual(
               ruleIds.filter((ruleId) => decidedBy.includes(ruleId)),
             );
@@ -328,6 +350,17 @@ describe('random timelines (fixed Mulberry32 seeds)', () => {
           }
           for (const rule of assessment.rules) {
             expect(['PASS', 'FAIL', 'UNKNOWN']).toContain(rule.status);
+            if (rule.id === 'CL-FAMILY-FINANCIAL') {
+              if (
+                rule.status === 'UNKNOWN' &&
+                rule.pendingDetails !== undefined
+              ) {
+                expect(rule.pendingDetails).toEqual(['PD-075']);
+              }
+              if (rule.pendingDetails?.includes('PD-075')) {
+                expect(request.timeline.partnerSpecifiedBenefit).toBe(true);
+              }
+            }
             expect(typeof rule.explanation).toBe('string');
             expect(rule.explanation.trim().length).toBeGreaterThan(0);
             for (const source of rule.sources) {
