@@ -1,15 +1,6 @@
-import { evaluate, type Locale, type RuleSetId } from '@uk-immigration/engine';
-import {
-  characters,
-  changedRules,
-  currentCard,
-  TURNS,
-  type GameState,
-} from '@uk-immigration/game';
-import { displayedRuleSets } from '../../lib/policy';
+import { evaluate, type Locale } from '@uk-immigration/engine';
+import { characters, statKeys, type GameState } from './mock-core';
 import { createDraft, type Draft } from '../../lib/questionnaire';
-
-const gameKey = 'uk-immigration-game-v1';
 
 export function withGameLocale(state: GameState, locale: Locale): GameState {
   if (state.locale === locale) return state;
@@ -17,55 +8,66 @@ export function withGameLocale(state: GameState, locale: Locale): GameState {
     ...state,
     locale,
     result: evaluate({
-      simulationDate: state.simulationDate,
+      simulationDate: state.date,
       timeline: state.timeline,
       locale,
     }),
   };
 }
 
-// Storage is the only external input boundary; an unavailable save never blocks play.
-export function gameStorage(next?: GameState | null): {
-  state: GameState | undefined;
-  available: boolean;
-} {
+// Storage is the external input boundary. Failed saves never interrupt play.
+export function gameStorage(
+  characterId: string,
+  next?: GameState,
+): { state: GameState | undefined; available: boolean } {
   try {
-    if (next === null) {
-      localStorage.removeItem(gameKey);
-      return { state: undefined, available: true };
-    }
+    const key = `uk-immigration-life-v2:${characterId}`;
     if (next) {
-      localStorage.setItem(gameKey, JSON.stringify(next));
+      localStorage.setItem(key, JSON.stringify(next));
       return { state: next, available: true };
     }
-    const saved = localStorage.getItem(gameKey);
+    const saved = localStorage.getItem(key);
     if (!saved) return { state: undefined, available: true };
     const state: GameState = JSON.parse(saved);
     if (
       !state ||
-      !characters.some((character) => character.id === state.characterId) ||
+      state.version !== 2 ||
+      state.characterId !== characterId ||
+      !characters.some((item) => item.id === characterId) ||
       !Number.isInteger(state.seed) ||
-      !Number.isInteger(state.turn) ||
-      state.turn < 1 ||
-      state.turn > TURNS ||
-      !['luck', 'choice', 'ended'].includes(state.phase) ||
+      !Number.isInteger(state.year) ||
+      state.year < 1 ||
+      ![1, 2, 3, 4].includes(state.quarter) ||
+      !Number.isInteger(state.actionsLeft) ||
+      state.actionsLeft < 0 ||
       !['zh-CN', 'en'].includes(state.locale) ||
-      !Array.isArray(state.drawnLuck) ||
+      !/^\d{4}-\d{2}-\d{2}$/.test(state.date) ||
+      !statKeys.every((key) => Number.isFinite(state.stats?.[key])) ||
+      ![state.flags, state.firedEvents, state.achievements].every(
+        (list) =>
+          Array.isArray(list) && list.every((item) => typeof item === 'string'),
+      ) ||
       !Array.isArray(state.log) ||
       !state.log.every(
-        (entry) => entry?.before?.byRuleSet && entry?.after?.byRuleSet,
-      )
+        (entry) =>
+          entry &&
+          typeof entry.text?.zhCN === 'string' &&
+          typeof entry.text?.en === 'string',
+      ) ||
+      (state.pendingEvent !== undefined &&
+        !characters
+          .find((item) => item.id === characterId)!
+          .events.some((event) => event.id === state.pendingEvent))
     )
       return { state: undefined, available: false };
     state.result = evaluate({
-      simulationDate: state.simulationDate,
+      simulationDate: state.date,
       timeline: state.timeline,
       locale: state.locale,
     });
-    currentCard(state);
     return { state, available: true };
   } catch {
-    return { state: next ?? undefined, available: false };
+    return { state: next, available: false };
   }
 }
 
@@ -73,7 +75,7 @@ export function gameDraft(state: GameState): Draft {
   return {
     ...createDraft(),
     timeline: state.timeline,
-    simulationDate: state.simulationDate,
+    simulationDate: state.date,
     completed: true,
     screening: {
       criminality: state.timeline.criminalRecord.length ? 'yes' : 'no',
@@ -81,30 +83,4 @@ export function gameDraft(state: GameState): Draft {
       debt: state.timeline.governmentDebt?.outstanding ? 'yes' : 'no',
     },
   };
-}
-
-export function mostChangedRules(state: GameState) {
-  const counts = new Map<
-    string,
-    { id: string; ruleSetId: RuleSetId; count: number }
-  >();
-  for (const entry of state.log) {
-    for (const ruleSet of displayedRuleSets) {
-      for (const change of changedRules(
-        entry.before,
-        entry.after,
-        ruleSet.id,
-      )) {
-        const key = `${ruleSet.id}:${change.id}`;
-        const item = counts.get(key) ?? {
-          id: change.id,
-          ruleSetId: ruleSet.id,
-          count: 0,
-        };
-        item.count++;
-        counts.set(key, item);
-      }
-    }
-  }
-  return [...counts.values()].sort((a, b) => b.count - a.count).slice(0, 3);
 }
