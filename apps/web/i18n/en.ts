@@ -1,6 +1,43 @@
 import type { zhCN } from './zh-CN';
 
 export const en: Record<keyof typeof zhCN, string> = {
+  'game.entry': 'Play a round · Immigration Life',
+  'game.disclaimer':
+    'Educational game: characters and events are fictional. Outcomes use the rules registered today and are not advice.',
+  'game.intro':
+    'Choose a character and follow ten years of their life. Make choices, meet surprises and see how the same timeline changes under two sets of rules. There are no scores and no real personal details to enter.',
+  'game.chooseCharacter': 'Choose your character',
+  'game.startAs': 'Start with {name}',
+  'game.turn': 'Turn {turn} / {total}',
+  'game.date': 'Game date',
+  'game.luck': 'Luck card',
+  'game.choice': 'This year’s choice',
+  'game.acknowledge': 'Got it',
+  'game.chosen': 'You chose:',
+  'game.luckRevealed': 'Luck revealed:',
+  'game.stepResult': 'This step’s result',
+  'game.results': 'One life, two sets of rules',
+  'game.changes': 'What changed this step',
+  'game.noChanges': 'This step did not change this column',
+  'game.notAssessed': 'Not assessed',
+  'game.ruleAbsent':
+    'This rule is no longer included in this step’s assessment; that does not mean the condition is met.',
+  'game.nextYear': 'Next year',
+  'game.ending': 'Your story so far',
+  'game.endingText':
+    'Ten turns complete. Below is the final assessment of this timeline; you can explore it further in the simulator.',
+  'game.earlyEnding':
+    'This story reached a situation needing professional review, so the game ends here. Both columns and their changes remain below.',
+  'game.topRules': 'The three rules that changed most this game',
+  'game.changedCount': 'Status changed {count} times',
+  'game.noRuleChanges': 'No rule status changes were recorded in this game.',
+  'game.openTimeline': 'Open this timeline in the simulator',
+  'game.replay': 'Play again (new luck)',
+  'game.changeCharacter': 'Change character',
+  'game.saved':
+    'Progress stays in this browser. Refresh to continue where you left off.',
+  'game.storageUnavailable':
+    'Local storage is unavailable. You can keep playing, but this game may be lost if you refresh or close the page.',
   'site.about': 'About',
   'site.feedback': 'Feedback',
   'about.title': 'How this simulator works',

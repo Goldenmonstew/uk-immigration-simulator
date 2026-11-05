@@ -14,7 +14,7 @@ import { GapSummary } from './gap-summary';
 import site from '../app/site.module.css';
 import styles from '../app/result/result.module.css';
 
-function jumpToAssessment(id: string) {
+export function jumpToAssessment(id: string) {
   const heading = document.getElementById(id);
   heading?.focus({ preventScroll: true });
   heading?.scrollIntoView({ block: 'start' });
