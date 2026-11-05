@@ -1,15 +1,16 @@
 export type * from './types';
-export type { RuleChange } from './game';
 export {
-  TURNS,
-  TURN_MONTHS,
-  LUCK_CHANCE,
-  startGame,
-  currentCard,
-  choose,
-  advance,
+  newGame,
+  actions,
+  act,
+  currentEvent,
+  resolve,
+  endQuarter,
+  progress,
   isOver,
-  changedRules,
+  narrative,
+  visaMonthsLeft,
   characters,
 } from './game';
-export { publicLuck } from './cards/luck';
+export { locations } from './locations';
+export { achievements } from './achievements';

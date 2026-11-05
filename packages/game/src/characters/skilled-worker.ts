@@ -1,10 +1,2183 @@
-import { currentLaw2026_11 } from '@uk-immigration/policy-data';
-import type { Character } from '../types';
+import { extensionCost } from '../locations';
+import type { Character, GameEvent } from '../types';
 
-// Fictional facts adapted from the structure of fixtures/p31-principal.ts.
-// Policy dates and levels come from parameters (SRC-004 SW 22A.1).
-const englishChange =
-  currentLaw2026_11.values.skilledWorkerSettlementEnglish.value;
+// Fictional individual facts, not policy thresholds.
+const events: GameEvent[] = [
+  {
+    id: 'sw-visa-folder',
+    title: {
+      zhCN: '桌上的文件夹',
+      en: 'The folder on the desk',
+    },
+    text: {
+      zhCN: '续签日期越来越近，林遥把文件夹放到茶杯旁。',
+      en: 'Renewal draws closer; Yao puts the folder beside the teacup.',
+    },
+    weight: 3,
+    choices: [
+      {
+        id: 'plan',
+        label: {
+          zhCN: '整理文件，去签证中心',
+          en: 'Sort the papers for the visa centre',
+        },
+        effects: [
+          {
+            type: 'stat',
+            key: 'mood',
+            delta: 3,
+          },
+        ],
+        sets: ['visa-folder-planned'],
+      },
+      {
+        id: 'skip',
+        label: {
+          zhCN: '先把提醒贴冰箱上',
+          en: 'Put a reminder on the fridge',
+        },
+        effects: [
+          {
+            type: 'stat',
+            key: 'mood',
+            delta: 5,
+          },
+        ],
+      },
+    ],
+    once: true,
+    when: [
+      {
+        visaMonthsLeftMax: 12,
+      },
+    ],
+  },
+  {
+    id: 'sw-visa-folder-after',
+    title: {
+      zhCN: '续签后的冰箱',
+      en: 'The fridge after renewal',
+    },
+    text: {
+      zhCN: '续签手续办妥，冰箱上的提醒终于换成了购物清单。',
+      en: 'With renewal done, the reminder on the fridge becomes a shopping list.',
+    },
+    weight: 3,
+    choices: [
+      {
+        id: 'first',
+        label: {
+          zhCN: '把文件收好，煮顿晚饭',
+          en: 'File the papers and cook dinner',
+        },
+        effects: [
+          {
+            type: 'stat',
+            key: 'mood',
+            delta: 12,
+          },
+        ],
+      },
+      {
+        id: 'second',
+        label: {
+          zhCN: '请朋友来吃饭',
+          en: 'Invite friends for dinner',
+        },
+        effects: [
+          {
+            type: 'money',
+            delta: -30,
+          },
+          {
+            type: 'stat',
+            key: 'mood',
+            delta: 16,
+          },
+        ],
+      },
+    ],
+    once: true,
+    requires: ['visa-folder-planned', 'visa-renewed'],
+  },
+  {
+    id: 'sw-job-invite',
+    title: {
+      zhCN: '招聘邮件',
+      en: 'A recruiter’s email',
+    },
+    text: {
+      zhCN: '测试团队约林遥聊聊新岗位，邮件里还有一张办公室狗的照片。',
+      en: 'A testing team invites Yao to discuss a role, with a photo of the office dog.',
+    },
+    weight: 3,
+    choices: [
+      {
+        id: 'plan',
+        label: {
+          zhCN: '去面试聊聊',
+          en: 'Go and talk',
+        },
+        effects: [
+          {
+            type: 'stat',
+            key: 'mood',
+            delta: 3,
+          },
+        ],
+        sets: ['job-invite-planned'],
+      },
+      {
+        id: 'skip',
+        label: {
+          zhCN: '留在熟悉的团队',
+          en: 'Stay with the familiar team',
+        },
+        effects: [
+          {
+            type: 'stat',
+            key: 'mood',
+            delta: 5,
+          },
+        ],
+      },
+    ],
+    once: true,
+    when: [
+      {
+        yearMin: 2,
+      },
+    ],
+  },
+  {
+    id: 'sw-job-invite-after',
+    title: {
+      zhCN: '新工牌',
+      en: 'A new pass',
+    },
+    text: {
+      zhCN: '新公司发来担保材料，林遥的旧工牌仍挂在胸前。',
+      en: 'The new company sends sponsorship papers; Yao still wears the old pass.',
+    },
+    weight: 3,
+    choices: [
+      {
+        id: 'first',
+        label: {
+          zhCN: '付费更新许可，接下测试岗位',
+          en: 'Pay to update permission and take the testing role',
+        },
+        effects: [
+          {
+            type: 'money',
+            delta: -extensionCost,
+          },
+          {
+            type: 'newEpisode',
+            episode: {
+              route: 'SKILLED_WORKER',
+              role: 'MAIN',
+              salary: 55000,
+              socCode: '2136',
+            },
+            durationMonths: 36,
+          },
+          {
+            type: 'income',
+            taxYear: 'current',
+            earnings: 55000,
+          },
+          {
+            type: 'stat',
+            key: 'career',
+            delta: 10,
+          },
+        ],
+        note: {
+          zhCN: '本情节假定新许可已获批并收取标准申请费及 IHS，不模拟审批。',
+          en: 'The scenario assumes new permission has been granted and charges the standard application fee plus IHS, without simulating the decision.',
+        },
+      },
+      {
+        id: 'second',
+        label: {
+          zhCN: '谢绝邀请，留在原岗位',
+          en: 'Decline and stay',
+        },
+        effects: [
+          {
+            type: 'stat',
+            key: 'mood',
+            delta: 6,
+          },
+        ],
+      },
+    ],
+    once: true,
+    requires: ['job-invite-planned'],
+    when: [
+      {
+        stat: 'money',
+        min: extensionCost,
+      },
+    ],
+  },
+  {
+    id: 'sw-parents-call',
+    title: {
+      zhCN: '爸妈的新手机',
+      en: 'The new family phone',
+    },
+    text: {
+      zhCN: '爸妈学会了视频通话，镜头却总对着天花板。',
+      en: 'Yao’s parents master video calls, mostly pointing the camera at the ceiling.',
+    },
+    weight: 3,
+    choices: [
+      {
+        id: 'plan',
+        label: {
+          zhCN: '答应回去住一阵',
+          en: 'Promise a longer visit',
+        },
+        effects: [
+          {
+            type: 'stat',
+            key: 'mood',
+            delta: 3,
+          },
+        ],
+        sets: ['parents-call-planned'],
+      },
+      {
+        id: 'skip',
+        label: {
+          zhCN: '约定每周通话',
+          en: 'Arrange a weekly call',
+        },
+        effects: [
+          {
+            type: 'stat',
+            key: 'mood',
+            delta: 5,
+          },
+        ],
+      },
+    ],
+    once: true,
+  },
+  {
+    id: 'sw-parents-call-after',
+    title: {
+      zhCN: '久违的早餐',
+      en: 'A familiar breakfast',
+    },
+    text: {
+      zhCN: '父母问在哪里相聚，林遥看着机票，又看了看备用床。',
+      en: 'Asked where to meet, Yao checks the flights and then the spare bed.',
+    },
+    weight: 3,
+    choices: [
+      {
+        id: 'first',
+        label: {
+          zhCN: '记录三个月探亲',
+          en: 'Record ninety days visiting family',
+        },
+        effects: [
+          {
+            type: 'absence',
+            startOffsetDays: -90,
+            days: 90,
+          },
+          {
+            type: 'money',
+            delta: -700,
+          },
+          {
+            type: 'stat',
+            key: 'mood',
+            delta: 18,
+          },
+        ],
+        note: {
+          zhCN: '只记录虚构情节中的事实，政策后果由引擎计算。',
+          en: 'Records the fictional scenario’s facts; the engine calculates policy consequences.',
+        },
+      },
+      {
+        id: 'second',
+        label: {
+          zhCN: '最后改为父母来英小住',
+          en: 'The parents visited the UK instead',
+        },
+        effects: [
+          {
+            type: 'money',
+            delta: -200,
+          },
+          {
+            type: 'stat',
+            key: 'mood',
+            delta: 12,
+          },
+        ],
+      },
+    ],
+    once: true,
+    requires: ['parents-call-planned'],
+  },
+  {
+    id: 'sw-partner-call',
+    title: {
+      zhCN: '两个人的时差',
+      en: 'Time zones for two',
+    },
+    text: {
+      zhCN: '伴侣下班时林遥正开晨会，聊天总差一个合适的钟点。',
+      en: 'Yao starts morning meetings as a partner finishes work; the clocks never quite meet.',
+    },
+    weight: 3,
+    choices: [
+      {
+        id: 'plan',
+        label: {
+          zhCN: '商量一起生活',
+          en: 'Talk about living together',
+        },
+        effects: [
+          {
+            type: 'stat',
+            key: 'mood',
+            delta: 3,
+          },
+        ],
+        sets: ['partner-call-planned'],
+      },
+      {
+        id: 'skip',
+        label: {
+          zhCN: '继续异地，认真约时间',
+          en: 'Make time for the long distance',
+        },
+        effects: [
+          {
+            type: 'stat',
+            key: 'mood',
+            delta: 5,
+          },
+        ],
+      },
+    ],
+    once: true,
+  },
+  {
+    id: 'sw-partner-call-after',
+    title: {
+      zhCN: '两把牙刷',
+      en: 'Two toothbrushes',
+    },
+    text: {
+      zhCN: '伴侣来英国了，洗手台多一把牙刷，房间忽然小了一点。',
+      en: 'The partner arrives in the UK; one extra toothbrush makes the room feel smaller.',
+    },
+    weight: 3,
+    choices: [
+      {
+        id: 'first',
+        label: {
+          zhCN: '一起安顿生活',
+          en: 'Settle in together',
+        },
+        effects: [
+          {
+            type: 'relationship',
+            remove: 'PARTNER',
+            add: {
+              type: 'PARTNER',
+              otherPartyStatus: 'OTHER',
+            },
+          },
+          {
+            type: 'stat',
+            key: 'mood',
+            delta: 15,
+          },
+        ],
+        sets: ['partner-arrived'],
+        note: {
+          zhCN: '只记录虚构情节中的事实，政策后果由引擎计算。',
+          en: 'Records the fictional scenario’s facts; the engine calculates policy consequences.',
+        },
+      },
+      {
+        id: 'second',
+        label: {
+          zhCN: '先分别租住，慢慢适应',
+          en: 'Keep separate homes while adjusting',
+        },
+        effects: [
+          {
+            type: 'relationship',
+            remove: 'PARTNER',
+            add: {
+              type: 'PARTNER',
+              otherPartyStatus: 'OTHER',
+            },
+          },
+          {
+            type: 'stat',
+            key: 'mood',
+            delta: 8,
+          },
+        ],
+        sets: ['partner-arrived'],
+        note: {
+          zhCN: '只记录虚构情节中的事实，政策后果由引擎计算。',
+          en: 'Records the fictional scenario’s facts; the engine calculates policy consequences.',
+        },
+      },
+    ],
+    once: true,
+    requires: ['partner-call-planned'],
+  },
+  {
+    id: 'sw-dinner',
+    title: {
+      zhCN: '同事的庆功饭',
+      en: 'A team dinner',
+    },
+    text: {
+      zhCN: '项目上线了，同事点了酒，林遥把车钥匙放在桌边。',
+      en: 'The project launches; colleagues order drinks as Yao puts car keys on the table.',
+    },
+    weight: 3,
+    choices: [
+      {
+        id: 'plan',
+        label: {
+          zhCN: '留下吃完晚饭',
+          en: 'Stay for dinner',
+        },
+        effects: [
+          {
+            type: 'stat',
+            key: 'mood',
+            delta: 3,
+          },
+        ],
+        sets: ['dinner-planned'],
+      },
+      {
+        id: 'skip',
+        label: {
+          zhCN: '提前坐公交回家',
+          en: 'Take the bus home early',
+        },
+        effects: [
+          {
+            type: 'stat',
+            key: 'mood',
+            delta: 5,
+          },
+        ],
+      },
+    ],
+    once: true,
+  },
+  {
+    id: 'sw-dinner-after',
+    title: {
+      zhCN: '散场的车钥匙',
+      en: 'Keys at closing time',
+    },
+    text: {
+      zhCN: '喝过酒，散场时钥匙还在口袋里，出租车正在排队。',
+      en: 'After drinks, the keys are still in a pocket and taxis wait outside.',
+    },
+    weight: 3,
+    choices: [
+      {
+        id: 'first',
+        label: {
+          zhCN: '叫车回家',
+          en: 'Take a taxi',
+        },
+        effects: [
+          {
+            type: 'money',
+            delta: -25,
+          },
+          {
+            type: 'stat',
+            key: 'mood',
+            delta: 5,
+          },
+        ],
+      },
+      {
+        id: 'second',
+        label: {
+          zhCN: '酒驾，后来被定罪',
+          en: 'Drive after drinking and later be convicted',
+        },
+        effects: [
+          {
+            type: 'criminal',
+            event: {},
+          },
+        ],
+        note: {
+          zhCN: '只记录虚构情节中的事实，政策后果由引擎计算。',
+          en: 'Records the fictional scenario’s facts; the engine calculates policy consequences.',
+        },
+      },
+    ],
+    once: true,
+    requires: ['dinner-planned'],
+  },
+  {
+    id: 'sw-review',
+    title: {
+      zhCN: '年度面谈',
+      en: 'The annual review',
+    },
+    text: {
+      zhCN: '经理问林遥明年想做什么，窗外的雨替沉默打了拍子。',
+      en: 'A manager asks about next year; rain provides the rhythm while Yao thinks.',
+    },
+    weight: 3,
+    choices: [
+      {
+        id: 'plan',
+        label: {
+          zhCN: '争取更多项目责任',
+          en: 'Ask for more responsibility',
+        },
+        effects: [
+          {
+            type: 'stat',
+            key: 'mood',
+            delta: 3,
+          },
+        ],
+        sets: ['review-planned'],
+      },
+      {
+        id: 'skip',
+        label: {
+          zhCN: '先稳住现在的节奏',
+          en: 'Keep the current rhythm',
+        },
+        effects: [
+          {
+            type: 'stat',
+            key: 'mood',
+            delta: 5,
+          },
+        ],
+      },
+    ],
+    once: true,
+  },
+  {
+    id: 'sw-review-after',
+    title: {
+      zhCN: '带新人那天',
+      en: 'A new starter’s first day',
+    },
+    text: {
+      zhCN: '林遥带新人认路，第一次发现自己已经不需要看门牌。',
+      en: 'Showing a new starter around, Yao realises the door signs are no longer needed.',
+    },
+    weight: 3,
+    choices: [
+      {
+        id: 'first',
+        label: {
+          zhCN: '认真带完一个项目',
+          en: 'Guide the next project',
+        },
+        effects: [
+          {
+            type: 'stat',
+            key: 'career',
+            delta: 15,
+          },
+          {
+            type: 'stat',
+            key: 'mood',
+            delta: 5,
+          },
+        ],
+      },
+      {
+        id: 'second',
+        label: {
+          zhCN: '把经验写成小册子',
+          en: 'Write a little handbook',
+        },
+        effects: [
+          {
+            type: 'stat',
+            key: 'career',
+            delta: 8,
+          },
+          {
+            type: 'stat',
+            key: 'english',
+            delta: 5,
+          },
+        ],
+      },
+    ],
+    once: true,
+    requires: ['review-planned'],
+  },
+  {
+    id: 'sw-assignment',
+    title: {
+      zhCN: '海外项目的空位',
+      en: 'An overseas assignment',
+    },
+    text: {
+      zhCN: '海外项目缺一位测试员，林遥盯着地图看了一会儿。',
+      en: 'An overseas project needs a tester; Yao studies the map for a while.',
+    },
+    weight: 3,
+    choices: [
+      {
+        id: 'plan',
+        label: {
+          zhCN: '考虑外派',
+          en: 'Consider the assignment',
+        },
+        effects: [
+          {
+            type: 'stat',
+            key: 'mood',
+            delta: 3,
+          },
+        ],
+        sets: ['assignment-planned'],
+      },
+      {
+        id: 'skip',
+        label: {
+          zhCN: '留在英国团队',
+          en: 'Stay with the UK team',
+        },
+        effects: [
+          {
+            type: 'stat',
+            key: 'mood',
+            delta: 5,
+          },
+        ],
+      },
+    ],
+    once: true,
+    when: [
+      {
+        yearMin: 2,
+      },
+    ],
+  },
+  {
+    id: 'sw-assignment-after',
+    title: {
+      zhCN: '八个月的行李',
+      en: 'Eight months in a suitcase',
+    },
+    text: {
+      zhCN: '项目终于收尾，林遥翻出这段时间的行程记录。',
+      en: 'The project closes; Yao looks back through the travel diary.',
+    },
+    weight: 3,
+    choices: [
+      {
+        id: 'first',
+        label: {
+          zhCN: '记录八个月海外工作',
+          en: 'Record 240 days working abroad',
+        },
+        effects: [
+          {
+            type: 'absence',
+            startOffsetDays: -240,
+            days: 240,
+          },
+          {
+            type: 'stat',
+            key: 'career',
+            delta: 12,
+          },
+          {
+            type: 'stat',
+            key: 'mood',
+            delta: 8,
+          },
+        ],
+        note: {
+          zhCN: '只记录虚构情节中的事实，政策后果由引擎计算。',
+          en: 'Records the fictional scenario’s facts; the engine calculates policy consequences.',
+        },
+      },
+      {
+        id: 'second',
+        label: {
+          zhCN: '实际改成英国远程协作',
+          en: 'The work was done remotely from the UK',
+        },
+        effects: [
+          {
+            type: 'stat',
+            key: 'career',
+            delta: 7,
+          },
+        ],
+      },
+    ],
+    once: true,
+    requires: ['assignment-planned'],
+  },
+  {
+    id: 'sw-four-days',
+    title: {
+      zhCN: '周五的可能性',
+      en: 'A possible free Friday',
+    },
+    text: {
+      zhCN: '公司提议缩短工时，林遥开始想象周五上午的公园。',
+      en: 'Shorter hours are offered; Yao imagines Friday mornings in the park.',
+    },
+    weight: 3,
+    choices: [
+      {
+        id: 'plan',
+        label: {
+          zhCN: '细算一下四天安排',
+          en: 'Work through the four-day option',
+        },
+        effects: [
+          {
+            type: 'stat',
+            key: 'mood',
+            delta: 3,
+          },
+        ],
+        sets: ['four-days-planned'],
+      },
+      {
+        id: 'skip',
+        label: {
+          zhCN: '先保留全职',
+          en: 'Keep full-time hours',
+        },
+        effects: [
+          {
+            type: 'stat',
+            key: 'mood',
+            delta: 5,
+          },
+        ],
+      },
+    ],
+    once: true,
+    when: [
+      {
+        yearMin: 2,
+      },
+    ],
+  },
+  {
+    id: 'sw-four-days-after',
+    title: {
+      zhCN: '空出来的星期五',
+      en: 'A free Friday',
+    },
+    text: {
+      zhCN: '日历多出了一块空白，林遥差点又往里面填上会议。',
+      en: 'A blank space appears in the calendar; Yao almost fills it with a meeting.',
+    },
+    weight: 3,
+    choices: [
+      {
+        id: 'first',
+        label: {
+          zhCN: '改为年薪四万四的安排',
+          en: 'Take the forty-four-thousand arrangement',
+        },
+        effects: [
+          {
+            type: 'episode',
+            patch: {
+              salary: 44000,
+            },
+          },
+          {
+            type: 'stat',
+            key: 'mood',
+            delta: 15,
+          },
+          {
+            type: 'stat',
+            key: 'health',
+            delta: 5,
+          },
+        ],
+        note: {
+          zhCN: '只记录虚构情节中的事实，政策后果由引擎计算。',
+          en: 'Records the fictional scenario’s facts; the engine calculates policy consequences.',
+        },
+      },
+      {
+        id: 'second',
+        label: {
+          zhCN: '继续原来的工作安排',
+          en: 'Keep the existing arrangement',
+        },
+        effects: [
+          {
+            type: 'stat',
+            key: 'career',
+            delta: 4,
+          },
+        ],
+      },
+    ],
+    once: true,
+    requires: ['four-days-planned'],
+  },
+  {
+    id: 'sw-partner-budget',
+    title: {
+      zhCN: '伴侣的坏消息',
+      en: 'Bad news at home',
+    },
+    text: {
+      zhCN: '伴侣的合同没续上，林遥把外卖软件暂时挪出了首页。',
+      en: 'A partner’s contract ends; Yao moves the takeaway app off the home screen.',
+    },
+    weight: 3,
+    choices: [
+      {
+        id: 'plan',
+        label: {
+          zhCN: '一起重新算账',
+          en: 'Rework the budget together',
+        },
+        effects: [
+          {
+            type: 'stat',
+            key: 'mood',
+            delta: 3,
+          },
+        ],
+        sets: ['partner-budget-planned'],
+      },
+      {
+        id: 'skip',
+        label: {
+          zhCN: '先找朋友聊聊',
+          en: 'Talk to a friend first',
+        },
+        effects: [
+          {
+            type: 'stat',
+            key: 'mood',
+            delta: 5,
+          },
+        ],
+      },
+    ],
+    once: true,
+    requires: ['partner-arrived'],
+  },
+  {
+    id: 'sw-partner-budget-after',
+    title: {
+      zhCN: '重新排预算',
+      en: 'A revised budget',
+    },
+    text: {
+      zhCN: '两人把账单排在桌上，茶续了两杯，账还没算完。',
+      en: 'Bills cover the table; two refills later, the sums are still going.',
+    },
+    weight: 3,
+    choices: [
+      {
+        id: 'first',
+        label: {
+          zhCN: '私人借款撑一阵',
+          en: 'Use a private loan for a while',
+        },
+        effects: [
+          {
+            type: 'money',
+            delta: 1000,
+          },
+          {
+            type: 'income',
+            taxYear: 'current',
+            partnerEarnings: 0,
+          },
+        ],
+        note: {
+          zhCN: '只记录虚构情节中的事实，政策后果由引擎计算。',
+          en: 'Records the fictional scenario’s facts; the engine calculates policy consequences.',
+        },
+      },
+      {
+        id: 'second',
+        label: {
+          zhCN: '本情节中本人领取 UC',
+          en: 'In this scenario, receive UC',
+        },
+        effects: [
+          {
+            type: 'money',
+            delta: 600,
+          },
+          {
+            type: 'income',
+            taxYear: 'current',
+            partnerEarnings: 0,
+          },
+          {
+            type: 'benefit',
+            benefit: {
+              benefitType: 'UNIVERSAL_CREDIT',
+            },
+            startOffsetDays: 0,
+            months: 6,
+          },
+        ],
+        note: {
+          zhCN: '只记录虚构情节中的事实，政策后果由引擎计算。',
+          en: 'Records the fictional scenario’s facts; the engine calculates policy consequences.',
+        },
+      },
+    ],
+    once: true,
+    requires: ['partner-budget-planned'],
+  },
+  {
+    id: 'sw-bonus-review',
+    title: {
+      zhCN: '项目收尾',
+      en: 'Closing the project',
+    },
+    text: {
+      zhCN: '项目终于交付，林遥的桌面从十几个窗口变成了一张壁纸。',
+      en: 'The project ships; Yao’s desktop goes from a dozen windows to a wallpaper.',
+    },
+    weight: 3,
+    choices: [
+      {
+        id: 'plan',
+        label: {
+          zhCN: '整理奖金材料',
+          en: 'Sort the bonus paperwork',
+        },
+        effects: [
+          {
+            type: 'stat',
+            key: 'mood',
+            delta: 3,
+          },
+        ],
+        sets: ['bonus-review-planned'],
+      },
+      {
+        id: 'skip',
+        label: {
+          zhCN: '把周末留给休息',
+          en: 'Keep the weekend for rest',
+        },
+        effects: [
+          {
+            type: 'stat',
+            key: 'mood',
+            delta: 5,
+          },
+        ],
+      },
+    ],
+    once: true,
+  },
+  {
+    id: 'sw-bonus-review-after',
+    title: {
+      zhCN: '奖金那一行',
+      en: 'The bonus line',
+    },
+    text: {
+      zhCN: '年终奖金到账，公司又问林遥愿不愿接后续维护。',
+      en: 'The annual bonus arrives, with an offer of follow-up maintenance work.',
+    },
+    weight: 3,
+    choices: [
+      {
+        id: 'first',
+        label: {
+          zhCN: '接下后续维护',
+          en: 'Take the follow-up maintenance',
+        },
+        effects: [
+          {
+            type: 'income',
+            taxYear: 'current',
+            earnings: 60000,
+          },
+          {
+            type: 'money',
+            delta: 500,
+          },
+        ],
+        note: {
+          zhCN: '本情节写入全年税前收入 £60,000，政策后果由引擎计算。',
+          en: 'This scenario records £60,000 in annual gross earnings; the engine calculates policy consequences.',
+        },
+      },
+      {
+        id: 'second',
+        label: {
+          zhCN: '按原计划收尾，留下假期',
+          en: 'Finish as planned and keep the holiday',
+        },
+        effects: [
+          {
+            type: 'income',
+            taxYear: 'current',
+            earnings: 55000,
+          },
+          {
+            type: 'money',
+            delta: 250,
+          },
+        ],
+        note: {
+          zhCN: '本情节写入全年税前收入 £55,000，政策后果由引擎计算。',
+          en: 'This scenario records £55,000 in annual gross earnings; the engine calculates policy consequences.',
+        },
+      },
+    ],
+    once: true,
+    requires: ['bonus-review-planned'],
+  },
+  {
+    id: 'sw-first-rain',
+    title: {
+      zhCN: '入职第一场雨',
+      en: 'Rain on the way to work',
+    },
+    text: {
+      zhCN: '林遥走进办公室时鞋还在滴水，同事递来一包纸巾。',
+      en: 'Yao arrives with dripping shoes; a colleague offers tissues.',
+    },
+    weight: 3,
+    choices: [
+      {
+        id: 'first',
+        label: {
+          zhCN: '说声谢谢，聊聊周末',
+          en: 'Say thanks and chat about the weekend',
+        },
+        effects: [
+          {
+            type: 'stat',
+            key: 'english',
+            delta: 4,
+          },
+          {
+            type: 'stat',
+            key: 'mood',
+            delta: 6,
+          },
+        ],
+      },
+      {
+        id: 'second',
+        label: {
+          zhCN: '换上备用袜子',
+          en: 'Change into spare socks',
+        },
+        effects: [
+          {
+            type: 'stat',
+            key: 'health',
+            delta: 5,
+          },
+        ],
+      },
+    ],
+    once: true,
+  },
+  {
+    id: 'sw-soup',
+    title: {
+      zhCN: '深夜的一碗汤',
+      en: 'A late bowl of soup',
+    },
+    text: {
+      zhCN: '加完班回家，林遥发现室友在锅里留了一碗汤。',
+      en: 'After a late shift, Yao finds a bowl of soup saved by a flatmate.',
+    },
+    weight: 3,
+    choices: [
+      {
+        id: 'first',
+        label: {
+          zhCN: '坐下慢慢喝',
+          en: 'Sit and enjoy it',
+        },
+        effects: [
+          {
+            type: 'stat',
+            key: 'health',
+            delta: 8,
+          },
+          {
+            type: 'stat',
+            key: 'mood',
+            delta: 7,
+          },
+        ],
+      },
+      {
+        id: 'second',
+        label: {
+          zhCN: '留张便签道谢',
+          en: 'Leave a thank-you note',
+        },
+        effects: [
+          {
+            type: 'stat',
+            key: 'mood',
+            delta: 8,
+          },
+          {
+            type: 'stat',
+            key: 'english',
+            delta: 2,
+          },
+        ],
+      },
+    ],
+    once: true,
+  },
+  {
+    id: 'sw-debug',
+    title: {
+      zhCN: '消失的 bug',
+      en: 'A disappearing bug',
+    },
+    text: {
+      zhCN: 'bug 在演示前自己消失了，林遥和同事都不太敢高兴。',
+      en: 'A bug disappears before the demo; nobody quite dares celebrate.',
+    },
+    weight: 3,
+    choices: [
+      {
+        id: 'first',
+        label: {
+          zhCN: '结对查清原因',
+          en: 'Investigate together',
+        },
+        effects: [
+          {
+            type: 'stat',
+            key: 'career',
+            delta: 8,
+          },
+          {
+            type: 'stat',
+            key: 'english',
+            delta: 3,
+          },
+        ],
+      },
+      {
+        id: 'second',
+        label: {
+          zhCN: '先做好记录再下班',
+          en: 'Document it and clock off',
+        },
+        effects: [
+          {
+            type: 'stat',
+            key: 'career',
+            delta: 3,
+          },
+          {
+            type: 'stat',
+            key: 'health',
+            delta: 4,
+          },
+        ],
+      },
+    ],
+    once: true,
+  },
+  {
+    id: 'sw-park-call',
+    title: {
+      zhCN: '公园的电话',
+      en: 'A call in the park',
+    },
+    text: {
+      zhCN: '林遥坐在长椅上给家里打电话，鸭子抢走了背景音。',
+      en: 'Yao calls home from a bench; the ducks dominate the soundtrack.',
+    },
+    weight: 3,
+    choices: [
+      {
+        id: 'first',
+        label: {
+          zhCN: '多聊一会儿',
+          en: 'Talk a little longer',
+        },
+        effects: [
+          {
+            type: 'stat',
+            key: 'mood',
+            delta: 12,
+          },
+        ],
+      },
+      {
+        id: 'second',
+        label: {
+          zhCN: '沿湖边走边聊',
+          en: 'Walk round the lake while talking',
+        },
+        effects: [
+          {
+            type: 'stat',
+            key: 'mood',
+            delta: 7,
+          },
+          {
+            type: 'stat',
+            key: 'health',
+            delta: 5,
+          },
+        ],
+      },
+    ],
+    once: true,
+  },
+  {
+    id: 'sw-landlord-visit',
+    title: {
+      zhCN: '临时检查',
+      en: 'A sudden inspection',
+    },
+    text: {
+      zhCN: '房东说下午来检查，林遥看了看满屋晾着的衣服。',
+      en: 'The landlord plans an afternoon visit; laundry covers Yao’s room.',
+    },
+    weight: 3,
+    choices: [
+      {
+        id: 'first',
+        label: {
+          zhCN: '收拾完出门散步',
+          en: 'Tidy up and take a walk',
+        },
+        effects: [
+          {
+            type: 'stat',
+            key: 'mood',
+            delta: 5,
+          },
+          {
+            type: 'stat',
+            key: 'health',
+            delta: 3,
+          },
+        ],
+      },
+      {
+        id: 'second',
+        label: {
+          zhCN: '商量换个时间',
+          en: 'Agree another time',
+        },
+        effects: [
+          {
+            type: 'stat',
+            key: 'english',
+            delta: 4,
+          },
+          {
+            type: 'stat',
+            key: 'mood',
+            delta: 3,
+          },
+        ],
+      },
+    ],
+    once: true,
+  },
+  {
+    id: 'sw-promotion-cake',
+    title: {
+      zhCN: '升职的蛋糕',
+      en: 'Promotion cake',
+    },
+    text: {
+      zhCN: '同事买了小蛋糕，林遥的新职称在糖霜上差点写不下。',
+      en: 'Colleagues buy a cake; Yao’s new title barely fits in the icing.',
+    },
+    weight: 3,
+    choices: [
+      {
+        id: 'first',
+        label: {
+          zhCN: '一起吃掉长职称',
+          en: 'Share the long job title',
+        },
+        effects: [
+          {
+            type: 'stat',
+            key: 'mood',
+            delta: 14,
+          },
+        ],
+      },
+      {
+        id: 'second',
+        label: {
+          zhCN: '留一块带回家',
+          en: 'Save a slice for home',
+        },
+        effects: [
+          {
+            type: 'stat',
+            key: 'mood',
+            delta: 10,
+          },
+          {
+            type: 'stat',
+            key: 'health',
+            delta: 3,
+          },
+        ],
+      },
+    ],
+    once: true,
+    requires: ['promoted'],
+  },
+  {
+    id: 'sw-market-noodles',
+    title: {
+      zhCN: '集市的面条',
+      en: 'Noodles at the market',
+    },
+    text: {
+      zhCN: '林遥在集市闻到熟悉的香味，排队时忘了看手机。',
+      en: 'A familiar smell stops Yao at the market; the phone stays in a pocket.',
+    },
+    weight: 3,
+    choices: [
+      {
+        id: 'first',
+        label: {
+          zhCN: '买一碗热面',
+          en: 'Buy a hot bowl',
+        },
+        effects: [
+          {
+            type: 'money',
+            delta: -9,
+          },
+          {
+            type: 'stat',
+            key: 'mood',
+            delta: 12,
+          },
+        ],
+      },
+      {
+        id: 'second',
+        label: {
+          zhCN: '回家照着做',
+          en: 'Try making it at home',
+        },
+        effects: [
+          {
+            type: 'money',
+            delta: -5,
+          },
+          {
+            type: 'stat',
+            key: 'health',
+            delta: 5,
+          },
+        ],
+      },
+    ],
+    once: true,
+  },
+  {
+    id: 'sw-winter-light',
+    title: {
+      zhCN: '窗边的小灯',
+      en: 'A light by the window',
+    },
+    text: {
+      zhCN: '天黑得越来越早，林遥给窗边添了一盏小灯。',
+      en: 'Darkness arrives earlier; Yao adds a little light by the window.',
+    },
+    weight: 3,
+    choices: [
+      {
+        id: 'first',
+        label: {
+          zhCN: '邀朋友来喝茶',
+          en: 'Invite a friend for tea',
+        },
+        effects: [
+          {
+            type: 'money',
+            delta: -10,
+          },
+          {
+            type: 'stat',
+            key: 'mood',
+            delta: 13,
+          },
+        ],
+      },
+      {
+        id: 'second',
+        label: {
+          zhCN: '安静读一晚书',
+          en: 'Read quietly for the evening',
+        },
+        effects: [
+          {
+            type: 'stat',
+            key: 'mood',
+            delta: 7,
+          },
+          {
+            type: 'stat',
+            key: 'english',
+            delta: 4,
+          },
+        ],
+      },
+    ],
+    once: true,
+  },
+  {
+    id: 'sw-kol',
+    title: {
+      zhCN: '材料清单的一格',
+      en: 'A box on the checklist',
+    },
+    text: {
+      zhCN: '林遥翻出 Life in the UK 书，里面夹着去年的车票。',
+      en: 'Yao finds last year’s train ticket inside the Life in the UK book.',
+    },
+    weight: 3,
+    choices: [
+      {
+        id: 'first',
+        label: {
+          zhCN: '备考并通过',
+          en: 'Prepare and pass',
+        },
+        effects: [
+          {
+            type: 'lifeInTheUk',
+          },
+          {
+            type: 'stat',
+            key: 'mood',
+            delta: 8,
+          },
+        ],
+        note: {
+          zhCN: '只记录虚构情节中的事实，政策后果由引擎计算。',
+          en: 'Records the fictional scenario’s facts; the engine calculates policy consequences.',
+        },
+      },
+      {
+        id: 'second',
+        label: {
+          zhCN: '这季先复习',
+          en: 'Revise this quarter',
+        },
+        effects: [
+          {
+            type: 'stat',
+            key: 'english',
+            delta: 5,
+          },
+        ],
+      },
+    ],
+    once: true,
+  },
+  {
+    id: 'sw-new-role',
+    title: {
+      zhCN: '开发岗位的新邀请',
+      en: 'A development offer',
+    },
+    text: {
+      zhCN: '新团队愿意把担保手续一起办好，林遥读了两遍邀请函。',
+      en: 'A new team offers to arrange sponsorship; Yao reads the offer twice.',
+    },
+    weight: 3,
+    choices: [
+      {
+        id: 'first',
+        label: {
+          zhCN: '付费更新许可，接受新开发岗',
+          en: 'Pay to update permission for the development role',
+        },
+        effects: [
+          {
+            type: 'money',
+            delta: -extensionCost,
+          },
+          {
+            type: 'newEpisode',
+            episode: {
+              route: 'SKILLED_WORKER',
+              role: 'MAIN',
+              salary: 65000,
+              socCode: '2134',
+            },
+            durationMonths: 36,
+          },
+          {
+            type: 'income',
+            taxYear: 'current',
+            earnings: 65000,
+          },
+        ],
+        note: {
+          zhCN: '本情节假定新许可已获批并收取标准申请费及 IHS，不模拟审批。',
+          en: 'The scenario assumes new permission has been granted and charges the standard application fee plus IHS, without simulating the decision.',
+        },
+      },
+      {
+        id: 'second',
+        label: {
+          zhCN: '留在当前岗位',
+          en: 'Stay in the current role',
+        },
+        effects: [
+          {
+            type: 'stat',
+            key: 'mood',
+            delta: 5,
+          },
+        ],
+      },
+    ],
+    once: true,
+    when: [
+      {
+        yearMin: 3,
+      },
+      {
+        stat: 'money',
+        min: extensionCost,
+      },
+    ],
+  },
+  {
+    id: 'sw-salary-talk',
+    title: {
+      zhCN: '工资面谈',
+      en: 'Salary talks',
+    },
+    text: {
+      zhCN: '林遥把做过的项目列成一页纸，经理认真看完了。',
+      en: 'Yao lists completed projects on one page; the manager reads it carefully.',
+    },
+    weight: 3,
+    choices: [
+      {
+        id: 'first',
+        label: {
+          zhCN: '接受年薪四万八的新安排',
+          en: 'Accept a forty-eight-thousand salary',
+        },
+        effects: [
+          {
+            type: 'episode',
+            patch: {
+              salary: 48000,
+            },
+          },
+          {
+            type: 'stat',
+            key: 'career',
+            delta: 5,
+          },
+        ],
+        note: {
+          zhCN: '只记录虚构情节中的事实，政策后果由引擎计算。',
+          en: 'Records the fictional scenario’s facts; the engine calculates policy consequences.',
+        },
+      },
+      {
+        id: 'second',
+        label: {
+          zhCN: '先谈清工作范围',
+          en: 'Clarify the responsibilities first',
+        },
+        effects: [
+          {
+            type: 'stat',
+            key: 'career',
+            delta: 7,
+          },
+        ],
+      },
+    ],
+    once: true,
+  },
+  {
+    id: 'sw-parent-care',
+    title: {
+      zhCN: '家里的病房',
+      en: 'A hospital room back home',
+    },
+    text: {
+      zhCN: '父母的病情反复，林遥和亲人回顾这次照顾怎么分工。',
+      en: 'A parent’s health fluctuates; Yao and relatives look back on how they shared the care.',
+    },
+    weight: 3,
+    choices: [
+      {
+        id: 'first',
+        label: {
+          zhCN: '记录四个月海外照顾',
+          en: 'Record 120 days of care abroad',
+        },
+        effects: [
+          {
+            type: 'absence',
+            startOffsetDays: -120,
+            days: 120,
+          },
+          {
+            type: 'money',
+            delta: -800,
+          },
+          {
+            type: 'stat',
+            key: 'mood',
+            delta: 10,
+          },
+        ],
+        note: {
+          zhCN: '只记录虚构情节中的事实，政策后果由引擎计算。',
+          en: 'Records the fictional scenario’s facts; the engine calculates policy consequences.',
+        },
+      },
+      {
+        id: 'second',
+        label: {
+          zhCN: '和亲人分工，短住一月',
+          en: 'Share the care and spend thirty days abroad',
+        },
+        effects: [
+          {
+            type: 'absence',
+            startOffsetDays: -30,
+            days: 30,
+          },
+          {
+            type: 'money',
+            delta: -500,
+          },
+          {
+            type: 'stat',
+            key: 'mood',
+            delta: 4,
+          },
+        ],
+        note: {
+          zhCN: '只记录虚构情节中的事实，政策后果由引擎计算。',
+          en: 'Records the fictional scenario’s facts; the engine calculates policy consequences.',
+        },
+      },
+    ],
+    once: true,
+  },
+  {
+    id: 'sw-partner-work',
+    title: {
+      zhCN: '另一张工资单',
+      en: 'Another payslip',
+    },
+    text: {
+      zhCN: '伴侣开始工作，林遥发现冰箱上的预算表终于有了空白。',
+      en: 'A partner starts work; the budget on Yao’s fridge finally has room to breathe.',
+    },
+    weight: 3,
+    choices: [
+      {
+        id: 'first',
+        label: {
+          zhCN: '商量按全职安排安顿下来',
+          en: 'Agree to settle into full-time work',
+        },
+        effects: [
+          {
+            type: 'income',
+            taxYear: 'current',
+            partnerEarnings: 24000,
+          },
+          {
+            type: 'stat',
+            key: 'mood',
+            delta: 8,
+          },
+        ],
+        note: {
+          zhCN: '只记录虚构情节中的事实，政策后果由引擎计算。',
+          en: 'Records the fictional scenario’s facts; the engine calculates policy consequences.',
+        },
+      },
+      {
+        id: 'second',
+        label: {
+          zhCN: '先兼职，留时间照顾家里',
+          en: 'Start part-time and leave time for home',
+        },
+        effects: [
+          {
+            type: 'income',
+            taxYear: 'current',
+            partnerEarnings: 12000,
+          },
+          {
+            type: 'stat',
+            key: 'mood',
+            delta: 6,
+          },
+        ],
+        note: {
+          zhCN: '只记录虚构情节中的事实，政策后果由引擎计算。',
+          en: 'Records the fictional scenario’s facts; the engine calculates policy consequences.',
+        },
+      },
+    ],
+    once: true,
+    requires: ['partner-arrived'],
+  },
+  {
+    id: 'sw-partner-space',
+    title: {
+      zhCN: '各自的空间',
+      en: 'Room apart',
+    },
+    text: {
+      zhCN: '两个人最近总为小事争执，林遥提出认真聊一次。',
+      en: 'Small arguments keep recurring; Yao asks for a proper conversation.',
+    },
+    weight: 3,
+    choices: [
+      {
+        id: 'first',
+        label: {
+          zhCN: '结束伴侣关系，分别生活',
+          en: 'End the partnership and live apart',
+        },
+        effects: [
+          {
+            type: 'relationship',
+            remove: 'PARTNER',
+          },
+          {
+            type: 'stat',
+            key: 'mood',
+            delta: -8,
+          },
+        ],
+        note: {
+          zhCN: '只记录虚构情节中的事实，政策后果由引擎计算。',
+          en: 'Records the fictional scenario’s facts; the engine calculates policy consequences.',
+        },
+      },
+      {
+        id: 'second',
+        label: {
+          zhCN: '保留关系，给彼此时间',
+          en: 'Keep the relationship and take time',
+        },
+        effects: [
+          {
+            type: 'stat',
+            key: 'mood',
+            delta: 5,
+          },
+        ],
+      },
+    ],
+    once: true,
+    requires: ['partner-arrived'],
+  },
+  {
+    id: 'sw-reunion',
+    title: {
+      zhCN: '毕业多年以后',
+      en: 'Years after graduation',
+    },
+    text: {
+      zhCN: '同学在海外聚会，林遥翻出了那件还穿得下的旧外套。',
+      en: 'An overseas reunion prompts Yao to find an old coat that still fits.',
+    },
+    weight: 3,
+    choices: [
+      {
+        id: 'first',
+        label: {
+          zhCN: '记录两周海外聚会',
+          en: 'Record fourteen days at the reunion abroad',
+        },
+        effects: [
+          {
+            type: 'absence',
+            startOffsetDays: -14,
+            days: 14,
+          },
+          {
+            type: 'money',
+            delta: -400,
+          },
+          {
+            type: 'stat',
+            key: 'mood',
+            delta: 12,
+          },
+        ],
+        note: {
+          zhCN: '只记录虚构情节中的事实，政策后果由引擎计算。',
+          en: 'Records the fictional scenario’s facts; the engine calculates policy consequences.',
+        },
+      },
+      {
+        id: 'second',
+        label: {
+          zhCN: '留在英国视频参加',
+          en: 'Join by video from the UK',
+        },
+        effects: [
+          {
+            type: 'stat',
+            key: 'mood',
+            delta: 6,
+          },
+        ],
+      },
+    ],
+    once: true,
+  },
+  {
+    id: 'sw-income-audit',
+    title: {
+      zhCN: '桌上的年结单',
+      en: 'The annual statement',
+    },
+    text: {
+      zhCN: '新项目邀请压在年结单上，林遥边看边算还有几个周末。',
+      en: 'A project offer rests on the annual statement; Yao counts the free weekends.',
+    },
+    weight: 3,
+    choices: [
+      {
+        id: 'first',
+        label: {
+          zhCN: '接受新项目邀请',
+          en: 'Accept the new project',
+        },
+        effects: [
+          {
+            type: 'income',
+            taxYear: 'current',
+            earnings: 57000,
+          },
+        ],
+        note: {
+          zhCN: '本情节写入全年税前收入 £57,000，政策后果由引擎计算。',
+          en: 'This scenario records £57,000 in annual gross earnings; the engine calculates policy consequences.',
+        },
+      },
+      {
+        id: 'second',
+        label: {
+          zhCN: '保留现在的工时',
+          en: 'Keep the current hours',
+        },
+        effects: [
+          {
+            type: 'income',
+            taxYear: 'current',
+            earnings: 53000,
+          },
+        ],
+        note: {
+          zhCN: '本情节写入全年税前收入 £53,000，政策后果由引擎计算。',
+          en: 'This scenario records £53,000 in annual gross earnings; the engine calculates policy consequences.',
+        },
+      },
+    ],
+    once: true,
+  },
+  {
+    id: 'sw-arrears',
+    title: {
+      zhCN: '忘记的一封信',
+      en: 'A forgotten letter',
+    },
+    text: {
+      zhCN: '政府欠款通知夹在广告里，林遥清理桌子时才看见。',
+      en: 'A government-debt notice hides among adverts until Yao clears the desk.',
+    },
+    weight: 3,
+    choices: [
+      {
+        id: 'first',
+        label: {
+          zhCN: '本情节中付清欠款',
+          en: 'In this scenario, clear the debt',
+        },
+        effects: [
+          {
+            type: 'money',
+            delta: -200,
+          },
+          {
+            type: 'timeline',
+            patch: {
+              governmentDebt: {
+                outstanding: false,
+              },
+            },
+          },
+        ],
+        note: {
+          zhCN: '只记录虚构情节中的事实，政策后果由引擎计算。',
+          en: 'Records the fictional scenario’s facts; the engine calculates policy consequences.',
+        },
+      },
+      {
+        id: 'second',
+        label: {
+          zhCN: '本情节中仍欠款',
+          en: 'In this scenario, leave a balance',
+        },
+        effects: [
+          {
+            type: 'timeline',
+            patch: {
+              governmentDebt: {
+                outstanding: true,
+              },
+            },
+          },
+        ],
+        note: {
+          zhCN: '只记录虚构情节中的事实，政策后果由引擎计算。',
+          en: 'Records the fictional scenario’s facts; the engine calculates policy consequences.',
+        },
+      },
+    ],
+    once: true,
+  },
+  {
+    id: 'sw-week-away',
+    title: {
+      zhCN: '海边的朋友',
+      en: 'A friend by the sea',
+    },
+    text: {
+      zhCN: '海外朋友寄来海边照片，林遥已经能想象那里的风。',
+      en: 'A friend abroad sends seaside photos; Yao can almost feel the wind.',
+    },
+    weight: 3,
+    choices: [
+      {
+        id: 'first',
+        label: {
+          zhCN: '记录一周海外短假',
+          en: 'Record seven days abroad',
+        },
+        effects: [
+          {
+            type: 'absence',
+            startOffsetDays: -7,
+            days: 7,
+          },
+          {
+            type: 'money',
+            delta: -250,
+          },
+          {
+            type: 'stat',
+            key: 'mood',
+            delta: 10,
+          },
+        ],
+        note: {
+          zhCN: '只记录虚构情节中的事实，政策后果由引擎计算。',
+          en: 'Records the fictional scenario’s facts; the engine calculates policy consequences.',
+        },
+      },
+      {
+        id: 'second',
+        label: {
+          zhCN: '改约英国海边见面',
+          en: 'Meet at the British seaside instead',
+        },
+        effects: [
+          {
+            type: 'money',
+            delta: -80,
+          },
+          {
+            type: 'stat',
+            key: 'mood',
+            delta: 7,
+          },
+        ],
+      },
+    ],
+    once: true,
+  },
+  {
+    id: 'sw-catch-up-pay',
+    title: {
+      zhCN: '补上的那一笔',
+      en: 'The missing payment',
+    },
+    text: {
+      zhCN: '旧项目款结清，新一轮邀约又来了，林遥看了看日历。',
+      en: 'The old project is paid; a new offer arrives, and Yao checks the calendar.',
+    },
+    weight: 3,
+    choices: [
+      {
+        id: 'first',
+        label: {
+          zhCN: '再接一轮，留钱给假期',
+          en: 'Take another round and save for a holiday',
+        },
+        effects: [
+          {
+            type: 'income',
+            taxYear: 'current',
+            earnings: 62000,
+          },
+          {
+            type: 'money',
+            delta: 350,
+          },
+        ],
+        note: {
+          zhCN: '本情节写入全年税前收入 £62,000，政策后果由引擎计算。',
+          en: 'This scenario records £62,000 in annual gross earnings; the engine calculates policy consequences.',
+        },
+      },
+      {
+        id: 'second',
+        label: {
+          zhCN: '这次先停一停',
+          en: 'Take a break this time',
+        },
+        effects: [
+          {
+            type: 'income',
+            taxYear: 'current',
+            earnings: 58000,
+          },
+          {
+            type: 'money',
+            delta: 200,
+          },
+        ],
+        note: {
+          zhCN: '本情节写入全年税前收入 £58,000，政策后果由引擎计算。',
+          en: 'This scenario records £58,000 in annual gross earnings; the engine calculates policy consequences.',
+        },
+      },
+    ],
+    once: true,
+  },
+  {
+    id: 'sw-remote-care',
+    title: {
+      zhCN: '家里的备用房间',
+      en: 'The spare room at home',
+    },
+    text: {
+      zhCN: '家里的备用房间一直留着，林遥回想这次住了多久。',
+      en: 'The family keeps the spare room ready; Yao recalls the length of this visit.',
+    },
+    weight: 3,
+    choices: [
+      {
+        id: 'first',
+        label: {
+          zhCN: '记录两个月海外小住',
+          en: 'Record sixty days staying abroad',
+        },
+        effects: [
+          {
+            type: 'absence',
+            startOffsetDays: -60,
+            days: 60,
+          },
+          {
+            type: 'stat',
+            key: 'mood',
+            delta: 12,
+          },
+        ],
+        note: {
+          zhCN: '只记录虚构情节中的事实，政策后果由引擎计算。',
+          en: 'Records the fictional scenario’s facts; the engine calculates policy consequences.',
+        },
+      },
+      {
+        id: 'second',
+        label: {
+          zhCN: '实际只停留两周',
+          en: 'The stay lasted only fourteen days',
+        },
+        effects: [
+          {
+            type: 'absence',
+            startOffsetDays: -14,
+            days: 14,
+          },
+          {
+            type: 'stat',
+            key: 'mood',
+            delta: 6,
+          },
+        ],
+        note: {
+          zhCN: '只记录虚构情节中的事实，政策后果由引擎计算。',
+          en: 'Records the fictional scenario’s facts; the engine calculates policy consequences.',
+        },
+      },
+    ],
+    once: true,
+  },
+];
 
 export const skilledWorker: Character = {
   id: 'skilled-worker',
@@ -39,445 +2212,7 @@ export const skilledWorker: Character = {
     immigrationBreaches: [],
     governmentDebt: { outstanding: false },
   },
-  luckPool: [],
-  script: [
-    {
-      id: 'sw-english',
-      kind: 'choice',
-      title: { zhCN: '英语考试的安排', en: 'Making time for an English test' },
-      text: {
-        zhCN: '你在英国生活了一年，工作之外也想给英语学习留点时间。现在准备考试，还是先缓一缓？',
-        en: 'After a year in the UK, you want to make time for English alongside work. Prepare for a test now, or leave it for later?',
-      },
-      choices: [
-        {
-          id: 'take-b2',
-          label: { zhCN: '现在考取 B2', en: 'Obtain B2 now' },
-          effects: [{ type: 'english', cefrLevel: 'B2' }],
-          note: {
-            zhCN: `本卡更新英语证明；Skilled Worker 现行法律栏从 ${englishChange.applicationsFrom} 起要求 ${englishChange.cefrLevel}（SRC-004 SW 22A.1），改革栏按自身规则评估。`,
-            en: `This card updates English evidence; current-law Skilled Worker settlement requires ${englishChange.cefrLevel} from ${englishChange.applicationsFrom} (SRC-004 SW 22A.1), while reform uses its own rules.`,
-          },
-        },
-        {
-          id: 'wait',
-          label: {
-            zhCN: '暂时保留现有证明',
-            en: 'Keep the existing evidence for now',
-          },
-          effects: [{ type: 'none' }],
-          note: {
-            zhCN: '等待不增加英语证明，之后仍按当时的要求评估。',
-            en: 'Waiting adds no English evidence; later assessments still use the requirement applicable then.',
-          },
-        },
-      ],
-    },
-    {
-      id: 'sw-partner',
-      kind: 'choice',
-      title: { zhCN: '两个人的计划', en: 'Plans for two' },
-      text: {
-        zhCN: '新一轮三年 Skilled Worker 许可已办妥，工作照旧。过去一年认识的伴侣正和你商量，是来英国一起生活，还是暂时继续异地。',
-        en: 'With fresh three-year Skilled Worker permission and the same job, you and a partner you met over the past year discuss living together in the UK or staying apart a little longer.',
-      },
-      choices: [
-        {
-          id: 'join',
-          label: {
-            zhCN: '伴侣来英，一起安顿并开始工作',
-            en: 'Your partner joins you and starts work',
-          },
-          effects: [
-            {
-              type: 'newEpisode',
-              episode: {
-                route: 'SKILLED_WORKER',
-                role: 'MAIN',
-                salary: 38000,
-                socCode: '2134',
-              },
-              durationMonths: 36,
-            },
-            {
-              type: 'relationship',
-              add: { type: 'PARTNER', otherPartyStatus: 'OTHER' },
-            },
-            { type: 'income', taxYear: 'current', partnerEarnings: 24000 },
-          ],
-          note: {
-            zhCN: '伴侣关系与家庭收入进入时间线，但不评估伴侣的 dependant 资格。',
-            en: 'The relationship and household earnings enter the timeline, but the partner’s dependant eligibility is not assessed.',
-          },
-        },
-        {
-          id: 'apart',
-          label: {
-            zhCN: '暂时继续异地生活',
-            en: 'Continue living apart for now',
-          },
-          effects: [
-            {
-              type: 'newEpisode',
-              episode: {
-                route: 'SKILLED_WORKER',
-                role: 'MAIN',
-                salary: 38000,
-                socCode: '2134',
-              },
-              durationMonths: 36,
-            },
-            {
-              type: 'relationship',
-              add: { type: 'PARTNER', otherPartyStatus: 'OTHER' },
-            },
-          ],
-          note: {
-            zhCN: '本卡只记录关系，不假定在海外的伴侣有可计入的收入。',
-            en: 'This card records the relationship without assuming countable earnings for a partner abroad.',
-          },
-        },
-      ],
-    },
-    {
-      id: 'sw-new-job',
-      kind: 'choice',
-      title: { zhCN: '新岗位的邀请', en: 'A new job offer' },
-      text: {
-        zhCN: '一家新公司邀请你做 IT 质量与测试工作，年薪 £55,000。你有些心动，也舍不得现在熟悉的团队。',
-        en: 'A new company offers an IT quality and testing job at £55,000. It is tempting, but you would miss your familiar team.',
-      },
-      choices: [
-        {
-          id: 'move',
-          label: { zhCN: '接受测试岗位', en: 'Take the testing job' },
-          effects: [
-            {
-              type: 'newEpisode',
-              episode: {
-                route: 'SKILLED_WORKER',
-                role: 'MAIN',
-                salary: 55000,
-                socCode: '2136',
-              },
-              durationMonths: 36,
-            },
-            { type: 'income', taxYear: 'current', earnings: 55000 },
-          ],
-          note: {
-            zhCN: '本情节以新岗位三年许可已获批为前提；担保年薪与 SOC 用于岗位薪资规则，tax year 收入用于收入路径。',
-            en: 'This scenario assumes three-year permission for the new job is granted; sponsored salary and SOC feed job salary rules, while tax-year earnings feed earnings pathways.',
-          },
-        },
-        {
-          id: 'stay',
-          label: { zhCN: '留在开发岗位', en: 'Stay in software development' },
-          effects: [
-            {
-              type: 'newEpisode',
-              episode: {
-                route: 'SKILLED_WORKER',
-                role: 'MAIN',
-                salary: 38000,
-                socCode: '2134',
-              },
-              durationMonths: 36,
-            },
-            { type: 'income', taxYear: 'current', earnings: 38000 },
-          ],
-          note: {
-            zhCN: '本情节以原岗位三年许可已获批为前提；保留原岗位与年薪，不代表薪资必然满足定居要求。',
-            en: 'This scenario assumes three-year permission for the existing job is granted; keeping the job and salary does not imply the salary meets settlement requirements.',
-          },
-        },
-      ],
-    },
-    {
-      id: 'sw-life-in-uk',
-      kind: 'choice',
-      title: { zhCN: 'Life in the UK', en: 'Life in the UK' },
-      text: {
-        zhCN: '你整理定居材料清单时发现，Life in the UK 还没考。趁这阵子工作不忙，能挤出些备考时间。',
-        en: 'While sorting out a settlement checklist, you realise you have not taken Life in the UK. Work is quieter, leaving a little time to prepare.',
-      },
-      choices: [
-        {
-          id: 'pass',
-          label: { zhCN: '备考并通过', en: 'Prepare and pass' },
-          effects: [{ type: 'lifeInTheUk' }],
-          note: {
-            zhCN: '本卡写入 Life in the UK 已通过的证明。',
-            en: 'This card records evidence of passing Life in the UK.',
-          },
-        },
-        {
-          id: 'later',
-          label: { zhCN: '以后再安排', en: 'Arrange it later' },
-          effects: [{ type: 'none' }],
-          note: {
-            zhCN: '未提供通过或豁免证明时，由引擎返回相应状态。',
-            en: 'Without pass or exemption evidence, the engine returns the corresponding status.',
-          },
-        },
-      ],
-    },
-    {
-      id: 'sw-overseas-assignment',
-      kind: 'choice',
-      title: {
-        zhCN: '回顾外派这一年',
-        en: 'Looking back on an overseas assignment',
-      },
-      text: {
-        zhCN: '过去一年，公司有个为期八个月的海外项目。你接下了外派，昨天刚回来，还是一直留在英国团队？续签也已办好，生活又翻过一页。',
-        en: 'Looking back over the past year, you either took an overseas assignment and returned yesterday, or stayed with the UK team. Your renewed permission is also in place.',
-      },
-      choices: [
-        {
-          id: 'abroad',
-          label: {
-            zhCN: '接受外派，昨天刚回来',
-            en: 'Take the assignment and return yesterday',
-          },
-          effects: [
-            { type: 'episode', patch: { validTo: '2032-01-14' } },
-            { type: 'absence', startOffsetDays: -240, days: 240 },
-          ],
-          note: {
-            zhCN: '本情节把外派八个月记为 240 天离境，并将已续签许可延至 2032-01-14；连续居留由引擎计算。',
-            en: 'This scenario records eight months as 240 days abroad and renewed permission through 2032-01-14; the engine calculates continuous residence.',
-          },
-        },
-        {
-          id: 'uk',
-          label: { zhCN: '留在英国团队', en: 'Stay with the UK team' },
-          effects: [{ type: 'episode', patch: { validTo: '2032-01-14' } }],
-          note: {
-            zhCN: '本卡不添加离境，只更新已续签的许可期限。',
-            en: 'This card adds no absence and only updates the renewed permission’s end date.',
-          },
-        },
-      ],
-    },
-    {
-      id: 'sw-sponsor-loss',
-      kind: 'choice',
-      title: { zhCN: '担保方裁员', en: 'Redundancy at your sponsor' },
-      text: {
-        zhCN: '原公司开始裁员。你可以接受已经落实的新担保岗位，也可以先回国陪家人三个月，再回来开始新工作。新岗位年薪都是 £55,000。',
-        en: 'Your employer starts making redundancies. You can take a job with a new sponsor already in place, or spend three months with family abroad before returning to a new job. Both pay £55,000.',
-      },
-      choices: [
-        {
-          id: 'new-sponsor',
-          label: {
-            zhCN: '接下新担保方的工作',
-            en: 'Take the job with the new sponsor',
-          },
-          effects: [
-            {
-              type: 'newEpisode',
-              episode: {
-                route: 'SKILLED_WORKER',
-                role: 'MAIN',
-                salary: 55000,
-                socCode: '2136',
-              },
-              durationMonths: 36,
-            },
-            { type: 'income', taxYear: 'current', earnings: 55000 },
-          ],
-          note: {
-            zhCN: '本卡写入今天起相接的新许可与 SOC 2136，不模拟取消许可程序或寻找担保的时限。',
-            en: 'This card records adjoining permission from today with SOC 2136; curtailment procedures and sponsor-search deadlines are not simulated.',
-          },
-        },
-        {
-          id: 'return-home',
-          label: {
-            zhCN: '回国陪家人，三个月后再来',
-            en: 'Spend three months with family before returning',
-          },
-          effects: [
-            {
-              type: 'newEpisode',
-              episode: {
-                route: 'SKILLED_WORKER',
-                role: 'MAIN',
-                salary: 55000,
-                socCode: '2136',
-              },
-              durationMonths: 36,
-              gapDays: 90,
-            },
-            { type: 'absence', startOffsetDays: 0, days: 90 },
-          ],
-          note: {
-            zhCN: '本情节写入 90 天离境与许可空档，新许可为 SOC 2136，生效后才参与评估；取消许可程序未建模。',
-            en: 'This scenario records 90 days abroad and a permission gap; the new SOC 2136 permission is assessed once effective, without modelling curtailment procedures.',
-          },
-        },
-      ],
-    },
-    {
-      id: 'sw-drink-driving',
-      kind: 'choice',
-      title: { zhCN: '晚餐之后', en: 'After dinner' },
-      text: {
-        zhCN: '晚餐喝了酒，散场时天已经很晚。你会怎样回家？',
-        en: 'You have had alcohol with dinner, and it is late when everyone leaves. How do you get home?',
-      },
-      choices: [
-        {
-          id: 'conviction',
-          label: {
-            zhCN: '酒驾并被定罪，留下犯罪记录',
-            en: 'Drive, be convicted and acquire a criminal record',
-          },
-          effects: [{ type: 'criminal', event: {} }],
-          note: {
-            zhCN: '引擎对申报的犯罪记录触发受监管审查，不在游戏内判断具体法律后果。',
-            en: 'The engine sends declared criminal records to regulated review; the game does not decide the specific legal consequences.',
-          },
-        },
-        {
-          id: 'taxi',
-          label: { zhCN: '叫车回家', en: 'Take a taxi home' },
-          effects: [{ type: 'none' }],
-          note: {
-            zhCN: '本情节没有新增犯罪记录。',
-            en: 'This scenario adds no criminal record.',
-          },
-        },
-      ],
-    },
-    {
-      id: 'sw-home',
-      kind: 'choice',
-      title: { zhCN: '住处的选择', en: 'A place to live' },
-      text: {
-        zhCN: '新一轮三年 Skilled Worker 许可已办妥，测试岗位年薪仍是 £55,000。周末看了几套房，你开始考虑买下住处，还是继续租住。',
-        en: 'With fresh three-year Skilled Worker permission and the same testing job at £55,000, a weekend of viewings gets you thinking about buying a home or continuing to rent.',
-      },
-      choices: [
-        {
-          id: 'buy',
-          label: { zhCN: '买下住处', en: 'Buy a home' },
-          effects: [
-            {
-              type: 'newEpisode',
-              episode: {
-                route: 'SKILLED_WORKER',
-                role: 'MAIN',
-                salary: 55000,
-                socCode: '2136',
-              },
-              durationMonths: 36,
-            },
-            { type: 'none' },
-          ],
-          note: {
-            zhCN: '本卡更新 SOC 2136 的许可；房价、贷款与资产变化未建模，买房不自动授予身份。',
-            en: 'This card renews SOC 2136 permission; property prices, mortgages and asset changes are not modelled, and buying does not grant status.',
-          },
-        },
-        {
-          id: 'rent',
-          label: { zhCN: '继续租住', en: 'Keep renting' },
-          effects: [
-            {
-              type: 'newEpisode',
-              episode: {
-                route: 'SKILLED_WORKER',
-                role: 'MAIN',
-                salary: 55000,
-                socCode: '2136',
-              },
-              durationMonths: 36,
-            },
-            { type: 'none' },
-          ],
-          note: {
-            zhCN: '本卡更新许可，租住选择不另改引擎字段。',
-            en: 'This card updates permission; the rental choice changes no other engine fields.',
-          },
-        },
-      ],
-    },
-    {
-      id: 'sw-income-shock',
-      kind: 'choice',
-      title: { zhCN: '预算突然收紧', en: 'A tighter budget' },
-      text: {
-        zhCN: '伴侣暂时失业，家里的账单却没有少。你们得想办法撑过这几个月。',
-        en: 'Your partner is temporarily out of work, but the bills keep coming. You need a way through the next few months.',
-      },
-      choices: [
-        {
-          id: 'claim',
-          label: {
-            zhCN: '申领 Universal Credit 渡过难关',
-            en: 'Claim Universal Credit to get through',
-          },
-          effects: [
-            { type: 'income', taxYear: 'current', partnerEarnings: 0 },
-            {
-              type: 'benefit',
-              benefit: { benefitType: 'UNIVERSAL_CREDIT' },
-              startOffsetDays: 0,
-              months: 6,
-            },
-          ],
-          note: {
-            zhCN: '本情节设为本人领取 Universal Credit，不判断申领资格；不把伴侣领取的福利算到本人名下。',
-            en: 'This scenario gives the applicant Universal Credit without assessing claim entitlement; benefits received by the partner are not attributed to the applicant.',
-          },
-        },
-        {
-          id: 'borrow',
-          label: {
-            zhCN: '向朋友借钱周转',
-            en: 'Borrow from a friend',
-          },
-          effects: [{ type: 'income', taxYear: 'current', partnerEarnings: 0 }],
-          note: {
-            zhCN: '私人借款不记为 public funds 或 government debt，本游戏不模拟还款预算。',
-            en: 'A private loan is not recorded as public funds or government debt; repayment budgeting is not simulated.',
-          },
-        },
-      ],
-    },
-    {
-      id: 'sw-four-days',
-      kind: 'choice',
-      title: { zhCN: '留一天给生活', en: 'A day for yourself' },
-      text: {
-        zhCN: '公司开始提供四天工作制，年薪是 £44,000，工作内容不变。每周多出一天自己的时间，让你有些心动。',
-        en: 'Your employer offers a four-day week at £44,000 doing the same work. An extra day to yourself each week sounds tempting.',
-      },
-      choices: [
-        {
-          id: 'four-days',
-          label: { zhCN: '改为四天工作制', en: 'Move to a four-day week' },
-          effects: [
-            { type: 'episode', patch: { salary: 44000 } },
-            { type: 'income', taxYear: 'current', earnings: 44000 },
-          ],
-          note: {
-            zhCN: '本卡更新名义年薪和当年收入，工时折算未建模。',
-            en: 'This card updates nominal annual salary and current-year earnings; working-hours adjustments are not modelled.',
-          },
-        },
-        {
-          id: 'full-time',
-          label: { zhCN: '保留当前安排', en: 'Keep the current arrangement' },
-          effects: [{ type: 'income', taxYear: 'current', earnings: 55000 }],
-          note: {
-            zhCN: '本卡保留岗位年薪，并记录当年税前收入。',
-            en: 'This card keeps the sponsored salary and records current-year gross earnings.',
-          },
-        },
-      ],
-    },
-  ],
+  sprite: 'characters/3.png',
+  stats: { money: 9000, mood: 65, health: 75, english: 45, career: 10 },
+  events,
 };

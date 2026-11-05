@@ -6,6 +6,36 @@ export const currentLaw2026_11 = {
   ruleSetId: 'current-law-2026-11',
   asOf: '2026-11-04',
   values: {
+    // GBP, standard in-country Skilled Worker application for up to 3 years;
+    // not the Immigration Salary List or Health and Care fee.
+    skilledWorkerExtensionFeeInUk: {
+      value: 943,
+      sources: [
+        {
+          srcId: 'SRC-030',
+          locator: 'Application fees: inside the UK, up to 3 years',
+        },
+      ],
+    },
+    immigrationHealthSurchargePerYear: {
+      value: 1035,
+      sources: [
+        {
+          srcId: 'SRC-030',
+          locator: 'How much it costs: healthcare surcharge, per year',
+        },
+      ],
+    },
+    settlementApplicationFee: {
+      value: 3226,
+      sources: [
+        {
+          srcId: 'SRC-031',
+          locator:
+            '9. Other applications made in the UK: Indefinite leave to remain - main applicant and dependants; Fee from 8 October 2026',
+        },
+      ],
+    },
     // Continuous residence: no more than this many days outside the UK in any
     // window of this many months (CR 3.1).
     continuousResidenceMaxAbsenceDays: {
