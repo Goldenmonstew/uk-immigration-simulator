@@ -12,9 +12,3 @@
   display: block;
   image-rendering: pixelated;
 }
-
-@media (max-width: 600px) {
-  .canvas {
-    height: 360px;
-  }
-}

@@ -3,7 +3,7 @@
 import { useEffect, useRef } from 'react';
 import * as Phaser from 'phaser';
 import { useTranslation } from '../../i18n/locale';
-import type { LocationId } from './mock-core';
+import type { LocationId } from '@uk-immigration/game';
 import { TownScene } from './scene';
 import styles from './town-canvas.module.css';
 
@@ -12,6 +12,7 @@ export interface TownCanvasProps {
   quarter: 1 | 2 | 3 | 4;
   sprite: string;
   paused: boolean;
+  onReady: () => void;
   onLocation: (id: LocationId) => void;
   destination?: { location: LocationId; request: number };
 }
@@ -59,8 +60,11 @@ export default function TownCanvas(props: TownCanvasProps) {
   useEffect(() => {
     const element = host.current!;
     const stop = observeTownSize(element, (type) => {
-      const town = new TownScene(props.sprite, latest.current, (id) =>
-        latest.current.onLocation(id),
+      const town = new TownScene(
+        props.sprite,
+        latest.current,
+        (id) => latest.current.onLocation(id),
+        () => latest.current.onReady(),
       );
       scene.current = town;
       if (latest.current.destination)

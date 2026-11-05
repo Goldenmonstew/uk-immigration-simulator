@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import type { RuleSetId } from '@uk-immigration/engine';
 import { useTranslation } from '../../i18n/locale';
 import {
@@ -11,7 +11,7 @@ import {
   locations,
   type GameState,
   type LocationId,
-} from './mock-core';
+} from '@uk-immigration/game';
 import {
   ActionFeedback,
   CharacterSelect,
@@ -26,7 +26,13 @@ import {
   StatusBar,
   type StateChange,
 } from './game-view';
-import { gameStorage, withGameLocale } from './session';
+import {
+  gameStorage,
+  withGameLocale,
+  needsVisaReminder,
+  spritePath,
+  visaMonths,
+} from './session';
 import TownCanvas from './town-canvas';
 import styles from './game.module.css';
 import site from '../site.module.css';
@@ -45,6 +51,12 @@ export default function GameClient() {
     location: LocationId;
     request: number;
   }>();
+
+  const [sceneReady, setSceneReady] = useState(false);
+  const [remindedQuarter, setRemindedQuarter] = useState<string>();
+  const [music, setMusic] = useState(false);
+  const [musicError, setMusicError] = useState(false);
+  const audio = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
     const stored = characters.map(
@@ -68,6 +80,7 @@ export default function GameClient() {
       !state ||
       state.actionsLeft > 0 ||
       currentEvent(state) ||
+      state.eventQueue.length > 0 ||
       feedback ||
       summary ||
       isOver(state)
@@ -79,9 +92,23 @@ export default function GameClient() {
     setState(after);
   }, [state, feedback, summary]);
 
+  useEffect(() => {
+    if (!state || isOver(state)) {
+      audio.current?.pause();
+      setMusic(false);
+    }
+  }, [state]);
+
   const current = state && withGameLocale(state, locale);
   const event = current && currentEvent(current);
+  const quarterKey =
+    current &&
+    `${current.characterId}:${current.seed}:${current.year}:${current.quarter}`;
+  const reminder =
+    current && needsVisaReminder(current) && remindedQuarter !== quarterKey;
   const paused = !!(
+    !sceneReady ||
+    reminder ||
     location ||
     detail ||
     feedback ||
@@ -96,6 +123,8 @@ export default function GameClient() {
     setFeedback(undefined);
     setSummary(undefined);
     setDestination(undefined);
+    setRemindedQuarter(undefined);
+    setSceneReady(false);
   };
   const apply = (next: GameState) => {
     setFeedback({ before: current!, after: next });
@@ -104,6 +133,8 @@ export default function GameClient() {
   };
   const walkTo = (target: LocationId) => {
     setDetail(undefined);
+    setSummary(undefined);
+    setRemindedQuarter(quarterKey);
     setDestination((previous) => ({
       location: target,
       request: (previous?.request ?? 0) + 1,
@@ -115,7 +146,16 @@ export default function GameClient() {
   });
   return (
     <div className={styles.game}>
-      <p className={styles.preview}>{t('game.preview')}</p>
+      <audio
+        ref={audio}
+        src="/game/assets/musics/theme-9.ogg"
+        loop
+        preload="none"
+        onError={() => {
+          setMusic(false);
+          setMusicError(true);
+        }}
+      />
       {!ready ? (
         <p role="status">{t('game.loading')}</p>
       ) : !current ? (
@@ -126,20 +166,48 @@ export default function GameClient() {
             <Ending state={current} onChange={changeCharacter} />
           ) : (
             <>
-              <StatusBar state={current} />
+              <StatusBar state={current}>
+                <button
+                  className={styles.music}
+                  aria-pressed={music}
+                  onClick={async () => {
+                    if (music) {
+                      audio.current?.pause();
+                      setMusic(false);
+                    } else {
+                      try {
+                        await audio.current?.play();
+                        setMusic(true);
+                        setMusicError(false);
+                      } catch {
+                        setMusicError(true);
+                      }
+                    }
+                  }}
+                >
+                  {t(music ? 'game.musicOn' : 'game.musicOff')}
+                </button>
+              </StatusBar>
+              {musicError && <p role="status">{t('game.musicUnavailable')}</p>}
               <div className={styles.map}>
                 <TownCanvas
                   key={`${current.characterId}:${current.seed}`}
                   locale={locale}
                   quarter={current.quarter}
-                  sprite={
+                  sprite={spritePath(
                     characters.find((item) => item.id === current.characterId)!
-                      .sprite
-                  }
+                      .sprite,
+                  )}
+                  onReady={() => setSceneReady(true)}
                   paused={paused}
                   onLocation={setLocation}
                   destination={destination}
                 />
+                {!sceneReady && (
+                  <p className={styles.loading} role="status">
+                    {t('game.loading')}
+                  </p>
+                )}
               </div>
               <p className={styles.controls}>{t('game.controls')}</p>
               <nav
@@ -179,11 +247,19 @@ export default function GameClient() {
               </div>
             </>
           )}
-          {summary ? (
-            <Modal key="summary" title={t('game.quarterSummary')}>
+          {!sceneReady && !isOver(current) ? null : summary ? (
+            <Modal
+              key="summary"
+              title={t(
+                summary.before.quarter === 4
+                  ? 'game.yearSummary'
+                  : 'game.quarterSummary',
+              )}
+            >
               <QuarterSummary
                 {...localizeChange(summary)}
                 onContinue={() => setSummary(undefined)}
+                onVisit={() => walkTo('council')}
               />
             </Modal>
           ) : feedback ? (
@@ -192,6 +268,29 @@ export default function GameClient() {
                 {...localizeChange(feedback)}
                 onContinue={() => setFeedback(undefined)}
               />
+            </Modal>
+          ) : reminder ? (
+            <Modal
+              key={`reminder-${quarterKey}`}
+              title={t('game.visaReminderTitle')}
+            >
+              <p>
+                {t('game.visaReminder').replace(
+                  '{count}',
+                  String(visaMonths(current)),
+                )}
+              </p>
+              <div className={styles.buttons}>
+                <button className={site.button} onClick={() => walkTo('visa')}>
+                  {t('game.visaVisit')}
+                </button>
+                <button
+                  className={site.secondary}
+                  onClick={() => setRemindedQuarter(quarterKey)}
+                >
+                  {t('game.continuePlaying')}
+                </button>
+              </div>
             </Modal>
           ) : event ? (
             <Modal

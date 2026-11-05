@@ -18,15 +18,19 @@ import {
   newGame,
   progress,
   resolve,
-  statKeys,
-  visaMonthsLeft,
   type Effect,
   type GameState,
   type LocationId,
   type StatKey,
   type Text,
-} from './mock-core';
-import { gameDraft, withGameLocale } from './session';
+} from '@uk-immigration/game';
+import {
+  gameDraft,
+  withGameLocale,
+  statKeys,
+  spritePath,
+  visaMonths,
+} from './session';
 import site from '../site.module.css';
 import styles from './game.module.css';
 
@@ -66,7 +70,9 @@ export function CharacterSelect({
           <article key={character.id} className={styles.character}>
             <span
               className={styles.portrait}
-              style={{ backgroundImage: `url("${character.sprite}")` }}
+              style={{
+                backgroundImage: `url("${spritePath(character.sprite)}")`,
+              }}
               role="img"
               aria-label={localText(character.name, locale)}
             />
@@ -106,15 +112,21 @@ export function CharacterSelect({
   );
 }
 
-export function StatusBar({ state }: { state: GameState }) {
+export function StatusBar({
+  state,
+  children,
+}: {
+  state: GameState;
+  children?: ReactNode;
+}) {
   const { t, locale } = useTranslation();
   const name = characters.find((item) => item.id === state.characterId)!.name;
-  const months = visaMonthsLeft(state);
+  const months = visaMonths(state);
   return (
     <header className={styles.hud}>
       <div className={styles.hudTop}>
         <strong>{localText(name, locale)}</strong>
-        <span>
+        <span className={styles.season}>
           {t('game.yearQuarter')
             .replace('{year}', String(state.year))
             .replace('{quarter}', String(state.quarter))}{' '}
@@ -125,11 +137,14 @@ export function StatusBar({ state }: { state: GameState }) {
           {t('game.actionsLeft').replace('{count}', String(state.actionsLeft))}
         </strong>
         <span
-          className={months <= 6 ? styles.urgent : styles.visa}
+          className={
+            months <= 6 ? `${styles.urgent} ${styles.visaFlash}` : styles.visa
+          }
           title={months <= 6 ? t('game.visaUrgent') : undefined}
         >
           {t('game.visa').replace('{count}', String(months))}
         </span>
+        {children}
       </div>
       <div className={styles.stats}>
         {statKeys.map((key) => (
@@ -172,7 +187,7 @@ export function ProgressBars({
         >
           <span>
             {t(index === 0 ? 'game.currentLaw' : 'game.reform')}
-            <strong>{bars[id].percent}%</strong>
+            <strong>{Math.round(bars[id].percent)}%</strong>
           </span>
           <span
             className={styles.track}
@@ -180,11 +195,11 @@ export function ProgressBars({
             aria-label={t(index === 0 ? 'game.currentLaw' : 'game.reform')}
             aria-valuemin={0}
             aria-valuemax={100}
-            aria-valuenow={bars[id].percent}
+            aria-valuenow={Math.round(bars[id].percent)}
           >
             <span
               style={{
-                width: `${bars[id].percent}%`,
+                width: `${Math.round(bars[id].percent)}%`,
                 backgroundColor: outcomeColor(bars[id].outcome),
               }}
             />
@@ -265,9 +280,9 @@ export function LocationMenu({
   onChange: (next: GameState) => void;
 }) {
   const { t, locale } = useTranslation();
-  const available = actions(state).filter(
-    (action) => action.location === location,
-  );
+  const available = actions(state)
+    .filter((action) => action.location === location)
+    .sort((a, b) => Number(b.id === 'extend') - Number(a.id === 'extend'));
   if (location === 'council')
     return (
       <>
@@ -281,9 +296,7 @@ export function LocationMenu({
     );
   return (
     <>
-      {location === 'visa' && (
-        <p className={site.notice}>{t('game.visaPreview')}</p>
-      )}
+      {location === 'station' && <p>{t('game.travelRecall')}</p>}
       {!available.length && <p>{t('game.noActions')}</p>}
       <div className={styles.choices}>
         {available.map((action) => (
@@ -294,8 +307,28 @@ export function LocationMenu({
           >
             <strong>{localText(action.label, locale)}</strong>
             <small>
-              {t('game.actionCost')} ·{' '}
-              {action.cost ? money(action.cost) : t('game.free')}
+              {t('game.actionCost').replace(
+                '{count}',
+                String(action.cost ?? 1),
+              )}
+              {action.effects.some(
+                (effect) => effect.type === 'money' && effect.delta < 0,
+              ) && (
+                <>
+                  {' '}
+                  · {t('game.fee')}{' '}
+                  {money(
+                    -action.effects.reduce(
+                      (sum, effect) =>
+                        sum +
+                        (effect.type === 'money' && effect.delta < 0
+                          ? effect.delta
+                          : 0),
+                      0,
+                    ),
+                  )}
+                </>
+              )}
             </small>
             <EffectHints effects={action.effects} />
           </button>
@@ -344,7 +377,7 @@ export function StatChanges({ before, after }: StateChange) {
     (key) => before.stats[key] !== after.stats[key],
   );
   return changed.length ? (
-    <ul className={styles.deltas}>
+    <ul className={`${styles.deltas} ${styles.animateDeltas}`}>
       {changed.map((key) => (
         <li key={key}>
           <span>{t(`game.${key}`)}</span>
@@ -387,64 +420,111 @@ export function QuarterSummary({
   before,
   after,
   onContinue,
-}: StateChange & { onContinue: () => void }) {
+  onVisit,
+}: StateChange & { onContinue: () => void; onVisit: () => void }) {
   const { t, locale } = useTranslation();
-  const entries = after.log
-    .slice(before.log.length)
-    .filter((entry) => entry.kind === 'quarter');
-  const income = entries.reduce(
-    (sum, entry) => sum + Math.max(0, entry.statDeltas?.money ?? 0),
-    0,
+  const entries = after.log.filter(
+    (entry) => entry.year === before.year && entry.quarter === before.quarter,
   );
-  const expenses = entries.reduce(
-    (sum, entry) => sum - Math.min(0, entry.statDeltas?.money ?? 0),
-    0,
+  const net = entries
+    .filter((entry) => entry.kind === 'quarter')
+    .reduce((sum, entry) => sum + (entry.statDeltas?.money ?? 0), 0);
+  const moments = entries.filter(
+    (entry) => entry.kind === 'event' || entry.kind === 'action',
   );
-  const events = before.log.filter(
-    (entry) =>
-      entry.kind === 'event' &&
-      entry.year === before.year &&
-      entry.quarter === before.quarter,
-  );
+  const quarterStart = { ...before, stats: { ...before.stats } };
+  for (const key of statKeys) {
+    quarterStart.stats[key] =
+      after.stats[key] -
+      entries.reduce((sum, entry) => sum + (entry.statDeltas?.[key] ?? 0), 0);
+  }
   const previous = progress(before),
     next = progress(after);
   return (
     <>
       <dl className={styles.facts}>
         <div>
-          <dt>{t('game.income')}</dt>
-          <dd>{money(income)}</dd>
-        </div>
-        <div>
-          <dt>{t('game.expenses')}</dt>
-          <dd>{money(expenses)}</dd>
+          <dt>{t('game.netIncome')}</dt>
+          <dd>{signed(net, 'money')}</dd>
         </div>
       </dl>
       <h3>{t('game.quarterChanges')}</h3>
-      <StatChanges before={before} after={after} />
-      <p className={visaMonthsLeft(after) <= 6 ? styles.urgent : undefined}>
-        {t('game.visa').replace('{count}', String(visaMonthsLeft(after)))}
+      <StatChanges before={quarterStart} after={after} />
+      <p className={visaMonths(after) <= 6 ? styles.urgent : undefined}>
+        {t('game.visa').replace('{count}', String(visaMonths(after)))}
       </p>
-      <h3>{t('game.progressChanges')}</h3>
-      <ul className={styles.deltas}>
-        {displayedRuleSets.map(({ id }, index) => (
-          <li key={id}>
-            <span>{t(index === 0 ? 'game.currentLaw' : 'game.reform')}</span>
-            <strong>
-              {previous[id].percent}% → {next[id].percent}%
-            </strong>
-          </li>
-        ))}
-      </ul>
       <h3>{t('game.eventReview')}</h3>
-      {events.length ? (
-        <ul>
-          {events.map((event, index) => (
-            <li key={index}>{localText(event.text, locale)}</li>
+      {moments.length ? (
+        <ul className={styles.review}>
+          {moments.map((entry, index) => (
+            <li key={index}>
+              {localText(entry.text, locale)}
+              <span className={styles.hints}>
+                {statKeys
+                  .filter((key) => entry.statDeltas?.[key])
+                  .map((key) => (
+                    <small key={key}>
+                      {t(`game.${key}`)} {signed(entry.statDeltas![key]!, key)}
+                    </small>
+                  ))}
+              </span>
+            </li>
           ))}
         </ul>
       ) : (
         <p>{t('game.noEvents')}</p>
+      )}
+      {before.quarter === 4 && (
+        <>
+          <h3>{t('game.yearSummary')}</h3>
+          <p>{t('game.progressChanges')}</p>
+          <div className={styles.progressBars}>
+            {displayedRuleSets.map(({ id }, index) => (
+              <div key={id} className={styles.progressButton}>
+                <strong>
+                  {t(index === 0 ? 'game.currentLaw' : 'game.reform')}
+                </strong>
+                <p>
+                  {Math.round(previous[id].percent)}% →{' '}
+                  {Math.round(next[id].percent)}%
+                </p>
+                <span className={styles.track} aria-hidden="true">
+                  <span
+                    style={{
+                      width: `${Math.round(previous[id].percent)}%`,
+                      backgroundColor: '#7896aa',
+                    }}
+                  />
+                </span>
+                <span
+                  className={styles.track}
+                  role="progressbar"
+                  aria-label={t(
+                    index === 0 ? 'game.currentLaw' : 'game.reform',
+                  )}
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                  aria-valuenow={Math.round(next[id].percent)}
+                >
+                  <span
+                    style={{
+                      width: `${Math.round(next[id].percent)}%`,
+                      backgroundColor: outcomeColor(next[id].outcome),
+                    }}
+                  />
+                </span>
+                <small>{t(`outcome.${next[id].outcome}`)}</small>
+              </div>
+            ))}
+          </div>
+          {!isOver(after) && (
+            <p>
+              <button className={site.secondary} onClick={onVisit}>
+                {t('game.councilDetails')}
+              </button>
+            </p>
+          )}
+        </>
       )}
       <button className={site.button} onClick={onContinue}>
         {t(isOver(after) ? 'game.seeEnding' : 'game.nextQuarter')}
@@ -470,20 +550,33 @@ export function Ending({
         </p>
       ))}
       <h2>{t('game.achievements')}</h2>
-      {state.achievements.length ? (
-        <ul>
-          {achievements
-            .filter((item) => state.achievements.includes(item.id))
-            .map((item) => (
-              <li key={item.id}>
-                <strong>{localText(item.title, locale)}</strong> —{' '}
-                {localText(item.description, locale)}
-              </li>
-            ))}
-        </ul>
-      ) : (
-        <p>{t('game.noAchievements')}</p>
-      )}
+      <div className={styles.achievementColumns}>
+        {[true, false].map((earned) => {
+          const items = [
+            ...achievements,
+            ...(characters.find(
+              (character) => character.id === state.characterId,
+            )!.achievements ?? []),
+          ].filter((item) => state.achievements.includes(item.id) === earned);
+          return (
+            <section key={String(earned)}>
+              <h3>{t(earned ? 'game.earned' : 'game.unearned')}</h3>
+              {items.length ? (
+                <ul>
+                  {items.map((item) => (
+                    <li key={item.id}>
+                      <strong>{localText(item.name, locale)}</strong>
+                      <p>{localText(item.description, locale)}</p>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p>{t('game.noAchievements')}</p>
+              )}
+            </section>
+          );
+        })}
+      </div>
       <div className={styles.buttons}>
         <Link
           className={site.button}

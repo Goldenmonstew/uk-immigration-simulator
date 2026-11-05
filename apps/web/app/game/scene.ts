@@ -1,6 +1,6 @@
 import * as Phaser from 'phaser';
 import { t } from '../../i18n';
-import type { LocationId } from './mock-core';
+import type { LocationId } from '@uk-immigration/game';
 
 type Cell = { x: number; y: number };
 type ViewState = {
@@ -32,12 +32,14 @@ export class TownScene extends Phaser.Scene {
   private entered?: LocationId;
   private destination?: LocationId;
   private ready = false;
+  private speedMultiplier = 1;
   private seasonalTiles: Phaser.Tilemaps.Tile[] = [];
 
   constructor(
     private spriteUrl: string,
     view: ViewState,
     private onLocation: (id: LocationId) => void,
+    private onReady: () => void,
   ) {
     super('town');
     this.view = view;
@@ -134,11 +136,13 @@ export class TownScene extends Phaser.Scene {
             Math.floor(point.y / tileSize) === item.y),
       );
       if (door) this.walkToLocation(door.id);
-      else
+      else {
+        this.destination = undefined;
         this.walkTo({
           x: Math.floor(point.x / tileSize),
           y: Math.floor(point.y / tileSize),
         });
+      }
     });
     this.cameras.main
       .setBounds(0, 0, map.widthInPixels, map.heightInPixels)
@@ -151,6 +155,7 @@ export class TownScene extends Phaser.Scene {
     this.resizeCamera();
     this.sync(this.view);
     if (this.destination) this.walkToLocation(this.destination);
+    this.onReady();
   }
 
   private resizeCamera() {
@@ -163,21 +168,25 @@ export class TownScene extends Phaser.Scene {
   }
 
   sync(view: ViewState) {
+    const wasPaused = this.view.paused;
     this.view = view;
     if (!this.ready) return;
     this.doors.forEach((door) =>
       door.label.setText(t(`game.location.${door.id}`, view.locale)),
     );
     for (const tile of this.seasonalTiles) {
-      tile.index = view.quarter >= 3 ? snowIndex + 1 : grassIndex + 1;
-      tile.tint = [0xd1edc5, 0xffffff, 0xdac27d, 0xeaf6ff][view.quarter - 1];
+      tile.index = view.quarter === 1 ? snowIndex + 1 : grassIndex + 1;
+      tile.tint = [0xeaf6ff, 0xd1edc5, 0xffffff, 0xdac27d][view.quarter - 1];
     }
     if (view.paused) this.halt();
+    else if (wasPaused && this.destination)
+      this.walkToLocation(this.destination);
   }
 
   halt() {
     this.path = [];
     this.target = undefined;
+    this.speedMultiplier = 1;
     this.player?.setPosition(
       this.cell.x * tileSize + 8,
       this.cell.y * tileSize + 8,
@@ -191,9 +200,16 @@ export class TownScene extends Phaser.Scene {
     this.destination = id;
     if (!this.ready || this.view.paused) return;
     const door = this.doors.find((item) => item.id === id)!;
-    if (this.cell.x === door.x && this.cell.y === door.y) {
+    if (this.atDoor(this.cell, door)) {
       this.enter(door.id);
-    } else this.walkTo(door);
+    } else {
+      this.walkTo({ x: door.x, y: door.y + 1 });
+      this.speedMultiplier = 2;
+    }
+  }
+
+  private atDoor(cell: Cell, door: Door) {
+    return cell.x === door.x && (cell.y === door.y || cell.y === door.y + 1);
   }
 
   private canWalk({ x, y }: Cell) {
@@ -231,10 +247,7 @@ export class TownScene extends Phaser.Scene {
         const next = { x: cell.x + dx, y: cell.y + dy };
         // Passing another doorway would open its menu before reaching the goal.
         const otherDoor = this.doors.some(
-          (door) =>
-            door.x === next.x &&
-            door.y === next.y &&
-            (door.x !== goal.x || door.y !== goal.y),
+          (door) => this.atDoor(next, door) && !this.atDoor(goal, door),
         );
         if (this.canWalk(next) && !otherDoor && !previous.has(index(next))) {
           previous.set(index(next), cell);
@@ -246,6 +259,7 @@ export class TownScene extends Phaser.Scene {
 
   private enter(id: LocationId) {
     this.entered = id;
+    this.destination = undefined;
     this.view = { ...this.view, paused: true };
     this.halt();
     this.onLocation(id);
@@ -271,6 +285,8 @@ export class TownScene extends Phaser.Scene {
             : 0;
       if (dx || dy) {
         this.path = [];
+        this.destination = undefined;
+        this.speedMultiplier = 1;
         const next = { x: this.cell.x + dx, y: this.cell.y + dy };
         if (this.canWalk(next)) this.target = next;
       } else this.target = this.path.shift();
@@ -291,7 +307,7 @@ export class TownScene extends Phaser.Scene {
     }
     const x = this.target.x * tileSize + 8;
     const y = this.target.y * tileSize + 8;
-    const step = Math.min(delta, 50) * 0.09;
+    const step = Math.min(delta, 50) * 0.144 * this.speedMultiplier;
     player.x +=
       Math.sign(x - player.x) * Math.min(Math.abs(x - player.x), step);
     player.y +=
@@ -299,9 +315,7 @@ export class TownScene extends Phaser.Scene {
     if (player.x === x && player.y === y) {
       this.cell = this.target;
       this.target = undefined;
-      const door = this.doors.find(
-        (item) => item.x === this.cell.x && item.y === this.cell.y,
-      );
+      const door = this.doors.find((item) => this.atDoor(this.cell, item));
       if (door && this.entered !== door.id) this.enter(door.id);
       else if (!door) this.entered = undefined;
     }
