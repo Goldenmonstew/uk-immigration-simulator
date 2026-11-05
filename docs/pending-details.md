@@ -209,3 +209,11 @@ dependant 随主申请人定居（SRC-001 Ch.5）时，原文未规定、引擎�
 | ID | 事项 | 原文怎么说 | 出处 | 对引擎的影响 | 预计何时明确 |
 |---|---|---|---|---|---|
 | PD-074 | Appendix FM 5 年路线伴侣的子女如何定居 | D-LTRC.1.1 末句：随按 Appendix Settlement Family Life 申请的伴侣或父母定居的子女适用该 Appendix；否则适用 Immigration Rules Part 8 第 298 段。Part 8 已于任务 6.1 登记为 SRC-029。 | SRC-024 D-LTRC.1.1；SRC-029 para 298 | **已关闭（SRC-029，任务 6.2）**：按 para 298 建模（`docs/contracts.md` §16.5）。`CL-SCOPE` 对这类子女为 `PASS`；`CL-FAMILY-CHILD` 判断主申请人已定居或同时获批定居（298(i)），时点为主申请人现行法律栏的日期，子女本人没有合格期；已满 18 岁按 Appendix KoLL 核英语与 Life in the UK（298(vii)）。298(i) 的具体情形与 298(iii)–(v) 写进假设。不再输出 PD-074。 | 已明确：SRC-029（2026-08-03，HC 259） |
+
+## 十、现行法律栏家庭财务（任务 6.4 新增）
+
+以下条目的出处是现行 Immigration Rules 的 Appendix FM（SRC-024），段号为 Rules 段落号；"原文未提及"指该 Appendix 未作规定。
+
+| ID | 事项 | 原文怎么说 | 出处 | 对引擎的影响 | 预计何时明确 |
+|---|---|---|---|---|---|
+| PD-075 | 伴侣领取特定福利时 adequate maintenance 的口径 | 伴侣领取 E-LTRP.3.3(a) 所列福利之一时，申请人可不按收入或储蓄门槛，改为证明伴侣能在不依赖 public funds 的情况下充分供养与安置其本人、申请人与 dependants（E-LTRP.3.3(b)）。Appendix FM 没有给出数字或算法；算法在 Appendix FM-SE 与内政部指引中，本仓库未登记。 | SRC-024 E-LTRP.3.1(c)、E-LTRP.3.3、E-LTRP.3.7(c) | 5 年伴侣路线：收入与储蓄都不满足财务门槛、且 `partnerSpecifiedBenefit` 为真时，`CL-FAMILY-FINANCIAL` 输出 `UNKNOWN`（PD-075）；其他要求都满足时结论为 `POTENTIALLY_ELIGIBLE`（`docs/contracts.md` §17.3）。 | 原文未提及（登记 Appendix FM-SE 与相关指引后可建模） |

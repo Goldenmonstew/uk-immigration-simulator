@@ -873,3 +873,98 @@ fixtures（自拟，文件头注明不是官方案例）与测试：
 - `cl-family-five-year-child-projected.ts`：主申请人为 `PARTNER_FIVE_YEAR`，差一天满 5 年，其他要求都满足，结论为 `LIKELY_NOT_ELIGIBLE` 并投影到次日。未满 18 岁的子女 → `LIKELY_NOT_ELIGIBLE`、5 年、同一日期。
 - `cl-family-five-year-adult-child-english.ts`：主申请人已满 5 年（`LIKELY_ELIGIBLE`）；子女已满 18 岁，已通过 Life in the UK，未填英语 → `INSUFFICIENT_INFORMATION`，`mustUnknown: ['CL-ENGLISH']`。
 - `current-law-dependants.test.ts`：原用例"5 年路线子女 → `CL-SCOPE` `UNKNOWN` + PD-074"改为新行为。补充用例：到期当天同时获批；主申请人已定居；缺 `principal`；主申请人为无日期的 `LIKELY_NOT_ELIGIBLE` → `FAIL`；18 岁以上英语 B1 → `PASS`；未满 18 岁豁免。
+
+## 17. 5 年伴侣路线的储蓄与福利替代（Phase 6.4）
+
+`CL-FAMILY-FINANCIAL`（§12.8）原来只按收入判断；储蓄（E-LTRP.3.1(b) / 3.7(b)）与伴侣领取特定福利（E-LTRP.3.3）写在假设里，标为"未建模"。本节补上这两项。只新增两个可选输入字段与一个参数；规则 ID、候选路径、`decidedBy`（§16.1）都不变。Earned Settlement 栏不变；10 年路线不变（SETF 没有财务要求）。
+
+来源：SRC-024 Appendix FM（快照 2026-10-08）的 E-LTRP.3.1(a)–(c)、E-LTRP.3.2(g)、E-LTRP.3.3(a)–(b)、E-LTRP.3.7(a)–(c)、E-LTRP.3.8、E-ILRP.1.3(1A)。段号已按快照核对。要点：
+
+- E-LTRP.3.1：须以指定证据证明以下之一。(a) 年毛收入至少 £29,000；(b) 指定储蓄，为 (i) £16,000，加 (ii) 额外储蓄，金额为缺口的 2.5 倍（缺口 = (a) 的要求减去 E-LTRP.3.2(a)–(f) 来源的年毛收入）；(c) 满足 E-LTRP.3.3（EX.1 适用时除外）。
+- E-LTRP.3.7（过渡要求）：(a) £18,600，首名子女加 £3,800，其后每名加 £2,400，可单独满足，也可与 (b) 组合（"alone or in combination with"）；(b) 储蓄的写法同 3.1(b)；(c) 满足 E-LTRP.3.3。E-LTRP.3.8：子女多到要求超过 £29,000 时，只需 £29,000。
+- E-ILRP.1.3(1A)：定居申请适用 E-LTRP.3.1(b)(ii) / E-LTRP.3.7(b)(ii) 时，去掉 "2.5 times"。所以定居阶段储蓄 ≥ £16,000 + 缺口即可。
+- E-LTRP.3.3：(a) 伴侣领取所列福利之一（(i)–(xiv)：Disability Living Allowance、Severe Disablement Allowance、Industrial Injuries Disablement Benefit、Attendance Allowance、Carer's Allowance、Personal Independence Payment、Armed Forces Independence Payment / Guaranteed Income Payment、War Pensions Scheme 下的 Constant Attendance Allowance / Mobility Supplement / War Disablement Pension、Police Injury Pension，以及苏格兰的 Child Disability Payment、Adult Disability Payment、Carer's Support Payment、Pension Age Disability Payment、Scottish Adult Disability Living Allowance）；(b) 申请人须证明伴侣能在不依赖 public funds 的情况下，充分供养与安置其本人、申请人与 dependants。没有数字门槛。
+
+### 17.1 字段
+
+| 字段 | 取值 | 含义 | 何时读取 |
+|---|---|---|---|
+| `PersonTimeline.cashSavings?` | `number`（GBP） | 申请人与伴侣合计的现金储蓄，含 E-LTRP.3.2(g) 所列 18 岁以上 dependent child 的储蓄。缺省 = 未填写 | 申请日当天为 `FAMILY_PARTNER_OR_PARENT` + `MAIN` + `PARTNER_FIVE_YEAR`，且收入未满足门槛 |
+| `PersonTimeline.partnerSpecifiedBenefit?` | `boolean` | 伴侣领取 E-LTRP.3.3(a) 所列福利之一。缺省 = 否，不输出 `UNKNOWN` | 同上，且收入与储蓄都不满足 |
+
+- 两个字段都放在 timeline 上，与片段无关。不加别的字段。
+- 储蓄的持有期与证据规则（Appendix FM-SE）、E-LTRP.3.2 的来源种类都不核对，写进假设。
+- `partnerSpecifiedBenefit` 缺省按"未领取"处理，不单独加假设；只在 `FAIL` 的解释里提示可改按 E-LTRP.3.3 判断。
+- 非负数等输入校验在 web 边界做（6.5），引擎不另外校验。
+
+### 17.2 参数（`currentLaw2026_11.values`）
+
+| 名称 | 值 | 来源 |
+|---|---|---|
+| `familyPartnerSavingsBase`（新） | 16,000 | SRC-024 E-LTRP.3.1(b)(i)、E-LTRP.3.7(b)(i) |
+
+不设倍数参数。去掉 2.5 倍的依据 E-ILRP.1.3(1A) 已在 `CL-FAMILY-FINANCIAL` 的 `sources` 里。
+
+### 17.3 `CL-FAMILY-FINANCIAL`（改）
+
+适用范围不变：当前为 `PARTNER_FIVE_YEAR` 的伴侣主申请人；其他情形照旧 `FAIL`。门槛与收入的算法也不变：
+- 门槛由 `familyIncomeThreshold` 给出：一般 £29,000；过渡为 £18,600 加子女，按 E-LTRP.3.8 封顶；
+- 收入取申请日前最近一个完整 tax year 的 `earnings` + `partnerEarnings`。
+
+E-LTRP.3.1 与 3.7 的 (a)(b)(c) 是并列的替代，满足任一即可。所以先看给定的数据能否满足 (a) 或 (b)，再看 (c)，最后看缺了什么。下表中，缺口 = 门槛 − 收入：
+
+| 顺序 | 情形 | 结果 |
+|---|---|---|
+| 1 | 收入已填，且 ≥ 门槛 | `PASS`（3.1(a) / 3.7(a)），解释不变 |
+| 2 | `cashSavings` 已填，且 ≥ `familyPartnerSavingsBase` + 缺口；收入未填时，缺口按整个门槛计（即收入为 0 也满足） | `PASS`（3.1(b) / 3.7(b)）。解释写收入、缺口与储蓄，并注明定居阶段按 E-ILRP.1.3(1A) 不乘 2.5 |
+| 3 | `partnerSpecifiedBenefit === true` | `UNKNOWN` + `pendingDetails: ['PD-075']`（3.1(c) / 3.7(c)、3.3(b)）。解释写：福利按申报，按 3.3(a) 处理；须证明 adequate maintenance and accommodation，没有数字门槛，计算口径本工具未登记 |
+| 4 | 收入未填 | `UNKNOWN`（不带 PD）。现有解释后补一句："也可用储蓄补足，至少 £16,000 加收入缺口（E-LTRP.3.1(b) / 3.7(b)）" |
+| 5 | 收入不足，`cashSavings` 缺省 | `UNKNOWN`（不带 PD）。解释写出缺口，并说明"储蓄至少 £16,000 加缺口即可满足，未填写储蓄" |
+| 6 | 收入不足，储蓄已填但不够 | `FAIL`。解释写还差的金额（£16,000 + 缺口 − 储蓄），并提示伴侣领取 3.3(a) 所列福利时可改按 E-LTRP.3.3 判断 |
+
+与任务书的两处不同，请评审：
+
+- **第 2 条里"收入未填也可 PASS"是新增的**：储蓄已覆盖整个门槛时，不论收入多少都满足 (b)，不必再要收入。
+- **第 3 条的位置**：
+  - 排在第 1、2 条之后（任务书放在最前）：(c) 是 (a)(b) 之外的另一种满足方式，收入或储蓄已满足时就该 `PASS`；只有两者都不满足时才落到 (c)。
+  - 排在第 4、5 条之前：伴侣领福利时，申请人可以直接走 (c)；补填收入或储蓄最多把结果改成 `PASS`，不会改成 `FAIL`。
+
+其余规定：
+
+- PD：只有第 3 条带 PD-075；其他规则都通过时，结论为 `POTENTIALLY_ELIGIBLE`、5 年（§7 判定第 2 条）。第 4、5 条是用户可以补填的输入，不带 PD，结论为 `INSUFFICIENT_INFORMATION`。
+- `meta.pendingDetails` 加 PD-075；`sources` 补 E-LTRP.3.3。
+- 假设：替换原来"储蓄、E-LTRP.3.3 与 Appendix FM-SE 未建模"那句，改为三条：
+  - 储蓄按申报的合计现金储蓄计；Appendix FM-SE 的持有期与证据规则、E-LTRP.3.2 的来源种类未核对；
+  - 过渡门槛超过 £29,000 时，缺口按 E-LTRP.3.8 封顶后的门槛计算；
+  - 伴侣领取的福利按申报；住宿要求（E-LTRP.3.4、E-LTRP.3.9）与 EX.1 未建模。
+- 不做：E-LTRP.3.2 的来源校验、Appendix FM-SE、EX.1、10 年路线、Earned Settlement 栏、问卷（6.5 由 astra 做）。
+
+### 17.4 新 PD
+
+PD-075 登记到 `docs/pending-details.md` 新的第十节"现行法律栏家庭财务（任务 6.4 新增）"：伴侣领取 E-LTRP.3.3(a) 所列福利时 adequate maintenance 的口径。Appendix FM 没有给出数字或算法；算法见 Appendix FM-SE 与内政部指引，本仓库未登记。第七节"未建模的点"里关于储蓄与 E-LTRP.3.3 的那句，在实现 commit 里改写。
+
+### 17.5 受影响的现有测试与输出
+
+- engine `current-law-routes.test.ts`：
+  - "£29,000 from 2024-04-11 …"：有两处收入比门槛少 £1（`28999`，以及两名子女时的 `24799`），原断言 `FAIL`；储蓄缺省后会变成 `UNKNOWN`。改为在这两处申报 `cashSavings: 0`（无储蓄），仍断言 `FAIL`，门槛边界的检验不变。
+  - "combined income below the threshold fails the pathway …"：低收入原断言 `FAIL` / `LIKELY_NOT_ELIGIBLE`。改为两例：申报 `cashSavings: 0` → `FAIL` / `LIKELY_NOT_ELIGIBLE`；不填储蓄 → `UNKNOWN` / `INSUFFICIENT_INFORMATION`。收入缺省那一例不变。
+- engine `helpers.ts` 的 `SAMPLES.familyPartnerFiveYear`（收入 £27,000，低于 £29,000，未填储蓄）：`CL-FAMILY-FINANCIAL` 由 `FAIL` 变为 `UNKNOWN`。该样例只用于双语检查与文案导出，没有状态断言，不改。
+- **web `apps/web/test/whatif-focus.test.tsx` 会失败**：用例 "family focus reuses the engine threshold … makes the financial rule pass" 把 fixture 的收入改为 0 后，断言 `before` 为 `FAIL`。按新语义（未填储蓄）应为 `UNKNOWN`。
+  - `apps/web` 不归 Opus 改，需要 astra 把断言改为 `UNKNOWN`，或在 draft 上申报 `cashSavings: 0`。
+  - 在那之前，本任务的实现 commit 过不了 gate。由 Fable 决定由谁改、何时合并。
+- fixtures：原有 fixture 的 `expected` 都不变。`CL-FAMILY-PARTNER-FIVE-YEARS` 收入 £22,000 ≥ £18,600，仍 `PASS`。`bilingual` 快照只变 `CL-FAMILY-FINANCIAL` 的来源（补 E-LTRP.3.3）与假设句。
+
+### 17.6 fixtures 与测试（实现时）
+
+三个自拟 fixture，文件头注明不是官方案例。都用一般门槛 £29,000（伴侣许可自 2024-06-01 起），申请日为满 5 年当天 2029-06-01（英语 B2），上一完整 tax year 为 2028-29：
+
+- `cl-family-five-year-savings-pass.ts`：收入 £20,000，储蓄 £25,000（缺口 £9,000 = £25,000 − £16,000）→ 财务规则 `PASS`，结论 `LIKELY_ELIGIBLE`、5 年。
+- `cl-family-five-year-savings-short.ts`：储蓄 £24,000 → `LIKELY_NOT_ELIGIBLE`，`mustFail: ['CL-FAMILY-FINANCIAL']`。
+- `cl-family-five-year-partner-benefit.ts`：伴侣领 Carer's Allowance（`partnerSpecifiedBenefit: true`），收入 £20,000，未填储蓄 → `POTENTIALLY_ELIGIBLE`、5 年，`mustUnknown: ['CL-FAMILY-FINANCIAL']`。
+
+单测覆盖：
+- 储蓄刚好够 / 差 £1 / 缺省；
+- 过渡门槛下的缺口；
+- 收入未填，但储蓄覆盖整个门槛；
+- 福利替代，且 PD 只出现在福利这一条；
+- 收入已达门槛时，福利与储蓄不影响 `PASS`。
