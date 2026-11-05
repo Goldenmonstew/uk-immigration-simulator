@@ -35,6 +35,9 @@ importers:
       '@uk-immigration/engine':
         specifier: workspace:*
         version: link:../../packages/engine
+      '@uk-immigration/game':
+        specifier: workspace:*
+        version: link:../../packages/game
       '@uk-immigration/policy-data':
         specifier: workspace:*
         version: link:../../packages/policy-data

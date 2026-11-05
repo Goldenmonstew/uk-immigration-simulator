@@ -23,6 +23,9 @@ export default function Home() {
           <Link className={styles.button} href="/simulate">
             {t('home.start')}
           </Link>
+          <Link className={styles.secondary} href="/game">
+            {t('game.entry')}
+          </Link>
         </div>
         <SavedScenarios />
         <section className={styles.section}>

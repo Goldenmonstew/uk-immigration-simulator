@@ -1,0 +1,116 @@
+.characters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+  gap: 24px;
+  margin: 24px 0 32px;
+}
+.character {
+  border: 1px solid #b1b4b6;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.character p {
+  flex: 1;
+  max-width: 65ch;
+}
+.turnHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.turnHeader h1 {
+  margin-bottom: 8px;
+}
+.characterName {
+  margin-bottom: 0;
+}
+.turn {
+  display: grid;
+  gap: 4px;
+  border-left: 3px solid #1d70b8;
+  padding-left: 16px;
+}
+.card {
+  max-width: 760px;
+  padding: 28px;
+  border: 1px solid #b1b4b6;
+  border-top: 5px solid #1d70b8;
+  background: #f3f7fa;
+}
+.card.luck {
+  border-top-color: #b58800;
+  background: #fff8e4;
+}
+.choices {
+  display: grid;
+  gap: 20px;
+}
+.choice {
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 16px;
+  border: 2px solid #1d70b8;
+  background: #fff;
+  color: #16324f;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+}
+.choice:hover {
+  background: #e5eef5;
+}
+.note {
+  display: block;
+  margin: 6px 0 0;
+  color: #505a5f;
+  font-size: 0.95rem;
+}
+.card .resolved {
+  border-top: 1px solid #b1b4b6;
+  padding-top: 16px;
+  margin: 24px 0 0;
+}
+.results {
+  margin-top: 32px;
+}
+.resultsHeading {
+  scroll-margin-top: 16px;
+}
+.columns {
+  margin-top: 16px;
+}
+.change {
+  background: #f3f7fa;
+  padding: 12px 16px;
+}
+.transition {
+  display: block;
+  margin-top: 8px;
+  font-size: 1rem;
+}
+.topRules {
+  padding-left: 24px;
+}
+.topRules li {
+  margin: 16px 0;
+}
+.topRules span {
+  display: block;
+}
+@media (max-width: 600px) {
+  .card,
+  .character {
+    padding: 20px;
+  }
+  .turnHeader {
+    align-items: flex-start;
+  }
+  .turn {
+    width: 100%;
+  }
+}
