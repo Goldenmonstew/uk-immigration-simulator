@@ -1,4 +1,4 @@
-// URLs transcribed from docs/SOURCES.md, SRC-001 through SRC-029.
+// URLs transcribed from docs/SOURCES.md, SRC-001 through SRC-031.
 export const sourceUrls: Record<string, string> = {
   'SRC-001':
     'https://assets.publishing.service.gov.uk/media/6ae90b0e5b14ba0182a272a4/A_Fairer_Pathway_to_Settlement_-_Government_response_to_the_consultation.pdf',
@@ -55,4 +55,7 @@ export const sourceUrls: Record<string, string> = {
     'https://www.gov.uk/guidance/immigration-rules/immigration-rules-appendix-private-life',
   'SRC-029':
     'https://www.gov.uk/guidance/immigration-rules/immigration-rules-part-8-family-members',
+  'SRC-030': 'https://www.gov.uk/skilled-worker-visa/how-much-it-costs',
+  'SRC-031':
+    'https://www.gov.uk/government/publications/visa-regulations-revised-table/home-office-immigration-and-nationality-fees-8-october-2026',
 };
