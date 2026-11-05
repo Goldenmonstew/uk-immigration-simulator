@@ -273,16 +273,16 @@ const events: GameEvent[] = [
       en: 'A familiar breakfast',
     },
     text: {
-      zhCN: '父母问在哪里相聚，林遥看着机票，又看了看备用床。',
-      en: 'Asked where to meet, Yao checks the flights and then the spare bed.',
+      zhCN: '相聚的日子结束，早餐桌上又只剩一副碗筷，林遥还是多煮了一个蛋。',
+      en: 'The visit is over; breakfast is back to one bowl, though Yao still boils an extra egg.',
     },
     weight: 3,
     choices: [
       {
         id: 'first',
         label: {
-          zhCN: '记录三个月探亲',
-          en: 'Record ninety days visiting family',
+          zhCN: '回国陪父母住了三个月',
+          en: 'Spent ninety days with the parents abroad',
         },
         effects: [
           {
@@ -308,8 +308,8 @@ const events: GameEvent[] = [
       {
         id: 'second',
         label: {
-          zhCN: '最后改为父母来英小住',
-          en: 'The parents visited the UK instead',
+          zhCN: '最后是父母来英国小住',
+          en: 'In the end the parents stayed in the UK',
         },
         effects: [
           {
@@ -698,8 +698,8 @@ const events: GameEvent[] = [
       {
         id: 'first',
         label: {
-          zhCN: '记录八个月海外工作',
-          en: 'Record 240 days working abroad',
+          zhCN: '在海外驻场了八个月',
+          en: 'Spent 240 days working on site abroad',
         },
         effects: [
           {
@@ -1661,8 +1661,8 @@ const events: GameEvent[] = [
       {
         id: 'first',
         label: {
-          zhCN: '记录四个月海外照顾',
-          en: 'Record 120 days of care abroad',
+          zhCN: '回国照顾了四个月',
+          en: 'Spent 120 days abroad caring for them',
         },
         effects: [
           {
@@ -1688,8 +1688,8 @@ const events: GameEvent[] = [
       {
         id: 'second',
         label: {
-          zhCN: '和亲人分工，短住一月',
-          en: 'Share the care and spend thirty days abroad',
+          zhCN: '和亲人轮流，只住了一个月',
+          en: 'Took turns with relatives and stayed thirty days',
         },
         effects: [
           {
@@ -1836,16 +1836,16 @@ const events: GameEvent[] = [
       en: 'Years after graduation',
     },
     text: {
-      zhCN: '同学在海外聚会，林遥翻出了那件还穿得下的旧外套。',
-      en: 'An overseas reunion prompts Yao to find an old coat that still fits.',
+      zhCN: '同学的海外聚会散了，群里的合照刷了一整晚，林遥一张张往回翻。',
+      en: 'The overseas reunion is over; photos fill the group chat all night, and Yao scrolls back through them.',
     },
     weight: 3,
     choices: [
       {
         id: 'first',
         label: {
-          zhCN: '记录两周海外聚会',
-          en: 'Record fourteen days at the reunion abroad',
+          zhCN: '飞过去聚了两周',
+          en: 'Flew out and spent fourteen days at the reunion',
         },
         effects: [
           {
@@ -1871,8 +1871,8 @@ const events: GameEvent[] = [
       {
         id: 'second',
         label: {
-          zhCN: '留在英国视频参加',
-          en: 'Join by video from the UK',
+          zhCN: '留在英国视频参加了',
+          en: 'Joined by video from the UK',
         },
         effects: [
           {
@@ -2004,16 +2004,16 @@ const events: GameEvent[] = [
       en: 'A friend by the sea',
     },
     text: {
-      zhCN: '海外朋友寄来海边照片，林遥已经能想象那里的风。',
-      en: 'A friend abroad sends seaside photos; Yao can almost feel the wind.',
+      zhCN: '海边回来一周了，林遥的鞋缝里还有沙，朋友又发来一张合照。',
+      en: 'A week after the seaside there is still sand in Yao’s shoes, and the friend sends another photo.',
     },
     weight: 3,
     choices: [
       {
         id: 'first',
         label: {
-          zhCN: '记录一周海外短假',
-          en: 'Record seven days abroad',
+          zhCN: '去海外的海边住了一周',
+          en: 'Spent seven days by the sea abroad',
         },
         effects: [
           {
@@ -2039,8 +2039,8 @@ const events: GameEvent[] = [
       {
         id: 'second',
         label: {
-          zhCN: '改约英国海边见面',
-          en: 'Meet at the British seaside instead',
+          zhCN: '最后改在英国海边见面',
+          en: 'Met at the British seaside instead',
         },
         effects: [
           {
@@ -2131,8 +2131,8 @@ const events: GameEvent[] = [
       {
         id: 'first',
         label: {
-          zhCN: '记录两个月海外小住',
-          en: 'Record sixty days staying abroad',
+          zhCN: '回家小住了两个月',
+          en: 'Stayed at the family home for sixty days',
         },
         effects: [
           {

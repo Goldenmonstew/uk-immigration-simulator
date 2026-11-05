@@ -815,16 +815,16 @@ export const commonEvents: GameEvent[] = [
       en: 'The conference tote',
     },
     text: {
-      zhCN: '会议日程寄到了，线上链接和海外会场地址挤在同一页。',
-      en: 'The conference schedule puts a video link beside the overseas venue address.',
+      zhCN: '会议结束了，帆布袋里塞着胸牌和名片，线上链接的邮件也还在收件箱。',
+      en: 'The conference is over; the tote holds a lanyard and business cards, and the video-link email is still in the inbox.',
     },
     weight: 2,
     choices: [
       {
         id: 'follow',
         label: {
-          zhCN: '记录两周海外行程',
-          en: 'Record the fortnight abroad',
+          zhCN: '这次飞去海外开了两周会',
+          en: 'Spent a fortnight at the venue abroad',
         },
         effects: [
           {
@@ -846,8 +846,8 @@ export const commonEvents: GameEvent[] = [
       {
         id: 'other',
         label: {
-          zhCN: '会议改线上了',
-          en: 'The meeting moved online',
+          zhCN: '最后改在线上参加',
+          en: 'Joined online in the end',
         },
         effects: [
           {
@@ -913,16 +913,16 @@ export const commonEvents: GameEvent[] = [
       en: 'Too much for the lunchbox',
     },
     text: {
-      zhCN: '父母说锅还留着，你们最后商量这次在哪里相聚。',
-      en: 'Your parents have kept the old saucepan; you decide where to meet this time.',
+      zhCN: '团聚结束，父母塞来的菜饭盒装不下，你翻着照片回想这次在哪里见的面。',
+      en: 'The visit is over and the lunchbox cannot hold everything your parents packed; you look back at where you met this time.',
     },
     weight: 2,
     choices: [
       {
         id: 'follow',
         label: {
-          zhCN: '记录四周探亲',
-          en: 'Record four weeks with family abroad',
+          zhCN: '回国陪家人住了四周',
+          en: 'Spent four weeks with family abroad',
         },
         effects: [
           {
@@ -948,8 +948,8 @@ export const commonEvents: GameEvent[] = [
       {
         id: 'other',
         label: {
-          zhCN: '这次改为家人来英相聚',
-          en: 'Family visited the UK instead',
+          zhCN: '这次是家人来英国相聚',
+          en: 'Family came to the UK this time',
         },
         effects: [
           {
@@ -1019,16 +1019,16 @@ export const commonEvents: GameEvent[] = [
       en: 'Sun-faded tickets',
     },
     text: {
-      zhCN: '出发日期到了，护照和取消行程的邮件都在手边。',
-      en: 'Departure day arrives, with the passport and cancellation email both close by.',
+      zhCN: '假期过去了，窗台上那张票根被晒得褪了色，护照也收回了抽屉。',
+      en: 'The holiday has passed; the ticket on the windowsill has faded in the sun, and the passport is back in the drawer.',
     },
     weight: 2,
     choices: [
       {
         id: 'follow',
         label: {
-          zhCN: '记录三周海外假期',
-          en: 'Record three weeks abroad',
+          zhCN: '去海外度了三周假',
+          en: 'Spent three weeks abroad on holiday',
         },
         effects: [
           {
@@ -1054,8 +1054,8 @@ export const commonEvents: GameEvent[] = [
       {
         id: 'other',
         label: {
-          zhCN: '临时取消，去本地公园',
-          en: 'Cancel and visit the local park',
+          zhCN: '最后临时取消，去了本地公园',
+          en: 'Cancelled at the last minute and visited the local park',
         },
         effects: [
           {
@@ -2572,8 +2572,8 @@ export const commonEvents: GameEvent[] = [
       {
         id: 'first',
         label: {
-          zhCN: '记录十天海外聚会',
-          en: 'Record ten days abroad',
+          zhCN: '飞去海外聚了十天',
+          en: 'Flew out for ten days with old classmates',
         },
         effects: [
           {
