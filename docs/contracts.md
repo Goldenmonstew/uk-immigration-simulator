@@ -627,3 +627,99 @@ export const currentLaw2027_01 = {
 ### 14.7 fixtures
 
 `packages/policy-data/fixtures/` 新增四个自拟 fixture（文件头注明事实依据为规则条款，不是官方案例），各在满期当天 → 现行法律栏 `LIKELY_ELIGIBLE`：难民（`CORE_PROTECTION` 主申请人满 5 年，未填英语与 KOL）、UK Ancestry（满 5 年，B1、KOL 已过，申请日早于 2027-03-26）、Innovator Founder（满 3 年，两项 INNF 17.1(f)、KOL 已过，未填英语）、Private Life（`YOUNG_ADULT` 满 5 年，B1、KOL 已过）。原有 fixture 的状态 / 年限 / 日期不变。
+
+## 15. 现行法律栏的 dependant：HK BN(O)、Global Talent 与家庭伴侣的子女（Phase 5.4）
+
+把三组 dependant 纳入现行法律栏，机制沿用 §8 / §9（`SimulationRequest.principal`，主申请人先按同一申请日评估）。Earned Settlement 栏、短路（§8 末段的复制规则）不变。保护类、UK Ancestry、Innovator Founder、Private Life 的 dependant 仍由 `CL-SCOPE` 给 `UNKNOWN`（§14）。
+
+段号按快照核对：SRC-020 Appendix HK BN(O)（2026-10-08）HK 55–64；SRC-021 Appendix Global Talent（2026-08-03）GT 25–34；SRC-022 Appendix Settlement Family Life（2026-08-03）SETF 10–17；SRC-024 Appendix FM（2026-10-08）D-LTRC.1.1；SRC-018 Appendix Children CHI 1–4；SRC-014 EL 1.1。
+
+### 15.1 字段
+
+| 字段 | 取值 | 含义 | 何时读取 |
+|---|---|---|---|
+| `ImmigrationEpisode.dependantOf?`（改） | 增加 `'RELATIVE'` | HK BN(O) 的 adult dependant relative：主申请人是此人的子女、孙子女、兄弟姐妹或父母（HK 59.1） | 申请日当天的 `HONG_KONG_BNO` + `DEPENDANT` 片段；其他路线上为 `RELATIVE` → `CL-SCOPE` `UNKNOWN` |
+
+- 不加其他字段：
+  - 年龄从 `dateOfBirth` 按申请日算；
+  - "最近一次许可为 dependent child / partner"由当前片段的 `role` + `dependantOf` 推出；
+  - 主申请人已定居用 `principal.settled`，即 `{ date, route }`，含"已成为英国公民"（同 SW 39.1(b) 的做法）；
+  - 家庭子女所随的伴侣是 10 年还是 5 年路线：读主申请人当前片段的 `familyPermission`。主申请人已定居时，读其最后一个 `FAMILY_PARTNER_OR_PARENT` + `MAIN` 片段的 `familyPermission`。
+- "在英国出生的子女"（GT 25.2(e)(ii)、GT 27.2(b)、SETF 10.3）不建模，写进假设。
+
+### 15.2 参数（`currentLaw2026_11.values`，规则 commit 时加 / 改）
+
+| 名称 | 值 | 来源 |
+|---|---|---|
+| `globalTalentPartnerQualifyingYears`（新） | 5 | SRC-021 GT 30.1 |
+| `hongKongBnoQualifyingYears`（沿用） | 5 | 已有 HK 62.1(b)；dependant 也按此段，不另设参数 |
+| `hongKongBnoSettlementEnglish`（沿用） | `'B1'` | 已有 HK 60.1（适用于该路线所有申请人） |
+| `globalTalentSettlementEnglishBefore` / `globalTalentSettlementEnglish`（沿用，补来源） | `'B1'` / `{ B2, 2027-03-26 }` | 来源补 SRC-021 GT 32.1(a) / GT 32.1(b) |
+| `familyPartnerSettlementEnglishBefore` / `familyPartnerSettlementEnglish`（沿用，补来源） | 同上 | 来源补 SRC-022 SETF 15.1(a) / SETF 15.1(b) |
+
+### 15.3 规则
+
+"主申请人时点" = 主申请人本路线的起点 + 其年限，只在主申请人现行法律栏的 `pathwayYears` 等于本路线年限时成立，否则不成立。写法同 `principalSkilledWorkerStart`：
+- HK BN(O)：`hongKongBnoStart` + 5；
+- Global Talent：`globalTalentQualifying` 的起点 + 3 或 5；
+- 家庭 10 年：`familyTenYearStart` + 10。
+
+不成立时按 `withoutPrincipalPathway` 的写法：主申请人不在该路线 → `UNKNOWN`；其结论为 `LIKELY_NOT_ELIGIBLE` → `FAIL`；否则 `UNKNOWN`。
+
+| 规则 | 适用 | 判断 |
+|---|---|---|
+| `CL-SCOPE`（改） | — | 下列 `DEPENDANT` → `PASS`：HK BN(O) 的 `PARTNER`，或申请日已满 18 岁的 `PARENT`（不需要 `principal`）；HK BN(O) 未满 18 岁的 `PARENT` 与 `RELATIVE`、Global Talent 的 `PARTNER` / `PARENT`、`FAMILY_PARTNER_OR_PARENT` 的 `PARENT`（这些需要 `principal`）。缺 `principal` → `UNKNOWN`，解释"填写主申请人信息后可判断"（同 SW）。`dependantOf` 缺省 → `UNKNOWN`（同 SW）。`FAMILY_PARTNER_OR_PARENT` 的 `PARTNER` / `RELATIVE` 与其他路线的 `RELATIVE` → `UNKNOWN`。家庭子女所随主申请人为 `PARTNER_FIVE_YEAR` → `UNKNOWN` + `pendingDetails: ['PD-074']`，解释写"D-LTRC.1.1 末句：不随 Appendix Settlement Family Life 申请的子女按 Part 8 第 298 段定居，该段未登记"。结论"信息不足"，不给年限与日期。来源补 HK 57.1、GT 27.1、SETF 12.1、D-LTRC.1.1。 |
+| `CL-HKBNO-RESIDENCE-5Y`（改） | 当前 `HONG_KONG_BNO` + `MAIN`，或 `DEPENDANT` 中除"未满 18 岁的 `PARENT`"以外的情形 | 判断不变：本人连续 `HONG_KONG_BNO` 段（任意 `role`）起点经 `restartAfterAbsences`（HK 62.1(b)、HK 63.1），dependant 许可本身即"可定居路线"的许可。未满 18 岁的子女不运行（HK 62.1(b) 豁免）。 |
+| `CL-HKBNO-DEPENDANT`（新） | 当前 `HONG_KONG_BNO` + `DEPENDANT`，且为未满 18 岁的 `PARENT` 或 `RELATIVE` | 主申请人须当前持 `HONG_KONG_BNO`（`MAIN`，或作为 `PARTNER` 的 `DEPENDANT`）。未满 18 岁子女（HK 57.2–57.3、HK 58.1）：主申请人时点成立 → `PASS`，解释写到时点（HK 57.3(a)）；主申请人已定居（任意路线，或已成为英国公民）→ `PASS`，可立即申请（HK 57.3(b)）。`RELATIVE`（HK 59.1）：主申请人时点成立 → `PASS`（59.1(a)）；已定居且 `settled.route = 'HONG_KONG_BNO'` → `PASS`（59.1(b)）；已定居但路线不同 → `UNKNOWN`，解释写"只有主申请人已是英国公民时才满足（59.1(c)），本工具无法区分"。假设：HK 57.4（另一位父母）、HK 58.1 / CHI 2.1（照护）按满足；HK 59.1 的亲属关系按申报。 |
+| `CL-GT-DEPENDANT`（新） | 当前 `GLOBAL_TALENT` + `DEPENDANT` + `PARTNER` / `PARENT` | 主申请人须当前为 `GLOBAL_TALENT` + `MAIN`，或已于 `settled.route = 'GLOBAL_TALENT'` 定居且本人当时持其同一身份的 GT dependant 许可（GT 27.1(b)(i)）。已定居但条件不符 → `FAIL`（同 SW 39.1(b)）。`PARTNER`：本人连续 GT dependant 段起点经 `restartAfterAbsences`，须满 5 年（GT 30.1、GT 31.1）；时点 = max(本人起点 + 5, 主申请人时点)；主申请人已定居时只看本人 5 年。`PARENT`：没有合格期，时点 = 主申请人时点；主申请人已定居 → 可立即申请。主申请人时点不成立 → 同 `withoutPrincipalPathway`。假设：Appendix Relationship with Partner（GT 27.4）；CHI 4.1–4.3（GT 27.3，含另一位父母）、CHI 1.1–1.2、1A.1、2.1（GT 29A.1）按满足；在英国出生的子女未建模。 |
+| `CL-FAMILY-CHILD`（新） | 当前 `FAMILY_PARTNER_OR_PARENT` + `DEPENDANT` + `PARENT`，且主申请人不是 5 年路线（5 年路线由 `CL-SCOPE` 处理） | 主申请人当前为 `FAMILY_PARTNER_OR_PARENT` + `MAIN` + `PARTNER_TEN_YEAR`：时点 = 主申请人时点（SETF 12.1(a)），子女没有自己的合格期。主申请人已于 `FAMILY_PARTNER_OR_PARENT` 定居，且最后一个 FM 片段为 `PARTNER_TEN_YEAR` → `PASS`，可立即申请（SETF 12.1(b)）。主申请人已于其他路线定居 → `FAIL`。主申请人为 `PARENT`，或 `familyPermission` 缺省 → `UNKNOWN`（不带 PD，同主申请人的处理）。年龄：未满 18 岁，或最近一次为 dependent child 许可（SETF 13.1，当前片段即满足），解释写明。假设：SETF 10.3 的在英国出生例外未建模；SETF 12.2（另一位父母）、SETF 13.2（16 岁以上不独立生活）、SETF 14.1（照护）按满足；SETF 11.3–11.6（suitability 事由要求 10 年）未建模。 |
+| `CL-ENGLISH`（改） | — | 按路线取等级：HK BN(O) 的 dependant → B1（HK 60.1）；GT dependant → B1，2027-03-26 起 B2（GT 32.1）；家庭子女 → 同样分段（SETF 15.1）。年龄豁免沿用 `ageExempt`（EL 1.1(a)(b)：未满 18 岁或已满 65 岁）。来源补 GT 32.1、SETF 15.1。 |
+| `CL-KOL`（改） | — | 判断与年龄豁免不变；解释写依据：HK 61.1（18–64 岁，与 `ageExempt` 一致）、GT 33.1、SETF 16.1。来源补 GT 33.1、SETF 16.1。 |
+
+### 15.4 候选路径（§12.4、§12.8 的补充）
+
+| 当前（`DEPENDANT`） | 候选 | 年限 | 起点 |
+|---|---|---|---|
+| HK BN(O) `PARTNER`，或已满 18 岁的 `PARENT` | `CL-ENGLISH` + `CL-KOL` | 5 | `CL-HKBNO-RESIDENCE-5Y` 的起点（本人） |
+| HK BN(O) 未满 18 岁的 `PARENT` | `CL-HKBNO-DEPENDANT` + `CL-ENGLISH` + `CL-KOL` | 5（主申请人的） | 主申请人 HK 起点；主申请人已定居 → 申请日 − 5 年 |
+| HK BN(O) `RELATIVE` | 同上 | 5 | max(本人起点, 主申请人 HK 起点)；主申请人已定居 → 本人起点 |
+| GT `PARTNER` | `CL-GT-DEPENDANT` + `CL-ENGLISH` + `CL-KOL` | 5 | max(本人起点, 主申请人时点 − 5 年)；主申请人已定居 → 本人起点 |
+| GT `PARENT` | 同上 | 主申请人的 3 或 5 | 主申请人 GT 起点；主申请人已定居 → 申请日 − 年限 |
+| 家庭 `PARENT`（主申请人 10 年路线） | `CL-FAMILY-CHILD` + `CL-ENGLISH` + `CL-KOL` | 10 | 主申请人 `familyTenYearStart`；主申请人已定居 → 申请日 − 10 年 |
+| 以上都有 | Long Residence 10 年候选照常并列 | 10 | 不变 |
+
+- 起点不成立（缺 `principal`、主申请人时点不成立）时候选不给起点，结论按新规则的状态落到"信息不足"或"不符合"，同 `CL-SW-CHILD`。
+- 本人 5 年（HK `PARTNER` / 已满 18 岁的 `PARENT` / `RELATIVE`）的起点与缺席重算来自 `CL-HKBNO-RESIDENCE-5Y`（`hongKongBnoStart`）；该规则与主申请人的同名规则一样只用于展示、不进候选（§12.4）：未满期的 `FAIL` 若进候选，会让候选失败、无法投影到期日。
+- 新规则的 `FAIL` / `UNKNOWN` 都进候选；`PASS` 时年限与起点由上表给出。
+- 投影日期在 2027-03-26 之后、届时须 B2 的假设：GT dependant 写 GT 32.1(b)，家庭子女写 SETF 15.1(b)；HK BN(O) 的 dependant 不加。
+- 年龄按申请日分支（同 `CL-SW-CHILD`）。HK 未满 18 岁子女的投影日期若已满 18 岁，届时应改按本人 5 年（HK 62.1(b)），只写进假设，不另算。
+- `clBaseAssumption` 的建模范围补上这三组 dependant。
+
+### 15.5 不建模与新 PD
+
+- 新 PD-074（登记到 `docs/pending-details.md` 第八节后的新一节"现行法律栏 dependant（任务 5.4）"）：Appendix FM 5 年路线伴侣的子女定居，依据为 Part 8 第 298 段（D-LTRC.1.1 末句），本仓库未登记该来源。
+- 不设 PD 的引擎取舍（写进假设）：
+  - 在英国出生的子女；
+  - HK 57.4、GT 27.3（CHI 4.3）、SETF 12.2 的另一位父母；
+  - 照护与独立生活要求（CHI 1A.1、CHI 2.1、SETF 13.2、SETF 14.1）；
+  - Appendix Relationship with Partner；
+  - HK 59.1 的亲属关系、59.1(c) 英国公民与已定居无法区分；
+  - SETF 11.3–11.6；
+  - 子女在投影期间满 18 岁。
+
+### 15.6 fixtures 与测试
+
+- `packages/policy-data/fixtures/` 新增三个自拟 fixture，文件头注明不是官方案例：
+  - HK BN(O) 未满 18 岁子女：随主申请人在其 5 年到期当天 `LIKELY_ELIGIBLE`、5 年；
+  - GT 伴侣：dependant 5 年到期当天，主申请人已以 Global Talent 定居（`principal.settled`）→ `LIKELY_ELIGIBLE`、5 年；
+  - SETF 10 年路线子女：随主申请人在其 10 年到期当天 `LIKELY_ELIGIBLE`、10 年。
+- 原有 fixture 的状态、年限、日期不变。
+- `packages/engine/test/current-law-dependants.test.ts`：
+  - 每组覆盖"到期当天 / 差一天 / 缺 `principal` → `UNKNOWN`"；
+  - HK 18 岁以上伴侣不需要 `principal`；
+  - 5 年路线子女 → `CL-SCOPE` `UNKNOWN` + PD-074。
+
+### 15.7 给 5.5b（问卷）
+
+- 当前片段为 `HONG_KONG_BNO` + `DEPENDANT` 时，`dependantOf` 增加"adult dependant relative（主申请人是我的子女、孙子女、兄弟姐妹或父母）"选项（`'RELATIVE'`）。
+- 这三条路线的 dependant 需要填主申请人信息，HK BN(O) 18 岁以上伴侣 / 子女除外。

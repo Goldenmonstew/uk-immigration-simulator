@@ -163,16 +163,27 @@ export const currentLaw2026_11 = {
       sources: [{ srcId: 'SRC-021', locator: 'GT 11.2' }],
     },
     // B1 before 2027-03-26, B2 from then.
+    // Also a dependent partner or child (GT 32.1).
     globalTalentSettlementEnglishBefore: {
       value: 'B1',
-      sources: [{ srcId: 'SRC-021', locator: 'GT 13.1(a)' }],
+      sources: [
+        { srcId: 'SRC-021', locator: 'GT 13.1(a)' },
+        { srcId: 'SRC-021', locator: 'GT 32.1(a)' },
+      ],
     },
     globalTalentSettlementEnglish: {
       value: { cefrLevel: 'B2', applicationsFrom: '2027-03-26' },
       sources: [
         { srcId: 'SRC-021', locator: 'GT 13.1(b)' },
+        { srcId: 'SRC-021', locator: 'GT 32.1(b)' },
         { srcId: 'SRC-007', locator: 'EM 5.60' },
       ],
+    },
+    // Continuous years as the Global Talent's dependent partner, whatever the
+    // principal's own qualifying period.
+    globalTalentPartnerQualifyingYears: {
+      value: 5,
+      sources: [{ srcId: 'SRC-021', locator: 'GT 30.1' }],
     },
 
     // Appendix Settlement Family Life (10-year partner route), version
@@ -187,6 +198,7 @@ export const currentLaw2026_11 = {
       value: 'B1',
       sources: [
         { srcId: 'SRC-022', locator: 'SETF 5.1(a)' },
+        { srcId: 'SRC-022', locator: 'SETF 15.1(a)' },
         { srcId: 'SRC-025', locator: 'KoLL 2.2(b)' },
         { srcId: 'SRC-025', locator: 'KoLL 2.2(c)(i)' },
       ],
@@ -195,6 +207,7 @@ export const currentLaw2026_11 = {
       value: { cefrLevel: 'B2', applicationsFrom: '2027-03-26' },
       sources: [
         { srcId: 'SRC-022', locator: 'SETF 5.1(b)' },
+        { srcId: 'SRC-022', locator: 'SETF 15.1(b)' },
         { srcId: 'SRC-025', locator: 'KoLL 2.2(ba)' },
         { srcId: 'SRC-025', locator: 'KoLL 2.2(c)(ii)' },
         { srcId: 'SRC-007', locator: 'EM 5.60' },

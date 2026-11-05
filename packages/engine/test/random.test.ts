@@ -80,7 +80,7 @@ function generateRequest(seed: number): SimulationRequest {
         validTo: iso(to),
       };
       if (episode.role === 'DEPENDANT') {
-        episode.dependantOf = optional(pick(['PARTNER', 'PARENT'] as const));
+        episode.dependantOf = optional(pick(['PARTNER', 'PARENT', 'RELATIVE'] as const));
       }
       if (episode.route === 'SKILLED_WORKER' && episode.role === 'MAIN') {
         episode.socCode = optional(
