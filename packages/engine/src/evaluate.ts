@@ -1,4 +1,4 @@
-import { earnedSettlement2026_11 } from '@uk-immigration/policy-data';
+import { PARAMETERS, RULE_SET_IDS } from '@uk-immigration/policy-data';
 import type { RuleSetId } from '@uk-immigration/policy-data';
 import { assess } from './aggregate';
 import { adultIllegalEntry } from './rules/es-requirements';
@@ -34,6 +34,13 @@ export const RULE_SETS: Record<RuleSetId, RuleSet> = {
 };
 
 type ShortCircuit = NonNullable<SimulationResult['shortCircuit']>;
+
+/** The latest `asOf` of these rule sets' parameter files, skipping any without one. */
+const latestAsOf = (ids: readonly RuleSetId[]) =>
+  ids
+    .flatMap((id) => PARAMETERS[id]?.asOf ?? [])
+    .sort()
+    .at(-1);
 
 function shortCircuitOf(ctx: RuleContext): ShortCircuit | undefined {
   const { timeline, simulationDate } = ctx;
@@ -158,7 +165,9 @@ export function evaluate(
     byRuleSet[id] = assessment;
   }
   return {
-    policyAsOf: earnedSettlement2026_11.asOf,
+    // Synthetic rule sets in tests have no parameter file; with no file at
+    // all, every parameter file counts (contracts §16.4).
+    policyAsOf: latestAsOf(ids) ?? latestAsOf(RULE_SET_IDS)!,
     byRuleSet,
     ...(shortCircuit && { shortCircuit }),
   };

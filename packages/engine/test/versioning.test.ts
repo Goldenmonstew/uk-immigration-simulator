@@ -136,6 +136,16 @@ describe('a synthetic third rule set (§13.3, §13.7)', () => {
     ).toEqual(['earned-settlement-2026-11']);
   });
 
+  test('policyAsOf: the synthetic rule set has no parameter file (§16.4)', () => {
+    const request = {
+      timeline: SAMPLES.default,
+      simulationDate: SIMULATION_DATE,
+    };
+    expect(
+      evaluate({ ...request, ruleSetIds: [FUTURE] }, registry).policyAsOf,
+    ).toBe(evaluate(request).policyAsOf);
+  });
+
   test('fixtures still check only the existing rule sets', () => {
     for (const fixture of fixtures) {
       expect(RULE_SET_IDS).toContain(fixture.expected.ruleSetId);
