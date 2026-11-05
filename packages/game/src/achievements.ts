@@ -4,6 +4,71 @@ const quarters = (s: GameState) =>
 // Achievement milestones are game goals, not legal eligibility tests.
 export const achievements: Achievement[] = [
   {
+    id: 'never-overstayed',
+    name: { zhCN: '签证从未逾期', en: 'Always in time' },
+    description: {
+      zhCN: '结束一局，度过至少一季且没有逾期记录。',
+      en: 'Finish after at least one quarter without an overstaying record.',
+    },
+    check: (s) =>
+      !!s.ending &&
+      quarters(s) > 0 &&
+      !s.timeline.immigrationBreaches.some((b) => b.type === 'OVERSTAYING'),
+  },
+  {
+    id: 'ten-years-no-public-funds',
+    name: { zhCN: '十年零 public funds', en: 'Ten years without public funds' },
+    description: {
+      zhCN: '度过四十季，本人没有领取 public funds 的记录。',
+      en: 'Complete forty quarters without a personal public-funds record.',
+    },
+    check: (s) => quarters(s) >= 40 && s.timeline.benefits.length === 0,
+  },
+  {
+    id: 'three-friends',
+    name: { zhCN: '三个朋友', en: 'Three friends' },
+    description: {
+      zhCN: '结识图书馆的艾莉、花园的山姆和邻居诺拉。',
+      en: 'Befriend Ellie at the library, Sam at the garden and Nora next door.',
+    },
+    check: (s) =>
+      ['friend-library', 'friend-garden', 'friend-neighbour'].every((f) =>
+        s.flags.includes(f),
+      ),
+  },
+  {
+    id: 'life-in-the-uk',
+    name: { zhCN: '书签换成证明', en: 'A certificate for a bookmark' },
+    description: {
+      zhCN: '取得 Life in the UK 通过记录。',
+      en: 'Record a Life in the UK pass.',
+    },
+    check: (s) =>
+      !!s.timeline.lifeInTheUk &&
+      'passed' in s.timeline.lifeInTheUk &&
+      s.timeline.lifeInTheUk.passed === true,
+  },
+  {
+    id: 'feeling-at-home',
+    name: { zhCN: '安顿下来', en: 'Finding your feet' },
+    description: {
+      zhCN: '度过二十季时，心情与健康都达到六十。',
+      en: 'After twenty quarters, hold mood and health of at least sixty.',
+    },
+    check: (s) =>
+      quarters(s) >= 20 && s.stats.mood >= 60 && s.stats.health >= 60,
+  },
+  {
+    id: 'two-renewals',
+    name: { zhCN: '文件夹的第二格', en: 'The second folder tab' },
+    description: {
+      zhCN: '在签证中心完成两次续签。',
+      en: 'Complete two renewals at the visa centre.',
+    },
+    check: (s) =>
+      s.log.filter((e) => e.kind === 'action' && e.id === 'extend').length >= 2,
+  },
+  {
     id: 'five-years-home',
     name: { zhCN: '五年零缺席', en: 'Five years at home' },
     description: {
