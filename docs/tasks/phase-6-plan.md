@@ -74,11 +74,12 @@ Phase 5 之后，现行法律栏覆盖用户常见路线的主申请人与主要
 
 同 Phase 5：gate 全过；新规则有 fixture 与三组用例；来源定位齐全；UI 改动 Fable 浏览器走查（含英文与 375px）；一个逻辑改动一次 commit；合并后 push main 自动部署。
 
-## 4. 用户决定（待定）
+## 4. 用户决定（2026-11-05）
 
-1. **6.4 储蓄与福利替代**：做不做？建议做——家庭路线用户常靠储蓄补收入缺口，现在一律按收入判 FAIL。
-2. **6.6 Innovator Founder 的 dependant**：做不做？建议暂不做，等有用户反馈再说；保护类 / UK Ancestry / Private Life 的 dependant 本阶段不做。
-3. **分工**：是否允许 sol 在 Opus 写好契约后实现规则代码（Opus 评审）？`AGENTS.md` 现规定规则语义仅 Opus。建议本阶段不改：Opus 任务已只剩 6.2 与 6.4（6.6 待定），规则代码出错的代价高。
+1. **6.4 储蓄与福利替代**：做。
+2. **6.6 Innovator Founder 的 dependant**：暂不做；保护类 / UK Ancestry / Private Life 的 dependant 本阶段也不做。
+3. **分工**：维持 `AGENTS.md`，规则语义仅 Opus；sol / astra 承担 6.1、6.3、6.5、6.7。
+4. Wave 1 于 2026-11-05 派发：sol 6.1（`docs/tasks/6.1-part-8-and-dependant-locators.md`）、Opus 6.2（`docs/tasks/6.2-engine-consistency-pd-074.md`，契约先行）。
 
 ## 5. 12 月 Statement of Changes 的触发（Fable）
 
