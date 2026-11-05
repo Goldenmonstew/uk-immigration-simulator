@@ -7,6 +7,7 @@ import type { FormEvent, ReactNode } from 'react';
 import {
   asylumSupportRepaymentNames,
   breachTypeNames,
+  PARAMETERS,
   publicFundsBenefits,
   resettlementSchemeNames,
   ROUTE_GROUPS,
@@ -28,6 +29,7 @@ import {
   activePersonDraft,
   createDraft,
   currentEpisode,
+  hasFamilyPartnerFiveYear,
   needsPrincipal,
   stepSequence,
   draftReducer,
@@ -86,6 +88,7 @@ export default function SimulatePage() {
   const heading = useRef<HTMLHeadingElement>(null);
   const active = activePersonDraft(draft);
   const { timeline } = active;
+  const familyPartnerFiveYear = hasFamilyPartnerFiveYear(timeline);
   const current = currentEpisode(active);
   const protectionMain =
     current?.role === 'MAIN' &&
@@ -156,6 +159,8 @@ export default function SimulatePage() {
       return;
     }
     const nextErrors = validateStep(active);
+    if (active.step === 4 && familyPartnerFiveYear && errors['cash-savings'])
+      nextErrors['cash-savings'] = errors['cash-savings'];
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length) {
       requestAnimationFrame(() =>
@@ -1079,6 +1084,44 @@ export default function SimulatePage() {
                   <p>{t('income.hint')}</p>
                   <p className={styles.hint}>{t('income.taxYearHint')}</p>
                   <p className={styles.hint}>{t('income.partnerHint')}</p>
+                  {familyPartnerFiveYear && (
+                    <Field
+                      id="cash-savings"
+                      label={t('income.cashSavings')}
+                      hint={t('income.cashSavingsHint').replace(
+                        '{base}',
+                        PARAMETERS[
+                          'current-law-2026-11'
+                        ].values.familyPartnerSavingsBase.value.toLocaleString(
+                          'en-GB',
+                        ),
+                      )}
+                      error={errors['cash-savings']}
+                    >
+                      <input
+                        {...fieldProps('cash-savings', true)}
+                        type="number"
+                        inputMode="numeric"
+                        min="0"
+                        step="1"
+                        defaultValue={timeline.cashSavings ?? ''}
+                        onChange={(event) => {
+                          const value = amount(event.target.value);
+                          const valid =
+                            !event.target.validity.badInput &&
+                            (value === undefined ||
+                              (Number.isInteger(value) && value >= 0));
+                          setErrors((previous) => {
+                            const next = { ...previous };
+                            if (valid) delete next['cash-savings'];
+                            else next['cash-savings'] = 'error.savings';
+                            return next;
+                          });
+                          update({ cashSavings: valid ? value : undefined });
+                        }}
+                      />
+                    </Field>
+                  )}
                   {visibleIncomeYears(active).map((row) => (
                     <fieldset className={styles.incomeRow} key={row.taxYear}>
                       <legend>{row.taxYear}</legend>
@@ -1131,6 +1174,25 @@ export default function SimulatePage() {
               {active.step === 5 && (
                 <>
                   <p>{t('benefits.hint')}</p>
+                  {familyPartnerFiveYear && (
+                    <div className={styles.checkboxes}>
+                      <label>
+                        <input
+                          id="partner-specified-benefit"
+                          type="checkbox"
+                          checked={timeline.partnerSpecifiedBenefit === true}
+                          onChange={(event) =>
+                            update({
+                              partnerSpecifiedBenefit: event.target.checked
+                                ? true
+                                : undefined,
+                            })
+                          }
+                        />
+                        <span>{t('benefits.partnerSpecifiedBenefit')}</span>
+                      </label>
+                    </div>
+                  )}
                   {!timeline.benefits.length && (
                     <p className={site.muted}>{t('benefits.empty')}</p>
                   )}

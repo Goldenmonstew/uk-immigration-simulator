@@ -63,6 +63,15 @@ export function needsPrincipal(draft: Draft): boolean {
   return currentEpisode(draft)?.role === 'DEPENDANT';
 }
 
+export function hasFamilyPartnerFiveYear(timeline: PersonTimeline): boolean {
+  return timeline.episodes.some(
+    (episode) =>
+      episode.route === 'FAMILY_PARTNER_OR_PARENT' &&
+      episode.role === 'MAIN' &&
+      episode.familyPermission === 'PARTNER_FIVE_YEAR',
+  );
+}
+
 export function activePersonDraft(draft: Draft): Draft {
   return draft.principalStep === undefined
     ? draft
@@ -160,16 +169,24 @@ export function draftReducer(state: Draft, action: Action): Draft {
         principalStep: undefined,
         principalCompleted: action.completed ?? state.principalCompleted,
       };
-    case 'timeline':
+    case 'timeline': {
+      const timeline = {
+        ...activePersonDraft(state).timeline,
+        ...action.patch,
+      };
       return {
         ...state,
         completed: false,
         [editingPrincipal ? 'principal' : 'timeline']: {
-          ...(editingPrincipal ? state.principal : state.timeline),
-          ...action.patch,
+          ...timeline,
+          ...(!hasFamilyPartnerFiveYear(timeline) && {
+            cashSavings: undefined,
+            partnerSpecifiedBenefit: undefined,
+          }),
         },
         ...(editingPrincipal && { principalCompleted: false }),
       };
+    }
     case 'episode': {
       const timeline = activePersonDraft(state).timeline;
       return draftReducer(state, {
@@ -405,6 +422,12 @@ export function validateStep(draft: Draft): Errors {
       );
       break;
     case 4:
+      if (
+        hasFamilyPartnerFiveYear(timeline) &&
+        timeline.cashSavings !== undefined &&
+        (!Number.isInteger(timeline.cashSavings) || timeline.cashSavings < 0)
+      )
+        errors['cash-savings'] = 'error.savings';
       visibleIncomeYears(draft).forEach((row) => {
         amount(`${row.taxYear}-earnings`, row.earnings);
         amount(`${row.taxYear}-partner`, row.partnerEarnings);

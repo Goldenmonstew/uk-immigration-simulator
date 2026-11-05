@@ -212,6 +212,8 @@ export const en: Record<keyof typeof zhCN, string> = {
   'error.dob':
     'Date of birth cannot be later than today or the simulation date.',
   'error.number': 'Enter a valid amount of 0 or more.',
+  'error.savings':
+    'Enter a whole savings amount of 0 or more, or leave blank if not provided.',
   'outcome.LIKELY_ELIGIBLE': 'Likely eligible',
   'outcome.LIKELY_ELIGIBLE.description':
     'All assessed rules in this rule set are met. This does not guarantee an application outcome.',
@@ -374,6 +376,11 @@ export const en: Record<keyof typeof zhCN, string> = {
   'income.partner': 'Partner annual earnings (optional)',
   'income.partnerHint':
     'Leave partner earnings blank if you are not relying on them.',
+  'income.cashSavings': 'Cash savings (you and your partner combined, £)',
+  'income.cashSavingsHint':
+    'Savings can cover an income shortfall: at least £{base} plus the shortfall (E-LTRP.3.1(b); settlement applications do not multiply by 2.5 under E-ILRP.1.3(1A)). Enter 0 if you have no savings.',
+  'benefits.partnerSpecifiedBenefit':
+    "My partner receives a benefit listed in E-LTRP.3.3(a) (such as Carer's Allowance, Personal Independence Payment, Disability Living Allowance or Attendance Allowance)",
   'benefits.hint':
     'Enter benefits or statutory payments you have received. The rules engine determines whether they count as public funds and their effect. Leave the end date blank if payments are ongoing.',
   'benefits.item': 'Payment record',
