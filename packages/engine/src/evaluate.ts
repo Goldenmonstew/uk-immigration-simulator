@@ -3,7 +3,11 @@ import type { RuleSetId } from '@uk-immigration/policy-data';
 import { assess } from './aggregate';
 import { adultIllegalEntry } from './rules/es-requirements';
 import { episodeOn } from './residence';
-import { esCurrentGroup, legacyUkrsArrival } from './rules/es-residence';
+import {
+  esCurrentGroup,
+  esRouteOn,
+  legacyUkrsArrival,
+} from './rules/es-residence';
 import { textFor } from './rule';
 import { RULES } from './rules';
 import type {
@@ -45,8 +49,14 @@ function shortCircuitOf(ctx: RuleContext): ShortCircuit | undefined {
   }
   const group = esCurrentGroup(timeline, simulationDate);
   // On a protection route illegal entry adds 10 years (Table 2, p48) and is
-  // assessed; elsewhere its consequence is inconsistent (PD-044).
-  if (adultIllegalEntry(timeline) && group !== 'PROTECTION') {
+  // assessed; elsewhere its consequence is inconsistent (PD-044). Legacy Safe
+  // and Legal Routes are protection routes under current law: they fall
+  // through to OUTSIDE_FRAMEWORK, which stops only Earned Settlement (§16.3).
+  if (
+    adultIllegalEntry(timeline) &&
+    group !== 'PROTECTION' &&
+    esRouteOn(timeline, simulationDate) !== 'LEGACY_SAFE_AND_LEGAL'
+  ) {
     return {
       reason: 'IMMIGRATION_BREACH',
       message: L(
