@@ -90,13 +90,13 @@ export const zhCN = {
   'policyPage.bestYears': '{window} 年中满足 {required} 年',
   'policyPage.applicationsFrom': '适用于申请日自',
   'site.name': '英国移民路径模拟',
-  'site.englishName': 'My Immigration Path',
   'site.skip': '跳到主要内容',
   'site.home': '首页',
   'site.language': '语言',
   'site.footer': '一般政策信息与假设情景模拟',
   'home.title': '了解可能适用的移民路径',
   'home.intro': '从你的时间线出发，查看可能适用的路径、关键条件与未定事项。',
+  'home.scopeTitle': '建模范围',
   'home.scope':
     '比较现行 settlement 路径与已公布的 Earned Settlement 改革。现行法律栏建模 Skilled Worker、Hong Kong BN(O)、Global Talent、Appendix FM 伴侣（5 年 / 10 年路线）、难民（Appendix Settlement Protection）、UK Ancestry、Innovator Founder 与 Private Life 的主申请人，以及 Long Residence。dependant 覆盖 Skilled Worker、Hong Kong BN(O)（伴侣、子女、adult dependant relative）、Global Talent（伴侣、子女）、Appendix FM 10 年路线伴侣的子女，以及 Appendix FM 5 年路线伴侣的子女（Immigration Rules Part 8 第 298 段）。其余路线及其 dependant 的独立定居条件仍显示“信息不足”。',
   'home.start': '开始模拟',
@@ -120,6 +120,8 @@ export const zhCN = {
   'policy.hypothesis':
     '改革栏假设该规则集在模拟日期适用；标签“已公布、未生效”不代表已经实施。',
   'result.title': '你的路径模拟',
+  'result.navigation': '跳到评估栏',
+  'result.jumpTo': '跳到{column}',
   'gap.title': '还差什么',
   'gap.met': '已满足全部已建模要求',
   'gap.earliest': '按当前情况最早 {date}',

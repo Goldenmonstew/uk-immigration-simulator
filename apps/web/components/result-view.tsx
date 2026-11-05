@@ -14,6 +14,12 @@ import { GapSummary } from './gap-summary';
 import site from '../app/site.module.css';
 import styles from '../app/result/result.module.css';
 
+function jumpToAssessment(id: string) {
+  const heading = document.getElementById(id);
+  heading?.focus({ preventScroll: true });
+  heading?.scrollIntoView({ block: 'start' });
+}
+
 function Advice() {
   const { t } = useTranslation();
   return (
@@ -58,6 +64,20 @@ export function ResultView({
       ) : (
         <>
           <h1>{t('result.title')}</h1>
+          <nav
+            className={styles.columnNavigation}
+            aria-label={t('result.navigation')}
+          >
+            {displayedRuleSets.map((ruleSet) => (
+              <button
+                key={ruleSet.id}
+                type="button"
+                onClick={() => jumpToAssessment(`${ruleSet.id}-heading`)}
+              >
+                {t(`policy.${ruleSet.kind}`)}
+              </button>
+            ))}
+          </nav>
           {result.shortCircuit && (
             <p className={`${site.notice} ${site.warning}`}>
               {result.shortCircuit.message}
@@ -113,9 +133,27 @@ export function AssessmentColumns({
             <h2
               id={`${idPrefix}${ruleSet.id}-heading`}
               className={styles.heading}
+              tabIndex={-1}
             >
               {t(`policy.${ruleSet.kind}`)}
             </h2>
+            {displayedRuleSets
+              .filter((other) => other.id !== ruleSet.id)
+              .map((other) => (
+                <button
+                  key={other.id}
+                  type="button"
+                  className={styles.columnJump}
+                  onClick={() =>
+                    jumpToAssessment(`${idPrefix}${other.id}-heading`)
+                  }
+                >
+                  {t('result.jumpTo').replace(
+                    '{column}',
+                    t(`policy.${other.kind}`),
+                  )}
+                </button>
+              ))}
             <span
               className={`${site.badge} ${ruleSet.kind === 'ANNOUNCED' ? site.announced : ''}`}
             >
@@ -178,13 +216,19 @@ export function AssessmentColumns({
                       (rule) => rule.status === status,
                     );
                     return (
-                      <section key={status} className={styles.group}>
-                        <h4>
-                          {t(`result.${status}`)}
-                          {p.openParen}
-                          {rules.length}
-                          {p.closeParen}
-                        </h4>
+                      <details
+                        key={status}
+                        className={styles.group}
+                        open={status !== 'PASS'}
+                      >
+                        <summary>
+                          <h4>
+                            {t(`result.${status}`)}
+                            {p.openParen}
+                            {rules.length}
+                            {p.closeParen}
+                          </h4>
+                        </summary>
                         {!rules.length ? (
                           <p className={site.muted}>
                             {t('result.noGroupRules')}
@@ -199,27 +243,32 @@ export function AssessmentColumns({
                               >
                                 <strong>{rule.title}</strong>
                                 <p>{rule.explanation}</p>
-                                <div
-                                  className={styles.sources}
-                                  aria-label={t('result.sources')}
-                                >
-                                  {rule.sources.map((source, index) =>
-                                    sourceUrls[source.srcId] ? (
-                                      <a
-                                        key={index}
-                                        href={sourceUrls[source.srcId]}
-                                        target="_blank"
-                                        rel="noreferrer"
-                                      >
-                                        {source.srcId} {source.locator}
-                                      </a>
-                                    ) : (
-                                      <span key={index}>
-                                        {source.srcId} {source.locator}
-                                      </span>
-                                    ),
-                                  )}
-                                </div>
+                                <details className={styles.sourceDetails}>
+                                  <summary>
+                                    {t('result.sources')}
+                                    {p.openParen}
+                                    {rule.sources.length}
+                                    {p.closeParen}
+                                  </summary>
+                                  <div className={styles.sources}>
+                                    {rule.sources.map((source, index) =>
+                                      sourceUrls[source.srcId] ? (
+                                        <a
+                                          key={index}
+                                          href={sourceUrls[source.srcId]}
+                                          target="_blank"
+                                          rel="noreferrer"
+                                        >
+                                          {source.srcId} {source.locator}
+                                        </a>
+                                      ) : (
+                                        <span key={index}>
+                                          {source.srcId} {source.locator}
+                                        </span>
+                                      ),
+                                    )}
+                                  </div>
+                                </details>
                                 {!!rule.pendingDetails?.length && (
                                   <p className={site.badge}>
                                     {t('result.pendingDetails')}
@@ -231,7 +280,7 @@ export function AssessmentColumns({
                             ))}
                           </ul>
                         )}
-                      </section>
+                      </details>
                     );
                   })
                 )}

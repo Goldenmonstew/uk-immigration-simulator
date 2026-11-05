@@ -15,7 +15,10 @@ export default function Home() {
       <div className={styles.narrow}>
         <h1>{t('home.title')}</h1>
         <p className={styles.lead}>{t('home.intro')}</p>
-        <p>{t('home.scope')}</p>
+        <details className={styles.scope}>
+          <summary>{t('home.scopeTitle')}</summary>
+          <p>{t('home.scope')}</p>
+        </details>
         <div className={styles.actions}>
           <Link className={styles.button} href="/simulate">
             {t('home.start')}

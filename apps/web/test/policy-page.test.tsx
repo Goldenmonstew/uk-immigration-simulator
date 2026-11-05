@@ -63,6 +63,26 @@ test('policy page enumerates the exported rule sets, parameters, rules, changelo
   expect(html).not.toMatch(/href="[^"?#]+\.md(?:[?#"])/);
 });
 
+test.each(['zh-CN', 'en'] as const)(
+  'parameter and rule groups start collapsed with counts and scrollable table regions in %s',
+  (locale) => {
+    const html = render(locale);
+    expect(html.match(/<details\b/g)).toHaveLength(
+      Object.keys(RULE_SETS).length * 2,
+    );
+    expect(html).not.toMatch(/<details[^>]*\bopen/);
+    expect(
+      html.match(/<summary[^>]*><h3>[^<]+[（(]\d+[）)]<\/h3><\/summary>/g),
+    ).toHaveLength(Object.keys(RULE_SETS).length * 2);
+    for (const id of Object.keys(RULE_SETS)) {
+      expect(html).toContain(`id="${id}-parameters"`);
+      expect(html).toContain(
+        `role="region" aria-labelledby="${id}-parameters" tabindex="0"><table`,
+      );
+    }
+  },
+);
+
 test('policy page translates all metadata and UI in English, with readable parameter shapes', () => {
   const html = render('en');
   expect(html).not.toMatch(/[\u3400-\u9fff]/);

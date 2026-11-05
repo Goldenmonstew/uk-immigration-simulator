@@ -90,10 +90,6 @@
   color: #fff;
   text-decoration: underline;
 }
-.header span {
-  color: #d9e5ee;
-  font-size: 0.95rem;
-}
 .navigation {
   display: flex;
   flex-wrap: wrap;
@@ -211,6 +207,18 @@
 .section {
   margin-top: 40px;
 }
+.body summary {
+  cursor: pointer;
+  min-height: 44px;
+  padding: 8px 0;
+}
+.scope > summary {
+  color: #1d70b8;
+  font-weight: 700;
+}
+.scope p {
+  margin: 8px 0 0;
+}
 .printOnly {
   display: none;
 }
@@ -234,15 +242,69 @@
 .footerLinks a {
   white-space: nowrap;
 }
-@media (max-width: 600px) {
+@media screen and (max-width: 600px) {
+  .body {
+    font-size: 17px;
+    line-height: 1.55;
+  }
+  .body h1 {
+    font-size: 28px;
+  }
+  .body h2 {
+    font-size: 22px;
+  }
+  .lead {
+    font-size: 18px;
+    line-height: 1.55;
+  }
+  .body input,
+  .body select,
+  .body button {
+    font-size: 18px;
+    line-height: 1.65;
+  }
+  .button,
+  .secondary {
+    font-size: 18px;
+  }
   .main {
     padding: 28px 20px 48px;
   }
   .headerInner {
-    padding: 16px 20px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0 12px;
+    padding: 4px 20px;
   }
-  .header span {
-    display: none;
+  .headerInner > a {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    font-size: 18px;
+    line-height: 1.2;
+  }
+  .languages {
+    grid-column: 2;
+    grid-row: 1;
+    gap: 4px;
+  }
+  .body .languages button {
+    font-size: 14px;
+    line-height: 1.2;
+    padding: 4px 8px;
+  }
+  .navigation {
+    grid-column: 1 / -1;
+    flex-wrap: nowrap;
+    gap: 16px;
+  }
+  .navigation a {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    font-size: 16px;
+    line-height: 1.4;
   }
   .policy {
     margin-bottom: 28px;
@@ -286,6 +348,10 @@
   .body h4,
   .body summary {
     break-after: avoid;
+  }
+  .body summary {
+    min-height: 0;
+    padding: 0;
   }
   .body p {
     orphans: 3;
