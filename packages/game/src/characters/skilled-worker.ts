@@ -10,8 +10,8 @@ export const skilledWorker: Character = {
   id: 'skilled-worker',
   name: { zhCN: '林遥', en: 'Yao Lin' },
   intro: {
-    zhCN: '虚构人物林遥，虚构设定为中国籍软件开发者，单身，2024 年初持技术工作者（Skilled Worker）许可入境，年薪 £38,000。每回合记录一段生活；没有记录的年度收入保持未知，不自动续填或推断定居获批。',
-    en: 'Yao Lin is a fictional Chinese software developer, single on arrival in early 2024 with Skilled Worker permission and a £38,000 salary. Each turn records part of a life; unrecorded annual earnings remain unknown, and settlement grants are never inferred.',
+    zhCN: '林遥是一名来自中国的软件开发者，2024 年初独自持 Skilled Worker 许可来英，年薪 £38,000，正在慢慢安顿生活。人物与事件均为虚构。',
+    en: 'Yao Lin is a software developer from China, settling into life after arriving alone in early 2024 with Skilled Worker permission and a £38,000 salary. All characters and events are fictional.',
   },
   startDate: '2025-01-15',
   timeline: {
@@ -46,8 +46,8 @@ export const skilledWorker: Character = {
       kind: 'choice',
       title: { zhCN: '英语考试的安排', en: 'Making time for an English test' },
       text: {
-        zhCN: `你在英国生活了一年，考虑现在取得 ${englishChange.cefrLevel} 证明，还是再等等；引擎中的 Skilled Worker 定居英语要求在 ${englishChange.applicationsFrom} 发生变化。`,
-        en: `After a year in the UK, you consider obtaining ${englishChange.cefrLevel} evidence now or waiting; the engine’s Skilled Worker settlement English requirement changes on ${englishChange.applicationsFrom}.`,
+        zhCN: '你在英国生活了一年，工作之外也想给英语学习留点时间。现在准备考试，还是先缓一缓？',
+        en: 'After a year in the UK, you want to make time for English alongside work. Prepare for a test now, or leave it for later?',
       },
       choices: [
         {
@@ -55,8 +55,8 @@ export const skilledWorker: Character = {
           label: { zhCN: '现在考取 B2', en: 'Obtain B2 now' },
           effects: [{ type: 'english', cefrLevel: 'B2' }],
           note: {
-            zhCN: '本卡更新英语证明；适用等级由评估日和规则栏决定。',
-            en: 'This card updates English evidence; the assessment date and rule set determine the required level.',
+            zhCN: `本卡更新英语证明；Skilled Worker 现行法律栏从 ${englishChange.applicationsFrom} 起要求 ${englishChange.cefrLevel}（SRC-004 SW 22A.1），改革栏按自身规则评估。`,
+            en: `This card updates English evidence; current-law Skilled Worker settlement requires ${englishChange.cefrLevel} from ${englishChange.applicationsFrom} (SRC-004 SW 22A.1), while reform uses its own rules.`,
           },
         },
         {
@@ -78,15 +78,15 @@ export const skilledWorker: Character = {
       kind: 'choice',
       title: { zhCN: '两个人的计划', en: 'Plans for two' },
       text: {
-        zhCN: '你已取得新的三年 Skilled Worker 许可，岗位和年薪不变。过去一年认识的伴侣考虑来英；本游戏只评估你本人。',
-        en: 'You have obtained a fresh three-year Skilled Worker permission with the same job and salary. A partner you met over the past year is considering joining you; the game assesses only you.',
+        zhCN: '新一轮三年 Skilled Worker 许可已办妥，工作照旧。过去一年认识的伴侣正和你商量，是来英国一起生活，还是暂时继续异地。',
+        en: 'With fresh three-year Skilled Worker permission and the same job, you and a partner you met over the past year discuss living together in the UK or staying apart a little longer.',
       },
       choices: [
         {
           id: 'join',
           label: {
-            zhCN: '记录伴侣来英并工作',
-            en: 'Record your partner joining and working',
+            zhCN: '伴侣来英，一起安顿并开始工作',
+            en: 'Your partner joins you and starts work',
           },
           effects: [
             {
@@ -144,8 +144,8 @@ export const skilledWorker: Character = {
       kind: 'choice',
       title: { zhCN: '新岗位的邀请', en: 'A new job offer' },
       text: {
-        zhCN: '一家新公司邀请你做 IT 质量与测试工作，年薪 £55,000。两个情节均已办妥对应岗位的三年 Skilled Worker 许可。',
-        en: 'A new company offers an IT quality and testing job at £55,000. In either scenario, the relevant three-year Skilled Worker permission has already been granted.',
+        zhCN: '一家新公司邀请你做 IT 质量与测试工作，年薪 £55,000。你有些心动，也舍不得现在熟悉的团队。',
+        en: 'A new company offers an IT quality and testing job at £55,000. It is tempting, but you would miss your familiar team.',
       },
       choices: [
         {
@@ -165,8 +165,8 @@ export const skilledWorker: Character = {
             { type: 'income', taxYear: 'current', earnings: 55000 },
           ],
           note: {
-            zhCN: '担保年薪与 SOC 用于岗位薪资规则，tax year 收入用于收入路径。',
-            en: 'Sponsored salary and SOC feed job salary rules; tax-year earnings feed earnings pathways.',
+            zhCN: '本情节以新岗位三年许可已获批为前提；担保年薪与 SOC 用于岗位薪资规则，tax year 收入用于收入路径。',
+            en: 'This scenario assumes three-year permission for the new job is granted; sponsored salary and SOC feed job salary rules, while tax-year earnings feed earnings pathways.',
           },
         },
         {
@@ -186,51 +186,37 @@ export const skilledWorker: Character = {
             { type: 'income', taxYear: 'current', earnings: 38000 },
           ],
           note: {
-            zhCN: '继续记录原岗位与年薪，不代表当前薪资必然满足定居要求。',
-            en: 'The original job and salary are retained; this does not imply the salary meets settlement requirements.',
+            zhCN: '本情节以原岗位三年许可已获批为前提；保留原岗位与年薪，不代表薪资必然满足定居要求。',
+            en: 'This scenario assumes three-year permission for the existing job is granted; keeping the job and salary does not imply the salary meets settlement requirements.',
           },
         },
       ],
     },
     {
-      id: 'sw-income-shock',
+      id: 'sw-life-in-uk',
       kind: 'choice',
-      title: { zhCN: '预算突然收紧', en: 'A tighter budget' },
+      title: { zhCN: 'Life in the UK', en: 'Life in the UK' },
       text: {
-        zhCN: '伴侣暂时失业，家庭开支吃紧。选择一段虚构记录：本卡不判断你是否有资格申领福利。',
-        en: 'Your partner is temporarily out of work and household finances are tight. Choose a fictional record; this card does not decide whether you are entitled to claim benefits.',
+        zhCN: '你整理定居材料清单时发现，Life in the UK 还没考。趁这阵子工作不忙，能挤出些备考时间。',
+        en: 'While sorting out a settlement checklist, you realise you have not taken Life in the UK. Work is quieter, leaving a little time to prepare.',
       },
       choices: [
         {
-          id: 'claim',
-          label: {
-            zhCN: '记录本人领取 Universal Credit',
-            en: 'Record Universal Credit received by you',
-          },
-          effects: [
-            { type: 'income', taxYear: 'current', partnerEarnings: 0 },
-            {
-              type: 'benefit',
-              benefit: { benefitType: 'UNIVERSAL_CREDIT' },
-              startOffsetDays: 0,
-              months: 6,
-            },
-          ],
+          id: 'pass',
+          label: { zhCN: '备考并通过', en: 'Prepare and pass' },
+          effects: [{ type: 'lifeInTheUk' }],
           note: {
-            zhCN: '福利记录只计申请人本人领取的 public funds，不把伴侣的福利算到本人名下。',
-            en: 'The benefit record counts public funds received by the applicant, not benefits received by the partner.',
+            zhCN: '本卡写入 Life in the UK 已通过的证明。',
+            en: 'This card records evidence of passing Life in the UK.',
           },
         },
         {
-          id: 'borrow',
-          label: {
-            zhCN: '记录向朋友借钱周转',
-            en: 'Record borrowing from a friend',
-          },
-          effects: [{ type: 'income', taxYear: 'current', partnerEarnings: 0 }],
+          id: 'later',
+          label: { zhCN: '以后再安排', en: 'Arrange it later' },
+          effects: [{ type: 'none' }],
           note: {
-            zhCN: '私人借款不记为 public funds 或 government debt，本游戏不模拟还款预算。',
-            en: 'A private loan is not recorded as public funds or government debt; repayment budgeting is not simulated.',
+            zhCN: '未提供通过或豁免证明时，由引擎返回相应状态。',
+            en: 'Without pass or exemption evidence, the engine returns the corresponding status.',
           },
         },
       ],
@@ -243,28 +229,28 @@ export const skilledWorker: Character = {
         en: 'Looking back on an overseas assignment',
       },
       text: {
-        zhCN: '以回顾方式选择过去一年的项目安排：海外工作八个月（本情节记为 240 天），或一直留在英国。两个情节均已获续签，现有许可延至 2032-01-14。',
-        en: 'Choose retrospectively how the past year’s project was arranged: eight months working abroad (240 days in this scenario), or staying in the UK throughout. In both scenarios, a renewal has extended your current permission to 2032-01-14.',
+        zhCN: '过去一年，公司有个为期八个月的海外项目。你接下了外派，昨天刚回来，还是一直留在英国团队？续签也已办好，生活又翻过一页。',
+        en: 'Looking back over the past year, you either took an overseas assignment and returned yesterday, or stayed with the UK team. Your renewed permission is also in place.',
       },
       choices: [
         {
           id: 'abroad',
           label: {
-            zhCN: '记录外派八个月，昨天返回',
-            en: 'Record eight months abroad, returning yesterday',
+            zhCN: '接受外派，昨天刚回来',
+            en: 'Take the assignment and return yesterday',
           },
           effects: [
             { type: 'episode', patch: { validTo: '2032-01-14' } },
             { type: 'absence', startOffsetDays: -240, days: 240 },
           ],
           note: {
-            zhCN: '这段离境进入连续居留计算，是否重置起点由引擎判定。',
-            en: 'This absence enters continuous-residence calculations; the engine decides whether it restarts the qualifying period.',
+            zhCN: '本情节把外派八个月记为 240 天离境，并将已续签许可延至 2032-01-14；连续居留由引擎计算。',
+            en: 'This scenario records eight months as 240 days abroad and renewed permission through 2032-01-14; the engine calculates continuous residence.',
           },
         },
         {
           id: 'uk',
-          label: { zhCN: '记录留在英国', en: 'Record staying in the UK' },
+          label: { zhCN: '留在英国团队', en: 'Stay with the UK team' },
           effects: [{ type: 'episode', patch: { validTo: '2032-01-14' } }],
           note: {
             zhCN: '本卡不添加离境，只更新已续签的许可期限。',
@@ -278,15 +264,15 @@ export const skilledWorker: Character = {
       kind: 'choice',
       title: { zhCN: '担保方裁员', en: 'Redundancy at your sponsor' },
       text: {
-        zhCN: '原公司裁员。一个情节是今天已有新担保并衔接许可；另一个是今天起回国 90 天，随后取得新许可。新岗位均为 SOC 2136，年薪 £55,000；本卡不模拟取消许可的程序。',
-        en: 'Your employer makes redundancies. One scenario has a new sponsor and adjoining permission today; the other has 90 days abroad from today before new permission is granted. Both new jobs are SOC 2136 at £55,000; this card does not simulate curtailment procedures.',
+        zhCN: '原公司开始裁员。你可以接受已经落实的新担保岗位，也可以先回国陪家人三个月，再回来开始新工作。新岗位年薪都是 £55,000。',
+        en: 'Your employer starts making redundancies. You can take a job with a new sponsor already in place, or spend three months with family abroad before returning to a new job. Both pay £55,000.',
       },
       choices: [
         {
           id: 'new-sponsor',
           label: {
-            zhCN: '记录已找到新担保',
-            en: 'Record a new sponsor already found',
+            zhCN: '接下新担保方的工作',
+            en: 'Take the job with the new sponsor',
           },
           effects: [
             {
@@ -302,15 +288,15 @@ export const skilledWorker: Character = {
             { type: 'income', taxYear: 'current', earnings: 55000 },
           ],
           note: {
-            zhCN: '本卡记录相接的许可片段，不把寻找担保的时限写成游戏规则。',
-            en: 'This card records adjoining permissions without turning a sponsor-search deadline into a game rule.',
+            zhCN: '本卡写入今天起相接的新许可与 SOC 2136，不模拟取消许可程序或寻找担保的时限。',
+            en: 'This card records adjoining permission from today with SOC 2136; curtailment procedures and sponsor-search deadlines are not simulated.',
           },
         },
         {
           id: 'return-home',
           label: {
-            zhCN: '记录回国三个月后再来',
-            en: 'Record returning after three months abroad',
+            zhCN: '回国陪家人，三个月后再来',
+            en: 'Spend three months with family before returning',
           },
           effects: [
             {
@@ -327,8 +313,8 @@ export const skilledWorker: Character = {
             { type: 'absence', startOffsetDays: 0, days: 90 },
           ],
           note: {
-            zhCN: '许可空档与离境分别记录，未来的新许可到生效后才参与评估。',
-            en: 'The permission gap and absence are recorded separately; future permission is assessed once it starts.',
+            zhCN: '本情节写入 90 天离境与许可空档，新许可为 SOC 2136，生效后才参与评估；取消许可程序未建模。',
+            en: 'This scenario records 90 days abroad and a permission gap; the new SOC 2136 permission is assessed once effective, without modelling curtailment procedures.',
           },
         },
       ],
@@ -338,8 +324,8 @@ export const skilledWorker: Character = {
       kind: 'choice',
       title: { zhCN: '晚餐之后', en: 'After dinner' },
       text: {
-        zhCN: '晚餐喝了酒，选择接下来的虚构情节；涉及犯罪记录的情节会结束这局，并显示引擎的受监管审查提示。',
-        en: 'You have had alcohol with dinner. Choose the next fictional scenario; a criminal record ends the game with the engine’s regulated-review message.',
+        zhCN: '晚餐喝了酒，散场时天已经很晚。你会怎样回家？',
+        en: 'You have had alcohol with dinner, and it is late when everyone leaves. How do you get home?',
       },
       choices: [
         {
@@ -370,8 +356,8 @@ export const skilledWorker: Character = {
       kind: 'choice',
       title: { zhCN: '住处的选择', en: 'A place to live' },
       text: {
-        zhCN: '你已取得新的三年 Skilled Worker 许可，SOC 2136、年薪 £55,000。接着考虑买房还是继续租住；游戏不模拟房价、贷款与资产变化。',
-        en: 'You have obtained fresh three-year Skilled Worker permission, SOC 2136 at £55,000. You then consider buying or renting; the game does not simulate property prices, mortgages or changes in assets.',
+        zhCN: '新一轮三年 Skilled Worker 许可已办妥，测试岗位年薪仍是 £55,000。周末看了几套房，你开始考虑买下住处，还是继续租住。',
+        en: 'With fresh three-year Skilled Worker permission and the same testing job at £55,000, a weekend of viewings gets you thinking about buying a home or continuing to rent.',
       },
       choices: [
         {
@@ -391,8 +377,8 @@ export const skilledWorker: Character = {
             { type: 'none' },
           ],
           note: {
-            zhCN: '本卡更新许可；买房本身不增加定居年限或自动授予身份。',
-            en: 'This card updates permission; buying a home does not add qualifying years or automatically grant status.',
+            zhCN: '本卡更新 SOC 2136 的许可；房价、贷款与资产变化未建模，买房不自动授予身份。',
+            en: 'This card renews SOC 2136 permission; property prices, mortgages and asset changes are not modelled, and buying does not grant status.',
           },
         },
         {
@@ -419,30 +405,44 @@ export const skilledWorker: Character = {
       ],
     },
     {
-      id: 'sw-life-in-uk',
+      id: 'sw-income-shock',
       kind: 'choice',
-      title: { zhCN: 'Life in the UK', en: 'Life in the UK' },
+      title: { zhCN: '预算突然收紧', en: 'A tighter budget' },
       text: {
-        zhCN: '你整理材料时发现还没有 Life in the UK 通过记录。',
-        en: 'While organising your documents, you notice there is no Life in the UK pass recorded.',
+        zhCN: '伴侣暂时失业，家里的账单却没有少。你们得想办法撑过这几个月。',
+        en: 'Your partner is temporarily out of work, but the bills keep coming. You need a way through the next few months.',
       },
       choices: [
         {
-          id: 'pass',
-          label: { zhCN: '备考并通过', en: 'Prepare and pass' },
-          effects: [{ type: 'lifeInTheUk' }],
+          id: 'claim',
+          label: {
+            zhCN: '申领 Universal Credit 渡过难关',
+            en: 'Claim Universal Credit to get through',
+          },
+          effects: [
+            { type: 'income', taxYear: 'current', partnerEarnings: 0 },
+            {
+              type: 'benefit',
+              benefit: { benefitType: 'UNIVERSAL_CREDIT' },
+              startOffsetDays: 0,
+              months: 6,
+            },
+          ],
           note: {
-            zhCN: '本卡写入 Life in the UK 已通过的证明。',
-            en: 'This card records evidence of passing Life in the UK.',
+            zhCN: '本情节设为本人领取 Universal Credit，不判断申领资格；不把伴侣领取的福利算到本人名下。',
+            en: 'This scenario gives the applicant Universal Credit without assessing claim entitlement; benefits received by the partner are not attributed to the applicant.',
           },
         },
         {
-          id: 'later',
-          label: { zhCN: '以后再安排', en: 'Arrange it later' },
-          effects: [{ type: 'none' }],
+          id: 'borrow',
+          label: {
+            zhCN: '向朋友借钱周转',
+            en: 'Borrow from a friend',
+          },
+          effects: [{ type: 'income', taxYear: 'current', partnerEarnings: 0 }],
           note: {
-            zhCN: '未提供通过或豁免证明时，由引擎返回相应状态。',
-            en: 'Without pass or exemption evidence, the engine returns the corresponding status.',
+            zhCN: '私人借款不记为 public funds 或 government debt，本游戏不模拟还款预算。',
+            en: 'A private loan is not recorded as public funds or government debt; repayment budgeting is not simulated.',
           },
         },
       ],
@@ -452,8 +452,8 @@ export const skilledWorker: Character = {
       kind: 'choice',
       title: { zhCN: '留一天给生活', en: 'A day for yourself' },
       text: {
-        zhCN: '公司提供四天工作制：年薪降为 £44,000，岗位代码不变。引擎没有工时字段，不判断兼职 going rate 的折算。',
-        en: 'Your employer offers a four-day week at £44,000 with the same SOC code. The engine has no working-hours field and does not calculate a part-time going-rate adjustment.',
+        zhCN: '公司开始提供四天工作制，年薪是 £44,000，工作内容不变。每周多出一天自己的时间，让你有些心动。',
+        en: 'Your employer offers a four-day week at £44,000 doing the same work. An extra day to yourself each week sounds tempting.',
       },
       choices: [
         {

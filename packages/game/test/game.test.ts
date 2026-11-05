@@ -53,12 +53,14 @@ function withoutLuck(state: GameState): GameState {
   return next;
 }
 
-function baselineAt(turn: number): GameState {
-  let state = withoutLuck(startGame(characters[0].id, 0));
+function baselineAt(turn: number, characterId = characters[0].id): GameState {
+  let state = withoutLuck(startGame(characterId, 0));
   while (state.turn < turn) {
     const card = currentCard(state)!;
     const choice =
-      card.choices.find((item) => item.id === 'taxi') ?? card.choices[0];
+      card.choices.find(
+        (item) => !item.effects.some((effect) => effect.type === 'criminal'),
+      ) ?? card.choices[0];
     state = withoutLuck(advance(choose(state, choice.id)));
   }
   return state;
@@ -68,15 +70,19 @@ function play(
   seed: number,
   avoidCriminality = false,
   locale: Locale = 'zh-CN',
+  characterId = characters[0].id,
 ): GameState {
-  let state = startGame(characters[0].id, seed, locale);
+  let state = startGame(characterId, seed, locale);
   let steps = 0;
   while (!isOver(state)) {
     expect(++steps).toBeLessThanOrEqual(TURNS * 2);
     const card = currentCard(state)!;
     expect(card).toBeDefined();
     const choice =
-      (avoidCriminality && card.choices.find((item) => item.id === 'taxi')) ||
+      (avoidCriminality &&
+        card.choices.find(
+          (item) => !item.effects.some((effect) => effect.type === 'criminal'),
+        )) ||
       card.choices[0];
     state = choose(state, choice.id);
     checkResult(state.result);
@@ -99,7 +105,7 @@ function effectStep(effects: Effect[], date = '2025-01-15'): GameState {
     const next = choose(state, character.script[0].choices[0].id);
     expect(state).toEqual(before);
     checkResult(next.result);
-    return next;
+    return { ...next, characterId: characters[0].id };
   } finally {
     characters.pop();
   }
@@ -153,34 +159,95 @@ describe('content schema and engine compatibility', () => {
     expect(new Set(allIds).size).toBe(allIds.length);
   });
 
-  for (let turn = 1; turn <= TURNS; turn++) {
-    test(`every choice and luck card evaluates on turn ${turn}'s baseline`, () => {
-      const baseline = baselineAt(turn);
-      const card = currentCard(baseline)!;
-      for (const choice of card.choices) {
-        const next = choose(baseline, choice.id);
-        checkResult(next.result);
-        expect(next.result).toEqual(
-          evaluate({
-            simulationDate: next.simulationDate,
-            timeline: next.timeline,
-            locale: next.locale,
-          }),
-        );
-      }
-      for (const luck of [...publicLuck, ...characters[0].luckPool]) {
-        const state = {
-          ...baseline,
-          phase: 'luck' as const,
-          pendingLuck: luck.id,
-        };
-        checkResult(choose(state, luck.choices[0].id).result);
-      }
-    });
+  for (const character of characters) {
+    for (let turn = 1; turn <= TURNS; turn++) {
+      test(`${character.id}: every choice and luck card evaluates on turn ${turn}'s baseline`, () => {
+        const baseline = baselineAt(turn, character.id);
+        const card = currentCard(baseline)!;
+        for (const choice of card.choices) {
+          const next = choose(baseline, choice.id);
+          checkResult(next.result);
+          expect(next.result).toEqual(
+            evaluate({
+              simulationDate: next.simulationDate,
+              timeline: next.timeline,
+              locale: next.locale,
+            }),
+          );
+        }
+        for (const luck of [...publicLuck, ...character.luckPool]) {
+          const state = {
+            ...baseline,
+            phase: 'luck' as const,
+            pendingLuck: luck.id,
+          };
+          checkResult(choose(state, luck.choices[0].id).result);
+        }
+      });
+    }
   }
 });
 
 describe('turns, replay and endings', () => {
+  for (const character of characters) {
+    for (const seed of [
+      ...Array.from({ length: 10 }, (_, index) => index),
+      17,
+      42,
+    ]) {
+      test(`${character.id}, seed ${seed}: ten-turn play is deterministic`, () => {
+        const state = play(seed, true, 'zh-CN', character.id);
+        expect(state).toEqual(play(seed, true, 'zh-CN', character.id));
+        expect(state.turn).toBe(TURNS);
+        expect(
+          state.log.filter((entry) =>
+            character.script.some((card) => card.id === entry.cardId),
+          ),
+        ).toHaveLength(TURNS);
+        expect(new Set(state.drawnLuck).size).toBe(state.drawnLuck.length);
+        expect(currentCard(state)).toBeUndefined();
+        expect(advance(state)).toBe(state);
+      });
+    }
+    test(`${character.id}: English replay survives JSON persistence`, () => {
+      const initial = startGame(character.id, 42, 'en');
+      const restored: GameState = JSON.parse(JSON.stringify(initial));
+      const card = currentCard(initial)!;
+      expect(choose(restored, card.choices[0].id)).toEqual(
+        choose(initial, card.choices[0].id),
+      );
+      expect(play(42, true, 'en', character.id)).toEqual(
+        play(42, true, 'en', character.id),
+      );
+    });
+  }
+
+  test('framework and protection short circuits leave the game running', () => {
+    for (const [route, role, reason] of [
+      ['HONG_KONG_BNO', 'MAIN', 'OUTSIDE_FRAMEWORK'],
+      ['CORE_PROTECTION', 'DEPENDANT', 'PROTECTION'],
+    ] as const) {
+      const state = effectStep([{ type: 'episode', patch: { route, role } }]);
+      expect(state.result.shortCircuit?.reason).toBe(reason);
+      expect(state.result.byRuleSet[REFORM]?.outcome).toBe(
+        'REQUIRES_REGULATED_REVIEW',
+      );
+      expect(state.result.byRuleSet[LAW]?.outcome).not.toBe(
+        'REQUIRES_REGULATED_REVIEW',
+      );
+      expect(isOver(state)).toBe(false);
+      expect(advance(state).turn).toBe(2);
+    }
+  });
+
+  test('adult illegal entry ends the game for both columns', () => {
+    const state = effectStep([
+      { type: 'breach', breach: { type: 'ILLEGAL_ENTRY' } },
+    ]);
+    expect(state.result.shortCircuit?.reason).toBe('IMMIGRATION_BREACH');
+    expect(isOver(state)).toBe(true);
+  });
+
   test('constants and boundary inputs', () => {
     expect([TURNS, TURN_MONTHS, LUCK_CHANCE]).toEqual([10, 12, 0.5]);
     expect(() => startGame('missing', 0)).toThrow('Unknown character');
@@ -303,6 +370,89 @@ describe('turns, replay and endings', () => {
 });
 
 describe('effect transformations', () => {
+  test.each([
+    ['2025-01-15', '2024-25'],
+    ['2025-04-05', '2024-25'],
+    ['2025-04-06', '2025-26'],
+    ['2025-06-01', '2025-26'],
+  ])(
+    'advance carries salary into the tax year ending after %s',
+    (date, taxYear) => {
+      const state = effectStep([{ type: 'none' }], date);
+      state.timeline.incomeYears = [
+        { taxYear: '2023-24', earnings: 8500, partnerEarnings: 20000 },
+      ];
+      const before = structuredClone(state);
+      const next = advance(state);
+      expect(
+        next.timeline.incomeYears.find((year) => year.taxYear === taxYear),
+      ).toEqual({ taxYear, earnings: 38000 });
+      expect(state).toEqual(before);
+      expect(next.result).toEqual(
+        evaluate({
+          simulationDate: next.simulationDate,
+          timeline: next.timeline,
+          locale: next.locale,
+        }),
+      );
+    },
+  );
+
+  test('advance fills missing earnings on a partner-only record without carrying partner earnings forward', () => {
+    const state = effectStep(
+      [{ type: 'income', taxYear: 'current', partnerEarnings: 20000 }],
+      '2025-06-01',
+    );
+    const next = advance(state);
+    expect(
+      next.timeline.incomeYears.find((year) => year.taxYear === '2025-26'),
+    ).toEqual({ taxYear: '2025-26', earnings: 38000, partnerEarnings: 20000 });
+    const later = advance(choose(withoutLuck(next), 'apart'));
+    expect(
+      later.timeline.incomeYears.find((year) => year.taxYear === '2026-27'),
+    ).toEqual({ taxYear: '2026-27', earnings: 38000 });
+  });
+
+  test.each([0, 42000])(
+    'advance preserves card earnings of £%i and next-year earnings',
+    (earnings) => {
+      const state = effectStep(
+        [
+          { type: 'income', taxYear: 'current', earnings },
+          { type: 'income', taxYear: 'next', earnings: 55000 },
+        ],
+        '2025-06-01',
+      );
+      const next = advance(state);
+      expect(
+        next.timeline.incomeYears.find((year) => year.taxYear === '2025-26')
+          ?.earnings,
+      ).toBe(earnings);
+      expect(
+        next.timeline.incomeYears.find((year) => year.taxYear === '2026-27')
+          ?.earnings,
+      ).toBe(55000);
+    },
+  );
+
+  test('advance uses the current salary and leaves earnings unknown when it is absent', () => {
+    const state = effectStep(
+      [{ type: 'episode', patch: { salary: 44000 } }],
+      '2025-06-01',
+    );
+    expect(
+      advance(state).timeline.incomeYears.find(
+        (year) => year.taxYear === '2025-26',
+      )?.earnings,
+    ).toBe(44000);
+    delete state.timeline.episodes[0].salary;
+    expect(
+      advance(state).timeline.incomeYears.some(
+        (year) => year.taxYear === '2025-26',
+      ),
+    ).toBe(false);
+  });
+
   test('absence uses inclusive day counts and signed offsets', () => {
     expect(
       effectStep([{ type: 'absence', startOffsetDays: -3, days: 3 }]).timeline
@@ -444,6 +594,14 @@ describe('effect transformations', () => {
 });
 
 describe('known card consequences and changed rules', () => {
+  test('Life in the UK is available on turn four before the five-year node', () => {
+    expect(currentCard(baselineAt(4))?.id).toBe('sw-life-in-uk');
+    const state = baselineAt(5);
+    expect(state.timeline.lifeInTheUk).toEqual({ passed: true });
+    expect(state.result.byRuleSet[LAW]?.outcome).toBe('LIKELY_ELIGIBLE');
+    expect(state.result.byRuleSet[LAW]?.pathwayYears).toBe(5);
+  });
+
   test('eight-month assignment changes the current-law residence rule from PASS to FAIL', () => {
     const state = baselineAt(5);
     const after = choose(state, 'abroad');
@@ -467,7 +625,7 @@ describe('known card consequences and changed rules', () => {
   });
 
   test('UC records the applicant’s public funds; borrowing does not', () => {
-    const state = baselineAt(4);
+    const state = baselineAt(9);
     const received = choose(state, 'claim');
     expect(changedRules(state.result, received.result, REFORM)).toContainEqual({
       id: 'ES-PUBLIC-FUNDS',
@@ -485,5 +643,277 @@ describe('known card consequences and changed rules', () => {
       before: 'FAIL',
       after: 'PASS',
     });
+  });
+});
+
+describe('HK BN(O) character consequences', () => {
+  const id = 'hong-kong-bno';
+
+  test('the opening outside-framework column does not end the game', () => {
+    const state = startGame(id, 17);
+    expect(state.result.shortCircuit?.reason).toBe('OUTSIDE_FRAMEWORK');
+    expect(state.result.shortCircuit?.message).toContain('B2');
+    expect(isOver(state)).toBe(false);
+    expect(currentCard(state)).toBeDefined();
+    expect(
+      state.result.byRuleSet[REFORM]?.rules.find(
+        (rule) => rule.id === 'ES-ENGLISH-B2',
+      )?.status,
+    ).toBe('FAIL');
+    expect(
+      state.result.byRuleSet[LAW]?.rules.find(
+        (rule) => rule.id === 'CL-ENGLISH',
+      )?.status,
+    ).toBe('PASS');
+  });
+
+  test('a long holiday changes the five-year residence rule from PASS to FAIL', () => {
+    const state = baselineAt(5, id);
+    expect(state.result.byRuleSet[LAW]?.outcome).toBe('LIKELY_ELIGIBLE');
+    expect(state.result.byRuleSet[LAW]?.pathwayYears).toBe(5);
+    const after = choose(state, 'long-holiday');
+    expect(changedRules(state.result, after.result, LAW)).toContainEqual({
+      id: 'CL-HKBNO-RESIDENCE-5Y',
+      before: 'PASS',
+      after: 'FAIL',
+    });
+    expect(after.result.byRuleSet[LAW]?.earliestDate).not.toBe(
+      state.result.byRuleSet[LAW]?.earliestDate,
+    );
+    expect(isOver(after)).toBe(false);
+  });
+
+  test('B2 changes the reform English rule while current-law B1 remains sufficient', () => {
+    const state = baselineAt(6, id);
+    expect(state.simulationDate > '2027-03-26').toBe(true);
+    const after = choose(state, 'take-b2');
+    expect(changedRules(state.result, after.result, REFORM)).toContainEqual({
+      id: 'ES-ENGLISH-B2',
+      before: 'FAIL',
+      after: 'PASS',
+    });
+    expect(
+      changedRules(state.result, after.result, LAW).map((rule) => rule.id),
+    ).not.toContain('CL-ENGLISH');
+    expect(after.result.shortCircuit?.reason).toBe('OUTSIDE_FRAMEWORK');
+  });
+
+  test('renewal adjoins a 30-month BN(O) permission and baseline permissions cover all turns', () => {
+    const state = baselineAt(4, id);
+    const after = choose(state, 'renew');
+    expect(after.timeline.episodes).toEqual([
+      {
+        route: 'HONG_KONG_BNO',
+        role: 'MAIN',
+        validFrom: '2022-07-01',
+        validTo: '2026-06-30',
+      },
+      {
+        route: 'HONG_KONG_BNO',
+        role: 'MAIN',
+        validFrom: '2026-07-01',
+        validTo: '2028-12-31',
+      },
+    ]);
+    for (let turn = 1; turn <= TURNS; turn++) {
+      const baseline = baselineAt(turn, id);
+      expect(
+        baseline.timeline.episodes.some(
+          (episode) =>
+            episode.validFrom <= baseline.simulationDate &&
+            baseline.simulationDate <= episode.validTo,
+        ),
+      ).toBe(true);
+      expect(baseline.result.shortCircuit?.reason).toBe('OUTSIDE_FRAMEWORK');
+    }
+  });
+
+  test('public funds do not remove the outside-framework boundary or end play', () => {
+    const state = baselineAt(9, id);
+    const after = choose(state, 'claim');
+    expect(changedRules(state.result, after.result, REFORM)).toContainEqual({
+      id: 'ES-PUBLIC-FUNDS',
+      before: 'PASS',
+      after: 'FAIL',
+    });
+    expect(after.result.shortCircuit?.reason).toBe('OUTSIDE_FRAMEWORK');
+    expect(after.result.byRuleSet[LAW]?.outcome).not.toBe(
+      'REQUIRES_REGULATED_REVIEW',
+    );
+    expect(isOver(after)).toBe(false);
+    expect(choose(state, 'use-savings').timeline.benefits).toEqual([]);
+  });
+
+  test('a conviction replaces outside-framework with review in both columns', () => {
+    const after = choose(baselineAt(10, id), 'conviction');
+    expect(after.result.shortCircuit?.reason).toBe('CRIMINALITY');
+    for (const ruleSet of [LAW, REFORM])
+      expect(after.result.byRuleSet[ruleSet]?.outcome).toBe(
+        'REQUIRES_REGULATED_REVIEW',
+      );
+    expect(isOver(after)).toBe(true);
+  });
+});
+
+describe('British citizen’s partner character consequences', () => {
+  const id = 'family-partner';
+  const financial = (state: GameState) =>
+    state.result.byRuleSet[LAW]?.rules.find(
+      (rule) => rule.id === 'CL-FAMILY-FINANCIAL',
+    );
+
+  test('post-cutoff arrival uses combined earnings and the general financial requirement', () => {
+    const state = startGame(id, 17);
+    expect(state.timeline.episodes[0]).toMatchObject({
+      validFrom: '2024-06-01',
+      familyPermission: 'PARTNER_FIVE_YEAR',
+      salary: 12000,
+    });
+    expect(state.timeline.relationships).toContainEqual({
+      type: 'PARTNER',
+      otherPartyStatus: 'BRITISH_CITIZEN',
+    });
+    expect(financial(state)?.status).toBe('PASS');
+    expect(financial(state)?.explanation).toContain('29,000');
+    expect(
+      state.result.byRuleSet[REFORM]?.rules.find(
+        (rule) => rule.id === 'ES-BRITISH-CONNECTION',
+      )?.status,
+    ).toBe('PASS');
+    expect(currentCard(state)).toBeDefined();
+  });
+
+  test('the 2026 renewal retains the five-year permission and covers the next turn', () => {
+    const state = baselineAt(2, id);
+    for (const choice of currentCard(state)!.choices) {
+      const after = choose(state, choice.id);
+      expect(after.timeline.episodes.at(-1)).toMatchObject({
+        route: 'FAMILY_PARTNER_OR_PARENT',
+        role: 'MAIN',
+        familyPermission: 'PARTNER_FIVE_YEAR',
+        validFrom: '2026-11-30',
+        validTo: '2029-05-29',
+      });
+      expect(after.timeline.episodes[0].validTo).toBe('2026-11-29');
+    }
+    for (let turn = 1; turn <= TURNS; turn++) {
+      const baseline = baselineAt(turn, id);
+      expect(
+        baseline.timeline.episodes.some(
+          (episode) =>
+            episode.validFrom <= baseline.simulationDate &&
+            baseline.simulationDate <= episode.validTo &&
+            episode.familyPermission === 'PARTNER_FIVE_YEAR',
+        ),
+      ).toBe(true);
+    }
+  });
+
+  test('B2 evidence changes both English rules after the current-law change date', () => {
+    const state = baselineAt(3, id);
+    const after = choose(state, 'take-b2');
+    expect(changedRules(state.result, after.result, LAW)).toContainEqual({
+      id: 'CL-ENGLISH',
+      before: 'FAIL',
+      after: 'PASS',
+    });
+    expect(changedRules(state.result, after.result, REFORM)).toContainEqual({
+      id: 'ES-ENGLISH-B2',
+      before: 'FAIL',
+      after: 'PASS',
+    });
+    expect(choose(state, 'wait').timeline.english).toEqual(
+      state.timeline.english,
+    );
+  });
+
+  test('the five-year node has both language evidence and a British-connection pathway', () => {
+    const state = baselineAt(5, id);
+    expect(state.timeline.lifeInTheUk).toEqual({ passed: true });
+    expect(state.result.byRuleSet[LAW]?.outcome).toBe('LIKELY_ELIGIBLE');
+    expect(state.result.byRuleSet[LAW]?.pathwayYears).toBe(5);
+    expect(state.result.byRuleSet[REFORM]?.pathwayYears).toBe(5);
+  });
+
+  test('claiming UC changes the reform pathway while current law still assesses settlement', () => {
+    const state = baselineAt(5, id);
+    const after = choose(state, 'claim');
+    expect(changedRules(state.result, after.result, REFORM)).toContainEqual({
+      id: 'ES-PUBLIC-FUNDS',
+      before: 'PASS',
+      after: 'FAIL',
+    });
+    expect(after.result.byRuleSet[REFORM]?.pathwayYears).toBe(20);
+    expect(after.result.byRuleSet[LAW]?.outcome).toBe(
+      state.result.byRuleSet[LAW]?.outcome,
+    );
+    expect(choose(state, 'cut-spending').timeline.benefits).toEqual([]);
+    expect(
+      advance(after).timeline.incomeYears.find(
+        (year) => year.taxYear === '2029-30',
+      ),
+    ).toEqual({ taxYear: '2029-30', earnings: 20000, partnerEarnings: 0 });
+  });
+
+  test('cash savings change the financial rule from FAIL to PASS after partner unemployment', () => {
+    const state = baselineAt(6, id);
+    expect(financial(state)?.status).toBe('FAIL');
+    const after = choose(state, 'save');
+    expect(changedRules(state.result, after.result, LAW)).toContainEqual({
+      id: 'CL-FAMILY-FINANCIAL',
+      before: 'FAIL',
+      after: 'PASS',
+    });
+    expect(after.timeline.cashSavings).toBe(25000);
+    expect(financial(choose(state, 'buy-car'))?.status).toBe('FAIL');
+  });
+
+  test('PIP uses the unmodelled maintenance alternative when earnings and savings are insufficient', () => {
+    const state = withoutLuck(advance(choose(baselineAt(6, id), 'buy-car')));
+    const after = choose(state, 'pip-awarded');
+    expect(changedRules(state.result, after.result, LAW)).toContainEqual({
+      id: 'CL-FAMILY-FINANCIAL',
+      before: 'FAIL',
+      after: 'UNKNOWN',
+    });
+    expect(financial(after)?.pendingDetails).toContain('PD-075');
+    expect(after.timeline.benefits).toEqual(state.timeline.benefits);
+    expect(financial(choose(state, 'pip-pending'))?.status).toBe('FAIL');
+    expect(financial(choose(baselineAt(7, id), 'pip-awarded'))?.status).toBe(
+      'PASS',
+    );
+  });
+
+  test('five-year family residence does not silently apply the standard absence reset', () => {
+    const state = baselineAt(8, id);
+    const after = choose(state, 'seven-months');
+    expect(after.timeline.absences.at(-1)).toEqual({
+      from: '2032-05-04',
+      to: '2032-11-29',
+    });
+    expect(
+      after.result.byRuleSet[LAW]?.rules.find(
+        (rule) => rule.id === 'CL-FAMILY-RESIDENCE',
+      )?.status,
+    ).toBe('PASS');
+    expect(after.result.byRuleSet[LAW]?.earliestDate).toBe(
+      state.result.byRuleSet[LAW]?.earliestDate,
+    );
+    expect(
+      changedRules(state.result, after.result, LAW).map((rule) => rule.id),
+    ).not.toContain('CL-FAMILY-RESIDENCE');
+  });
+
+  test('birth is narrative only and a conviction still stops both columns', () => {
+    const state = baselineAt(9, id);
+    for (const choice of currentCard(state)!.choices)
+      expect(choose(state, choice.id).result).toEqual(state.result);
+    const after = choose(baselineAt(10, id), 'conviction');
+    expect(after.result.shortCircuit?.reason).toBe('CRIMINALITY');
+    for (const ruleSet of [LAW, REFORM])
+      expect(after.result.byRuleSet[ruleSet]?.outcome).toBe(
+        'REQUIRES_REGULATED_REVIEW',
+      );
+    expect(isOver(after)).toBe(true);
   });
 });
