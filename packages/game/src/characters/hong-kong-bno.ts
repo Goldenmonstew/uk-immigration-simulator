@@ -553,8 +553,8 @@ const events: GameEvent[] = [
           { type: 'money', delta: 600 },
         ],
         note: {
-          zhCN: '本情节假定本人已领取 Universal Credit；记录不代表有申领资格或自动构成逾期（SRC-006 public funds 清单）。',
-          en: 'This scenario assumes the player received Universal Credit; the record establishes neither entitlement nor an automatic overstay (SRC-006 public funds list).',
+          zhCN: '本情节假定本人已领取 Universal Credit 并写入时间线的 benefits；是否影响许可条件由引擎按 SRC-006 的 public funds 清单处理。',
+          en: 'This scenario assumes the player received Universal Credit and records it in the timeline benefits; whether that affects conditions of permission is left to the engine under the SRC-006 public funds list.',
         },
       },
       {
@@ -621,8 +621,8 @@ const events: GameEvent[] = [
         },
         effects: [{ type: 'criminal', event: {} }],
         note: {
-          zhCN: '记录定罪后由引擎处理；改革栏不在框架内不等于免审犯罪记录（SRC-001 p37；SRC-020 HK 56.1）。',
-          en: 'The engine handles the conviction; being outside the reform framework does not remove criminal checks (SRC-001 p37; SRC-020 HK 56.1).',
+          zhCN: '记录定罪后由引擎处理；改革栏不在框架内不等于免审犯罪记录（SRC-001 p25–p26；SRC-020 HK 56.1）。',
+          en: 'The engine handles the conviction; being outside the reform framework does not remove criminal checks (SRC-001 p25–p26; SRC-020 HK 56.1).',
         },
       },
     ],
@@ -1344,8 +1344,8 @@ const events: GameEvent[] = [
           { type: 'money', delta: 500 },
         ],
         note: {
-          zhCN: '本情节假定本人已领取 Universal Credit；记录不代表有申领资格或自动构成逾期（SRC-006 public funds 清单）。',
-          en: 'This scenario assumes the player received Universal Credit; the record establishes neither entitlement nor an automatic overstay (SRC-006 public funds list).',
+          zhCN: '本情节假定本人已领取 Universal Credit 并写入时间线的 benefits；是否影响许可条件由引擎按 SRC-006 的 public funds 清单处理。',
+          en: 'This scenario assumes the player received Universal Credit and records it in the timeline benefits; whether that affects conditions of permission is left to the engine under the SRC-006 public funds list.',
         },
       },
       {
