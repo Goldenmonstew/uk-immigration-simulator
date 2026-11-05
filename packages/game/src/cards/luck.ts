@@ -26,8 +26,8 @@ export const publicLuck: LuckCard[] = [
     kind: 'luck',
     title: { zhCN: '项目奖金到账', en: 'A project bonus arrives' },
     text: {
-      zhCN: '项目奖金和其他工作收入使你本 tax year 的税前总收入记录更新为 £60,000；担保岗位的年薪不变。',
-      en: 'A project bonus and other work bring your recorded gross earnings for the current tax year to £60,000; your sponsored salary stays the same.',
+      zhCN: '项目奖金终于到账了，加上其他工作，这个纳税年度一共赚了 £60,000。',
+      en: 'The project bonus finally arrives. Together with other work, it brings this tax year’s gross earnings to £60,000.',
     },
     choices: [
       {
@@ -35,8 +35,8 @@ export const publicLuck: LuckCard[] = [
         label: { zhCN: '知道了', en: 'Noted' },
         effects: [{ type: 'income', taxYear: 'current', earnings: 60000 }],
         note: {
-          zhCN: '收入规则读取完整 tax year 的收入，当前年度要在之后的评估中才进入回看窗口。',
-          en: 'Earnings rules read completed tax years, so the current year enters the lookback window in a later assessment.',
+          zhCN: '本卡写入当前 tax year 收入，岗位年薪不变；完整年度进入后续评估的回看窗口。',
+          en: 'This card records current-tax-year earnings without changing salary; the completed year enters a later assessment’s lookback window.',
         },
       },
     ],
@@ -126,8 +126,8 @@ export const publicLuck: LuckCard[] = [
     kind: 'luck',
     title: { zhCN: '护照还在路上', en: 'Passport delayed' },
     text: {
-      zhCN: '护照续签延误，你取消了一趟尚未出发的旅行；现有移民许可不变。',
-      en: 'A passport renewal is delayed. You cancel a trip before departure; your existing immigration permission is unchanged.',
+      zhCN: '护照续签延误，你只好取消一趟原本很期待的旅行。',
+      en: 'A passport renewal is delayed, so you cancel a trip you were looking forward to.',
     },
     choices: [
       {
@@ -135,8 +135,8 @@ export const publicLuck: LuckCard[] = [
         label: { zhCN: '知道了', en: 'Noted' },
         effects: [{ type: 'none' }],
         note: {
-          zhCN: '取消但未成行的旅行不添加离境，护照办理进度未建模。',
-          en: 'A cancelled trip adds no absence; passport processing is not modelled.',
+          zhCN: '取消但未成行的旅行不添加离境，移民许可不变；护照办理进度未建模。',
+          en: 'A cancelled trip adds no absence and leaves immigration permission unchanged; passport processing is not modelled.',
         },
       },
     ],

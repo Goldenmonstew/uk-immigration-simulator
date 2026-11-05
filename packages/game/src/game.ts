@@ -8,13 +8,15 @@ import type {
   SimulationResult,
 } from '@uk-immigration/engine';
 import { publicLuck } from './cards/luck';
+import { familyPartner } from './characters/family-partner';
+import { hongKongBno } from './characters/hong-kong-bno';
 import { skilledWorker } from './characters/skilled-worker';
 import type { Card, Effect, GameState } from './types';
 
 export const TURNS = 10;
 export const TURN_MONTHS = 12;
 export const LUCK_CHANCE = 0.5;
-export const characters = [skilledWorker];
+export const characters = [skilledWorker, hongKongBno, familyPartner];
 
 const addDays = (date: IsoDate, days: number): IsoDate =>
   new Date(Date.parse(date) + days * 86_400_000).toISOString().slice(0, 10);
@@ -27,6 +29,12 @@ function addMonths(date: IsoDate, months: number): IsoDate {
   ).getUTCDate();
   target.setUTCDate(Math.min(day, lastDay));
   return target.toISOString().slice(0, 10);
+}
+
+function taxYearOf(date: IsoDate): string {
+  const startYear =
+    Number(date.slice(0, 4)) - (date.slice(5) < '04-06' ? 1 : 0);
+  return `${startYear}-${String((startYear + 1) % 100).padStart(2, '0')}`;
 }
 
 function characterOf(id: string) {
@@ -54,11 +62,9 @@ function applyEffects(
         break;
       }
       case 'income': {
-        const startYear =
-          Number(date.slice(0, 4)) -
-          (date.slice(5) < '04-06' ? 1 : 0) +
-          (effect.taxYear === 'next' ? 1 : 0);
-        const taxYear = `${startYear}-${String((startYear + 1) % 100).padStart(2, '0')}`;
+        const taxYear = taxYearOf(
+          effect.taxYear === 'next' ? addMonths(date, 12) : date,
+        );
         let income = timeline.incomeYears.find(
           (year) => year.taxYear === taxYear,
         );
@@ -242,14 +248,23 @@ export function advance(state: GameState): GameState {
   if (isOver(state)) return state;
   if (currentCard(state)) throw new Error('Resolve this turn before advancing');
   const simulationDate = addMonths(state.simulationDate, TURN_MONTHS);
+  const timeline = structuredClone(state.timeline);
+  const salary = currentEpisode(timeline, state.simulationDate)?.salary;
+  const taxYear = taxYearOf(state.simulationDate);
+  const income = timeline.incomeYears.find((year) => year.taxYear === taxYear);
+  if (salary !== undefined && income?.earnings === undefined) {
+    if (income) income.earnings = salary;
+    else timeline.incomeYears.push({ taxYear, earnings: salary });
+  }
   const next: GameState = {
     ...state,
     turn: state.turn + 1,
     simulationDate,
+    timeline,
     phase: 'choice',
     result: evaluate({
       simulationDate,
-      timeline: state.timeline,
+      timeline,
       locale: state.locale,
     }),
   };
@@ -259,9 +274,8 @@ export function advance(state: GameState): GameState {
 export function isOver(state: GameState): boolean {
   return (
     state.phase === 'ended' ||
-    Object.values(state.result.byRuleSet).some(
-      (column) => column?.outcome === 'REQUIRES_REGULATED_REVIEW',
-    ) ||
+    state.result.shortCircuit?.reason === 'CRIMINALITY' ||
+    state.result.shortCircuit?.reason === 'IMMIGRATION_BREACH' ||
     (state.turn === TURNS &&
       state.log.some(
         (entry) =>
