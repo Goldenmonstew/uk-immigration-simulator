@@ -32,32 +32,6 @@ export default function ResultPage() {
   const [ready, setReady] = useState(false);
   const [mock, setMock] = useState(false);
   useEffect(() => {
-    let details: [HTMLDetailsElement, boolean][] | undefined;
-    const beforePrint = () => {
-      if (details) return;
-      details = Array.from(document.querySelectorAll('details'), (element) => [
-        element,
-        element.open,
-      ]);
-      details.forEach(([element]) => {
-        element.open = true;
-      });
-    };
-    const afterPrint = () => {
-      details?.forEach(([element, open]) => {
-        element.open = open;
-      });
-      details = undefined;
-    };
-    window.addEventListener('beforeprint', beforePrint);
-    window.addEventListener('afterprint', afterPrint);
-    return () => {
-      afterPrint();
-      window.removeEventListener('beforeprint', beforePrint);
-      window.removeEventListener('afterprint', afterPrint);
-    };
-  }, []);
-  useEffect(() => {
     const load = () => {
       setResult(undefined);
       setDraft(undefined);

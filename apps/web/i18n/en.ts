@@ -98,7 +98,6 @@ export const en: Record<keyof typeof zhCN, string> = {
   'policyPage.bestYears': '{required} of {window} years',
   'policyPage.applicationsFrom': 'for applications from',
   'site.name': 'UK Immigration Path Simulator',
-  'site.englishName': 'My Immigration Path',
   'site.skip': 'Skip to main content',
   'site.home': 'Home',
   'site.footer':
@@ -106,6 +105,7 @@ export const en: Record<keyof typeof zhCN, string> = {
   'home.title': 'Explore potentially relevant immigration pathways',
   'home.intro':
     'Use your timeline to explore potentially relevant pathways, key conditions and unresolved details.',
+  'home.scopeTitle': 'Modelled scope',
   'home.scope':
     'Compare current settlement pathways with the announced Earned Settlement reforms. The current law column models main applicants on Skilled Worker, Hong Kong BN(O), Global Talent, Appendix FM partner routes (5-year and 10-year), refugee routes (Appendix Settlement Protection), UK Ancestry, Innovator Founder and Private Life; and Long Residence. Dependant coverage includes Skilled Worker, Hong Kong BN(O) (partners, children and adult dependant relatives), Global Talent (partners and children), children of Appendix FM partners on the 10-year route, and children of Appendix FM partners on the 5-year route (paragraph 298 of Part 8 of the Immigration Rules). The separate settlement requirements of other routes and their dependants still show insufficient information.',
   'home.start': 'Start simulation',
@@ -127,6 +127,8 @@ export const en: Record<keyof typeof zhCN, string> = {
   'policy.hypothesis':
     'The reforms column assumes that the rule set applies on the simulation date. Announced rules are not yet in force.',
   'result.title': 'Your pathway simulation',
+  'result.navigation': 'Jump to an assessment',
+  'result.jumpTo': 'Jump to {column}',
   'gap.title': 'What is missing',
   'gap.met': 'All modelled requirements are met.',
   'gap.earliest': 'Based on the current situation, the earliest date is {date}',

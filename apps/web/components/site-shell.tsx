@@ -1,12 +1,39 @@
 'use client';
 
 import Link from 'next/link';
+import { useEffect } from 'react';
 import type { ReactNode } from 'react';
 import { useTranslation } from '../i18n/locale';
 import styles from '../app/site.module.css';
 
 export function SiteShell({ children }: { children: ReactNode }) {
   const { t, locale, setLocale } = useTranslation();
+  useEffect(() => {
+    let details: [HTMLDetailsElement, boolean][] | undefined;
+    const beforePrint = () => {
+      if (details) return;
+      details = Array.from(document.querySelectorAll('details'), (element) => [
+        element,
+        element.open,
+      ]);
+      details.forEach(([element]) => {
+        element.open = true;
+      });
+    };
+    const afterPrint = () => {
+      details?.forEach(([element, open]) => {
+        element.open = open;
+      });
+      details = undefined;
+    };
+    window.addEventListener('beforeprint', beforePrint);
+    window.addEventListener('afterprint', afterPrint);
+    return () => {
+      afterPrint();
+      window.removeEventListener('beforeprint', beforePrint);
+      window.removeEventListener('afterprint', afterPrint);
+    };
+  }, []);
   return (
     <>
       <title>{t('site.name')}</title>
@@ -16,7 +43,6 @@ export function SiteShell({ children }: { children: ReactNode }) {
       <header className={styles.header}>
         <div className={styles.headerInner}>
           <Link href="/">{t('site.name')}</Link>
-          <span>{t('site.englishName')}</span>
           <nav className={styles.navigation} aria-label={t('site.navigation')}>
             <Link href="/policy">{t('site.policy')}</Link>
             <Link href="/about">{t('site.about')}</Link>
