@@ -142,6 +142,12 @@ function validTimeline(value: unknown): boolean {
       )) ||
     (timeline.protectionStatusRevoked !== undefined &&
       typeof timeline.protectionStatusRevoked !== 'boolean') ||
+    (timeline.cashSavings !== undefined &&
+      (typeof timeline.cashSavings !== 'number' ||
+        !Number.isFinite(timeline.cashSavings) ||
+        timeline.cashSavings < 0)) ||
+    (timeline.partnerSpecifiedBenefit !== undefined &&
+      typeof timeline.partnerSpecifiedBenefit !== 'boolean') ||
     !['english', 'lifeInTheUk', 'settled'].every(
       (key) =>
         timeline[key] === undefined ||

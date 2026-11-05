@@ -338,6 +338,11 @@ export const zhCN = {
   'income.earnings': '个人年收入',
   'income.partner': '伴侣年收入（可选）',
   'income.partnerHint': '伴侣收入留空表示不依赖伴侣收入。',
+  'income.cashSavings': '现金储蓄（本人与伴侣合计，£）',
+  'income.cashSavingsHint':
+    '收入不足时可用储蓄补足：至少 £{base} 加收入缺口（E-LTRP.3.1(b)；定居申请按 E-ILRP.1.3(1A) 不乘 2.5）；填 0 表示没有储蓄。',
+  'benefits.partnerSpecifiedBenefit':
+    "我的伴侣领取 E-LTRP.3.3(a) 列明的福利（如 Carer's Allowance、Personal Independence Payment、Disability Living Allowance、Attendance Allowance 等）",
   'benefits.hint':
     '填写领取过的福利或法定支付。是否属于 public funds 及其影响由规则引擎判断；结束日期留空表示仍在领取。',
   'benefits.item': '领取记录',
@@ -377,5 +382,6 @@ export const zhCN = {
   'error.nationality': '请输入三位英文字母国家代码。',
   'error.range': '结束日期不能早于开始日期。',
   'error.number': '请输入不小于 0 的有效金额。',
+  'error.savings': '请输入不小于 0 的整数储蓄金额，或留空表示未填写。',
   'error.soc': '请输入四位数字的 SOC 2020 岗位代码，或留空。',
 } as const;

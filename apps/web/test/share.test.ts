@@ -1,4 +1,5 @@
 import { expect, test } from 'vitest';
+
 import type {
   ImmigrationBreach,
   ImmigrationEpisode,
@@ -399,5 +400,50 @@ test('sharing rejects malformed extension two fields on either timeline', () => 
         ),
       ).toBeUndefined();
     }
+  }
+});
+
+test('sharing preserves savings and specified benefit values on both timelines', () => {
+  const draft = createDraft();
+  for (const cashSavings of [undefined, 0, 25000, 25000.5]) {
+    for (const partnerSpecifiedBenefit of [undefined, true, false]) {
+      draft.timeline.cashSavings = cashSavings;
+      draft.timeline.partnerSpecifiedBenefit = partnerSpecifiedBenefit;
+      draft.principal = structuredClone(draft.timeline);
+      expect(decodeDraft(encodeDraft(draft))).toEqual(
+        JSON.parse(JSON.stringify(draft)),
+      );
+    }
+  }
+});
+
+test('sharing rejects invalid savings and specified benefit values on either timeline', () => {
+  const draft = createDraft();
+  const patches = [
+    ...[-1, '25000', '', true, null, [], {}].map((cashSavings) => ({
+      cashSavings,
+    })),
+    ...['true', 0, 1, null, [], {}].map((partnerSpecifiedBenefit) => ({
+      partnerSpecifiedBenefit,
+    })),
+  ];
+  for (const key of ['timeline', 'principal']) {
+    for (const patch of patches) {
+      expect(
+        decodeDraft(
+          btoa(
+            JSON.stringify({
+              ...draft,
+              [key]: { ...draft.timeline, ...patch },
+            }),
+          ),
+        ),
+      ).toBeUndefined();
+    }
+    const nonFinite = JSON.stringify({
+      ...draft,
+      [key]: { ...draft.timeline, cashSavings: 'non-finite' },
+    }).replace('"non-finite"', '1e400');
+    expect(decodeDraft(btoa(nonFinite))).toBeUndefined();
   }
 });

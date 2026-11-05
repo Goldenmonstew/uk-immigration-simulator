@@ -14,6 +14,7 @@ import {
   needsPrincipal,
   runPrincipalSimulation,
   runSimulation,
+  validateStep,
 } from '../lib/questionnaire';
 import * as questionnaire from '../lib/questionnaire';
 
@@ -155,6 +156,316 @@ test('new route inputs produce the contracted current law years and English resu
       expect(label).not.toMatch(/[\u3400-\u9fff]/);
   }
 });
+
+test.each([false, true])(
+  'family financial inputs reach the engine and change the result, principal = %s',
+  (principal) => {
+    let draft = currentLawDraft({ ...episodes[1], validFrom: '2024-06-01' });
+    draft = draftReducer(draft, { type: 'date', date: '2029-06-01' });
+    draft.timeline.incomeYears = [{ taxYear: '2028-29', earnings: 20000 }];
+    if (principal) {
+      const timeline = draft.timeline;
+      draft = draftReducer(draft, { type: 'principal-start' });
+      draft = draftReducer(draft, { type: 'timeline', patch: timeline });
+    }
+    const evaluate = vi.spyOn(engine, 'evaluate');
+    try {
+      // SRC-024 E-LTRP.3.1(b), E-ILRP.1.3(1A): £16,000 + £9,000 shortfall.
+      for (const cashSavings of [undefined, 0, 25000]) {
+        for (const partnerSpecifiedBenefit of [undefined, true, undefined]) {
+          draft = draftReducer(draft, {
+            type: 'timeline',
+            patch: { cashSavings, partnerSpecifiedBenefit },
+          });
+          runSimulation(draft, 'en');
+          const sent =
+            evaluate.mock.lastCall![0][principal ? 'principal' : 'timeline']!;
+          expect(sent.cashSavings).toBe(cashSavings);
+          expect(sent.partnerSpecifiedBenefit).toBe(partnerSpecifiedBenefit);
+          const result = principal
+            ? runPrincipalSimulation(draft, 'en')!
+            : runSimulation(draft, 'en');
+          const current = result.byRuleSet['current-law-2026-11']!;
+          const financial = current.rules.find(
+            (rule) => rule.id === 'CL-FAMILY-FINANCIAL',
+          )!;
+          expect(financial.status).toBe(
+            cashSavings === 25000
+              ? 'PASS'
+              : partnerSpecifiedBenefit || cashSavings === undefined
+                ? 'UNKNOWN'
+                : 'FAIL',
+          );
+          expect(current.outcome).toBe(
+            cashSavings === 25000
+              ? 'LIKELY_ELIGIBLE'
+              : partnerSpecifiedBenefit
+                ? 'POTENTIALLY_ELIGIBLE'
+                : cashSavings === undefined
+                  ? 'INSUFFICIENT_INFORMATION'
+                  : 'LIKELY_NOT_ELIGIBLE',
+          );
+          expect(financial.pendingDetails ?? []).toEqual(
+            partnerSpecifiedBenefit && cashSavings !== 25000 ? ['PD-075'] : [],
+          );
+        }
+      }
+    } finally {
+      evaluate.mockRestore();
+    }
+  },
+);
+
+test.each([false, true])(
+  'family financial inputs clear when the last eligible episode is changed or removed, principal = %s',
+  (principal) => {
+    let draft = currentLawDraft(episodes[1]);
+    if (principal) {
+      draft = draftReducer(draft, { type: 'principal-start' });
+      draft = draftReducer(draft, {
+        type: 'timeline',
+        patch: currentLawDraft(episodes[1]).timeline,
+      });
+    }
+    draft = draftReducer(draft, {
+      type: 'timeline',
+      patch: { cashSavings: 25000, partnerSpecifiedBenefit: true },
+    });
+    const actions = [
+      { type: 'episode', index: 0, patch: { route: 'SKILLED_WORKER' } },
+      { type: 'episode', index: 0, patch: { role: 'DEPENDANT' } },
+      ...(['PARTNER_TEN_YEAR', 'PARENT', undefined] as const).map(
+        (familyPermission) => ({
+          type: 'episode' as const,
+          index: 0,
+          patch: { familyPermission },
+        }),
+      ),
+      { type: 'timeline', patch: { episodes: [] } },
+    ] satisfies Parameters<typeof draftReducer>[1][];
+    for (const action of actions) {
+      const changed = draftReducer(draft, action);
+      const timeline = activePersonDraft(changed).timeline;
+      expect(timeline.cashSavings).toBeUndefined();
+      expect(timeline.partnerSpecifiedBenefit).toBeUndefined();
+      expect(principal ? changed.timeline : changed.principal).toEqual(
+        principal ? draft.timeline : draft.principal,
+      );
+      const restored = draftReducer(changed, {
+        type: 'timeline',
+        patch: { episodes: [episodes[1]] },
+      });
+      expect(activePersonDraft(restored).timeline.cashSavings).toBeUndefined();
+      expect(
+        activePersonDraft(restored).timeline.partnerSpecifiedBenefit,
+      ).toBeUndefined();
+    }
+    const multiple = draftReducer(draft, {
+      type: 'timeline',
+      patch: { episodes: [episodes[1], episodes[1]] },
+    });
+    const oneRemaining = draftReducer(multiple, {
+      type: 'episode',
+      index: 0,
+      patch: { route: 'SKILLED_WORKER' },
+    });
+    expect(activePersonDraft(oneRemaining).timeline).toMatchObject({
+      cashSavings: 25000,
+      partnerSpecifiedBenefit: true,
+    });
+    expect(activePersonDraft(draft).timeline).toMatchObject({
+      cashSavings: 25000,
+      partnerSpecifiedBenefit: true,
+    });
+  },
+);
+
+test.each(['zh-CN', 'en'] as const)(
+  'family financial controls follow eligible episodes on either timeline in %s',
+  (locale) => {
+    const cases = [
+      episodes[1],
+      { ...episodes[1], validTo: '2025-01-01' },
+      { ...episodes[1], route: 'SKILLED_WORKER' as const },
+      { ...episodes[1], role: 'DEPENDANT' as const },
+      ...(['PARTNER_TEN_YEAR', 'PARENT', undefined] as const).map(
+        (familyPermission) => ({ ...episodes[1], familyPermission }),
+      ),
+    ];
+    for (const principal of [false, true]) {
+      for (const [index, episode] of cases.entries()) {
+        for (const step of [4, 5]) {
+          let draft = currentLawDraft(episode);
+          if (principal) {
+            draft = draftReducer(draft, { type: 'principal-start' });
+            draft = draftReducer(draft, {
+              type: 'timeline',
+              patch: currentLawDraft(episode).timeline,
+            });
+          }
+          draft = draftReducer(draft, {
+            type: 'timeline',
+            patch: { cashSavings: 0, partnerSpecifiedBenefit: true },
+          });
+          draft = draftReducer(draft, { type: 'step', step });
+          const applicable = index < 2;
+          const evaluate = vi.spyOn(engine, 'evaluate');
+          const create = vi
+            .spyOn(questionnaire, 'createDraft')
+            .mockReturnValue(draft);
+          const state = vi
+            .spyOn(React, 'useState')
+            .mockReturnValueOnce([true, vi.fn()]);
+          try {
+            const html = renderToStaticMarkup(
+              <LocaleContext value={{ locale, setLocale: () => {} }}>
+                <SimulatePage />
+              </LocaleContext>,
+            );
+            expect(html.includes('id="cash-savings"')).toBe(
+              applicable && step === 4,
+            );
+            expect(html.includes('id="partner-specified-benefit"')).toBe(
+              applicable && step === 5,
+            );
+            if (applicable && step === 4) {
+              expect(html).toContain('£16,000');
+              expect(html).toContain('E-ILRP.1.3(1A)');
+            }
+            if (locale === 'en') expect(html).not.toMatch(/[\u3400-\u9fff]/);
+            runSimulation(draft);
+            const sent =
+              evaluate.mock.lastCall![0][principal ? 'principal' : 'timeline']!;
+            expect(sent.cashSavings).toBe(applicable ? 0 : undefined);
+            expect(sent.partnerSpecifiedBenefit).toBe(
+              applicable ? true : undefined,
+            );
+          } finally {
+            create.mockRestore();
+            state.mockRestore();
+            evaluate.mockRestore();
+          }
+        }
+      }
+    }
+  },
+);
+
+test('savings questionnaire validation accepts omitted or non-negative integers', () => {
+  const draft = { ...currentLawDraft(episodes[1]), step: 4 };
+  for (const cashSavings of [undefined, 0, 25000]) {
+    draft.timeline.cashSavings = cashSavings;
+    expect(validateStep(draft)).toEqual({});
+  }
+  for (const cashSavings of [-1, 0.5, NaN, Infinity]) {
+    draft.timeline.cashSavings = cashSavings;
+    expect(validateStep(draft)).toEqual({ 'cash-savings': 'error.savings' });
+  }
+});
+
+test.each([false, true])(
+  'financial control changes omit invalid savings and unchecked benefits, principal = %s',
+  (principal) => {
+    let draft = currentLawDraft(episodes[1]);
+    if (principal) {
+      draft = draftReducer(draft, { type: 'principal-start' });
+      draft = draftReducer(draft, {
+        type: 'timeline',
+        patch: currentLawDraft(episodes[1]).timeline,
+      });
+    }
+    const dispatch = (action: Parameters<typeof draftReducer>[1]) => {
+      draft = draftReducer(draft, action);
+    };
+    let errors: questionnaire.Errors = {};
+    const reducer = vi
+      .spyOn(React, 'useReducer')
+      .mockImplementation(() => [
+        draft,
+        (action?: unknown) =>
+          dispatch(action as Parameters<typeof draftReducer>[1]),
+      ]);
+    const state = vi.spyOn(React, 'useState');
+    let input: React.InputHTMLAttributes<HTMLInputElement>;
+    const capture = (node: React.ReactNode) => {
+      React.Children.forEach(node, (child) => {
+        if (
+          !React.isValidElement<{ children?: React.ReactNode; id?: string }>(
+            child,
+          )
+        )
+          return;
+        if (
+          child.type === 'input' &&
+          ['cash-savings', 'partner-specified-benefit'].includes(
+            child.props.id ?? '',
+          )
+        )
+          input = child.props;
+        capture(child.props.children);
+      });
+    };
+    const render = () => {
+      state
+        .mockReturnValueOnce([true, vi.fn()])
+        .mockReturnValueOnce([true, vi.fn()])
+        .mockReturnValueOnce([
+          errors,
+          (update: unknown) => {
+            const next = update as React.SetStateAction<questionnaire.Errors>;
+            errors = typeof next === 'function' ? next(errors) : next;
+          },
+        ]);
+      function Probe() {
+        const page = SimulatePage();
+        capture(page);
+        return page;
+      }
+      return renderToStaticMarkup(
+        <LocaleContext value={{ locale: 'en', setLocale: () => {} }}>
+          <Probe />
+        </LocaleContext>,
+      );
+    };
+    try {
+      dispatch({ type: 'step', step: 4 });
+      for (const [value, badInput, expected] of [
+        ['25000', false, 25000],
+        ['-1', false, undefined],
+        ['0.5', false, undefined],
+        ['', true, undefined],
+        ['', false, undefined],
+        ['0', false, 0],
+      ] as const) {
+        render();
+        input!.onChange!({
+          target: { value, validity: { badInput } },
+        } as React.ChangeEvent<HTMLInputElement>);
+        expect(activePersonDraft(draft).timeline.cashSavings).toBe(expected);
+        const invalid = badInput || (value !== '' && expected === undefined);
+        expect(errors['cash-savings']).toBe(
+          invalid ? 'error.savings' : undefined,
+        );
+        const html = render();
+        expect(html.includes('id="cash-savings-error"')).toBe(invalid);
+        expect(html).not.toMatch(/[\u3400-\u9fff]/);
+      }
+      dispatch({ type: 'step', step: 5 });
+      for (const checked of [true, false]) {
+        render();
+        input!.onChange!({
+          target: { checked },
+        } as React.ChangeEvent<HTMLInputElement>);
+        expect(activePersonDraft(draft).timeline.partnerSpecifiedBenefit).toBe(
+          checked ? true : undefined,
+        );
+      }
+    } finally {
+      reducer.mockRestore();
+      state.mockRestore();
+    }
+  },
+);
 
 test('unspecified Global Talent and family permission inputs remain insufficient information', () => {
   for (const episode of episodes.slice(0, 2)) {
