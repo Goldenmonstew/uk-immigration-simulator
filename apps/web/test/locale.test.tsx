@@ -35,11 +35,16 @@ test('all route and group labels preserve bilingual Chinese and English-only Eng
     expect(names['zh-CN']).toMatch(cjk);
     expect(routeLabel(names, 'zh-CN')).toBe(`${names['zh-CN']} · ${names.en}`);
     expect(routeLabel(names, 'en')).toBe(names.en);
+    expect(routeLabel(names, 'zh-CN', true)).toBe(names['zh-CN']);
+    expect(routeLabel(names, 'en', true)).toBe(names.en);
     expect(names.en).not.toMatch(cjk);
   }
   expect(
     routeLabel({ 'zh-CN': '中文 · English', en: 'English' }, 'zh-CN'),
   ).toBe('中文 · English');
+  expect(
+    routeLabel({ 'zh-CN': '中文 · English', en: 'English' }, 'zh-CN', true),
+  ).toBe('中文');
   const render = (locale: 'zh-CN' | 'en') =>
     renderToStaticMarkup(
       <LocaleContext value={{ locale, setLocale: () => {} }}>
@@ -122,6 +127,8 @@ test('locale renders the shell title, engine result, principal and What-if expla
   }
   expect(english).toContain(`<title>${t('site.name', 'en')}</title>`);
   expect(chinese).toContain(`<title>${t('site.name')}</title>`);
+  for (const html of [chinese, english])
+    expect(html).not.toContain('My Immigration Path');
   expect(english).toContain('lang="en" aria-pressed="true"');
   expect(chinese).toContain('lang="zh-CN" aria-pressed="true"');
   for (const result of [

@@ -43,6 +43,20 @@
 }
 .parameters code {
   font-size: 1rem;
+  overflow-wrap: anywhere;
+}
+.group {
+  margin: 16px 0;
+  border-bottom: 1px solid #b1b4b6;
+  padding-bottom: 8px;
+}
+.group > summary h3 {
+  display: inline;
+  margin: 0;
+}
+.tableScroll {
+  max-width: 100%;
+  overflow-x: auto;
 }
 .entries {
   list-style: none;
@@ -62,6 +76,9 @@
   margin: 8px 0;
 }
 @media (max-width: 600px) {
+  .parameters code {
+    font-size: 0.875rem;
+  }
   .ruleSets {
     grid-template-columns: 1fr;
   }
@@ -90,5 +107,11 @@
   .parameters td::before {
     content: attr(data-label) ': ';
     font-weight: 700;
+  }
+}
+
+@media print {
+  .tableScroll {
+    overflow: visible;
   }
 }

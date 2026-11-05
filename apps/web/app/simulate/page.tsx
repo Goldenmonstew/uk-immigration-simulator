@@ -85,6 +85,7 @@ export default function SimulatePage() {
   const [ready, setReady] = useState(false);
   const [storageAvailable, setStorageAvailable] = useState(true);
   const [errors, setErrors] = useState<Errors>({});
+  const [compactRoutes, setCompactRoutes] = useState(false);
   const heading = useRef<HTMLHeadingElement>(null);
   const active = activePersonDraft(draft);
   const { timeline } = active;
@@ -101,6 +102,14 @@ export default function SimulatePage() {
   const editingPrincipal = draft.principalStep !== undefined;
   const sequence = stepSequence(draft);
   const position = sequence.indexOf(active.step);
+
+  useEffect(() => {
+    const media = window.matchMedia('(max-width: 600px)');
+    const update = () => setCompactRoutes(media.matches);
+    update();
+    media.addEventListener('change', update);
+    return () => media.removeEventListener('change', update);
+  }, []);
 
   useEffect(() => {
     const stored = draftStorage();
@@ -361,7 +370,7 @@ export default function SimulatePage() {
                               {Object.entries(routeNames).map(
                                 ([route, name]) => (
                                   <option key={route} value={route}>
-                                    {routeLabel(name, locale)}
+                                    {routeLabel(name, locale, compactRoutes)}
                                   </option>
                                 ),
                               )}
@@ -543,7 +552,7 @@ export default function SimulatePage() {
                           >
                             {Object.entries(routeNames).map(([route, name]) => (
                               <option key={route} value={route}>
-                                {routeLabel(name, locale)}
+                                {routeLabel(name, locale, compactRoutes)}
                               </option>
                             ))}
                           </select>

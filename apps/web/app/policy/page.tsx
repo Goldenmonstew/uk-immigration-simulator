@@ -91,40 +91,64 @@ export default function PolicyPage() {
       <section className={site.section} aria-labelledby="parameters-heading">
         <h2 id="parameters-heading">{t('policyPage.parameters')}</h2>
         {allRuleSets.map((ruleSet) => (
-          <table key={ruleSet.id} className={styles.parameters}>
-            <caption>{t(`policy.${ruleSet.kind}`)}</caption>
-            <thead>
-              <tr>
-                <th scope="col">{t('policyPage.name')}</th>
-                <th scope="col">{t('policyPage.value')}</th>
-                <th scope="col">{t('result.sources')}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {Object.entries(PARAMETERS[ruleSet.id].values).map(
-                ([name, parameter]) => (
-                  <tr key={name} data-parameter={name}>
-                    <th scope="row">
-                      <code>{name}</code>
-                    </th>
-                    <td data-label={t('policyPage.value')}>
-                      <ParameterValue value={parameter.value} />
-                    </td>
-                    <td data-label={t('result.sources')}>
-                      <Sources sources={parameter.sources} />
-                    </td>
+          <details key={ruleSet.id} className={styles.group}>
+            <summary id={`${ruleSet.id}-parameters`}>
+              <h3>
+                {t(`policy.${ruleSet.kind}`)}
+                {p.openParen}
+                {Object.keys(PARAMETERS[ruleSet.id].values).length}
+                {p.closeParen}
+              </h3>
+            </summary>
+            <div
+              className={styles.tableScroll}
+              role="region"
+              aria-labelledby={`${ruleSet.id}-parameters`}
+              tabIndex={0}
+            >
+              <table className={styles.parameters}>
+                <caption>{t(`policy.${ruleSet.kind}`)}</caption>
+                <thead>
+                  <tr>
+                    <th scope="col">{t('policyPage.name')}</th>
+                    <th scope="col">{t('policyPage.value')}</th>
+                    <th scope="col">{t('result.sources')}</th>
                   </tr>
-                ),
-              )}
-            </tbody>
-          </table>
+                </thead>
+                <tbody>
+                  {Object.entries(PARAMETERS[ruleSet.id].values).map(
+                    ([name, parameter]) => (
+                      <tr key={name} data-parameter={name}>
+                        <th scope="row">
+                          <code>{name}</code>
+                        </th>
+                        <td data-label={t('policyPage.value')}>
+                          <ParameterValue value={parameter.value} />
+                        </td>
+                        <td data-label={t('result.sources')}>
+                          <Sources sources={parameter.sources} />
+                        </td>
+                      </tr>
+                    ),
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </details>
         ))}
       </section>
       <section className={site.section} aria-labelledby="rules-heading">
         <h2 id="rules-heading">{t('policyPage.rules')}</h2>
         {allRuleSets.map((ruleSet) => (
-          <section key={ruleSet.id} className={site.section}>
-            <h3>{t(`policy.${ruleSet.kind}`)}</h3>
+          <details key={ruleSet.id} className={styles.group}>
+            <summary>
+              <h3>
+                {t(`policy.${ruleSet.kind}`)}
+                {p.openParen}
+                {RULES[ruleSet.id].length}
+                {p.closeParen}
+              </h3>
+            </summary>
             <ul className={styles.entries}>
               {RULES[ruleSet.id].map(({ meta }) => (
                 <li key={meta.id} data-rule={meta.id}>
@@ -143,7 +167,7 @@ export default function PolicyPage() {
                 </li>
               ))}
             </ul>
-          </section>
+          </details>
         ))}
       </section>
       <section className={site.section} aria-labelledby="changelog-heading">
