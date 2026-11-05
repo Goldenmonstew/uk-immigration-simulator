@@ -1,5 +1,12 @@
 import { evaluate, type Locale } from '@uk-immigration/engine';
-import { characters, statKeys, type GameState } from './mock-core';
+import {
+  characters,
+  currentEvent,
+  isOver,
+  visaMonthsLeft,
+  type GameState,
+  type StatKey,
+} from '@uk-immigration/game';
 import { createDraft, type Draft } from '../../lib/questionnaire';
 
 export function withGameLocale(state: GameState, locale: Locale): GameState {
@@ -13,6 +20,37 @@ export function withGameLocale(state: GameState, locale: Locale): GameState {
       locale,
     }),
   };
+}
+
+export const statKeys: StatKey[] = [
+  'money',
+  'mood',
+  'health',
+  'english',
+  'career',
+];
+export const spritePath = (sprite: string) => `/game/assets/${sprite}`;
+export const visaMonths = (state: GameState) =>
+  Math.floor(visaMonthsLeft(state));
+
+export function needsVisaReminder(state: GameState): boolean {
+  if (isOver(state) || visaMonths(state) > 3) return false;
+  const active = state.timeline.episodes
+    .filter(
+      (episode) =>
+        episode.validFrom <= state.date && episode.validTo >= state.date,
+    )
+    .sort((a, b) => b.validFrom.localeCompare(a.validFrom))[0];
+  if (!active) return true;
+  const nextDay = new Date(Date.parse(active.validTo) + 86_400_000)
+    .toISOString()
+    .slice(0, 10);
+  return !state.timeline.episodes.some(
+    (episode) =>
+      episode.validFrom > state.date &&
+      episode.validFrom <= nextDay &&
+      episode.validTo > active.validTo,
+  );
 }
 
 // Storage is the external input boundary. Failed saves never interrupt play.
@@ -35,6 +73,7 @@ export function gameStorage(
       state.characterId !== characterId ||
       !characters.some((item) => item.id === characterId) ||
       !Number.isInteger(state.seed) ||
+      !Number.isInteger(state.randomState) ||
       !Number.isInteger(state.year) ||
       state.year < 1 ||
       ![1, 2, 3, 4].includes(state.quarter) ||
@@ -43,9 +82,18 @@ export function gameStorage(
       !['zh-CN', 'en'].includes(state.locale) ||
       !/^\d{4}-\d{2}-\d{2}$/.test(state.date) ||
       !statKeys.every((key) => Number.isFinite(state.stats?.[key])) ||
-      ![state.flags, state.firedEvents, state.achievements].every(
+      ![
+        state.flags,
+        state.firedEvents,
+        state.achievements,
+        state.eventQueue,
+      ].every(
         (list) =>
           Array.isArray(list) && list.every((item) => typeof item === 'string'),
+      ) ||
+      (state.eventQueue.length > 0 && !state.pendingEvent) ||
+      !state.eventQueue.every((id) =>
+        currentEvent({ ...state, pendingEvent: id }),
       ) ||
       !Array.isArray(state.log) ||
       !state.log.every(
@@ -54,10 +102,7 @@ export function gameStorage(
           typeof entry.text?.zhCN === 'string' &&
           typeof entry.text?.en === 'string',
       ) ||
-      (state.pendingEvent !== undefined &&
-        !characters
-          .find((item) => item.id === characterId)!
-          .events.some((event) => event.id === state.pendingEvent))
+      (state.pendingEvent !== undefined && !currentEvent(state))
     )
       return { state: undefined, available: false };
     state.result = evaluate({

@@ -4,14 +4,6 @@
   --ink: #16324f;
   --line: #bccdd5;
 }
-.preview {
-  margin: 0 0 20px;
-  padding: 10px 14px;
-  background: #eaf2f6;
-  border-left: 4px solid #1d70b8;
-  color: var(--ink);
-  font-size: 0.9rem;
-}
 .welcome {
   padding: 28px 0;
 }
@@ -128,6 +120,7 @@
   background: #8fd4aa;
 }
 .map {
+  position: relative;
   border: 2px solid var(--ink);
   border-top: 0;
   background: #718c53;
@@ -185,6 +178,7 @@
 .track > span {
   display: block;
   height: 100%;
+  transition: width 400ms ease-out;
 }
 .progressButton small {
   font-size: 0.85rem;
@@ -369,5 +363,109 @@
   }
   .toolbar > button {
     width: 100%;
+  }
+}
+
+.loading {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  display: grid;
+  place-items: center;
+  background: #eaf2e3;
+  color: var(--ink);
+  z-index: 1;
+}
+.music {
+  min-height: 44px;
+  background: #284a64;
+  color: white;
+  border: 1px solid #7896aa;
+  cursor: pointer;
+  padding: 4px 8px;
+  font-size: inherit;
+}
+.visaFlash {
+  animation: visa-flash 700ms ease-out 1;
+}
+@keyframes visa-flash {
+  50% {
+    box-shadow: 0 0 0 5px #ffb6a4;
+  }
+}
+.animateDeltas strong {
+  animation: delta-in 450ms ease-out 1;
+}
+@keyframes delta-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.review {
+  padding-left: 20px;
+}
+.review li {
+  margin-bottom: 12px;
+}
+.achievementColumns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+.achievementColumns ul {
+  padding-left: 20px;
+}
+.achievementColumns li {
+  margin-bottom: 12px;
+}
+.achievementColumns p {
+  margin: 4px 0;
+}
+@media (max-width: 600px) {
+  .hudTop {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .hudTop > strong:first-child {
+    font-size: 1rem;
+  }
+  .season {
+    grid-column: span 2;
+    text-align: right;
+  }
+  .hudTop time {
+    display: none;
+  }
+  .urgent,
+  .visa {
+    padding: 4px;
+  }
+  .destinations {
+    display: flex;
+    overflow-x: auto;
+    max-width: 100%;
+    padding: 4px 0;
+  }
+  .destinations button {
+    flex: 0 0 auto;
+    padding: 8px 14px;
+  }
+  .achievementColumns {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .visaFlash,
+  .animateDeltas strong {
+    animation: none;
+  }
+  .track > span {
+    transition: none;
   }
 }
