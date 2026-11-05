@@ -45,6 +45,7 @@
 | SRC-026 | LAW | Immigration Rules: Appendix UK Ancestry（版本 2026-08-03，HC 259；主申请人 settlement 见 UKA 10.1–UKA 17.2） | https://www.gov.uk/guidance/immigration-rules/immigration-rules-appendix-uk-ancestry | 2026-08-03 | 2026-11-04 | `policy-sources/2026-08-03-immigration-rules-appendix-uk-ancestry.html`（sha256 `82ead664bd3a11260db4bb5e8b1656c9b01cb73a1b1ba3f3ff147feb130d780b`） | archived |
 | SRC-027 | LAW | Immigration Rules: Appendix Innovator Founder（版本 2026-08-03，HC 259；主申请人 settlement 见 INNF 15.1–INNF 21.6，业务条件见 INNF 17.1–INNF 17.5） | https://www.gov.uk/guidance/immigration-rules/immigration-rules-appendix-innovator-founder | 2026-08-03 | 2026-11-04 | `policy-sources/2026-08-03-immigration-rules-appendix-innovator-founder.html`（sha256 `1853949fb4447bd0a0c8d76c79678aaf50947d02336e33f0c0867dbf55894418`） | archived |
 | SRC-028 | LAW | Immigration Rules: Appendix Private Life（版本 2026-10-08，HC 584；主申请人 settlement 见 PL 11.1–PL 18.5，合格期分流见 PL 13.1–PL 14.4） | https://www.gov.uk/guidance/immigration-rules/immigration-rules-appendix-private-life | 2026-10-08 | 2026-11-04 | `policy-sources/2026-10-08-immigration-rules-appendix-private-life.html`（sha256 `43a13c41406b8d7131d7f1e98addcd4afb597b04ea8dded55897ca3d4003e3ad`） | archived |
+| SRC-029 | LAW | Immigration Rules Part 8: family members（版本 2026-08-03，HC 259；child settlement 见 para 298–298A） | https://www.gov.uk/guidance/immigration-rules/immigration-rules-part-8-family-members | 2026-08-03 | 2026-11-05 | `policy-sources/2026-08-03-immigration-rules-part-8-family-members.html`（sha256 `66c523cc6f5d9c6370277ab972b9ab07c247090476b5e5c8009d78a88feb8d9f`） | archived |
 
 ## 登记备注（按 SRC）
 
@@ -243,6 +244,12 @@
 - **持续保护身份**：STP 4.1（保护身份未被撤销或放弃）；STP 4.2（safe return review 及其指向的撤销 / 不续期条款）。
 - **保护许可与 settlement 的衔接**：STP 5.1（满足 suitability 与 eligibility 则授予 settlement）；STP 5.2（未满足 settlement 但仍有权享有保护身份时，继续给予至少 30 个月许可）；本 Appendix 未列首次保护许可的授予年限。
 - **英语 / KOL**：本 Appendix 快照未列英语等级、Appendix English Language、Appendix KOL UK 或 2027-03-26 起 B2 的条款，无相应段号可登记。
+- **Partner / child settlement — validity**：STP 6.1–STP 6.4（申请表、身份 / 生物信息、境内申请、最近许可及英国出生子女例外、无效申请）。
+- **Partner / child settlement — suitability**：STP 7.1(a)–(g)（本 Appendix 自列的 criminality、conduct 与 public good 拒绝事由）。
+- **Partner 关系**：STP 8.1(a)–(b)（P 同时在 protection route 获批 settlement，或 P 已在该路线定居且申请人在 P 定居时持其 partner 许可）；STP 8.2（Appendix Relationship with Partner）；STP 8.3 已 DELETED。
+- **Child 要求**：STP 8A.1(a)–(c)（引用 Appendix Children 的年龄、照护及 settlement 关系要求）；STP 9.1–STP 9.2、STP 10.1 已 DELETED。
+- **Partner / child 合格期 / 英语 / KOL**：快照的 partner / child settlement 部分 STP 6.1–STP 11.3 未列合格期、英语或 KOL 段。
+- **Partner / child decision**：STP 11.1–STP 11.3（授予 settlement、仍符合 partner / child 许可资格时给予至少 30 个月 permission to stay，或拒绝申请）。
 
 ## SRC-024 常用定位
 
@@ -283,6 +290,14 @@
 - **连续居留**：UKA 14.1（UKA 13.1 的期间须符合 Appendix Continuous Residence）。
 - **英语**：UKA 15.1(a)–(b)（除非豁免，申请日早于 2027-03-26 为口语与听力至少 CEFR B1，自该日起为 B2）；UKA 15.2（引用 Appendix English Language）。
 - **KOL**：UKA 16.1（引用 Appendix KOL UK）。
+- **Partner / child settlement — validity**：UKA 28.1–UKA 28.4（申请表、费用 / 生物信息 / 身份、境内申请、P 的申请或定居身份、最近许可限制及无效申请）；其中 UKA 28.3A 列最近持 Student 许可者的额外条件。
+- **Partner / child settlement — suitability**：UKA 29.1–UKA 29.2（Part Suitability、移民法违规与 immigration bail 及其例外）。
+- **Partner / child 关系**：UKA 30.1–UKA 30.2、UKA 30.5（P 同时在 UK Ancestry route 获批 settlement，或已定居 / 入籍且定居时持该路线许可，partner 引用 Appendix Relationship with Partner，child 引用 Appendix Children 的 settlement 关系要求）；UKA 30.3–UKA 30.4 已 DELETED。
+- **Partner / child 合格期定位边界**：UKA 31–32 已 DELETED（UKA 31.1、UKA 32.1–UKA 32.2），快照未列合格期。
+- **Child 照护 / 年龄 / 独立生活**：UKA 32A.1(a)–(b)（引用 Appendix Children 的照护、年龄及独立生活要求）。
+- **Partner / child maintenance**：UKA 33.1–UKA 33.3（本人、UK Ancestry 主申请人及其他 dependants 的足够生活费与住宿，不依赖 public funds；Appendix Finance 证据及可信第三方资助）。
+- **Partner / child 英语 / KOL**：UKA 34.1(a)–(b)、UKA 34.2（除非豁免，口语与听力在申请日早于 2027-03-26 为至少 B1，自该日起至少 B2，并引用 Appendix English Language）；UKA 35.1（申请日 18 岁及以上须满足 Appendix KOL UK）。
+- **Partner / child decision**：UKA 36.1–UKA 36.2（授予 settlement 或拒绝申请，拒绝后可按 Appendix AR 申请 Administrative Review）。
 
 ## SRC-027 常用定位
 
@@ -296,6 +311,13 @@
 - **条件不可重复 / 团队与岗位限制**：INNF 17.2（同一 criterion 不能重复计为两项）；INNF 17.3（同时申请或已获 settlement 的团队成员不能共用同一达标成果）；INNF 17.4(a)–(c)（岗位至少存在 12 个月且合规、平均每周至少 30 小时有薪工作，符合条件的不同员工兼职可合并、settled worker 按入职时定义并持续任职整个所申报的 12 个月）。
 - **英语定位边界**：主申请人 settlement 部分 INNF 15.1–INNF 21.6 未另列英语要求或 2027-03-26 分段；入境 / 续签的 INNF 5.1 积分表及 INNF 11.1–INNF 11.2 列的是四项能力均至少 CEFR B2（除非豁免，并引用 Appendix English Language）。本 Appendix 中按申请日早于 / 自 2027-03-26 分 B1 / B2 的 INNF 39.1–INNF 39.2 属 partner / child settlement，不是主申请人条款。
 - **KOL**：INNF 20.1（引用 Appendix KOL UK）。
+- **Partner / child settlement — validity**：INNF 32.1–INNF 32.3（申请表、费用 / 生物信息 / 身份、境内申请、P 的 settlement 申请或已定居 / 入籍身份及申请人的许可 / 出生条件、无效申请）。
+- **Partner / child settlement — suitability**：INNF 33.1–INNF 33.2（Part Suitability、移民法违规与 immigration bail 及其例外）。
+- **Partner / child 关系 / 最近许可**：INNF 34.1–INNF 34.4（P 同时作为 Innovator Founder 获批 settlement 或已定居 / 入籍时的条件、申请人最近 dependant 许可或英国出生 child 分支，child 引用 Appendix Children 的 settlement 关系要求，partner 引用 Appendix Relationship with Partner）。
+- **Child 年龄 / 照护 / 独立生活**：INNF 35.1–INNF 35.2、INNF 36.1 已 DELETED；INNF 36A.1(a)–(b)（引用 Appendix Children 的照护、年龄及独立生活要求）。
+- **Partner 合格期 / 连续居留**：INNF 37.1（在英国连续 5 年持 P 的 partner 许可）；INNF 38.1（该期间须符合 Appendix Continuous Residence）。
+- **Partner / child 英语 / KOL**：INNF 39.1(a)–(b)、INNF 39.2（上述 B1 / B2 申请日分段及 Appendix English Language 的具体段号）；INNF 40.1（除非豁免，引用 Appendix KOL UK）。
+- **Partner / child decision**：INNF 41.1–INNF 41.5（授予 settlement、转作 permission to stay 申请及其费用 / Immigration Health Charge、许可长度与条件、拒绝申请及 Administrative Review）。
 
 ## SRC-028 常用定位
 
@@ -311,3 +333,21 @@
 - **连续居留**：PL 15.1（settlement 合格期引用 Appendix Continuous Residence，但在英国出生的 child 除外）；英国出生 child 的 PL 13.2 期间按 PL 15A.1–PL 15A.3（可含有 / 无许可期间、监禁 / 特定拘留不计、单次缺席超过 6 个月或累计至少 550 天等中断事由）。不要把许可入口 PL 7.1–PL 7.3 与 settlement 合格期的计算依据混为一谈。
 - **英语 / KOL**：PL 16.1(a)–(b)（除非豁免，申请日早于 2027-03-26 为口语与听力至少 CEFR B1，自该日起为 B2）；PL 16.2（引用 Appendix English Language）；PL 17.1（除非豁免，例如未满 18 岁，引用 Appendix KOL UK；快照原文段号写作 `PL17.1`）。
 - **与 Appendix Settlement Family Life 的衔接**：本 Appendix 快照未直接引用 Appendix Settlement Family Life；交叉定位 SRC-022 的 SETF 1.3（最近许可为 Appendix FM partner / parent）、SETF 3.1(c)（其 10 年组合可计 Private Life 许可）及 SETF 3.2（计入其他可定居路线的条件）。反向计入 Appendix FM family 许可的依据为本页 PL 14.3(a)–(b)、(d)–(e)，不能把两套 settlement 的最近许可入口互换。
+- **英国出生 dependent child settlement — validity**：PL 26.1–PL 26.3（申请表、费用 / 生物信息 / 身份、境内申请、P 的 Private Life settlement 申请或已定居 / 入籍身份及子女出生时间、无效申请）。
+- **英国出生 dependent child settlement — suitability**：PL 27.1、PL 27.3–PL 27.6（Part Suitability、特定事由对应的 10 年指定许可与刑期结束 / 事由被发现后首次许可起 5 年要求、可计入许可、移民法违规与 immigration bail 及其例外）；PL 27.2 已 DELETED。
+- **英国出生 dependent child 要求**：PL 28.1–PL 28.2 已 DELETED；PL 28A.1(a)–(d)（Appendix Children 的年龄、独立生活、照护及 settlement 关系要求）、PL 28A.2（在英国出生）；PL 29.1–PL 29.2、PL 30.1 已 DELETED。
+- **英国出生 dependent child 英语 / KOL**：PL 31.1(a)–(b)、PL 31.2（除非豁免，口语与听力在申请日早于 2027-03-26 为至少 B1，自该日起至少 B2，并引用 Appendix English Language；快照原文写作 `PL31.1`）；PL 32.1（除非豁免，例如未满 18 岁，引用 Appendix KOL UK）。
+- **英国出生 dependent child decision**：PL 33.1–PL 33.5（授予 settlement、转作 permission to stay 申请及其费用 / Immigration Health Charge、许可长度与条件，或拒绝申请）。
+
+## SRC-029 常用定位
+
+- 版本：[GOV.UK Content API 变更记录](https://www.gov.uk/api/content/guidance/immigration-rules/immigration-rules-part-8-family-members) 最近一条为 2026-08-03（Statement of Changes HC 259），与[手册变更记录](https://www.gov.uk/guidance/immigration-rules/updates)中 Part 8 的最近一条一致；`public_updated_at` 与快照的 `govuk:public-updated-at` 同为 `2026-08-03T08:17:40+01:00`，不取手册头部的 2026-10-29。
+- **Child settlement 小节**：para 298 前的标题为 “Requirements for indefinite leave to remain in the United Kingdom as the child of a parent, parents or a close relative present and settled or being admitted for settlement in the United Kingdom”。
+- **父母 / 近亲情形**：para 298(i)(a)（父母双方在英国已定居）；(b)（一方在英国已定居、另一方去世）；(c)（一方在英国已定居且独自承担抚养责任，或子女通常与其同住而非另一方）；(d)（一方在英国已定居或同时获准入境定居、另一方没有且未获批英国限期许可，并列 serious and compelling reasons 例外）；(e)（近亲在英国已定居，子女在英国没有其他可合理期待提供支持或照料的家人）。
+- **既往许可 / 年龄分支**：para 298(ii)（持有或曾持有英国限期入境或居留许可）及 (a)（未满 18 岁）；(b)（以定居为目的获批 para 302 或 Appendix FM 许可）；(c)（按 para 319R 入境并作为难民或 humanitarian protection 受益人的子女完成 2 年限期许可，父母现已定居或原保护身份父母现为 British Citizen）；(d)（按 para 319X 持限期许可，其难民或 humanitarian protection 受益人近亲现已定居）；(e)（最近按 para 298A 获批限期居留）；(f)（最近按 Appendix Adoption 或本 Part 的 adopted children rules 获批入境或居留许可）。
+- **独立生活 / 住宿 / 生活费**：para 298(iii)（未独立生活、未婚、未另组独立家庭）；(iv)（由入境时投靠的父母 / 近亲提供其独占拥有或使用的足够住宿，不依赖 public funds）；(v)（由该父母 / 近亲提供足够生活费，不依赖 public funds）。
+- **Suitability / 英语与 Life in the UK**：para 298(vi)（不得因 Part Suitability 被拒）；(vii)（18 岁及以上且按 para 302、Appendix FM、para 319R 或 para 319X 入境者，按 Appendix KoLL 满足英语与英国生活知识要求；KoLL 见 SRC-025）。
+- **未满足 settlement 后的限期许可**：para 298A(a)–(c)（仅因 298(vi) 的 SUI 5.3 所述刑罚 / 处置、18 岁及以上未满足 298(vii)，或原会因 SUI 5.3 被拒时，可给予不超过 30 个月的 limited leave to remain，并附 no recourse to public funds 条件）。
+- **Para 302 所在小节**：标题为 “Limited leave to enter or remain in the United Kingdom with a view to settlement as the child of a parent or parents given limited leave to enter or remain in the United Kingdom with a view to settlement”；para 302 为此类子女的限期许可条款，由 para 298(ii)(b) 引用。
+- **Appendix FM 交叉引用**：para A277、A277B(a)–(c)、A277C、A277D、A278、A280(a)–(b)、A280(d)(v)、A280(g)、A280B、277、298(ii)(b)、298(vii)（分别见过渡与相互适用条款、partner 定义及上述 child settlement 许可 / KoLL 入口；Appendix FM 见 SRC-024）。
+- **Appendix Settlement Family Life 交叉引用**：para A277B(c)（在该段指定情形下，将 Part 8 连续许可期间计入后续 indefinite leave to remain 的连续许可期间；该 Appendix 见 SRC-022）。
