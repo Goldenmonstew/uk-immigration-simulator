@@ -832,6 +832,7 @@ test.each(originalCharacters.map((character) => character.id))(
   'real character %s plays eight quarters through overlay callbacks with save restoration',
   (characterId) => {
     let state = core.newGame(characterId, 42, 'en');
+    const startQuarter = state.quarter;
     const handleEvents = () => {
       for (let count = 0; core.currentEvent(state); count++) {
         expect(count).toBeLessThan(12);
@@ -900,7 +901,7 @@ test.each(originalCharacters.map((character) => character.id))(
       state = restored;
     }
     expect(state.year).toBe(3);
-    expect(state.quarter).toBe(1);
+    expect(state.quarter).toBe(startQuarter);
     expect(state.timeline.immigrationBreaches).toEqual([]);
   },
 );
