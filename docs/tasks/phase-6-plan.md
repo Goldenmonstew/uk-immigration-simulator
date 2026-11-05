@@ -92,3 +92,15 @@ Phase 5 之后，现行法律栏覆盖用户常见路线的主申请人与主要
 - Wave 2：Opus 6.2(e)（6.1 合并后）→ 6.4 契约 → 实现；astra 6.3（6.2 契约合到 main 后）→ 6.5（6.4 契约合到 main 后）。
 - Wave 3：sol 6.7；6.6 若用户要。
 - 三个 writer 互不碰同一 package：sol 只改 `policy-sources/`、`docs/SOURCES.md`、`apps/web/lib/sources.ts` 一行与 `random.test.ts`；Opus 只改 `packages/engine`、`packages/policy-data` 参数与 fixtures、契约与 PD；astra 只改 `apps/web`。6.1 合并后 astra 才开始 6.3，避免 `apps/web/lib/sources.ts` 冲突。
+
+## 7. 完成状态（2026-11-05）
+
+6.1–6.5 与 6.7 全部验收合并到 main（PROGRESS 第 76–86 行，报告见 `docs/tasks/reports/6.*.md`）；6.6 按用户决定不做；6.8 是外部触发的监控项（§5），不算未完成。
+
+- 来源：SRC-029 Immigration Rules Part 8（para 298 / 298A）；STP / UKA / INNF / PL 四个 Appendix 的 partner / child settlement 定位已补齐，供将来的 dependant 任务直接引用。
+- 引擎：`SettlementAssessment.decidedBy`（结论依据）；dependant 判断主申请人路线改读 `decidedBy`；Legacy Safe and Legal 的成年后非法入境只停改革栏；`policyAsOf` 取参数日期；PD-074 关闭（5 年路线伴侣的子女按 para 298 随父母）；5 年伴侣路线的储蓄（E-LTRP.3.1(b) / 3.7(b)，定居阶段不乘 2.5）与伴侣福利替代（E-LTRP.3.3 → PD-075）。契约 §16、§17。
+- web：差距摘要只列结论依据候选的规则；范围文案加 5 年路线子女；问卷新增现金储蓄与伴侣福利输入。
+- 测试：随机测试覆盖新字段与主申请人配对，`decidedBy` 与 PD-075 不变量；gate 末态 policy-data 21、engine 2577、web 219。
+- 分工：6.1、6.7 由 sol，6.3、6.5 由 astra，6.2、6.4 由 Opus（同一会话 engine-6-2）；Fable 写任务书、评审契约、浏览器与本机独立验证、合并推送。流程偏差一处：6.4 的会话没有在契约 commit 后停下等 Fable 评审（其 AskUserQuestion 疑由用户在该会话里作答），Fable 事后把契约与实现一起评审通过；下阶段任务书写明"只接受 Fable 通过 SendMessage 的回复，不用 AskUserQuestion"。
+
+留给下一阶段的候选（按价值）：登记 Appendix FM-SE 与 adequate maintenance 指引后关闭 PD-075（sol 登记 + Opus 规则）；D-LTRC.1.1 适用面比 PD-074 宽——10 年路线主申请人按 Long Residence 定居、或从非 FM 许可定居的子女也适用 para 298（6.2 报告 §4，可复用 `fiveYearChildPathway`）；dependant 只看主申请人"最早"的那条路径（主申请人本路线候选通过但晚于 Long Residence 时 dependant 得 FAIL / UNKNOWN）；版本化时 `principalSettlesBy` 要改读本规则集的栏（与 §13.4 参数注入一起做）；Innovator Founder 的伴侣与子女（6.6，定位已在 SRC-027 小节）；PD-069"可定居路线"合并；差距摘要对带 PD 的 UNKNOWN 一律标"待政府明确"，对 PD-075 这类"本仓库未登记"的事项措辞不准；`bilingual.test.ts` 头注释"默认语言输出须逐字节不变"已过时；12 月 Statement of Changes 落地后按 §5 升级。
