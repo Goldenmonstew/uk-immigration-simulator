@@ -81,8 +81,8 @@ const events: GameEvent[] = [
         ],
         sets: ['bno-cafe-shifts'],
         note: {
-          zhCN: '只记录本人时间线；家人的许可不在本局评估范围内。',
-          en: 'Only the player’s timeline is recorded; relatives’ permission is outside this game.',
+          zhCN: '记录本税年本人全年税前收入 £36,000；不模拟雇主流程。',
+          en: 'Records £36,000 in the player’s annual gross earnings for this tax year; employer procedures are not simulated.',
         },
       },
       {
@@ -115,8 +115,8 @@ const events: GameEvent[] = [
           { type: 'stat', key: 'health', delta: -4 },
         ],
         note: {
-          zhCN: '只记录本人时间线；家人的许可不在本局评估范围内。',
-          en: 'Only the player’s timeline is recorded; relatives’ permission is outside this game.',
+          zhCN: '记录本税年本人全年税前收入 £38,000；不模拟雇主流程。',
+          en: 'Records £38,000 in the player’s annual gross earnings for this tax year; employer procedures are not simulated.',
         },
       },
       {
@@ -127,8 +127,8 @@ const events: GameEvent[] = [
           { type: 'stat', key: 'mood', delta: 5 },
         ],
         note: {
-          zhCN: '只记录本人时间线；家人的许可不在本局评估范围内。',
-          en: 'Only the player’s timeline is recorded; relatives’ permission is outside this game.',
+          zhCN: '记录本税年本人全年税前收入 £34,000；不模拟雇主流程。',
+          en: 'Records £34,000 in the player’s annual gross earnings for this tax year; employer procedures are not simulated.',
         },
       },
     ],
@@ -163,8 +163,8 @@ const events: GameEvent[] = [
     id: 'bno-partner-offer',
     title: { zhCN: '第二张工牌', en: 'A second staff pass' },
     text: {
-      zhCN: '伴侣终于拿到录用信，冰箱上的预算表空出了一小块。',
-      en: 'The partner gets an offer at last, leaving a little breathing room on the fridge budget.',
+      zhCN: '伴侣终于拿到录用信，孩子在冰箱上的便签旁添了一颗星。',
+      en: 'The partner gets an offer at last; the child adds a star beside the note on the fridge.',
     },
     weight: 2,
     once: true,
@@ -173,27 +173,21 @@ const events: GameEvent[] = [
       {
         id: 'first',
         label: { zhCN: '接受全职安排', en: 'Take the full-time arrangement' },
-        effects: [
-          { type: 'income', taxYear: 'current', partnerEarnings: 24000 },
-          { type: 'stat', key: 'mood', delta: 7 },
-        ],
+        effects: [{ type: 'stat', key: 'mood', delta: 7 }],
         sets: ['bno-partner-working'],
         note: {
-          zhCN: '只记录本人时间线；家人的许可不在本局评估范围内。',
-          en: 'Only the player’s timeline is recorded; relatives’ permission is outside this game.',
+          zhCN: '只改变心情并记录伴侣的工作经历，不计入本局收入。',
+          en: 'Changes mood and records the partner’s work story, without adding income in this game.',
         },
       },
       {
         id: 'second',
         label: { zhCN: '先从兼职开始', en: 'Start with part-time hours' },
-        effects: [
-          { type: 'income', taxYear: 'current', partnerEarnings: 12000 },
-          { type: 'stat', key: 'mood', delta: 5 },
-        ],
+        effects: [{ type: 'stat', key: 'mood', delta: 5 }],
         sets: ['bno-partner-working'],
         note: {
-          zhCN: '只记录本人时间线；家人的许可不在本局评估范围内。',
-          en: 'Only the player’s timeline is recorded; relatives’ permission is outside this game.',
+          zhCN: '只改变心情并记录伴侣的工作经历，不计入本局收入。',
+          en: 'Changes mood and records the partner’s work story, without adding income in this game.',
         },
       },
     ],
@@ -202,8 +196,8 @@ const events: GameEvent[] = [
     id: 'bno-parents-ticket',
     title: { zhCN: '父母的行李秤', en: 'The parents’ luggage scales' },
     text: {
-      zhCN: '父母说只带一点东西，视频里身后却排着三个箱子。',
-      en: 'The parents promise to pack lightly; three suitcases line up behind them on the video call.',
+      zhCN: '视频里聊起刚结束的团聚，父母笑说三个箱子一个也没少。',
+      en: 'On a video call about the reunion just ended, the parents laugh that all three suitcases made the trip.',
     },
     weight: 2,
     once: true,
@@ -219,7 +213,10 @@ const events: GameEvent[] = [
       },
       {
         id: 'skip',
-        label: { zhCN: '这次由嘉宁回去', en: 'Ka Ning visits them instead' },
+        label: {
+          zhCN: '这次是嘉宁回去住了三周',
+          en: 'Ka Ning spent three weeks visiting them',
+        },
         effects: [
           { type: 'absence', startOffsetDays: -21, days: 21 },
           { type: 'money', delta: -700 },
@@ -450,8 +447,8 @@ const events: GameEvent[] = [
         },
         effects: [{ type: 'stat', key: 'mood', delta: 3 }],
         note: {
-          zhCN: 'HK 60.1 为 B1；该 Appendix 不在 HC 1691 升 B2 清单内（SRC-020；SRC-007 EM 5.60）。',
-          en: `HK 60.1 requires ${policy.hongKongBnoSettlementEnglish.value}; this Appendix is outside the HC 1691 B2 list (SRC-020; SRC-007 EM 5.60).`,
+          zhCN: '现行法律栏 HK 60.1 仍为 B1，该 Appendix 不在 HC 1691 升 B2 清单内（SRC-020；SRC-007 EM 5.60）；改革栏框架外群体仍适用强化的 B2 与犯罪记录要求（SRC-001 p25–p26）。',
+          en: `In the current-law column HK 60.1 still requires ${policy.hongKongBnoSettlementEnglish.value}; this Appendix is outside the HC 1691 B2 list (SRC-020; SRC-007 EM 5.60); in the reform column, groups outside the framework still face enhanced B2 and criminal-record requirements (SRC-001 p25–p26).`,
         },
       },
     ],
@@ -465,6 +462,7 @@ const events: GameEvent[] = [
     },
     weight: 2,
     once: true,
+    forbids: ['bno-b2-passed'],
     requires: ['bno-b2-practice'],
     when: [{ stat: 'english', min: balance.englishB2 }],
     choices: [
@@ -478,9 +476,10 @@ const events: GameEvent[] = [
           { type: 'english', cefrLevel: 'B2' },
           { type: 'stat', key: 'mood', delta: 3 },
         ],
+        sets: ['bno-b2-passed'],
         note: {
-          zhCN: '额外取得 B2 不改变 HK 60.1 的 B1 要求（SRC-020；SRC-007 EM 5.60）。',
-          en: 'Additional B2 evidence does not change HK 60.1’s B1 requirement (SRC-020; SRC-007 EM 5.60).',
+          zhCN: '额外取得 B2 不改变现行法律栏 HK 60.1 的 B1 要求（SRC-020；SRC-007 EM 5.60）；改革栏框架外群体仍适用强化的 B2 与犯罪记录要求（SRC-001 p25–p26）。',
+          en: 'Additional B2 evidence does not change HK 60.1’s B1 requirement in the current-law column (SRC-020; SRC-007 EM 5.60); in the reform column, groups outside the framework still face enhanced B2 and criminal-record requirements (SRC-001 p25–p26).',
         },
       },
       {
@@ -493,6 +492,7 @@ const events: GameEvent[] = [
           { type: 'stat', key: 'english', delta: 2 },
           { type: 'stat', key: 'mood', delta: -2 },
         ],
+        sets: ['bno-b2-failed'],
       },
     ],
   },
@@ -547,7 +547,7 @@ const events: GameEvent[] = [
           {
             type: 'benefit',
             benefit: { benefitType: 'UNIVERSAL_CREDIT' },
-            startOffsetDays: 0,
+            startOffsetDays: -90,
             months: 3,
           },
           { type: 'money', delta: 600 },
@@ -680,7 +680,7 @@ const events: GameEvent[] = [
           { type: 'money', delta: -1100 },
           { type: 'stat', key: 'mood', delta: 5 },
         ],
-        sets: ['quarter-housing-change', 'rent-rise-bno'],
+        sets: ['quarter-housing-change', 'rent-rise-bno', 'bno-house-moved'],
       },
       {
         id: 'stay',
@@ -714,8 +714,8 @@ const events: GameEvent[] = [
           { type: 'stat', key: 'career', delta: 2 },
         ],
         note: {
-          zhCN: '只记录本人时间线；家人的许可不在本局评估范围内。',
-          en: 'Only the player’s timeline is recorded; relatives’ permission is outside this game.',
+          zhCN: '记录年薪 £36,000 写入本人时间线；不模拟雇主流程。',
+          en: 'Records an annual salary of £36,000 in the player’s timeline; employer procedures are not simulated.',
         },
       },
       {
@@ -726,8 +726,8 @@ const events: GameEvent[] = [
         },
         effects: [{ type: 'stat', key: 'mood', delta: 3 }],
         note: {
-          zhCN: '只记录本人时间线；家人的许可不在本局评估范围内。',
-          en: 'Only the player’s timeline is recorded; relatives’ permission is outside this game.',
+          zhCN: '沿用现有工时和工资，记录这次面谈。',
+          en: 'Keeps the current hours and pay and records the meeting.',
         },
       },
     ],
@@ -750,8 +750,8 @@ const events: GameEvent[] = [
           { type: 'stat', key: 'health', delta: 3 },
         ],
         note: {
-          zhCN: '只记录本人时间线；家人的许可不在本局评估范围内。',
-          en: 'Only the player’s timeline is recorded; relatives’ permission is outside this game.',
+          zhCN: '记录年薪 £30,000 写入本人时间线；不模拟雇主流程。',
+          en: 'Records an annual salary of £30,000 in the player’s timeline; employer procedures are not simulated.',
         },
       },
       {
@@ -762,8 +762,8 @@ const events: GameEvent[] = [
         },
         effects: [{ type: 'money', delta: -250 }],
         note: {
-          zhCN: '只记录本人时间线；家人的许可不在本局评估范围内。',
-          en: 'Only the player’s timeline is recorded; relatives’ permission is outside this game.',
+          zhCN: '记录代接孩子支出 £250，现有工时和工资继续沿用。',
+          en: 'Records £250 spent on school collection help and keeps the current hours and pay.',
         },
       },
     ],
@@ -782,32 +782,26 @@ const events: GameEvent[] = [
       {
         id: 'first',
         label: {
-          zhCN: '记录伴侣暂时失业',
-          en: 'Record the partner’s temporary unemployment',
+          zhCN: '陪伴侣熬过失业这阵子',
+          en: 'Support the partner through unemployment',
         },
-        effects: [
-          { type: 'income', taxYear: 'current', partnerEarnings: 0 },
-          { type: 'stat', key: 'mood', delta: -6 },
-        ],
+        effects: [{ type: 'stat', key: 'mood', delta: -6 }],
         sets: ['bno-partner-between-jobs'],
         note: {
-          zhCN: '只记录本人时间线；家人的许可不在本局评估范围内。',
-          en: 'Only the player’s timeline is recorded; relatives’ permission is outside this game.',
+          zhCN: '只改变心情并记录伴侣的工作经历，不计入本局收入。',
+          en: 'Changes mood and records the partner’s work story, without adding income in this game.',
         },
       },
       {
         id: 'second',
         label: {
-          zhCN: '记录已经找到的兼职',
-          en: 'Record a part-time job already found',
+          zhCN: '先靠新找到的兼职过渡',
+          en: 'Manage for now with the new part-time job',
         },
-        effects: [
-          { type: 'income', taxYear: 'current', partnerEarnings: 10000 },
-          { type: 'stat', key: 'mood', delta: -2 },
-        ],
+        effects: [{ type: 'stat', key: 'mood', delta: -2 }],
         note: {
-          zhCN: '只记录本人时间线；家人的许可不在本局评估范围内。',
-          en: 'Only the player’s timeline is recorded; relatives’ permission is outside this game.',
+          zhCN: '只改变心情并记录伴侣的工作经历，不计入本局收入。',
+          en: 'Changes mood and records the partner’s work story, without adding income in this game.',
         },
       },
     ],
@@ -826,25 +820,19 @@ const events: GameEvent[] = [
       {
         id: 'first',
         label: { zhCN: '全职重新出发', en: 'Restart full-time work' },
-        effects: [
-          { type: 'income', taxYear: 'current', partnerEarnings: 23000 },
-          { type: 'stat', key: 'mood', delta: 5 },
-        ],
+        effects: [{ type: 'stat', key: 'mood', delta: 5 }],
         note: {
-          zhCN: '只记录本人时间线；家人的许可不在本局评估范围内。',
-          en: 'Only the player’s timeline is recorded; relatives’ permission is outside this game.',
+          zhCN: '只改变心情并记录伴侣的工作经历，不计入本局收入。',
+          en: 'Changes mood and records the partner’s work story, without adding income in this game.',
         },
       },
       {
         id: 'second',
         label: { zhCN: '先以较短工时适应', en: 'Ease back with shorter hours' },
-        effects: [
-          { type: 'income', taxYear: 'current', partnerEarnings: 14000 },
-          { type: 'stat', key: 'mood', delta: 4 },
-        ],
+        effects: [{ type: 'stat', key: 'mood', delta: 4 }],
         note: {
-          zhCN: '只记录本人时间线；家人的许可不在本局评估范围内。',
-          en: 'Only the player’s timeline is recorded; relatives’ permission is outside this game.',
+          zhCN: '只改变心情并记录伴侣的工作经历，不计入本局收入。',
+          en: 'Changes mood and records the partner’s work story, without adding income in this game.',
         },
       },
     ],
@@ -871,8 +859,8 @@ const events: GameEvent[] = [
           { type: 'stat', key: 'career', delta: 3 },
         ],
         note: {
-          zhCN: '只记录本人时间线；家人的许可不在本局评估范围内。',
-          en: 'Only the player’s timeline is recorded; relatives’ permission is outside this game.',
+          zhCN: '记录年薪 £35,000 写入本人时间线；不模拟雇主流程。',
+          en: 'Records an annual salary of £35,000 in the player’s timeline; employer procedures are not simulated.',
         },
       },
       {
@@ -886,8 +874,8 @@ const events: GameEvent[] = [
           { type: 'stat', key: 'health', delta: 4 },
         ],
         note: {
-          zhCN: '只记录本人时间线；家人的许可不在本局评估范围内。',
-          en: 'Only the player’s timeline is recorded; relatives’ permission is outside this game.',
+          zhCN: '记录年薪 £31,000 写入本人时间线；不模拟雇主流程。',
+          en: 'Records an annual salary of £31,000 in the player’s timeline; employer procedures are not simulated.',
         },
       },
     ],
@@ -905,31 +893,31 @@ const events: GameEvent[] = [
       {
         id: 'first',
         label: {
-          zhCN: '记录这年的额外项目收入',
-          en: 'Record this year’s extra project earnings',
+          zhCN: '接下额外项目，忙完这一轮',
+          en: 'Take the extra project and finish this round',
         },
         effects: [
           { type: 'income', taxYear: 'current', earnings: 39000 },
           { type: 'stat', key: 'health', delta: -3 },
         ],
         note: {
-          zhCN: '只记录本人时间线；家人的许可不在本局评估范围内。',
-          en: 'Only the player’s timeline is recorded; relatives’ permission is outside this game.',
+          zhCN: '记录本税年本人全年税前收入 £39,000；不模拟雇主流程。',
+          en: 'Records £39,000 in the player’s annual gross earnings for this tax year; employer procedures are not simulated.',
         },
       },
       {
         id: 'second',
         label: {
-          zhCN: '记录正常工时的收入',
-          en: 'Record normal-hours earnings',
+          zhCN: '守住正常工时，留点空闲',
+          en: 'Keep normal hours and some free time',
         },
         effects: [
           { type: 'income', taxYear: 'current', earnings: 34000 },
           { type: 'stat', key: 'mood', delta: 3 },
         ],
         note: {
-          zhCN: '只记录本人时间线；家人的许可不在本局评估范围内。',
-          en: 'Only the player’s timeline is recorded; relatives’ permission is outside this game.',
+          zhCN: '记录本税年本人全年税前收入 £34,000；不模拟雇主流程。',
+          en: 'Records £34,000 in the player’s annual gross earnings for this tax year; employer procedures are not simulated.',
         },
       },
     ],
@@ -950,12 +938,12 @@ const events: GameEvent[] = [
         id: 'first',
         label: { zhCN: '接下值班经理岗位', en: 'Take the duty-manager role' },
         effects: [
-          { type: 'episode', patch: { salary: 40000 } },
+          { type: 'income', taxYear: 'current', earnings: 40000 },
           { type: 'stat', key: 'career', delta: 4 },
         ],
         note: {
-          zhCN: '只记录本人时间线；家人的许可不在本局评估范围内。',
-          en: 'Only the player’s timeline is recorded; relatives’ permission is outside this game.',
+          zhCN: '记录本税年本人全年税前收入 £40,000，主业合同继续沿用；不模拟雇主流程。',
+          en: 'Records £40,000 in the player’s annual gross earnings for this tax year and keeps the main-job contract; employer procedures are not simulated.',
         },
       },
       {
@@ -963,8 +951,8 @@ const events: GameEvent[] = [
         label: { zhCN: '继续只做现在的班次', en: 'Keep the existing shifts' },
         effects: [{ type: 'stat', key: 'mood', delta: 4 }],
         note: {
-          zhCN: '只记录本人时间线；家人的许可不在本局评估范围内。',
-          en: 'Only the player’s timeline is recorded; relatives’ permission is outside this game.',
+          zhCN: '沿用现有班次，记录和老板的商量。',
+          en: 'Keeps the existing shifts and records the discussion with the owner.',
         },
       },
     ],
@@ -991,8 +979,8 @@ const events: GameEvent[] = [
           { type: 'stat', key: 'health', delta: 4 },
         ],
         note: {
-          zhCN: '只记录本人时间线；家人的许可不在本局评估范围内。',
-          en: 'Only the player’s timeline is recorded; relatives’ permission is outside this game.',
+          zhCN: '记录年薪 £32,000 写入本人时间线；不模拟雇主流程。',
+          en: 'Records an annual salary of £32,000 in the player’s timeline; employer procedures are not simulated.',
         },
       },
       {
@@ -1000,8 +988,8 @@ const events: GameEvent[] = [
         label: { zhCN: '维持现在的合同', en: 'Keep the current contract' },
         effects: [{ type: 'stat', key: 'mood', delta: 1 }],
         note: {
-          zhCN: '只记录本人时间线；家人的许可不在本局评估范围内。',
-          en: 'Only the player’s timeline is recorded; relatives’ permission is outside this game.',
+          zhCN: '沿用现有合同，记录这次家庭商量。',
+          en: 'Keeps the current contract and records the family discussion.',
         },
       },
     ],
@@ -1010,8 +998,8 @@ const events: GameEvent[] = [
     id: 'bno-hk-wedding',
     title: { zhCN: '喜帖里的金粉', en: 'Glitter in a wedding invitation' },
     text: {
-      zhCN: '朋友从香港寄来喜帖，打开时金粉洒进了早餐麦片旁。',
-      en: 'A wedding invitation from Hong Kong drops glitter beside the breakfast cereal.',
+      zhCN: '从香港婚礼回来，嘉宁收好喜帖，金粉又洒进了早餐麦片旁。',
+      en: 'Back from the Hong Kong wedding, Ka Ning files the invitation and scatters glitter beside the breakfast cereal.',
     },
     weight: 2,
     once: true,
@@ -1061,8 +1049,8 @@ const events: GameEvent[] = [
       {
         id: 'first',
         label: {
-          zhCN: '记录四个月的海外照顾',
-          en: 'Record four months caring abroad',
+          zhCN: '陪父亲在海外住了四个月',
+          en: 'Spent four months abroad caring for Dad',
         },
         effects: [
           { type: 'absence', startOffsetDays: -120, days: 120 },
@@ -1077,8 +1065,8 @@ const events: GameEvent[] = [
       {
         id: 'second',
         label: {
-          zhCN: '记录亲人分担后的一月停留',
-          en: 'Record a one-month stay with care shared',
+          zhCN: '和亲人轮班，陪住了一个月',
+          en: 'Shared the care and stayed for one month',
         },
         effects: [
           { type: 'absence', startOffsetDays: -30, days: 30 },
@@ -1150,8 +1138,8 @@ const events: GameEvent[] = [
       {
         id: 'first',
         label: {
-          zhCN: '记录十天的两人假期',
-          en: 'Record ten days away together',
+          zhCN: '两个人在香港度过了十天假期',
+          en: 'Spent ten days away together',
         },
         effects: [
           { type: 'absence', startOffsetDays: -10, days: 10 },
@@ -1166,8 +1154,8 @@ const events: GameEvent[] = [
       {
         id: 'second',
         label: {
-          zhCN: '记录延长到一个月的探亲',
-          en: 'Record the visit extended to one month',
+          zhCN: '多陪陪家人，住满了一个月',
+          en: 'Stayed a full month with the family',
         },
         effects: [
           { type: 'absence', startOffsetDays: -30, days: 30 },
@@ -1240,8 +1228,8 @@ const events: GameEvent[] = [
       {
         id: 'first',
         label: {
-          zhCN: '记录一周的告别行程',
-          en: 'Record a week-long farewell visit',
+          zhCN: '陪朋友度过了告别前的一周',
+          en: 'Spent a week with the friend before the farewell',
         },
         effects: [
           { type: 'absence', startOffsetDays: -7, days: 7 },
@@ -1257,7 +1245,7 @@ const events: GameEvent[] = [
         id: 'second',
         label: {
           zhCN: '多住一周帮忙打包',
-          en: 'Record a second week helping pack',
+          en: 'Stayed another week to help pack',
         },
         effects: [
           { type: 'absence', startOffsetDays: -14, days: 14 },
@@ -1285,8 +1273,8 @@ const events: GameEvent[] = [
       {
         id: 'first',
         label: {
-          zhCN: '记录六个月多一点的停留',
-          en: 'Record a stay just over six months',
+          zhCN: '在亲戚家住了半年多',
+          en: 'Stayed with relatives for just over six months',
         },
         effects: [
           { type: 'absence', startOffsetDays: -185, days: 185 },
@@ -1418,34 +1406,37 @@ const events: GameEvent[] = [
     },
     weight: 2,
     once: true,
-    requires: ['bno-b2-practice'],
+    forbids: ['bno-b2-passed'],
+    requires: ['bno-b2-practice', 'bno-b2-failed'],
     when: [{ stat: 'english', min: balance.englishB2 }, { yearMin: 3 }],
     choices: [
       {
         id: 'first',
         label: {
-          zhCN: '记录已取得的 B2 结果',
-          en: 'Record the B2 result obtained',
+          zhCN: '收好这次通过的 B2 证明',
+          en: 'File the B2 evidence from this pass',
         },
         effects: [
           { type: 'english', cefrLevel: 'B2' },
           { type: 'stat', key: 'mood', delta: 3 },
         ],
+        sets: ['bno-b2-passed'],
         note: {
-          zhCN: '本情节假定通过；HK 60.1 的法定英语要求仍为 B1（SRC-020）。',
-          en: 'This scenario assumes a pass; HK 60.1’s legal English requirement remains B1 (SRC-020).',
+          zhCN: '本情节假定通过，现行法律栏 HK 60.1 仍为 B1（SRC-020）；改革栏框架外群体仍适用强化的 B2 与犯罪记录要求（SRC-001 p25–p26）。',
+          en: 'This scenario assumes a pass; HK 60.1 still requires B1 in the current-law column (SRC-020); in the reform column, groups outside the framework still face enhanced B2 and criminal-record requirements (SRC-001 p25–p26).',
         },
       },
       {
         id: 'second',
         label: {
-          zhCN: '记录未过进阶考试，继续练习',
-          en: 'Record an unsuccessful advanced test and keep practising',
+          zhCN: '这次没过，继续练习',
+          en: 'Keep practising after this unsuccessful test',
         },
         effects: [
           { type: 'stat', key: 'english', delta: 2 },
           { type: 'stat', key: 'mood', delta: -2 },
         ],
+        sets: ['bno-b2-failed'],
       },
     ],
   },
@@ -1512,8 +1503,8 @@ const events: GameEvent[] = [
           { type: 'stat', key: 'career', delta: 3 },
         ],
         note: {
-          zhCN: '只记录本人时间线；家人的许可不在本局评估范围内。',
-          en: 'Only the player’s timeline is recorded; relatives’ permission is outside this game.',
+          zhCN: '记录年薪 £38,000 写入本人时间线；不模拟雇主流程。',
+          en: 'Records an annual salary of £38,000 in the player’s timeline; employer procedures are not simulated.',
         },
       },
       {
@@ -1527,8 +1518,8 @@ const events: GameEvent[] = [
           { type: 'stat', key: 'health', delta: 3 },
         ],
         note: {
-          zhCN: '只记录本人时间线；家人的许可不在本局评估范围内。',
-          en: 'Only the player’s timeline is recorded; relatives’ permission is outside this game.',
+          zhCN: '记录年薪 £33,000 写入本人时间线；不模拟雇主流程。',
+          en: 'Records an annual salary of £33,000 in the player’s timeline; employer procedures are not simulated.',
         },
       },
     ],
@@ -1547,7 +1538,7 @@ const events: GameEvent[] = [
       {
         id: 'first',
         label: { zhCN: '买合脚的新鞋', en: 'Buy shoes that fit' },
-        effects: [{ type: 'stat', key: 'money', delta: -45 }],
+        effects: [{ type: 'money', delta: -45 }],
       },
       {
         id: 'second',
@@ -1696,7 +1687,7 @@ const events: GameEvent[] = [
       {
         id: 'first',
         label: { zhCN: '买一张留给外婆', en: 'Buy a copy for grandma' },
-        effects: [{ type: 'stat', key: 'money', delta: -18 }],
+        effects: [{ type: 'money', delta: -18 }],
       },
       {
         id: 'second',
@@ -1754,7 +1745,7 @@ const events: GameEvent[] = [
       {
         id: 'second',
         label: { zhCN: '打包一份带回家', en: 'Take a portion home' },
-        effects: [{ type: 'stat', key: 'money', delta: -8 }],
+        effects: [{ type: 'money', delta: -8 }],
       },
     ],
   },
@@ -1830,7 +1821,7 @@ const events: GameEvent[] = [
       {
         id: 'second',
         label: { zhCN: '路上买杯热饮', en: 'Buy warm drinks on the way' },
-        effects: [{ type: 'stat', key: 'money', delta: -9 }],
+        effects: [{ type: 'money', delta: -9 }],
       },
     ],
   },
@@ -1927,7 +1918,7 @@ const events: GameEvent[] = [
           zhCN: '多开一阵把屋子暖透',
           en: 'Keep it on until the house warms',
         },
-        effects: [{ type: 'stat', key: 'money', delta: -160 }],
+        effects: [{ type: 'money', delta: -160 }],
       },
       {
         id: 'second',
@@ -1953,7 +1944,7 @@ const events: GameEvent[] = [
       {
         id: 'first',
         label: { zhCN: '买密封条补一补', en: 'Buy a draught strip' },
-        effects: [{ type: 'stat', key: 'money', delta: -22 }],
+        effects: [{ type: 'money', delta: -22 }],
       },
       {
         id: 'second',
@@ -2236,7 +2227,7 @@ const events: GameEvent[] = [
       {
         id: 'second',
         label: { zhCN: '再买点水果装饰', en: 'Buy fruit to decorate it' },
-        effects: [{ type: 'stat', key: 'money', delta: -12 }],
+        effects: [{ type: 'money', delta: -12 }],
       },
     ],
   },
@@ -2264,7 +2255,7 @@ const events: GameEvent[] = [
           zhCN: '请一晚保姆出门约会',
           en: 'Pay for a babysitter and go out',
         },
-        effects: [{ type: 'stat', key: 'money', delta: -95 }],
+        effects: [{ type: 'money', delta: -95 }],
       },
     ],
   },
@@ -2511,6 +2502,7 @@ const events: GameEvent[] = [
     },
     weight: 2,
     once: true,
+    forbids: ['bno-house-moved'],
     requires: ['bno-neighbour-peace'],
     choices: [
       {
@@ -2545,7 +2537,7 @@ const events: GameEvent[] = [
         effects: [{ type: 'stat', key: 'mood', delta: 2 }],
         note: {
           zhCN: `HK 62.1(b) 为 ${policy.hongKongBnoQualifyingYears.value} 年；连续居留、${policy.hongKongBnoSettlementEnglish.value} 与 Life in the UK 仍须评估（SRC-020 HK 63.1、60.1、61.1）。`,
-          en: 'The HK 62.1(b) period comes from parameters; HK 63.1 residence and HK 60.1/61.1 still require assessment (SRC-020).',
+          en: `HK 62.1(b) requires ${policy.hongKongBnoQualifyingYears.value} years; continuous residence, ${policy.hongKongBnoSettlementEnglish.value} and Life in the UK still require assessment (SRC-020 HK 63.1, 60.1, 61.1).`,
         },
       },
       {
