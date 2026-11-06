@@ -798,46 +798,35 @@ test('hours render from places, and core filters activities that cannot finish b
 });
 
 test('home residents use fixed accessible positions and never appear in the town while home', () => {
-  const household: core.Npc = {
-    ...core.npcs[0],
-    id: 'jamie',
-    name: { zhCN: '杰米', en: 'Jamie' },
-    characters: ['family-partner'],
-    schedule: [{ stops: [{ from: 0, at: 'home' }] }],
-  };
-  core.npcs.push(household);
-  try {
-    const state = core.newGame('family-partner', 42, 'en');
-    delete state.pendingEvent;
-    state.eventQueue = [];
-    state.day.deliveries = [];
-    expect(visibleResidents(state, true).map((n) => n.id)).toEqual(['jamie']);
-    expect(visibleResidents(state, false).some((n) => n.id === 'jamie')).toBe(
-      false,
-    );
-    expect(visibleResidents(active(), true)).toEqual([]);
-    expect(core.peopleAt(state, 'home')).toContain('jamie');
-    const chatted = core.talk(state, 'jamie');
-    expect(chatted.day.talked).toContain('jamie');
-    expect(
-      renderView(
-        () =>
-          Dialogue({
-            state: chatted,
-            npc: 'jamie',
-            onChange: vi.fn(),
-            onClose: vi.fn(),
-          }),
-        'en',
-      ).html,
-    ).toContain('Jamie');
-    const collision = homeMap.layers.find((l) => l.name === 'collision')!;
-    for (let index = 0; index < 3; index++) {
-      const spot = homeSpot(index);
-      expect(collision.data![spot.y * homeMap.width + spot.x]).toBe(0);
-    }
-  } finally {
-    core.npcs.splice(core.npcs.indexOf(household), 1);
+  // Jamie is real household data since 9.3; mornings are spent at home.
+  const state = core.newGame('family-partner', 42, 'en');
+  delete state.pendingEvent;
+  state.eventQueue = [];
+  state.day.deliveries = [];
+  expect(visibleResidents(state, true).map((n) => n.id)).toEqual(['jamie']);
+  expect(visibleResidents(state, false).some((n) => n.id === 'jamie')).toBe(
+    false,
+  );
+  expect(visibleResidents(active(), true)).toEqual([]);
+  expect(core.peopleAt(state, 'home')).toContain('jamie');
+  const chatted = core.talk(state, 'jamie');
+  expect(chatted.day.talked).toContain('jamie');
+  expect(
+    renderView(
+      () =>
+        Dialogue({
+          state: chatted,
+          npc: 'jamie',
+          onChange: vi.fn(),
+          onClose: vi.fn(),
+        }),
+      'en',
+    ).html,
+  ).toContain('Jamie');
+  const collision = homeMap.layers.find((l) => l.name === 'collision')!;
+  for (let index = 0; index < 3; index++) {
+    const spot = homeSpot(index);
+    expect(collision.data![spot.y * homeMap.width + spot.x]).toBe(0);
   }
 });
 
