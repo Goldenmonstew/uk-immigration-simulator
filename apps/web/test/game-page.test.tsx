@@ -807,7 +807,19 @@ test('home residents use fixed accessible positions and never appear in the town
   expect(visibleResidents(state, false).some((n) => n.id === 'jamie')).toBe(
     false,
   );
-  expect(visibleResidents(active(), true)).toEqual([]);
+  // Yao's flatmate is at home before leaving for work.
+  expect(visibleResidents(active(), true).map((n) => n.id)).toEqual([
+    'yao-flatmate',
+  ]);
+  // Away at work: drawn neither at home nor in the town.
+  const working = active();
+  working.day.weather = 'sunny';
+  working.day.minute = 660;
+  expect(core.npcAt(working, 'yao-flatmate')).toBe('away');
+  expect(visibleResidents(working, true)).toEqual([]);
+  expect(
+    visibleResidents(working, false).some((n) => n.id === 'yao-flatmate'),
+  ).toBe(false);
   expect(core.peopleAt(state, 'home')).toContain('jamie');
   const chatted = core.talk(state, 'jamie');
   expect(chatted.day.talked).toContain('jamie');

@@ -14,6 +14,7 @@ import type { DayMemory } from './diary';
 
 export function visibleResidents(state: GameState, interior: boolean) {
   return townsfolk(state)
+    .filter((npc) => npcAt(state, npc.id) !== 'away')
     .filter((npc) => (npcAt(state, npc.id) === 'home') === interior)
     .slice(0, 12);
 }
