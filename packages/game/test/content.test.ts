@@ -40,7 +40,7 @@ describe('9.3 people and stories', () => {
           ? ['jamie']
           : character.id === 'hong-kong-bno'
             ? ['ka-ning-partner', 'ka-ning-child']
-            : [],
+            : ['yao-flatmate'],
       );
       for (const npc of family) expect(npcAt(state, npc.id)).toBe('home');
     }
@@ -55,10 +55,10 @@ describe('9.3 people and stories', () => {
     )) {
       let state = clear(newGame(npc.characters?.[0] ?? 'skilled-worker', 1));
       const timeline = structuredClone(state.timeline);
-      const scenes = heartEvents.filter((e) => e.heart?.npc === npc.id);
-      expect(scenes.map((e) => e.heart!.hearts)).toEqual(
-        npc.characters ? [2, 6] : [2, 4, 6, 8],
-      );
+      const scenes = heartEvents
+        .filter((e) => e.heart?.npc === npc.id)
+        .sort((a, b) => a.heart!.hearts - b.heart!.hearts);
+      expect(scenes.map((e) => e.heart!.hearts)).toEqual([2, 4, 6, 8, 10]);
       for (const event of scenes) {
         state.friendship[npc.id] = event.heart!.hearts * 100 - b.talkFriendship;
         state.day.minute = Math.max(
@@ -68,12 +68,16 @@ describe('9.3 people and stories', () => {
           ),
         );
         state.flags.push(...(event.requires ?? []));
-        for (const c of event.when ?? [])
+        for (const c of event.when ?? []) {
           if ('dayKind' in c) state.day.kind = c.dayKind;
+          if ('flag' in c) state.flags.push(c.flag);
+          if ('weather' in c) state.day.weather = c.weather;
+          if ('festival' in c) state.day.festival = c.festival;
+        }
         state.day.talked = [];
         state = talk(state, npc.id);
         expect(currentEvent(state)?.id).toBe(event.id);
-        state = resolve(state, 'stay');
+        state = resolve(state, event.choices[0].id);
         expect(talk(state, npc.id).pendingEvent).toBeUndefined();
       }
       expect(state.timeline).toEqual(timeline);

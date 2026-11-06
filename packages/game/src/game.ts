@@ -12,7 +12,7 @@ import { hongKongBno } from './characters/hong-kong-bno';
 import { familyPartner } from './characters/family-partner';
 import { commonEvents, systemEvents } from './events/common';
 import { extensionFor, locationActions, places } from './locations';
-import { npcs, heartEvents } from './npcs';
+import { npcs, heartEvents, townHeartLetters } from './npcs';
 import { items, recipes } from './items';
 import {
   festivals,
@@ -31,6 +31,7 @@ import type {
   FestivalId,
   ItemId,
   Npc,
+  NpcLocation,
   PlaceId,
   Channel,
   Weather,
@@ -72,6 +73,7 @@ function pool(state: GameState) {
     ...characterOf(state.characterId).events,
     ...systemEvents,
     ...heartEvents,
+    ...townHeartLetters,
   ];
 }
 /** Remaining calendar months rounded down; zero on the last valid day. */
@@ -164,6 +166,7 @@ function draw(state: GameState, count: number) {
     const candidates = [
       ...commonEvents,
       ...characterOf(state.characterId).events,
+      ...townHeartLetters,
     ].filter(
       (e) =>
         available(state, e, true) &&
@@ -1599,16 +1602,14 @@ function npcOf(state: GameState, id: string) {
   if (!npc) throw new Error(`Unknown townsperson: ${id}`);
   return npc;
 }
-export function npcAt(
-  state: GameState,
-  npc: string,
-): PlaceId | import('./types').AnchorId {
+export function npcAt(state: GameState, npc: string): NpcLocation {
   const person = npcOf(state, npc);
   const rule = person.schedule.find(
     (r) =>
       (!r.dayKinds || r.dayKinds.includes(state.day.kind)) &&
       (!r.weather || r.weather.includes(state.day.weather)) &&
-      (r.festival === undefined || r.festival === !!state.day.festival),
+      (r.festival === undefined || r.festival === !!state.day.festival) &&
+      matches(state, r.when),
   )!;
   return [...rule.stops].reverse().find((s) => s.from <= state.day.minute)!.at;
 }
