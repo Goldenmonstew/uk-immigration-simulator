@@ -26,7 +26,8 @@ floor (24,2)；rug (24,5)；wall (24,14)；bedT (14,6)；bedB (14,7)；kitchen (
 - 下载：https://opengameart.org/sites/default/files/kenney_RPGurbanPack.zip
 - 许可：CC0，包内 `License.txt` 与来源页。
 - 取 `Tilemap/tilemap_packed.png` 六个人物（列 23–26，每人连续三行），重排为下、左、右、上四方向，每方向三帧。本地每张 64×48。
-- 3 位玩家保留原配色；8 位常驻镇民及 3 位家人对衣服离线调色，保留面部、肤色与头发。没有使用 ninja-adventure 备选人物。
+- 3 位玩家保留原配色；8 位常驻镇民及 4 位家人（含林遥室友）对衣服离线调色，保留面部、肤色与头发。没有使用 ninja-adventure 备选人物。
+- `yao-flatmate.png` 从同包派生的 `skilled-worker.png` 逐像素替换衣服色板：上衣 `#42a379 → #ae67a2`、`#369069 → #915087`，裤装 `#d6d4aa → #555779`、`#c5b993 → #424462`。紫色上衣与靛色裤装区别于林遥的绿色上衣与浅色裤装；保留 64×48、四方向三帧及全部透明像素。
 - 文件清单：
 
 - `urban/ade.png`
@@ -43,6 +44,7 @@ floor (24,2)；rug (24,5)；wall (24,14)；bedT (14,6)；bedB (14,7)；kitchen (
 - `urban/priya.png`
 - `urban/rahman.png`
 - `urban/skilled-worker.png`
+- `urban/yao-flatmate.png`
 
 ## josehzz — Farming crops 16x16
 

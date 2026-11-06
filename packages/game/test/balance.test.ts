@@ -1,3 +1,4 @@
+import { notices } from '../src/festivals';
 import { describe, expect, test } from 'vitest';
 import {
   activities,
@@ -14,6 +15,7 @@ import {
   harvest,
   isOver,
   newGame,
+  npcAt,
   npcs,
   plant,
   recipes,
@@ -26,8 +28,9 @@ import {
   water,
   townsfolk,
 } from '../src';
-import type { GameState, PlaceId, StatKey } from '../src';
+import type { GameEvent, GameState, PlaceId, StatKey } from '../src';
 import { balance as b } from '../src/balance';
+import { heartEvents } from '../src/npcs';
 
 const median = (values: number[]) => {
   const sorted = [...values].sort((a, b) => a - b);
@@ -49,8 +52,13 @@ function play(character: string, seed: number, active: boolean) {
   let recorded = 0;
   let listenedLines = 0;
   let chineseCharacters = 0;
+  const readEvents = new Map<string, GameEvent>();
+  const readNotices = new Set<string>();
+  const peakFriendship: Record<string, number> = {};
   const playedDays = new Set<number>();
   const record = () => {
+    for (const [npc, points] of Object.entries(state.friendship))
+      peakFriendship[npc] = Math.max(peakFriendship[npc] ?? 0, points);
     const quarters = state.log.filter((e) => e.kind === 'quarter').length;
     if (quarters > recorded) {
       quarterSamples.push({ ...state.stats });
@@ -61,13 +69,16 @@ function play(character: string, seed: number, active: boolean) {
   const drain = () => {
     for (let i = 0; currentEvent(state); i++) {
       if (i > 40) throw new Error('Unexpected event loop');
-      const choices = currentEvent(state)!.choices.filter(
+      const event = currentEvent(state)!;
+      readEvents.set(event.id, event);
+      const choices = event.choices.filter(
         (c) =>
           !c.effects.some((e) => e.type === 'criminal' || e.type === 'ending'),
       );
       state = resolve(state, choices[pick(choices.length)].id);
       record();
     }
+    record();
   };
   const visit = (place: PlaceId, minute = 480) => {
     if (state.day.minute < minute) {
@@ -81,6 +92,10 @@ function play(character: string, seed: number, active: boolean) {
     visit(place, minute);
     if (activities(state, place).some((a) => a.id === id)) {
       state = doActivity(state, id);
+      if (id === 'board')
+        for (const notice of notices)
+          if (state.flags.includes(`quarter-board-${notice.id}`))
+            readNotices.add(notice.id);
       record();
       drain();
     }
@@ -103,7 +118,10 @@ function play(character: string, seed: number, active: boolean) {
       continue;
     }
     playedDays.add(day);
-    if (state.day.kind === 'workday') activity('work', 'work', 540);
+    if (state.day.kind === 'workday') {
+      visit('gp', 540);
+      activity('work', 'work', 540);
+    }
     const count = 3 + pick(2);
     for (
       let step = state.day.kind === 'workday' ? 1 : 0;
@@ -115,11 +133,15 @@ function play(character: string, seed: number, active: boolean) {
         ['nap', 'home'],
         ['class', 'college'],
         ['study-home', 'home'],
+        ['study-library', 'library'],
         ['gp', 'gp'],
         ['relax', 'pub'],
         ['coffee', 'cafe'],
         ['bench', 'bench'],
         ['board', 'board'],
+        ['assessment', 'council'],
+        ['visit', 'station'],
+        ['visit', 'green'],
       ] as const;
       if (pick(4) === 0) {
         visit('pond');
@@ -141,13 +163,15 @@ function play(character: string, seed: number, active: boolean) {
     }
     // A small everyday loop exercises gifts, crops and recipes alongside the
     // three/four main activities, rather than silently making legal decisions.
-    const offset = pick(townsfolk(state).length);
+    const present = () =>
+      townsfolk(state).filter((person) => npcAt(state, person.id) !== 'away');
+    const offset = pick(present().length);
     for (
       let chat = 0;
       chat < 5 && state.dayNumber === day && !isOver(state);
       chat++
     ) {
-      const people = townsfolk(state);
+      const people = present();
       const person = people[(offset + chat) % people.length];
       state = talk(state, person.id);
       if (state.outcome?.kind === 'talk' && state.outcome.text) {
@@ -157,7 +181,7 @@ function play(character: string, seed: number, active: boolean) {
       }
       drain();
     }
-    const people = townsfolk(state);
+    const people = present();
     const npc = people[offset % people.length];
     if (state.dayNumber !== day || isOver(state)) {
       record();
@@ -170,7 +194,12 @@ function play(character: string, seed: number, active: boolean) {
     ) {
       state = buy(state, 'tea', 1);
       drain();
-      if (!state.day.gifted.includes(npc.id) && state.inventory.tea > 0) {
+      if (
+        townsfolk(state).some((person) => person.id === npc.id) &&
+        npcAt(state, npc.id) !== 'away' &&
+        !state.day.gifted.includes(npc.id) &&
+        state.inventory.tea > 0
+      ) {
         state = gift(state, npc.id, 'tea');
         drain();
       }
@@ -242,13 +271,57 @@ function play(character: string, seed: number, active: boolean) {
   const lines = npcs
     .flatMap((npc) => npc.lines)
     .filter((line) => state.heard.includes(line.id));
+  const seenText = new Set<string>();
+  const countText = (parts: string[]) =>
+    parts.reduce((sum, text) => {
+      if (seenText.has(text)) return sum;
+      seenText.add(text);
+      return sum + (text.match(/\p{Script=Han}/gu)?.length ?? 0);
+    }, 0);
+  const eventText = (events: GameEvent[]) =>
+    countText(
+      events.flatMap((event) => [
+        event.title.zhCN,
+        ...event.text.zhCN.split('\n'),
+      ]),
+    );
+  const content = {
+    dialogue: countText(lines.map((line) => line.text.zhCN)),
+    events: eventText([...readEvents.values()].filter((event) => !event.heart)),
+    hearts: eventText([...readEvents.values()].filter((event) => event.heart)),
+    notices: countText(
+      notices
+        .filter((notice) => readNotices.has(notice.id))
+        .map((notice) => notice.text.zhCN),
+    ),
+  };
   return {
     state,
+    content,
+    totalContent: Object.values(content).reduce((sum, count) => sum + count, 0),
+    eventCards: [...readEvents.values()].filter((event) => !event.heart).length,
+    noticeCount: readNotices.size,
     fifth,
     quarterSamples,
     heard: listenedLines,
     uniqueLines: lines.length,
     words: chineseCharacters,
+    uniqueWords: lines.reduce(
+      (sum, line) =>
+        sum + (line.text.zhCN.match(/\p{Script=Han}/gu)?.length ?? 0),
+      0,
+    ),
+    heartScenes: Object.fromEntries(
+      [2, 4, 6, 8, 10].map((threshold) => [
+        threshold,
+        heartEvents.filter(
+          (event) =>
+            event.heart!.hearts === threshold &&
+            state.firedEvents.includes(event.id),
+        ).length,
+      ]),
+    ),
+    peakFriendship,
   };
 }
 
@@ -308,10 +381,50 @@ describe('v3 seeded strategies', () => {
           );
           expect(interior).toHaveLength(4);
         }
-        if (active)
-          expect(
-            runs.reduce((sum, r) => sum + r.uniqueLines, 0) / runs.length,
-          ).toBeGreaterThanOrEqual(200);
+        if (active) {
+          const content = Object.fromEntries(
+            (['dialogue', 'events', 'hearts', 'notices'] as const).map(
+              (category) => [
+                category,
+                runs.reduce((sum, run) => sum + run.content[category], 0) /
+                  runs.length,
+              ],
+            ),
+          );
+          const total =
+            runs.reduce((sum, run) => sum + run.totalContent, 0) / runs.length;
+          const uniqueLines =
+            runs.reduce((sum, run) => sum + run.uniqueLines, 0) / runs.length;
+          const heard =
+            runs.reduce((sum, run) => sum + run.heard, 0) / runs.length;
+          const uniqueRatio = uniqueLines / heard;
+          const meanUniqueRatio =
+            runs.reduce((sum, run) => sum + run.uniqueLines / run.heard, 0) /
+            runs.length;
+          console.log(
+            'CONTENT_V3',
+            JSON.stringify({
+              character: character.id,
+              seeds: '1-20',
+              content,
+              total,
+              uniqueLines,
+              heard,
+              uniqueRatio,
+              meanUniqueRatio,
+              eventCards:
+                runs.reduce((sum, run) => sum + run.eventCards, 0) /
+                runs.length,
+              noticeCount:
+                runs.reduce((sum, run) => sum + run.noticeCount, 0) /
+                runs.length,
+            }),
+          );
+          expect(uniqueLines).toBeGreaterThanOrEqual(450);
+          expect(total).toBeGreaterThanOrEqual(15000);
+          expect(uniqueRatio).toBeGreaterThanOrEqual(0.8);
+          expect(meanUniqueRatio).toBeGreaterThanOrEqual(0.8);
+        }
         expect(runs.every((run) => run.state.ending !== undefined)).toBe(true);
         expect(runs.every((run) => run.state.day.minute <= 1440)).toBe(true);
         summary.push({
@@ -327,6 +440,27 @@ describe('v3 seeded strategies', () => {
             runs.reduce((sum, r) => sum + r.uniqueLines, 0) / runs.length,
           meanChineseCharacters:
             runs.reduce((sum, r) => sum + r.words, 0) / runs.length,
+          meanUniqueChineseCharacters:
+            runs.reduce((sum, r) => sum + r.uniqueWords, 0) / runs.length,
+          meanHeartScenes: Object.fromEntries(
+            [2, 4, 6, 8, 10].map((threshold) => [
+              threshold,
+              runs.reduce((sum, r) => sum + r.heartScenes[threshold], 0) /
+                runs.length,
+            ]),
+          ),
+          tenHeartReach: Object.fromEntries(
+            npcs
+              .filter(
+                (npc) =>
+                  !npc.characters || npc.characters.includes(character.id),
+              )
+              .map((npc) => [
+                npc.id,
+                runs.filter((run) => (run.peakFriendship[npc.id] ?? 0) >= 1000)
+                  .length / runs.length,
+              ]),
+          ),
         });
       }
       console.log('BALANCE_V3', JSON.stringify(summary));

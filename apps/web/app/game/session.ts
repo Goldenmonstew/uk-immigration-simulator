@@ -14,6 +14,7 @@ import type { DayMemory } from './diary';
 
 export function visibleResidents(state: GameState, interior: boolean) {
   return townsfolk(state)
+    .filter((npc) => npcAt(state, npc.id) !== 'away')
     .filter((npc) => (npcAt(state, npc.id) === 'home') === interior)
     .slice(0, 12);
 }
@@ -60,6 +61,7 @@ const residentIds = [
   'jamie',
   'ka-ning-partner',
   'ka-ning-child',
+  'yao-flatmate',
 ];
 export const spritePath = (id: string) =>
   `/game/assets/urban/${residentIds.includes(id) ? id : 'skilled-worker'}.png`;

@@ -39,6 +39,7 @@ export function playSound(kind: keyof typeof files, npc = '') {
         'jamie',
         'ka-ning-partner',
         'ka-ning-child',
+        'yao-flatmate',
       ].indexOf(npc) /
         20;
   }

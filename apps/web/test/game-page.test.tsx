@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { readFileSync } from 'node:fs';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { afterEach, beforeEach, expect, test, vi } from 'vitest';
 import { evaluate, type Locale } from '@uk-immigration/engine';
@@ -371,11 +372,125 @@ test.each(['zh-CN', 'en'] as const)(
     expect(core.currentEvent(state)?.speaker).toBe('margaret');
     view = h.render();
     const heartEvent = core.currentEvent(state)!;
+    const paragraphs =
+      heartEvent.text[locale === 'en' ? 'en' : 'zhCN'].split('\n');
+    for (let index = 0; index < paragraphs.length; index++) {
+      view.click(t('game.reveal', locale));
+      view = h.render();
+      if (index < paragraphs.length - 1) {
+        view.click(t('game.continuePlaying', locale));
+        view = h.render();
+      }
+    }
     view.click(heartEvent.choices[0].label[locale === 'en' ? 'en' : 'zhCN']);
     expect(state.pendingEvent).toBeUndefined();
     expect(state.firedEvents).toContain(heartEvent.id);
     if (locale === 'en') expect(view.html).not.toMatch(cjk);
     h.dispose();
+  },
+);
+
+test.each(['zh-CN', 'en'] as const)(
+  'heart scenes type and reveal one paragraph at a time before offering choices in %s',
+  (locale) => {
+    vi.useFakeTimers();
+    let state = active(locale);
+    state.friendship.margaret = 190;
+    state = core.talk(state, 'margaret');
+    const event = core.currentEvent(state)!;
+    const key = locale === 'en' ? 'en' : 'zhCN';
+    const paragraphs = event.text[key].split('\n');
+    expect(paragraphs.length).toBeGreaterThanOrEqual(3);
+    const onChange = vi.fn((next: GameState) => {
+      state = next;
+    });
+    const h = harness(
+      () => Dialogue({ state, npc: 'margaret', onChange, onClose: vi.fn() }),
+      locale,
+    );
+    const hasChoices = (view: ReturnType<typeof h.render>) =>
+      view.buttons.some((b) => b.label.startsWith(event.choices[0].label[key]));
+    for (let index = 0; index < paragraphs.length; index++) {
+      h.render();
+      h.flush();
+      let view = h.render();
+      expect(view.html).toContain(
+        `aria-label="${paragraphs[index].replaceAll('"', '&quot;').replaceAll("'", '&#x27;')}"`,
+      );
+      expect(view.html).toContain('<span aria-hidden="true">▍</span>');
+      expect(hasChoices(view)).toBe(false);
+      expect(
+        view.buttons.some((b) => b.label === t('game.continuePlaying', locale)),
+      ).toBe(false);
+      if (index < paragraphs.length - 1)
+        expect(view.html).not.toContain(paragraphs[index + 1]);
+
+      vi.advanceTimersByTime(28);
+      view = h.render();
+      expect(view.html).toContain(`>${paragraphs[index][0]}<span`);
+      expect(hasChoices(view)).toBe(false);
+      if (index === 1) {
+        vi.advanceTimersByTime(28 * (paragraphs[index].length - 1));
+      } else view.click(t('game.reveal', locale));
+      view = h.render();
+      expect(
+        view.buttons.some((b) => b.label === t('game.reveal', locale)),
+      ).toBe(false);
+      expect(hasChoices(view)).toBe(index === paragraphs.length - 1);
+      expect(onChange).not.toHaveBeenCalled();
+      if (index < paragraphs.length - 1) {
+        expect(view.html).not.toContain(paragraphs[index + 1]);
+        view.click(t('game.continuePlaying', locale));
+      }
+    }
+    h.render().click(event.choices[0].label[key]);
+    expect(onChange).toHaveBeenCalledOnce();
+    expect(state.pendingEvent).toBeUndefined();
+    expect(state.firedEvents).toContain(event.id);
+    h.dispose();
+  },
+);
+
+test('single-paragraph phone dialogue keeps its choices while the text is typing', () => {
+  const state = active();
+  state.pendingEvent = 'phone';
+  const onChange = vi.fn();
+  const view = renderView(() =>
+    Dialogue({ state, npc: 'margaret', onChange, onClose: vi.fn() }),
+  );
+  expect(view.html).toContain('<span aria-hidden="true">▍</span>');
+  expect(view.buttons.some((b) => b.label === t('game.continuePlaying'))).toBe(
+    false,
+  );
+  view.click('好，记下了');
+  expect(onChange.mock.calls[0][0].pendingEvent).toBeUndefined();
+});
+
+test.each(['zh-CN', 'en'] as const)(
+  'speakerless event text uses separate paragraphs in %s',
+  (locale) => {
+    const event = fixtures[1];
+    const original = event.text;
+    event.text = {
+      zhCN: '第一段。\n第二段。\n第三段。',
+      en: 'First paragraph.\nSecond paragraph.\nThird paragraph.',
+    };
+    try {
+      const state = active(locale);
+      state.pendingEvent = event.id;
+      const view = renderView(
+        () => EventCard({ state, onChange: vi.fn() }),
+        locale,
+      );
+      const paragraphs =
+        event.text[locale === 'en' ? 'en' : 'zhCN'].split('\n');
+      for (const paragraph of paragraphs)
+        expect(view.html).toContain(`>${paragraph}</p>`);
+      expect(view.html.match(/<p /g)).toHaveLength(3);
+      view.click(event.choices[0].label[locale === 'en' ? 'en' : 'zhCN']);
+    } finally {
+      event.text = original;
+    }
   },
 );
 
@@ -797,6 +912,47 @@ test('hours render from places, and core filters activities that cannot finish b
   }
 });
 
+test.each(core.characters)(
+  '$id household members leave both maps while away and return home afterwards',
+  (character) => {
+    const state = core.newGame(character.id, 42, 'en');
+    state.day.kind = 'workday';
+    state.day.weather = 'sunny';
+    delete state.day.festival;
+    state.day.minute = 480;
+    const family = core
+      .townsfolk(state)
+      .filter((npc) => npc.characters?.includes(character.id));
+    expect(family.length).toBeGreaterThan(0);
+    for (const npc of family)
+      expect(visibleResidents(state, true)).toContain(npc);
+    state.day.minute = 660;
+    for (const npc of family) {
+      expect(core.npcAt(state, npc.id)).toBe('away');
+      expect(visibleResidents(state, true)).not.toContain(npc);
+      expect(visibleResidents(state, false)).not.toContain(npc);
+      expect(core.townsfolk(state)).toContain(npc);
+    }
+    state.day.minute = 1080;
+    for (const npc of family)
+      expect(visibleResidents(state, true)).toContain(npc);
+  },
+);
+
+test('flatmate uses a distinct existing 64 by 48 PNG sprite sheet', () => {
+  const path = spritePath('yao-flatmate');
+  expect(path).toBe('/game/assets/urban/yao-flatmate.png');
+  const sprite = readFileSync(new URL(`../public${path}`, import.meta.url));
+  expect(sprite.subarray(0, 8)).toEqual(
+    Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]),
+  );
+  expect([sprite.readUInt32BE(16), sprite.readUInt32BE(20)]).toEqual([64, 48]);
+  const player = readFileSync(
+    new URL(`../public${spritePath('skilled-worker')}`, import.meta.url),
+  );
+  expect(sprite.equals(player)).toBe(false);
+});
+
 test('home residents use fixed accessible positions and never appear in the town while home', () => {
   // Jamie is real household data since 9.3; mornings are spent at home.
   const state = core.newGame('family-partner', 42, 'en');
@@ -807,7 +963,19 @@ test('home residents use fixed accessible positions and never appear in the town
   expect(visibleResidents(state, false).some((n) => n.id === 'jamie')).toBe(
     false,
   );
-  expect(visibleResidents(active(), true)).toEqual([]);
+  // Yao's flatmate is at home before leaving for work.
+  expect(visibleResidents(active(), true).map((n) => n.id)).toEqual([
+    'yao-flatmate',
+  ]);
+  // Away at work: drawn neither at home nor in the town.
+  const working = active();
+  working.day.weather = 'sunny';
+  working.day.minute = 660;
+  expect(core.npcAt(working, 'yao-flatmate')).toBe('away');
+  expect(visibleResidents(working, true)).toEqual([]);
+  expect(
+    visibleResidents(working, false).some((n) => n.id === 'yao-flatmate'),
+  ).toBe(false);
   expect(core.peopleAt(state, 'home')).toContain('jamie');
   const chatted = core.talk(state, 'jamie');
   expect(chatted.day.talked).toContain('jamie');

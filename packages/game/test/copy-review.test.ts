@@ -84,6 +84,23 @@ add(['ka-ning-partner-daily-27'], { forbids: ['bno-partner-restarted'] });
 add(['jamie-daily-26'], { forbids: ['family-jamie-reemployed'] });
 add(['ka-ning-child-daily-27'], { season: 4 });
 add(['ka-ning-child-daily-28'], { season: 3 });
+for (const [npc, minuteMin] of [
+  ['jamie', 1020],
+  ['ka-ning-partner', 1020],
+  ['ka-ning-child', 930],
+] as const)
+  add(
+    Array.from({ length: 6 }, (_, i) => `${npc}-daily-${31 + i}`),
+    { dayKinds: ['workday'], when: [{ minuteMin }] },
+  );
+add(['jamie-daily-37', 'jamie-daily-38'], {
+  requires: ['family-jamie-unemployed'],
+  forbids: ['family-jamie-reemployed', 'family-pip-applied'],
+});
+add(['ka-ning-partner-daily-37', 'ka-ning-partner-daily-38'], {
+  requires: ['bno-partner-between-jobs'],
+  forbids: ['bno-partner-restarted'],
+});
 for (const npc of npcs)
   for (const line of npc.lines)
     if (line.festival === 'bonfire-night')

@@ -200,6 +200,8 @@ export type AnchorId =
   | 'college-steps'
   | 'pub-garden'
   | 'library-steps';
+/** 'away': out of town for work or school. */
+export type NpcLocation = PlaceId | AnchorId | 'away';
 /** 'margaret' | 'priya' | 'ade' | 'helen' | 'dave' | 'rahman' | 'lina' | 'gareth' plus household ids. */
 export type NpcId = string;
 /** Seeds are `seed-<crop>`; the client maps unknown ids to a fallback icon. */
@@ -253,7 +255,8 @@ export interface Npc {
     dayKinds?: DayKind[];
     weather?: Weather[];
     festival?: boolean;
-    stops: { from: number; at: PlaceId | AnchorId }[];
+    when?: Condition[];
+    stops: { from: number; at: NpcLocation }[];
   }[];
   gifts: { loved: ItemId[]; liked: ItemId[]; disliked: ItemId[] };
   reactions: Record<'loved' | 'liked' | 'neutral' | 'disliked', Text>;

@@ -1,3 +1,4 @@
+import { notices } from '../src/festivals';
 import { perform, quarter } from './helpers';
 import { evaluate } from '@uk-immigration/engine';
 import { currentLaw2026_11 } from '@uk-immigration/policy-data';
@@ -127,9 +128,9 @@ describe('v3 content contract', () => {
       120,
     );
     expect(commonEvents.filter((e) => e.id.startsWith('town-'))).toHaveLength(
-      14,
+      70,
     );
-    expect(characters[0].events).toHaveLength(40);
+    expect(characters[0].events).toHaveLength(70);
     expect(characters.slice(1).map((c) => c.events.length)).toEqual([80, 80]);
     expect(new Set(all.map((e) => e.id)).size).toBe(all.length);
     const produced = new Set([
@@ -138,6 +139,10 @@ describe('v3 content contract', () => {
       'debt-crisis',
       'lina-can-stay',
       'lina-will-leave',
+      ...heartEvents.flatMap((event) =>
+        event.choices.flatMap((choice) => choice.sets ?? []),
+      ),
+      ...notices.map((notice) => `quarter-board-${notice.id}`),
       ...all.flatMap((e) => e.choices.flatMap((c) => c.sets ?? [])),
     ]);
     for (const e of all) {
