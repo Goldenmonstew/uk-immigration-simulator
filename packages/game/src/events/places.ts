@@ -17,9 +17,9 @@ const scenes: [
     'college',
     'eraser',
     '跑偏的橡皮',
-    'A wandering eraser',
+    'A wandering rubber',
     '一块橡皮从课桌滚到鞋边，失主正沿着反方向找。你一抬脚，它又往门口跑了。',
-    'An eraser rolls to your shoe while its owner searches the other way. Lift your foot and it heads for the door.',
+    'A rubber rolls to your shoe while its owner searches the other way. Lift your foot and it heads for the door.',
     '蹲下挡住它',
     'Crouch and stop it',
     '叫住找橡皮的同学',
@@ -78,8 +78,8 @@ const scenes: [
     'display',
     '亮得太短的号码',
     'A fleeting number',
-    '签到屏幕的提示闪得很快，旁边的人还在找眼镜。前台递来纸笔，屏幕已经回到了开头。',
-    'The check-in message flashes past while someone finds their glasses. Reception offers pen and paper as it resets.',
+    '签到屏幕的提示闪得很快，旁边的人才刚读完第一行。前台递来纸笔，屏幕已经回到了开头。',
+    'The check-in message resets just as someone finishes the first line. Reception offers pen and paper for another try.',
     '陪对方把名字写清',
     'Help write the name clearly',
     '把纸笔递到手边',
@@ -256,14 +256,14 @@ const scenes: [
   [
     'cafe',
     'chair-leg',
-    '转个方向的桌子',
-    'A turn of the table',
-    '客人换了三张纸垫桌脚，桌子还晃。服务员把桌子转半圈，杯中的水终于不再替大家点头。',
-    'Three paper pads fail to steady a table. The server turns it halfway round; the water finally stops nodding.',
-    '帮忙收掉多余纸垫',
-    'Collect the spare pads',
-    '扶住杯子让桌子转过去',
-    'Hold the cups while it turns',
+    '菜单后的糖罐',
+    'The sugar behind the menu',
+    '服务员擦过桌面，糖罐被推到另一头。客人伸手去拿，罐子却停在菜单后面，只露出圆圆的盖顶。',
+    'The sugar jar slides behind a menu as the server wipes the table. A customer reaches for it, but only the lid is visible.',
+    '把菜单挪开露出糖罐',
+    'Move the menu to reveal the sugar',
+    '把糖罐递到客人手边',
+    'Pass the sugar to the customer',
   ],
   [
     'cafe',
@@ -391,7 +391,7 @@ const scenes: [
     '填错格的字',
     'A word in the wrong square',
     '长椅上有人对着填字报纸叹气，想了半天，发现答案填到了题号旁。橡皮只剩指甲那么小。',
-    'A crossword solver sighs, then notices the answer beside the clue number. Their eraser is fingernail-small.',
+    'A crossword solver sighs, then notices the answer beside the clue number. Their rubber is fingernail-small.',
     '替对方按住报纸慢慢擦',
     'Hold the paper while they erase',
     '陪着从空格重新读题',
@@ -400,13 +400,13 @@ const scenes: [
   [
     'bench',
     'slat',
-    '夹在木条里的便签',
-    'A note in the slats',
-    '一张购物便签卡在椅子木条间，失主记得买茶，剩下的全忘了。你们用另一张硬纸慢慢把它顶出来。',
-    'A shopping note sticks between bench slats. Its owner remembers tea and nothing else. A stiff card can nudge it out.',
+    '夹在木条里的票',
+    'A ticket in the slats',
+    '一张影院票卡在长椅木条间，失主记得片名，却想不起座位。你们找来另一张硬纸，试着把它顶出来。',
+    'A cinema ticket sticks between bench slats. Its owner remembers the film but not the seat. You find a stiff card to nudge it out.',
     '扶着硬纸慢慢顶',
     'Steady the card',
-    '蹲下替对方看便签的位置',
+    '蹲下替对方看票的位置',
     'Crouch to guide them',
   ],
   [
@@ -453,6 +453,11 @@ export const placeEvents: GameEvent[] = scenes.map(
     weight: 2,
     once: true,
     channel: `place:${place}`,
+    ...((place === 'pond' ||
+      place === 'allotment' ||
+      (place === 'bench' && ['crossword', 'drawing'].includes(id))) && {
+      when: [{ minuteMax: 1080 }],
+    }),
     choices: [
       {
         id: 'help',
@@ -462,7 +467,23 @@ export const placeEvents: GameEvent[] = scenes.map(
       {
         id: 'stay',
         label: { zhCN: second, en: secondEn },
-        effects: [{ type: 'stat', key: 'english', delta: b.heartHelp }],
+        effects: [
+          {
+            type: 'stat',
+            key:
+              place === 'gp' ||
+              place === 'pond' ||
+              place === 'allotment' ||
+              place === 'bench'
+                ? 'health'
+                : place === 'work' || place === 'council'
+                  ? 'career'
+                  : place === 'shop' || place === 'station'
+                    ? 'mood'
+                    : 'english',
+            delta: b.heartHelp,
+          },
+        ],
       },
     ],
   }),

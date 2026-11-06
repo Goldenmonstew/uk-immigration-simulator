@@ -1829,6 +1829,7 @@ const events: GameEvent[] = [
     choices: [
       {
         id: 'first',
+        sets: ['partner-separated'],
         label: {
           zhCN: '结束伴侣关系，分别生活',
           en: 'End the partnership and live apart',

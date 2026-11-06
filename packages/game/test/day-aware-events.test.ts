@@ -12,6 +12,8 @@ import {
 } from '../src';
 import type { Channel, Condition, GameEvent, GameState } from '../src';
 import { commonEvents } from '../src/events/common';
+import { balance as b } from '../src/balance';
+import { heartEvents } from '../src/npcs';
 import { clear } from './helpers';
 
 function card(channel: Channel, when: Condition[] = []): GameEvent {
@@ -95,8 +97,60 @@ describe('day-aware event delivery', () => {
       expect(enter(enter(tick(before, 60), 'green'), 'home').pendingEvent).toBe(
         event.id,
       );
-      expect(sleep(tick(before, 840)).pendingEvent).toBe(event.id);
+      const bedtime = queued(event, 1320);
+      const delivered = sleep(bedtime);
+      expect(delivered.pendingEvent).toBe(event.id);
+      expect(delivered.day.place).toBe('home');
+      expect(delivered.dayNumber).toBe(bedtime.dayNumber);
+      expect(delivered.firedEvents).toContain(event.id);
     });
+  });
+  test('sleeping at home at 22:00 returns an unvisited pond card to the pool unfired', () => {
+    const event = card('place:pond');
+    only(event, () => {
+      const before = queued(event, 1320);
+      before.day.index = 2;
+      before.day.kind = 'special';
+      const after = sleep(before);
+      expect(after.pendingEvent).toBeUndefined();
+      expect(after.dayNumber).toBe(before.dayNumber + 1);
+      expect(after.firedEvents).not.toContain(event.id);
+      expect([
+        ...after.eventQueue,
+        ...after.day.deliveries.map((delivery) => delivery.eventId),
+      ]).toContain(event.id);
+      let revisited = after;
+      for (let day = 0; day < 3 && !revisited.pendingEvent; day++) {
+        revisited = enter(tick(revisited, 180), 'pond');
+        if (!revisited.pendingEvent) revisited = sleep(revisited);
+      }
+      expect(currentEvent(revisited)?.id).toBe(event.id);
+      expect(revisited.day.place).toBe('pond');
+      expect(
+        revisited.firedEvents.filter((id) => id === event.id),
+      ).toHaveLength(1);
+    });
+  });
+  test('a festival chat reaches the threshold but waits until the next ordinary day for the scene', () => {
+    const event = heartEvents.find((scene) => scene.id === 'heart-helen-2')!;
+    const before = clear();
+    before.day.index = 2;
+    before.day.kind = 'special';
+    before.day.festival = 'lunar-new-year';
+    before.day.minute = 600;
+    before.friendship.helen = 200 - b.talkFriendship;
+    const festival = talk(before, 'helen');
+    expect(festival.friendship.helen).toBe(200);
+    expect(festival.pendingEvent).toBeUndefined();
+    expect(festival.firedEvents).not.toContain(event.id);
+    const nextDay = clear(sleep(festival));
+    expect(nextDay.day.kind).toBe('workday');
+    expect(nextDay.day.festival).toBeUndefined();
+    const ordinary = talk(nextDay, 'helen');
+    expect(currentEvent(ordinary)?.id).toBe(event.id);
+    expect(ordinary.firedEvents.filter((id) => id === event.id)).toHaveLength(
+      1,
+    );
   });
   test.each(['place:green', 'npc:ade'] as const)(
     '%s retains a card until its delivery window',

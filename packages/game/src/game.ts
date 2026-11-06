@@ -230,6 +230,7 @@ function deliver(state: GameState, channel: Channel | 'leftovers') {
     if (!event) continue;
     if (delivery.channel.startsWith('place:')) {
       const place = delivery.channel.slice(6) as PlaceId;
+      if (channel === 'leftovers' && place !== state.day.place) continue;
       if (!isOpen(state, place)) continue;
     }
     if (channel === 'leftovers' && delivery.channel === 'phone')
@@ -1667,7 +1668,7 @@ export function talk(state: GameState, npc: string): GameState {
     statDeltas: deltas(state, next),
   };
   deliver(next, `npc:${npc}`);
-  if (!next.pendingEvent) {
+  if (!next.pendingEvent && !next.day.festival) {
     const heart = heartEvents.find(
       (event) =>
         event.heart!.npc === npc &&

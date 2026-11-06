@@ -535,7 +535,7 @@ export const notices: { id: string; text: Text; season?: Quarter }[] = [
     id: 'repair',
     text: {
       zhCN: '咖啡馆收小件缝补，纽扣自带。不会穿针也能来坐坐。',
-      en: 'Small sewing repairs at the café. Bring buttons; company welcome too.',
+      en: 'Small sewing repairs at the café. Bring buttons; can’t thread a needle? Come and sit anyway.',
     },
   },
   {
@@ -562,8 +562,8 @@ export const notices: { id: string; text: Text; season?: Quarter }[] = [
   {
     id: 'winter-mending',
     text: {
-      zhCN: '冬衣缝补桌在图书馆，断线的手套也能带来。',
-      en: 'Winter-clothes mending table at the library. Bring unravelled gloves.',
+      zhCN: '图书馆冬衣整理桌教叠厚毛衣，带一件总塞不进抽屉的来。',
+      en: 'Winter-clothes folding at the library. Bring a jumper that never fits the drawer.',
     },
     season: 1,
   },
@@ -578,8 +578,8 @@ export const notices: { id: string; text: Text; season?: Quarter }[] = [
   {
     id: 'winter-birds',
     text: {
-      zhCN: '池塘冬季观鸟，借望远镜前先看看镜头盖。',
-      en: 'Winter birdwatching at the pond. Check binocular caps before borrowing.',
+      zhCN: '池塘冬季观鸟，可借鸟鸣卡，听不准的那声先空着。',
+      en: 'Winter birdwatching at the pond. Borrow a birdsong card; leave unfamiliar calls blank.',
     },
     season: 1,
   },
@@ -610,8 +610,8 @@ export const notices: { id: string; text: Text; season?: Quarter }[] = [
   {
     id: 'spring-pots',
     text: {
-      zhCN: '小店交换空花盆，请把盆底的泥先刷掉。',
-      en: 'Spring pot swap at the shop. Brush the soil off the bottoms first.',
+      zhCN: '小店春季擦招牌，借长柄刷前先把门口的自行车推开。',
+      en: 'Spring sign-cleaning at the shop. Move the bicycles before borrowing the long brush.',
     },
     season: 2,
   },
@@ -634,8 +634,8 @@ export const notices: { id: string; text: Text; season?: Quarter }[] = [
   {
     id: 'spring-books',
     text: {
-      zhCN: '图书馆春季整理书架，书签请先取回，树叶也算。',
-      en: 'Spring shelf tidy at the library. Retrieve bookmarks, including leaves.',
+      zhCN: '图书馆春季整理书架，夹在书里的明信片请先取回。',
+      en: 'Spring shelf tidy at the library. Retrieve postcards left inside books.',
     },
     season: 2,
   },
@@ -682,8 +682,8 @@ export const notices: { id: string; text: Text; season?: Quarter }[] = [
   {
     id: 'autumn-leaves',
     text: {
-      zhCN: '图书馆收秋叶做书签，只捡落下的，不折树枝。',
-      en: 'Autumn-leaf bookmarks at the library. Fallen leaves only; leave branches alone.',
+      zhCN: '图书馆拓印秋叶，带落叶来就行，桌上备着蜡笔。',
+      en: 'Autumn leaf rubbings at the library. Bring fallen leaves; crayons are on the table.',
     },
     season: 4,
   },

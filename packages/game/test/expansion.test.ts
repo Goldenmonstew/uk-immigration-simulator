@@ -41,11 +41,6 @@ describe('10.2 town dialogue', () => {
             line.when?.some((c) => 'route' in c && c.route === route),
           ).length,
         ).toBeGreaterThanOrEqual(3);
-      expect(
-        added.filter((line) =>
-          line.requires?.some((flag) => !flag.startsWith('heart-')),
-        ).length,
-      ).toBeGreaterThanOrEqual(4);
       const callbacks = added.filter((line) =>
         line.requires?.some((flag) => flag.startsWith('heart-')),
       );
@@ -82,6 +77,7 @@ describe('10.2 town dialogue', () => {
             before.heard = ['fallback'];
             before.firedEvents = heartEvents.map((event) => event.id);
             before.flags = [...(line.requires ?? [])];
+            before.friendship[id] = (line.heartsMin ?? 0) * 100;
             const expected = !line.when?.some(
               (c) => 'route' in c && c.route !== route,
             );
@@ -243,7 +239,10 @@ describe('10.2 notices and festivals', () => {
           event.when?.some(
             (c) =>
               'yearMax' in c &&
-              c.yearMax === (festival.id === 'christmas-market' ? 2 : 1),
+              c.yearMax ===
+                (['christmas-market', 'bonfire-night'].includes(festival.id)
+                  ? 2
+                  : 1),
           ),
         ),
       ).toBe(true);

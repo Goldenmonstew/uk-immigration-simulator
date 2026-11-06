@@ -10,7 +10,7 @@ import {
   tick,
 } from '../src';
 import { locationActions, places } from '../src/locations';
-import type { GameState } from '../src';
+import type { GameState, PlaceId } from '../src';
 
 export function clear(state = newGame('skilled-worker', 1)): GameState {
   const next = structuredClone(state);
@@ -52,6 +52,10 @@ export function firstPending(state: GameState) {
   const date = state.date;
   while (!currentEvent(next) && !next.ending && next.date === date) {
     next = tick(next, Math.max(0, 600 - next.day.minute));
+    for (const delivery of next.day.deliveries) {
+      if (!currentEvent(next) && delivery.channel.startsWith('place:'))
+        next = enter(next, delivery.channel.slice(6) as PlaceId);
+    }
     if (!currentEvent(next)) next = sleep(next);
   }
   return next;

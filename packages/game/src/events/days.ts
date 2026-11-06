@@ -30,12 +30,12 @@ const noticeScenes: [
     'shop',
     '隔着玻璃的饼干',
     'Biscuit behind glass',
-    '寻猫公告上的饼干蹲在小店窗台外。你认出条纹，收住脚步，店员拿来电话，却先拍糊了照片。',
-    'Biscuit from the missing-cat notice sits outside the shop window. You stop; the worker’s first phone photo blurs.',
-    '指着猫提醒店员联系主人',
-    'Point it out so the worker can call the owner',
-    '站远一点让店员慢慢拍',
-    'Give the worker room to photograph it',
+    '寻猫公告上的饼干蹲在小店窗台外。你认出条纹，收住脚步，拉赫曼拿来电话，却先拍糊了照片。',
+    'Biscuit from the missing-cat notice sits outside the shop window. You stop; Rahman’s first phone photo blurs.',
+    '指着猫提醒拉赫曼联系主人',
+    'Point it out so Rahman can call the owner',
+    '站远一点让拉赫曼慢慢拍',
+    'Give Rahman room to photograph it',
   ],
   [
     'choir',
@@ -163,8 +163,8 @@ const festivalScenes: [
     'bun',
     '没包住的甜面包',
     'The escaping bun',
-    '摊主翻出旧纸袋装甜面包，袋口折得太小，圆面包露出半张脸。大家帮忙换袋，谁也没急着咬。',
-    'Old bags won’t fold around the round buns. Half a bun peeks out as everyone helps find larger bags.',
+    '摊主翻出旧纸袋装甜面包，袋口折得太小，圆面包露出半张脸。大家帮忙换袋，摊主把掉下的芝麻扫进小碟。',
+    'Old bags won’t fold around the round buns. Half a bun peeks out as everyone finds larger bags and the stallholder gathers the fallen sesame seeds.',
     '帮忙展开大纸袋',
     'Open the larger bags',
     '托住托盘让摊主换袋',
@@ -289,7 +289,7 @@ const festivalScenes: [
     'bell',
     '盒底的小铃',
     'The bell at the bottom',
-    '摊位翻出旧装饰盒，盒底一只小铃怎么也不响。孩子拿来一看，里面塞着去年收摊时垫的棉花。',
+    '摊位翻出旧装饰盒，盒底一只小铃怎么也不响。孩子拿来一看，里面塞着上一回集市收摊时垫的棉花。',
     'An old decoration bell stays silent until a child finds packing cotton inside, left from the previous market.',
     '帮孩子慢慢取出棉花',
     'Help remove the cotton',
@@ -332,7 +332,9 @@ export const noticeEvents: GameEvent[] = noticeScenes.map(
     weight: 2,
     once: true,
     requires: [`quarter-board-${notice}`],
-    ...(notice === 'litter' && { when: [{ dayKind: 'weekend' as const }] }),
+    ...(notice === 'litter' && {
+      when: [{ dayKind: 'weekend' as const }, { minuteMax: 1080 }],
+    }),
     ...(notice === 'walk' && { when: [{ minuteMin: 1080 }] }),
     choices: [
       {
@@ -343,7 +345,18 @@ export const noticeEvents: GameEvent[] = noticeScenes.map(
       {
         id: 'stay',
         label: { zhCN: second, en: secondEn },
-        effects: [{ type: 'stat', key: 'health', delta: b.heartHelp }],
+        effects: [
+          {
+            type: 'stat',
+            key:
+              place === 'library' || place === 'cafe'
+                ? 'english'
+                : place === 'shop'
+                  ? 'mood'
+                  : 'health',
+            delta: b.heartHelp,
+          },
+        ],
       },
     ],
   }),
@@ -362,34 +375,38 @@ export const festivalEvents: GameEvent[] = festivalScenes.map(
     firstEn,
     second,
     secondEn,
-  ]) => ({
-    id: `town-festival-${festival}-${id}`,
-    channel: 'place:green',
-    season,
-    title: { zhCN: title, en: titleEn },
-    text: { zhCN, en },
-    weight: 2,
-    once: true,
-    when: [
-      { festival },
-      stage === 0
-        ? { yearMax: festival === 'christmas-market' ? 2 : 1 }
-        : {
-            yearMin:
-              stage === 1 ? (festival === 'christmas-market' ? 3 : 2) : 5,
-          },
-    ],
-    choices: [
-      {
-        id: 'help',
-        label: { zhCN: first, en: firstEn },
-        effects: [{ type: 'stat', key: 'mood', delta: b.heartMood }],
-      },
-      {
-        id: 'stay',
-        label: { zhCN: second, en: secondEn },
-        effects: [{ type: 'stat', key: 'health', delta: b.heartHelp }],
-      },
-    ],
-  }),
+  ]) => {
+    const alternate =
+      festival === 'christmas-market' || festival === 'bonfire-night';
+    return {
+      id: `town-festival-${festival}-${id}`,
+      channel: 'place:green',
+      season,
+      title: { zhCN: title, en: titleEn },
+      text: { zhCN, en },
+      weight: 2,
+      once: true,
+      when: [
+        { festival },
+        stage === 0
+          ? { yearMax: alternate ? 2 : 1 }
+          : {
+              yearMin: stage === 1 ? (alternate ? 3 : 2) : 5,
+            },
+        ...(id === 'lantern' || id === 'star' ? [{ minuteMin: 960 }] : []),
+      ],
+      choices: [
+        {
+          id: 'help',
+          label: { zhCN: first, en: firstEn },
+          effects: [{ type: 'stat', key: 'mood', delta: b.heartMood }],
+        },
+        {
+          id: 'stay',
+          label: { zhCN: second, en: secondEn },
+          effects: [{ type: 'stat', key: 'health', delta: b.heartHelp }],
+        },
+      ],
+    };
+  },
 );

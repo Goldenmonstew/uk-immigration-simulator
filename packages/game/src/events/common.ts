@@ -1732,8 +1732,8 @@ export const commonEvents: GameEvent[] = [
       en: 'A spare doormat',
     },
     text: {
-      zhCN: '室友准备搬走，走廊里多了一卷没开封的门垫。',
-      en: 'A flatmate is moving out; an unopened doormat appears in the hallway.',
+      zhCN: '隔壁准备搬走，走廊里多了一卷没开封的门垫。',
+      en: 'The neighbours are moving out; an unopened doormat appears in the hallway.',
     },
     weight: 2,
     forbids: ['quarter-housing-change'],
@@ -1741,8 +1741,8 @@ export const commonEvents: GameEvent[] = [
       {
         id: 'plan',
         label: {
-          zhCN: '一起找新住处',
-          en: 'Look for a new home',
+          zhCN: '也去看看新住处',
+          en: 'Look at new places too',
         },
         effects: [
           {
@@ -1757,8 +1757,8 @@ export const commonEvents: GameEvent[] = [
         id: 'skip',
         sets: ['quarter-housing-change'],
         label: {
-          zhCN: '留下找新室友',
-          en: 'Stay and find another flatmate',
+          zhCN: '留下，把门垫还给邻居',
+          en: 'Stay put and return the doormat',
         },
         effects: [
           {
