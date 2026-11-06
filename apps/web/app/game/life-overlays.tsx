@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useRef, useState } from 'react';
+import { Fragment, useEffect, useRef, useState } from 'react';
 import { useTranslation } from '../../i18n/locale';
 import {
   buy,
@@ -592,7 +592,14 @@ export function OutcomeText({ text }: { text?: Text }) {
   const { locale } = useTranslation();
   return text ? (
     <p role="status" className={styles.outcomeToast}>
-      {localText(text, locale)}
+      {localText(text, locale)
+        .split('\n')
+        .map((line, index) => (
+          <Fragment key={index}>
+            {index > 0 && <br />}
+            {line}
+          </Fragment>
+        ))}
     </p>
   ) : null;
 }
