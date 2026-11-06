@@ -333,7 +333,7 @@ describe('delivery and resumable default routine', () => {
 });
 
 describe('actual travel, interrupted travel and financial boundaries', () => {
-  test('abroad only morning and phone arrive; face-to-face cards and letters wait for the first day home', () => {
+  test('abroad only phone calls arrive; morning cards do not happen; face-to-face cards and letters wait for the first day home', () => {
     const channels: Channel[] = [
       'morning',
       'phone',
@@ -367,16 +367,15 @@ describe('actual travel, interrupted travel and financial boundaries', () => {
         const event = currentEvent(state)!;
         expect(event).toBeDefined();
         expect(
-          event.id.startsWith('system-') ||
-            ['morning', 'phone'].includes(event.channel!),
+          event.id.startsWith('system-') || event.channel === 'phone',
         ).toBe(true);
         expect(mailbox(state)).toEqual([]);
         delivered.push(event.id);
         state = resolve(JSON.parse(JSON.stringify(state)), event.choices[0].id);
       }
-      expect(delivered).toEqual(
-        expect.arrayContaining(['trip-fixture-0', 'trip-fixture-1']),
-      );
+      expect(delivered).toContain('trip-fixture-1');
+      expect(delivered).not.toContain('trip-fixture-0');
+      expect(state.firedEvents).not.toContain('trip-fixture-0');
       expect(state.day.index).toBe(0);
       expect(mailbox(state)).toContain('trip-fixture-4');
       expect(scheduled(state)).toEqual(

@@ -181,7 +181,7 @@ function deliver(state: GameState, channel: Channel | 'leftovers') {
   for (const delivery of [...state.day.deliveries]) {
     if (
       state.trip &&
-      !['morning', 'phone'].includes(delivery.channel) &&
+      delivery.channel !== 'phone' &&
       !delivery.eventId.startsWith('system-')
     )
       continue;
@@ -1224,7 +1224,13 @@ function beginDay(state: GameState, index: DayState['index']) {
   for (const id of [...state.eventQueue]) {
     if (id.startsWith('system-')) continue;
     const channel = pool(state).find((e) => e.id === id)?.channel ?? 'morning';
-    if (state.trip && !['morning', 'phone'].includes(channel)) {
+    if (state.trip && channel === 'morning') {
+      // A town-set morning card does not happen while the player is abroad;
+      // it goes back to the pool and may be drawn in a later quarter.
+      state.eventQueue.splice(state.eventQueue.indexOf(id), 1);
+      continue;
+    }
+    if (state.trip && channel !== 'phone') {
       setFlags(state, [`travel-deferred:${id}`]);
       continue;
     }
