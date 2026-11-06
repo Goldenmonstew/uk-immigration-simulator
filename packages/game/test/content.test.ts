@@ -61,7 +61,15 @@ describe('9.3 people and stories', () => {
       );
       for (const event of scenes) {
         state.friendship[npc.id] = event.heart!.hearts * 100 - b.talkFriendship;
-        state.day.minute = 600;
+        state.day.minute = Math.max(
+          600,
+          ...(event.when ?? []).map((c) =>
+            'minuteMin' in c ? (c.minuteMin ?? 0) : 0,
+          ),
+        );
+        state.flags.push(...(event.requires ?? []));
+        for (const c of event.when ?? [])
+          if ('dayKind' in c) state.day.kind = c.dayKind;
         state.day.talked = [];
         state = talk(state, npc.id);
         expect(currentEvent(state)?.id).toBe(event.id);
@@ -261,7 +269,7 @@ describe('9.3 festivals, notices and food', () => {
       );
       expect(offered).toBe(flags.includes('quarter-board-pub-quiz'));
       if (offered) {
-        expect(read.outcome?.text?.zhCN).toContain(weekend.day.date);
+        expect(read.outcome?.text?.zhCN).toContain('2月1日周六 18:00');
         expect(npcAt(evening, 'dave')).toBe('pub');
         const played = doActivity(evening, 'pub-quiz');
         expect(played.stats.english).toBe(

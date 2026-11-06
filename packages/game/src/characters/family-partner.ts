@@ -272,8 +272,8 @@ const events: GameEvent[] = [
     channel: 'npc:jamie',
     title: t('会议后的沉默', 'Silence after the meeting'),
     text: t(
-      '杰米下班后没开收音机，公司让大家等周五的消息。',
-      'Jamie leaves the radio off after work. The company has told everyone to wait for Friday’s news.',
+      '杰米没开收音机，公司让大家等下周的消息。',
+      'Jamie leaves the radio off. The company has told everyone to wait for next week’s news.',
     ),
     weight: 3,
     once: true,
@@ -394,6 +394,7 @@ const events: GameEvent[] = [
     choices: [
       {
         id: 'accept',
+        sets: ['family-jamie-reemployed'],
         label: t(
           '陪杰米庆祝年薪两万的新工作',
           'Celebrate Jamie’s new job at twenty thousand a year',
@@ -406,6 +407,7 @@ const events: GameEvent[] = [
       },
       {
         id: 'part-time',
+        sets: ['family-jamie-reemployed'],
         label: t(
           '他先接受年薪一万的兼职',
           'He starts with part-time work at ten thousand a year',
@@ -622,7 +624,7 @@ const events: GameEvent[] = [
     choices: [
       {
         id: 'practise',
-        label: t('练完再吃晚饭', 'Finish practising before dinner'),
+        label: t('练完再吃饭', 'Finish practising before eating'),
         effects: [
           { type: 'stat', key: 'english', delta: 3 },
           { type: 'stat', key: 'mood', delta: 2 },
@@ -735,8 +737,8 @@ const events: GameEvent[] = [
     channel: 'morning',
     title: t('书签可以退休了', 'The bookmark can retire'),
     text: t(
-      '考试结束，索菲娅走出门时发现，那张旧购物小票书签已经揉软了。',
-      'Leaving the test, Sofia finds the old shopping-receipt bookmark has worn soft.',
+      '昨天走出考场时，索菲娅发现旧购物小票书签已经揉软了。',
+      'Leaving the test yesterday, Sofia found the old shopping-receipt bookmark had worn soft.',
     ),
     weight: 4,
     once: true,
@@ -860,8 +862,8 @@ const events: GameEvent[] = [
     channel: 'npc:jamie',
     title: t('熟悉的杯子', 'The familiar cup'),
     text: t(
-      '回家第一晚，杰米把索菲娅的杯子放在老位置，连茶渍都没变。',
-      'On her first night back, Jamie puts Sofia’s cup in its usual spot. Even the tea stain is familiar.',
+      '回家后，杰米把索菲娅的杯子放在老位置，连茶渍都没变。',
+      'After she returns home, Jamie puts Sofia’s cup in its usual spot. Even the tea stain is familiar.',
     ),
     weight: 4,
     once: true,
@@ -1019,10 +1021,10 @@ const events: GameEvent[] = [
   {
     id: 'family-neighbour-drill',
     channel: 'npc:jamie',
-    title: t('周日的电钻', 'A Sunday drill'),
+    title: t('清早的电钻', 'An early drill'),
     text: t(
-      '隔壁周日一早又开电钻，杰米的枕头盖住耳朵也没用。',
-      'The neighbour starts drilling early on Sunday again. Jamie’s pillow makes a poor ear defender.',
+      '隔壁一大早又开电钻，杰米的枕头盖住耳朵也没用。',
+      'The neighbour starts drilling early again. Jamie’s pillow makes a poor ear defender.',
     ),
     weight: 3,
     once: true,
@@ -1464,6 +1466,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-rain-bus',
+    when: [{ weather: 'rain' }],
     channel: 'npc:jamie',
     title: t('同一把伞', 'The same umbrella'),
     text: t(
@@ -1581,8 +1584,8 @@ const events: GameEvent[] = [
     channel: 'npc:jamie',
     title: t('周末班表', 'The weekend rota'),
     text: t(
-      '两个人难得同时休息，窗外却下起雨，连鸽子都躲在站牌下面。',
-      'They finally have the same day off. Outside, even the pigeons shelter from the rain under the bus stop.',
+      '班表上终于排到同一天休息，天气预报却说有雨。',
+      'The rota finally gives them the same day off, but the forecast promises rain.',
     ),
     weight: 2,
     once: true,
@@ -1859,7 +1862,7 @@ const events: GameEvent[] = [
   {
     id: 'family-summer-picnic',
     channel: 'place:green',
-    title: t('草地上的午饭', 'Lunch on the grass'),
+    title: t('草地上的野餐', 'A picnic on the grass'),
     text: t(
       '天气预报说有太阳，两个人把野餐毯带出门，顺便也带了雨衣。',
       'The forecast promises sunshine. They take the picnic blanket and, just in case, raincoats.',
@@ -1915,15 +1918,15 @@ const events: GameEvent[] = [
     channel: 'place:home',
     title: t('门口的拖鞋', 'Slippers by the door'),
     text: t(
-      '忙完一周的班，索菲娅回家只想确认拖鞋没有被吸尘器藏起来。',
-      'After a busy week, Sofia only wants to know that the vacuum cleaner has not hidden her slippers.',
+      '忙完一周的班，索菲娅醒来先找拖鞋，怕又被吸尘器藏起来。',
+      'Waking after a busy week, Sofia checks that the vacuum cleaner hasn’t hidden her slippers.',
     ),
     weight: 2,
     once: true,
     choices: [
       {
         id: 'sleep',
-        label: t('洗完澡就睡', 'Shower and go straight to bed'),
+        label: t('再躺十分钟', 'Lie down for ten more minutes'),
         effects: [{ type: 'stat', key: 'health', delta: 5 }],
       },
       {
@@ -2115,7 +2118,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-nhs-text',
-    channel: 'phone',
+    channel: 'morning',
     title: t('来得很早的短信', 'A very early text'),
     text: t(
       'NHS 的预约短信清晨就到了，杰米以为闹钟提前了一个时代。',
@@ -2322,8 +2325,8 @@ const events: GameEvent[] = [
     channel: 'npc:jamie',
     title: t('保温中的晚饭', 'Dinner kept warm'),
     text: t(
-      '索菲娅到家时晚饭已经热过两次，杰米把锅盖揭得像宣布彩票开奖。',
-      'Dinner has been reheated twice when Sofia gets home. Jamie lifts the lid like announcing the lottery numbers.',
+      '昨晚索菲娅到家时，晚饭已热过两次，杰米揭锅盖像在宣布彩票开奖。',
+      'Last night dinner had been reheated twice when Sofia got home. Jamie lifted the lid like announcing the lottery numbers.',
     ),
     weight: 2,
     once: true,
@@ -2556,10 +2559,10 @@ const events: GameEvent[] = [
   {
     id: 'family-late-call',
     channel: 'phone',
-    title: t('睡前的一通电话', 'A call before bed'),
+    title: t('家里的一通电话', 'A call from home'),
     text: t(
-      '家里的电话打来时英国已经很晚，索菲娅披着毯子坐到了窗边。',
-      'The call from home comes late in Britain. Sofia wraps a blanket around herself and sits by the window.',
+      '家里来电话，索菲娅披着毯子坐到窗边。',
+      'A call comes from home. Sofia wraps a blanket around herself and sits by the window.',
     ),
     weight: 2,
     once: true,
@@ -2567,8 +2570,8 @@ const events: GameEvent[] = [
       {
         id: 'talk',
         label: t(
-          '多聊一会儿，明天早点睡',
-          'Talk a little longer and sleep early tomorrow',
+          '多聊一会儿，别的事晚点做',
+          'Talk a little longer and leave other things for later',
         ),
         effects: [
           { type: 'stat', key: 'mood', delta: 5 },
@@ -2590,8 +2593,8 @@ const events: GameEvent[] = [
     channel: 'npc:jamie',
     title: t('后门的小台阶', 'The step by the back door'),
     text: t(
-      '难得没有急事的傍晚，两个人坐在后门台阶上，看蜗牛完成它的通勤。',
-      'On an evening with nothing urgent, they sit on the back step and watch a snail finish its commute.',
+      '难得没有急事的时候，两个人坐在后门台阶上，看蜗牛完成它的通勤。',
+      'With nothing urgent to do, they sit on the back step and watch a snail finish its commute.',
     ),
     weight: 2,
     once: true,

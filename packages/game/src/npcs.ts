@@ -9,16 +9,96 @@ const lines = (npc: string, pairs: [string, string][]): Npc['lines'] =>
     id: `${npc}-${i + 1}`,
     text: text(zhCN, en),
   }));
-const reactions = (loved: Text, disliked: Text): Npc['reactions'] => ({
+const giftReplies: Record<string, [Text, Text]> = {
+  margaret: [
+    text(
+      '真贴心，我把园艺手套摘了再收。',
+      'Lovely thought. Let me take my gardening gloves off.',
+    ),
+    text(
+      '谢谢啊，小屋里得给它找个位置。',
+      'Thank you. I’ll find it a spot in the shed.',
+    ),
+  ],
+  ade: [
+    text(
+      '这个可比会议纪要讨喜，谢谢！',
+      'Much nicer than meeting minutes. Thanks!',
+    ),
+    text(
+      '收到，我腾一下那个乱抽屉。',
+      'Thanks. I’ll clear a bit of that chaotic drawer.',
+    ),
+  ],
+  helen: [
+    text(
+      '谢谢，讲义堆旁边总算添点别的了。',
+      'Thank you. Something besides handouts on my desk at last.',
+    ),
+    text(
+      '这份心意我收下了，先挪开眼镜。',
+      'Thank you for thinking of me. Let me move my glasses.',
+    ),
+  ],
+  priya: [
+    text(
+      '你真会挑时候，我刚好能喘口气。',
+      'Good timing. I’ve just got a moment to breathe.',
+    ),
+    text(
+      '谢谢，我先挪开那支漏墨的笔。',
+      'Thanks. I’ll move that leaky pen out of the way.',
+    ),
+  ],
+  dave: [
+    text(
+      '好眼光！这份礼物可不用抢答。',
+      'Good choice! No buzzer needed for this one.',
+    ),
+    text(
+      '谢啦，我给它留个不沾杯圈的位置。',
+      'Cheers. I’ll find a spot without a beer ring.',
+    ),
+  ],
+  rahman: [
+    text(
+      '还给我带了东西，门铃该替你多响一声。',
+      'A gift for me? The doorbell owes you an extra ring.',
+    ),
+    text(
+      '谢谢惦记，我放自己那一边，不上货架。',
+      'Thank you. On my side of the counter, off the shelves.',
+    ),
+  ],
+  lina: [
+    text(
+      '今天包里总算多了件让人高兴的东西。',
+      'Something cheerful for my bag today. Thank you.',
+    ),
+    text(
+      '谢谢你，我把杯子挪开一点。',
+      'Thank you. I’ll shift my coffee cup a little.',
+    ),
+  ],
+  gareth: [
+    text(
+      '这回轮到我收东西了，真不错。',
+      'My turn to receive something. Lovely.',
+    ),
+    text(
+      '谢谢，放外套口袋，免得混进邮包。',
+      'Thanks. Coat pocket, so it won’t get mixed up with the post.',
+    ),
+  ],
+};
+const reactions = (
+  id: string,
+  loved: Text,
+  disliked: Text,
+): Npc['reactions'] => ({
   loved,
-  liked: text(
-    '还特意给我带了？谢谢，正好用得上。',
-    'You brought this for me? Thank you. Just the thing.',
-  ),
-  neutral: text(
-    '谢谢你想着我，我先收好。',
-    'Thanks for thinking of me. I’ll put it somewhere safe.',
-  ),
+  liked: giftReplies[id][0],
+  neutral: giftReplies[id][1],
   disliked,
 });
 const schedule = (
@@ -101,7 +181,7 @@ const margaretLines = lines('margaret', [
   ],
   [
     '向日葵挡住了小屋，我得侧身找门。',
-    'The sunflowers hid the shed. I have to edge round for the door.',
+    'The sunflowers hid the shed. I’ve got to edge round for the door.',
   ],
   [
     '落叶能堆肥，扫不完就这么安慰自己。',
@@ -156,8 +236,8 @@ const margaretLines = lines('margaret', [
     'Spare shed key’s there. Lift the door before locking it.',
   ],
   [
-    '我把你送的花放窗边，邻居已经问了两回。',
-    'Your flowers are by the window. Next door asked about them twice.',
+    '窗边那盆花，邻居已经问了两回。',
+    'Next door has asked twice about the flowers by the window.',
   ],
   [
     '晚点回来也敲门，我听得到水壶以外的声音。',
@@ -347,8 +427,8 @@ const adeLines = lines('ade', [
     'Kept a seat here. Your mug is doing the reserving.',
   ],
   [
-    '快到续签那阵了？我也在找旧工资单。',
-    'Renewal coming round? I’m hunting old payslips too.',
+    '快到续签那阵了？我抽屉也翻乱了。',
+    'Renewal coming round? My drawers are a mess too.',
   ],
   [
     '等邮件时我总刷收件箱，垃圾邮件倒挺准时。',
@@ -453,7 +533,7 @@ const helenLines = lines('helen', [
   ],
   [
     '春假刚过，粉笔盒里长了片落花。',
-    'Back after spring break. Found a fallen petal in the chalk box.',
+    'Back after the Easter holidays. Found a fallen petal in the chalk box.',
   ],
   [
     '窗外鸟叫太响，听力练习有伴奏了。',
@@ -468,8 +548,8 @@ const helenLines = lines('helen', [
     'Light so late I get home thinking there’s another evening class.',
   ],
   [
-    '开学的走廊又有湿外套味了。',
-    'Term starts and the corridor smells of wet coats again.',
+    '秋季学期的走廊又有湿外套味了。',
+    'The autumn-term corridor smells of wet coats again.',
   ],
   [
     '树叶夹在书里，可惜不是我刚读的那页。',
@@ -549,8 +629,8 @@ const helenLines = lines('helen', [
     'More biscuits in the weekend class. Don’t tell the evening lot.',
   ],
   [
-    '下班来上课辛苦了，我先给你找把干椅子。',
-    'Long day before class. Let me find you a dry chair.',
+    '下班来上课辛苦了，热水壶刚烧好。',
+    'Long day before class. The kettle’s just boiled.',
   ],
   [
     '今晚的“轰”不用查词典，大家都听懂了。',
@@ -625,6 +705,7 @@ export const npcs: Npc[] = [
       disliked: ['old-boot', 'shopping-trolley', 'pike'],
     },
     reactions: reactions(
+      'margaret',
       text(
         '你记着我喜欢的东西呢，快来喝杯茶。',
         'You remembered what I like. Come and have a cup of tea.',
@@ -668,6 +749,7 @@ export const npcs: Npc[] = [
       disliked: ['old-boot', 'shopping-trolley', 'turnip'],
     },
     reactions: reactions(
+      'ade',
       text(
         '蛋糕级别的好消息！我去拿两把叉子。',
         'Cake-level good news! I’ll get two forks.',
@@ -711,6 +793,7 @@ export const npcs: Npc[] = [
       disliked: ['old-boot', 'shopping-trolley', 'pike'],
     },
     reactions: reactions(
+      'helen',
       text(
         '这正好配我那只缺了角的杯子，谢谢。',
         'Just the thing for my chipped cup. Thank you.',
@@ -905,6 +988,7 @@ for (const [id, zhCN, en, role, at, pairs] of supporting)
       disliked: ['old-boot', 'shopping-trolley'],
     },
     reactions: reactions(
+      id,
       text('太好了，正想着这个呢。', 'Lovely, I was just thinking of that.'),
       text('这个……我先找个地方搁着。', 'Well… I’ll find somewhere to put it.'),
     ),
@@ -931,7 +1015,7 @@ const extraDailyLines: Record<string, [string, string][]> = {
     ],
     [
       '有人把杂志按颜色排了，我舍不得动。',
-      'Someone arranged the magazines by colour. I cannot disturb them.',
+      'Someone arranged the magazines by colour. I can’t disturb them.',
     ],
     [
       '这支笔总漏墨，我的拇指先签到了。',
@@ -995,7 +1079,7 @@ const extraDailyLines: Record<string, [string, string][]> = {
     ],
     [
       '又来买茶？我上次那包还舍不得拆。',
-      'More tea? I have been saving the packet from last time.',
+      'More tea? I’ve been saving the packet from last time.',
     ],
     [
       '你在这儿，我可以把半句笑话讲完。',
@@ -1024,7 +1108,7 @@ const extraDailyLines: Record<string, [string, string][]> = {
     ],
     [
       '我把购物单写在手上，洗手后全忘了。',
-      'Wrote my shopping list on my hand. Washing up erased it.',
+      'Wrote my shopping list on my hand. Washing my hands erased it.',
     ],
     [
       '那只麻雀每天来，从没预约过。',
@@ -1036,7 +1120,7 @@ const extraDailyLines: Record<string, [string, string][]> = {
     ],
     [
       '围巾是自己织的，两头不太认识。',
-      'Knitted this scarf myself. The ends do not quite match.',
+      'Knitted this scarf myself. The ends don’t quite match.',
     ],
     [
       '杯沿缺了一点，喝茶得找对方向。',
@@ -1044,7 +1128,7 @@ const extraDailyLines: Record<string, [string, string][]> = {
     ],
     [
       '听见你的脚步，我就知道茶该续了。',
-      'Hearing your footsteps tells me it is time for more tea.',
+      'Hearing your footsteps tells me it’s time for more tea.',
     ],
     [
       '今天想坐着发会儿呆，你也可以坐。',
@@ -1058,7 +1142,7 @@ const extraDailyLines: Record<string, [string, string][]> = {
     ],
     [
       '今天的汤不在测验里，放心尝。',
-      'The soup is not part of the quiz. Taste away.',
+      'The soup isn’t part of the quiz. Taste away.',
     ],
     [
       '桌脚垫了杯垫，杯子反倒没垫的了。',
@@ -1074,18 +1158,18 @@ const extraDailyLines: Record<string, [string, string][]> = {
     ],
     [
       '那张椅子留着，坐下不会突然矮一截。',
-      'Keep that chair. It will not suddenly lose height.',
+      'Keep that chair. It won’t suddenly lose height.',
     ],
     [
       '厨房的钟慢一点，炸薯条可不等它。',
-      'The kitchen clock is slow. The chips will not wait for it.',
+      'The kitchen clock is slow. The chips won’t wait for it.',
     ],
     [
       '我给笔装了新芯，题目可没换简单的。',
       'New ink in the pens. The questions are no easier.',
     ],
     [
-      '昨晚有人把答题纸当购物单带走了。',
+      '上回有人把答题纸当购物单带走了。',
       'Someone took the answer sheet home as a shopping list.',
     ],
     [
@@ -1135,15 +1219,15 @@ const extraDailyLines: Record<string, [string, string][]> = {
     ],
     [
       '上回那个队名我记住了，拼写得再问。',
-      'Remember your team name. Will need the spelling again.',
+      'I remember your team name. I’ll need the spelling again.',
     ],
     [
       '给你一支好写的笔，别告诉隔壁桌。',
-      'A decent pen for you. Do not tell the next table.',
+      'A decent pen for you. Don’t tell the next table.',
     ],
     [
       '你笑得这么早，我还没讲到包袱呢。',
-      'Laughing already? I have not reached the punchline.',
+      'Laughing already? I haven’t reached the punchline.',
     ],
     [
       '关店后我也爱坐着，换到桌子这边。',
@@ -1154,8 +1238,8 @@ const extraDailyLines: Record<string, [string, string][]> = {
       'New playlist failed. Back to the old record.',
     ],
     [
-      '文件先放椅子上，杯子底下会留圈。',
-      'Put the folder on the chair. Cups leave rings.',
+      '题册先合上吧，杯子底下会留圈。',
+      'Close the quiz book for now. Cups leave rings.',
     ],
     [
       '等消息时来坐吧，今天没人催你交卷。',
@@ -1171,7 +1255,7 @@ const extraDailyLines: Record<string, [string, string][]> = {
     ],
     [
       '小碟子换了，大饼干依旧放不下。',
-      'New saucers. The big biscuits still do not fit.',
+      'New saucers. The big biscuits still don’t fit.',
     ],
     [
       '客人夸窗户亮，我刚擦的是镜子。',
@@ -1187,7 +1271,7 @@ const extraDailyLines: Record<string, [string, string][]> = {
     ],
     [
       '今晚要是没人点歌，我就哼自己的。',
-      'If nobody requests a song tonight, I will hum my own.',
+      'If nobody requests a song tonight, I’ll hum my own.',
     ],
   ],
   rahman: [
@@ -1257,7 +1341,7 @@ const extraDailyLines: Record<string, [string, string][]> = {
     ],
     [
       '雪把门前盖住了，我得重新找台阶。',
-      'Snow covered the entrance. I have to find the step again.',
+      'Snow covered the entrance. I’ve got to find the step again.',
     ],
     [
       '周末早晨报纸卖完，街上才像醒了。',
@@ -1269,15 +1353,15 @@ const extraDailyLines: Record<string, [string, string][]> = {
     ],
     [
       '你常买的茶在这里，我没挪地方。',
-      'Your usual tea is here. I have not moved it.',
+      'Your usual tea is here. I haven’t moved it.',
     ],
     [
       '看你走过来，我就把硬币拿好了。',
       'Saw you coming and got the change ready.',
     ],
     [
-      '你替我看那次店门，我还记着呢。',
-      'I remember you watching the door for me.',
+      '上回你帮我按住纸箱，我还记着呢。',
+      'I remember you holding that box steady for me.',
     ],
     [
       '今天别急着走，我想听你说完上次的事。',
@@ -1285,15 +1369,15 @@ const extraDailyLines: Record<string, [string, string][]> = {
     ],
     [
       '那张老照片里有我，找围裙最歪的那个。',
-      'I am in that old photograph. Look for the crooked apron.',
+      'I’m in that old photograph. Look for the crooked apron.',
     ],
     [
       '入籍那天拍的照片，领带歪得很认真。',
       'My citizenship-day photograph has a very determined crooked tie.',
     ],
     [
-      '那天之后还是要早起开店，茶也照样凉。',
-      'Still had to open early afterwards. The tea went cold as usual.',
+      '入籍第二天照样早起开店，茶也照样凉。',
+      'The day after citizenship, I still opened early. Tea still went cold.',
     ],
     [
       '第一次在这里过冬，买了顶太大的帽子。',
@@ -1329,7 +1413,7 @@ const extraDailyLines: Record<string, [string, string][]> = {
     ],
     [
       '下次带杯子来，别让茶只剩我一个人喝。',
-      'Bring your cup next time. Tea need not be just for me.',
+      'Bring your cup next time. Tea needn’t be just for me.',
     ],
   ],
   lina: [
@@ -1339,7 +1423,7 @@ const extraDailyLines: Record<string, [string, string][]> = {
     ],
     [
       '我学会把冷咖啡当另一种饮料了。',
-      'I have learnt to treat cold coffee as a different drink.',
+      'I’ve learnt to treat cold coffee as a different drink.',
     ],
     [
       '织到一半的围巾，已经比我有方向感。',
@@ -1411,7 +1495,7 @@ const extraDailyLines: Record<string, [string, string][]> = {
     ],
     [
       '你记得我不爱太甜，今天这杯正好。',
-      'You remembered I do not like it too sweet. This is just right.',
+      'You remembered I don’t like it too sweet. This is just right.',
     ],
     [
       '上回没讲完的故事，我带着后半段来了。',
@@ -1423,11 +1507,11 @@ const extraDailyLines: Record<string, [string, string][]> = {
     ],
     [
       '这团毛线替你留着，下回教你接线。',
-      'Saved this wool for you. I will show you how to join it.',
+      'Saved this wool for you. I’ll show you how to join it.',
     ],
     [
-      '我想聊聊害怕的事，能先找张干椅子吗？',
-      'I want to talk about being scared. A dry chair first?',
+      '我想聊聊害怕的事，能先找个安静角落吗？',
+      'I want to talk about frightening things. Can we find a quiet corner first?',
     ],
     [
       '今天想笑一下，刚才那只鸭子帮了忙。',
@@ -1439,7 +1523,7 @@ const extraDailyLines: Record<string, [string, string][]> = {
     ],
     [
       '有时不知道说什么，我们就看看水吧。',
-      'Sometimes words will not come. We can watch the water.',
+      'Sometimes words won’t come. We can watch the water.',
     ],
     [
       '手机响的时候，咖啡匙总比我先跳起来。',
@@ -1447,7 +1531,7 @@ const extraDailyLines: Record<string, [string, string][]> = {
     ],
     [
       '这张车站地图折不开了，路都挤在一起。',
-      'The station map will not unfold. All the roads are squeezed together.',
+      'The station map won’t unfold. All the roads are squeezed together.',
     ],
     [
       '今天把抽屉理了，找回一枚旧发夹。',
@@ -1468,7 +1552,7 @@ const extraDailyLines: Record<string, [string, string][]> = {
     ],
     [
       '多坐一会儿吧，我还没喝到杯底。',
-      'Stay a little longer. I have not reached the bottom of my cup.',
+      'Stay a little longer. I haven’t reached the bottom of my cup.',
     ],
   ],
   gareth: [
@@ -1532,7 +1616,10 @@ const extraDailyLines: Record<string, [string, string][]> = {
       '雨把地址打湿了，幸好我认得这条街。',
       'Rain blurred the address. Lucky I know this street.',
     ],
-    ['晴天我能少拧一次袜子。', 'Sunshine means one fewer sock-wringing.'],
+    [
+      '晴天我能少拧一次袜子。',
+      'Sunshine means one less pair of socks to wring out.',
+    ],
     [
       '雪上留下的路线，比导航诚实。',
       'My tracks in snow are more honest than the navigation app.',
@@ -1578,8 +1665,8 @@ const extraDailyLines: Record<string, [string, string][]> = {
       'That folder looks heavy. Shall I hold the door?',
     ],
     [
-      '等回信时，听见每辆车都像邮车吧。',
-      'Waiting for news makes every van sound like the post van.',
+      '等回信时，信箱盖一响就想去看看吧。',
+      'Waiting for a letter, every rattle of the letterbox makes you look.',
     ],
     [
       '今天有封写得很漂亮的信，我只看了地址。',
@@ -1592,19 +1679,19 @@ const extraDailyLines: Record<string, [string, string][]> = {
     ],
     [
       '街角那扇门总夹袖子，我学会侧着站。',
-      'That corner door catches sleeves. I have learnt to stand sideways.',
+      'That corner door catches sleeves. I’ve learnt to stand sideways.',
     ],
     [
       '我不怕绕路，只怕午饭的汤先凉了。',
-      'Do not mind a detour. Just mind the lunch soup going cold.',
+      'I don’t mind a detour. I just mind my soup going cold.',
     ],
     [
-      '长椅空着呢，这回我先坐了。',
-      'Bench is free. This time I am sitting first.',
+      '这张明信片没地址，是我拿来试笔的。',
+      'No address on this postcard. I was testing a pen.',
     ],
     [
       '明天换条近路，今天先把风景走完。',
-      'A shortcut tomorrow. Today I will finish the scenic route.',
+      'A shortcut tomorrow. Today I’ll finish the scenic route.',
     ],
   ],
 };
@@ -1637,8 +1724,8 @@ const favourites: Record<string, [string[], string[], string, string]> = {
   priya: [
     ['tea', 'salad'],
     ['flowers', 'biscuits'],
-    '正想找个安静地方喝茶，这个太合适了。',
-    'A quiet cup of tea was just what I wanted. Perfect.',
+    '正想歇一会儿，这份心意来得真巧。',
+    'I was just ready for a break. What lovely timing.',
   ],
   dave: [
     ['cake', 'fish-and-potatoes'],
@@ -1662,7 +1749,7 @@ const favourites: Record<string, [string[], string[], string, string]> = {
     ['tea', 'baked-potato'],
     ['biscuits', 'cake'],
     '送完这一袋，就坐下来慢慢享用。',
-    'Once this bag is delivered, I will sit down and enjoy it.',
+    'Once this bag is delivered, I’ll sit down and enjoy it.',
   ],
 };
 for (const npc of npcs.filter((n) => favourites[n.id])) {
@@ -1683,7 +1770,7 @@ for (const npc of npcs.filter((n) => favourites[n.id])) {
     npc.id === 'gareth'
       ? 'Not in the postbag. The letters would suffer.'
       : npc.id === 'dave'
-        ? 'Keep that out of the kitchen. I will find a bucket.'
+        ? 'Keep that out of the kitchen. I’ll find a bucket.'
         : npc.id === 'priya'
           ? 'The waiting room could not bear that smell.'
           : npc.id === 'rahman'
@@ -1878,21 +1965,21 @@ const extraScenes: typeof scenes = [
   ],
   [
     'priya',
-    '歪掉的围巾',
-    'The uneven scarf',
-    '她拆开织歪的半截围巾，把针递给你，两人对着线团慢慢找头。',
-    'She unpicks an uneven scarf and offers you a needle. Together you find the end of the wool.',
-    '替她理线',
-    'Untangle the wool',
-    '学着织一行',
-    'Try knitting a row',
+    '缺角的拼图',
+    'The missing jigsaw corner',
+    '她倒出半盒拼图，递给你一片蓝天，两人一起找那块缺角。',
+    'She empties half a jigsaw box and hands you a piece of sky. Together you hunt for the missing corner.',
+    '一起找角上的拼片',
+    'Find the corner pieces',
+    '先拼出一小块天',
+    'Start a patch of sky',
   ],
   [
     'priya',
     '前台以外的名字',
     'A name beyond the desk',
     '有人叫她前台，她指着你笑，说今天只想做普里娅。你们把茶搬到窗边。',
-    'Someone calls her reception. She smiles at you: today she is just Priya. You move the tea to the window.',
+    'Someone calls her “Reception”. She smiles at you: today she is just Priya. You move the tea to the window.',
     '叫她的名字',
     'Use her name',
     '听她讲休息日',
@@ -1903,7 +1990,7 @@ const extraScenes: typeof scenes = [
     '藏起来的答案',
     'The hidden answers',
     '戴夫把测验答案塞反了，满桌都看见。他叹口气，拿粉笔重写题目。',
-    'Dave exposes the answers by filing them backwards. He sighs and rewrites the quiz on the board.',
+    'Dave files the answer sheet face up. He sighs and rewrites the quiz on the board.',
     '替他挡住纸页',
     'Shield the page',
     '帮忙擦黑板',
@@ -2149,3 +2236,113 @@ for (const npc of npcs)
       text,
     })),
   );
+
+// Scene-specific dialogue conditions are applied by stable id.
+const dialogueConditions: Record<string, Partial<Npc['lines'][number]>> = {
+  'priya-4': { dayKinds: ['weekend'] },
+  'ade-21': { dayKinds: ['weekend', 'special'] },
+  'margaret-1': { when: [{ minuteMax: 720 }] },
+  'ade-1': { dayKinds: ['workday'], when: [{ minuteMax: 720 }] },
+  'helen-1': { when: [{ minuteMax: 720 }] },
+  'ade-10': {
+    dayKinds: ['workday'],
+    weather: ['sunny'],
+    when: [{ minuteMin: 720, minuteMax: 840 }],
+  },
+  'ade-24': { when: [{ minuteMin: 720, minuteMax: 840 }] },
+  'helen-36': { when: [{ minuteMin: b.eveningClass }] },
+  'priya-daily-25': { heartsMin: 2, dayKinds: ['weekend'] },
+  'priya-daily-34': { heartsMin: 4 },
+  'rahman-daily-35': { heartsMin: 4 },
+  'lina-4': { heartsMin: 2 },
+  'lina-daily-35': { heartsMin: 4 },
+  'gareth-daily-21': { requires: ['friend-gareth'] },
+  'rahman-daily-22': { requires: ['friend-rahman'] },
+  'gareth-daily-31': { season: 1 },
+  'priya-daily-28': { when: [{ visaMonthsLeftMax: b.renewalWindowMonths }] },
+  'dave-daily-28': { when: [{ visaMonthsLeftMax: b.renewalWindowMonths }] },
+  'gareth-daily-28': { when: [{ visaMonthsLeftMax: b.renewalWindowMonths }] },
+  'rahman-daily-27': { when: undefined },
+  'rahman-daily-28': { when: [{ visaMonthsLeftMax: b.renewalWindowMonths }] },
+};
+for (const id of [
+  'ade-2',
+  'ade-3',
+  'ade-5',
+  'ade-7',
+  'ade-8',
+  'priya-1',
+  'priya-2',
+  'priya-3',
+  'priya-5',
+  'priya-daily-1',
+  'priya-daily-2',
+  'priya-daily-3',
+  'priya-daily-5',
+  'priya-daily-6',
+  'priya-daily-8',
+  'priya-daily-16',
+])
+  dialogueConditions[id] = { ...dialogueConditions[id], dayKinds: ['workday'] };
+for (const id of [
+  'priya-5',
+  'rahman-2',
+  'dave-5',
+  'helen-9',
+  'margaret-25',
+  'gareth-daily-8',
+])
+  dialogueConditions[id] = { ...dialogueConditions[id], weather: ['rain'] };
+for (const npc of npcs) {
+  for (const line of npc.lines) {
+    Object.assign(line, dialogueConditions[line.id]);
+    if (line.festival === 'bonfire-night')
+      line.when = [...(line.when ?? []), { minuteMin: b.bonfireStart }];
+    if (line.id === 'helen-festival-christmas-market')
+      line.when = [{ minuteMin: 960 }];
+  }
+}
+const heartConditions: Record<string, GameEvent['when']> = {
+  'heart-ade-2': [{ dayKind: 'workday' }],
+  'heart-ade-4': [{ dayKind: 'workday' }, { minuteMin: 720, minuteMax: 840 }],
+  'heart-priya-4': [{ minuteMin: 1020 }],
+  'heart-dave-2': [{ dayKind: 'weekend' }, { minuteMin: b.quizStart }],
+  'heart-dave-6': [{ minuteMin: 1380 }],
+  'heart-rahman-8': [{ minuteMin: 1200 }],
+  'heart-gareth-4': [{ minuteMin: 1080 }],
+  'heart-helen-8': [{ minuteMin: 720, minuteMax: 1080 }],
+};
+for (const event of heartEvents)
+  if (heartConditions[event.id]) event.when = heartConditions[event.id];
+
+const lineCopy: Record<string, Text> = {
+  'dave-1': text(
+    '这回题目我锁抽屉了，钥匙还在找。',
+    'This quiz’s questions are locked away. Now to find the key.',
+  ),
+  'dave-daily-9': text(
+    '上回有人把答题纸当购物单带走了。',
+    'Last time someone took the answer sheet home as a shopping list.',
+  ),
+  'rahman-daily-18': text(
+    '周末早晨报纸卖完，街上才像醒了。',
+    'Once the weekend morning papers sell out, the street feels awake.',
+  ),
+  'gareth-daily-18': text(
+    '周末的邮筒也得看一眼，肩膀倒轻松些。',
+    'Still checking the postbox at weekends. Easier on the shoulder, though.',
+  ),
+  'priya-daily-25': text(
+    '绕池塘慢慢走一圈？今天不赶时间。',
+    'Fancy a slow lap of the pond? I’ve got time today.',
+  ),
+};
+for (const npc of npcs)
+  for (const line of npc.lines)
+    if (lineCopy[line.id]) line.text = lineCopy[line.id];
+heartEvents.find((e) => e.id === 'heart-helen-4')!.title.en =
+  'The bookmark by the window';
+heartEvents.find((e) => e.id === 'heart-helen-8')!.title.en =
+  'An afternoon without the register';
+heartEvents.find((e) => e.id === 'heart-ade-8')!.text.en =
+  'Your extension is on the back of his old badge. He says the number hasn’t changed.';

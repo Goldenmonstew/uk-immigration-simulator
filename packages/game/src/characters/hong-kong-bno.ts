@@ -35,8 +35,8 @@ const events: GameEvent[] = [
     channel: 'morning',
     title: { zhCN: '小椅子上的大人', en: 'Adults on tiny chairs' },
     text: {
-      zhCN: '家长会的椅子低得像露营凳，老师把孩子的画摆在桌上。',
-      en: 'The parents’ evening chairs are camping-stool low; the teacher lays out the child’s drawings.',
+      zhCN: '昨晚家长会的椅子低得像露营凳，老师把孩子的画摆在桌上。',
+      en: 'At last night’s parents’ evening the chairs were camping-stool low; the teacher laid out the child’s drawings.',
     },
     weight: 2,
     once: true,
@@ -101,7 +101,7 @@ const events: GameEvent[] = [
   {
     id: 'bno-cafe-shifts',
     channel: 'place:cafe',
-    title: { zhCN: '收工后的奶茶', en: 'Milk tea after closing' },
+    title: { zhCN: '一杯奶茶', en: 'A cup of milk tea' },
     text: {
       zhCN: '周末帮工满了一轮，嘉宁的袖口沾着糖，日历却挤满了。',
       en: 'After a round of weekend shifts, Ka Ning has sugar on the cuffs and a crowded calendar.',
@@ -150,15 +150,16 @@ const events: GameEvent[] = [
     choices: [
       {
         id: 'plan',
+        sets: ['bno-partner-cv-seen', 'bno-partner-applications'],
         label: {
           zhCN: '陪伴侣投递第一轮',
           en: 'Help send the first applications',
         },
         effects: [{ type: 'stat', key: 'mood', delta: 3 }],
-        sets: ['bno-partner-applications'],
       },
       {
         id: 'skip',
+        sets: ['bno-partner-cv-seen'],
         label: { zhCN: '今晚先收起电脑', en: 'Close the laptop tonight' },
         effects: [{ type: 'stat', key: 'mood', delta: 5 }],
       },
@@ -381,7 +382,7 @@ const events: GameEvent[] = [
       },
       {
         id: 'skip',
-        label: { zhCN: '先把晚饭煮好', en: 'Finish dinner first' },
+        label: { zhCN: '先把饭吃好', en: 'Have a meal first' },
         effects: [{ type: 'stat', key: 'mood', delta: 4 }],
       },
     ],
@@ -650,8 +651,8 @@ const events: GameEvent[] = [
     channel: 'morning',
     title: { zhCN: '学校附近的窗户', en: 'A window near the school' },
     text: {
-      zhCN: '放学路上出现招租牌，嘉宁看了看窗户，又看了看书包。',
-      en: 'A rental sign appears on the school run; Ka Ning looks at the window, then the school bag.',
+      zhCN: '学校附近出现招租牌，嘉宁看了看窗户，又看了看书包。',
+      en: 'A rental sign appears near the school; Ka Ning looks at the window, then the school bag.',
     },
     weight: 2,
     once: true,
@@ -843,6 +844,7 @@ const events: GameEvent[] = [
     choices: [
       {
         id: 'first',
+        sets: ['bno-partner-restarted'],
         label: { zhCN: '全职重新出发', en: 'Restart full-time work' },
         effects: [{ type: 'stat', key: 'mood', delta: 5 }],
         note: {
@@ -852,6 +854,7 @@ const events: GameEvent[] = [
       },
       {
         id: 'second',
+        sets: ['bno-partner-restarted'],
         label: { zhCN: '先以较短工时适应', en: 'Ease back with shorter hours' },
         effects: [{ type: 'stat', key: 'mood', delta: 4 }],
         note: {
@@ -1622,8 +1625,8 @@ const events: GameEvent[] = [
     channel: 'npc:ka-ning-child',
     title: { zhCN: '倒过来的绘本', en: 'An upside-down picture book' },
     text: {
-      zhCN: '睡前读到第三页，嘉宁才发现孩子一直把书拿倒了。',
-      en: 'Three pages into bedtime reading, Ka Ning notices the child’s book has been upside down.',
+      zhCN: '昨晚睡前读到第三页，嘉宁才发现孩子一直把书拿倒了。',
+      en: 'Three pages into last night’s bedtime reading, Ka Ning noticed the child’s book had been upside down.',
     },
     weight: 2,
     once: true,
@@ -1750,8 +1753,8 @@ const events: GameEvent[] = [
     id: 'bno-school-email',
     channel: 'letter',
     title: {
-      zhCN: '一晚上的三封邮件',
-      en: 'Three school emails in one evening',
+      zhCN: '一天里的三封邮件',
+      en: 'Three school emails in one day',
     },
     text: {
       zhCN: '学校连发三封邮件，嘉宁先读了最短的那封，结果是广告。',
@@ -1803,8 +1806,8 @@ const events: GameEvent[] = [
     channel: 'place:cafe',
     title: { zhCN: '排队时的闲聊', en: 'A conversation in the queue' },
     text: {
-      zhCN: '午餐队伍绕过门口，嘉宁和前面的人聊起最近的雨。',
-      en: 'The lunch queue curls outside; Ka Ning chats with the person ahead about the rain.',
+      zhCN: '队伍绕过门口，嘉宁和前面的人聊起最近的雨。',
+      en: 'The queue curls outside; Ka Ning chats with the person ahead about the rain.',
     },
     weight: 2,
     once: true,
@@ -1855,6 +1858,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-partner-umbrella',
+    when: [{ weather: 'rain' }],
     channel: 'place:station',
     title: { zhCN: '两个人一把伞', en: 'One umbrella for two' },
     text: {
@@ -1979,8 +1983,8 @@ const events: GameEvent[] = [
       {
         id: 'second',
         label: {
-          zhCN: '加件衣服早点钻被窝',
-          en: 'Add a layer and go to bed early',
+          zhCN: '加件衣服，晚点再开',
+          en: 'Add a layer and turn it on later',
         },
         effects: [{ type: 'stat', key: 'health', delta: 2 }],
       },
@@ -2015,7 +2019,7 @@ const events: GameEvent[] = [
     channel: 'morning',
     title: { zhCN: '锅炉前的保温杯', en: 'A flask beside the boiler' },
     text: {
-      zhCN: '等维修工的下午，嘉宁抱着保温杯，孩子裹得像一只饭团。',
+      zhCN: '等维修工上门时，嘉宁抱着保温杯，孩子裹得像一只饭团。',
       en: 'Waiting for the repairer, Ka Ning holds a flask while the child looks like a blanket-wrapped rice ball.',
     },
     weight: 2,
@@ -2069,8 +2073,8 @@ const events: GameEvent[] = [
     channel: 'morning',
     title: { zhCN: '斜着下的雨', en: 'Rain falling sideways' },
     text: {
-      zhCN: '放学路上的雨是斜着下的，嘉宁觉得伞需要考个驾照。',
-      en: 'Rain falls sideways on the school run; Ka Ning thinks the umbrella needs driving lessons.',
+      zhCN: '上次送孩子上学，雨是斜着下的，嘉宁觉得伞需要考个驾照。',
+      en: 'On the last school run, rain fell sideways; Ka Ning thought the umbrella needed driving lessons.',
     },
     weight: 2,
     once: true,
@@ -2304,8 +2308,8 @@ const events: GameEvent[] = [
     channel: 'npc:ka-ning-partner',
     title: { zhCN: '餐桌上的旧车票', en: 'An old ticket on the dinner table' },
     text: {
-      zhCN: '纪念日晚饭时，伴侣找出了两人第一次旅行的旧车票。',
-      en: 'At the anniversary dinner, the partner finds the ticket from their first trip together.',
+      zhCN: '纪念日快到了，伴侣找出了两人第一次旅行的旧车票。',
+      en: 'With the anniversary coming up, the partner finds the ticket from their first trip together.',
     },
     weight: 2,
     once: true,
@@ -2333,8 +2337,8 @@ const events: GameEvent[] = [
     channel: 'morning',
     title: { zhCN: '雪地里的小脚印', en: 'Small footprints in snow' },
     text: {
-      zhCN: '门前薄雪上留着孩子的脚印，绕了三圈才走向学校。',
-      en: 'The child’s footprints circle three times in the light snow before heading towards school.',
+      zhCN: '昨夜薄雪上留着孩子的脚印，绕了三圈又回到门口。',
+      en: 'The child’s footprints circle three times in last night’s light snow, then return to the doorstep.',
     },
     weight: 2,
     once: true,
@@ -2358,7 +2362,7 @@ const events: GameEvent[] = [
   {
     id: 'bno-summer-light',
     channel: 'npc:ka-ning-child',
-    title: { zhCN: '不肯天黑的晚上', en: 'An evening that will not darken' },
+    title: { zhCN: '不肯天黑的夏天', en: 'A summer that won’t darken' },
     text: {
       zhCN: '夏天的窗外一直亮着，孩子说太阳是不是忘了下班。',
       en: 'The summer window stays bright; the child asks whether the sun forgot to clock off.',
@@ -2370,8 +2374,8 @@ const events: GameEvent[] = [
       {
         id: 'first',
         label: {
-          zhCN: '拉上窗帘早点睡',
-          en: 'Close the curtains and sleep earlier',
+          zhCN: '拉上窗帘歇一会儿',
+          en: 'Close the curtains and rest a while',
         },
         effects: [{ type: 'stat', key: 'health', delta: 3 }],
       },
@@ -2504,8 +2508,8 @@ const events: GameEvent[] = [
     channel: 'place:work',
     title: { zhCN: '微波炉前的队伍', en: 'A queue at the microwave' },
     text: {
-      zhCN: '午休的微波炉排起长队，嘉宁发现人人都在守着一个饭盒。',
-      en: 'A microwave queue forms at lunch; everyone appears to be guarding a lunchbox.',
+      zhCN: '微波炉前排起长队，嘉宁发现人人都在守着一个饭盒。',
+      en: 'A microwave queue forms; everyone appears to be guarding a lunchbox.',
     },
     weight: 2,
     once: true,

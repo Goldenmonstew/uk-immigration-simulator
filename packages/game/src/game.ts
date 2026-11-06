@@ -123,13 +123,31 @@ function matches(state: GameState, conditions: Condition[] = []): boolean {
     );
   });
 }
-function available(state: GameState, event: GameEvent) {
+function dayCondition(c: Condition) {
+  return 'dayKind' in c || 'weather' in c || 'festival' in c;
+}
+function timeCondition(c: Condition) {
+  return 'minuteMin' in c || 'minuteMax' in c;
+}
+function timeWindow(event: GameEvent, start: number, end: number) {
+  for (const c of event.when ?? []) {
+    if ('minuteMin' in c) start = Math.max(start, c.minuteMin ?? start);
+    if ('minuteMax' in c) end = Math.min(end, c.minuteMax ?? end);
+  }
+  return { start, end };
+}
+function available(state: GameState, event: GameEvent, drawing = false) {
   return (
     (!event.season || event.season === state.quarter) &&
     (!event.once || !state.firedEvents.includes(event.id)) &&
     (event.requires ?? []).every((f) => state.flags.includes(f)) &&
     !(event.forbids ?? []).some((f) => state.flags.includes(f)) &&
-    matches(state, event.when)
+    matches(
+      state,
+      event.when?.filter(
+        (c) => !drawing || (!dayCondition(c) && !timeCondition(c)),
+      ),
+    )
   );
 }
 function random(state: GameState) {
@@ -148,7 +166,7 @@ function draw(state: GameState, count: number) {
       ...characterOf(state.characterId).events,
     ].filter(
       (e) =>
-        available(state, e) &&
+        available(state, e, true) &&
         ![state.pendingEvent, ...state.eventQueue].some((id) =>
           pool(state)
             .find((scheduled) => scheduled.id === id)
@@ -191,10 +209,29 @@ function deliver(state: GameState, channel: Channel | 'leftovers') {
       (delivery.minute ?? b.phoneStart) > state.day.minute
     )
       continue;
+    const event = pool(state).find((e) => e.id === delivery.eventId);
+    if (!event) continue;
+    if (delivery.channel.startsWith('place:')) {
+      const place = delivery.channel.slice(6) as PlaceId;
+      if (!isOpen(state, place)) continue;
+    }
+    if (channel === 'leftovers' && delivery.channel === 'phone')
+      state.day.minute = Math.max(
+        state.day.minute,
+        delivery.minute ?? b.phoneStart,
+      );
+    // Letters are written for wake-up, even when read later in the day.
+    const check =
+      delivery.channel === 'letter'
+        ? { ...state, day: { ...state.day, minute: b.wakeMinute } }
+        : state;
+    if (!available(check, event)) continue;
     state.day.deliveries = state.day.deliveries.filter(
       (d) => d.eventId !== delivery.eventId,
     );
-    if (makePending(state, delivery.eventId)) return;
+    state.pendingEvent = delivery.eventId;
+    state.firedEvents.push(delivery.eventId);
+    return;
   }
 }
 function nextEvent(state: GameState) {
@@ -208,7 +245,11 @@ function nextEvent(state: GameState) {
   }
   deliver(state, 'morning');
   deliver(state, 'phone');
-  if (state.day.place) deliver(state, `place:${state.day.place}`);
+  if (
+    state.day.place &&
+    (state.day.place !== 'home' || state.day.done.includes('returned-home'))
+  )
+    deliver(state, `place:${state.day.place}`);
 }
 function pressure(state: GameState) {
   const queue = (id: string) => {
@@ -573,7 +614,7 @@ export function activities(state: GameState, place: PlaceId): Activity[] {
         const name = items.find((i) => i.id === crop)!.name;
         action.label = {
           zhCN: `带${showQuantity(state, crop)}份${name.zhCN}参加评比`,
-          en: `Show ${showQuantity(state, crop)} ${name.en.toLowerCase()}`,
+          en: `Show ${showQuantity(state, crop)} ${cropName(crop, showQuantity(state, crop))}`,
         };
       }
       if (a.id === 'exam' && state.stats.english >= b.englishB1)
@@ -605,6 +646,11 @@ export function activities(state: GameState, place: PlaceId): Activity[] {
         };
       return action;
     });
+}
+function cropName(crop: string, quantity: number) {
+  const name = items.find((i) => i.id === crop)!.name.en.toLowerCase();
+  if (quantity === 1 || crop === 'corn') return name;
+  return crop === 'tomato' || crop === 'potato' ? `${name}es` : `${name}s`;
 }
 function showQuantity(state: GameState, crop: string) {
   const record = state.flags.find((f) =>
@@ -677,13 +723,19 @@ export function doActivity(state: GameState, actionId: string): GameState {
       zhCN: posted
         .map(
           (n) =>
-            n.text.zhCN + (n.id === 'pub-quiz' ? `（${quizDate} 18:00）` : ''),
+            n.text.zhCN +
+            (n.id === 'pub-quiz'
+              ? `（${noticeDate(quizDate, 'zh-CN')} 18:00）`
+              : ''),
         )
         .join('\n'),
       en: posted
         .map(
           (n) =>
-            n.text.en + (n.id === 'pub-quiz' ? ` (${quizDate}, 18:00)` : ''),
+            n.text.en +
+            (n.id === 'pub-quiz'
+              ? ` (${noticeDate(quizDate, 'en')}, 18:00)`
+              : ''),
         )
         .join('\n'),
     };
@@ -717,13 +769,16 @@ export function doActivity(state: GameState, actionId: string): GameState {
     next.day.done.push('summer-show');
     const result =
       rank === 'ribbon'
-        ? { zhCN: '拿到一枚蓝丝带', en: 'a blue ribbon' }
+        ? { zhCN: '拿到一枚蓝丝带', en: 'win a blue ribbon' }
         : rank === 'commended'
-          ? { zhCN: '得到评委的特别夸奖', en: 'a special commendation' }
-          : { zhCN: '留下第一次参展的标签', en: 'a first-entry label' };
+          ? { zhCN: '得到评委的特别夸奖', en: 'receive a special commendation' }
+          : {
+              zhCN: '留下第一次参展的标签',
+              en: 'take home a first-entry label',
+            };
     next.outcome.text = {
       zhCN: `${action.label.zhCN}，${result.zhCN}。玛格丽特帮你把收成装回篮子。`,
-      en: `${action.label.en}: ${result.en}. Margaret helps return the harvest to your basket.`,
+      en: `You show ${quantity} ${cropName(crop, quantity)} and ${result.en}. Margaret helps return the harvest to your basket.`,
     };
   }
   next.outcome.statDeltas = deltas(state, next);
@@ -1142,6 +1197,12 @@ function isOpen(state: GameState, place: PlaceId) {
       state.day.minute < hours.closes)
   );
 }
+function noticeDate(date: IsoDate, locale: Locale) {
+  const day = new Date(`${date}T00:00:00Z`);
+  if (locale === 'zh-CN')
+    return `${day.getUTCMonth() + 1}月${day.getUTCDate()}日周${'日一二三四五六'[day.getUTCDay()]}`;
+  return `${new Intl.DateTimeFormat('en-GB', { weekday: 'short', timeZone: 'UTC' }).format(day)} ${day.getUTCDate()} ${new Intl.DateTimeFormat('en-GB', { month: 'short', timeZone: 'UTC' }).format(day)}`;
+}
 function firstWeekday(date: IsoDate, weekday: number): IsoDate {
   const delta = (weekday - new Date(date).getUTCDay() + 7) % 7;
   return addDays(date, delta || 7);
@@ -1219,11 +1280,12 @@ function beginDay(state: GameState, index: DayState['index']) {
     gifted: [],
     deliveries: [],
   };
-  // Deferred assignment gives each remaining card equal probability for each
-  // remaining day, without storing a second calendar or another random stream.
+  // Day kinds and festivals are known for the remaining days. Weather is rolled
+  // daily, so weather-bound cards take the first matching day.
   for (const id of [...state.eventQueue]) {
     if (id.startsWith('system-')) continue;
-    const channel = pool(state).find((e) => e.id === id)?.channel ?? 'morning';
+    const event = pool(state).find((e) => e.id === id)!;
+    const channel = event.channel ?? 'morning';
     if (state.trip && channel === 'morning') {
       // A town-set morning card does not happen while the player is abroad;
       // it goes back to the pool and may be drawn in a later quarter.
@@ -1234,8 +1296,57 @@ function beginDay(state: GameState, index: DayState['index']) {
       setFlags(state, [`travel-deferred:${id}`]);
       continue;
     }
+    const hours = channel.startsWith('place:')
+      ? places.find((p) => p.id === channel.slice(6))?.hours
+      : undefined;
+    const window = timeWindow(
+      event,
+      channel === 'phone' ? b.phoneStart : (hours?.opens ?? b.wakeMinute),
+      channel === 'phone' ? b.phoneEnd : hours ? hours.closes - 1 : b.midnight,
+    );
+    const morning = channel === 'morning' || channel === 'letter';
+    const remaining = ([0, 1, 2] as const).filter((i) => {
+      const kind = (['workday', 'weekend', 'special'] as const)[i];
+      return (
+        i >= index &&
+        (!hours?.dayKinds || hours.dayKinds.includes(kind)) &&
+        matches(
+          {
+            ...state,
+            day: {
+              ...state.day,
+              kind,
+              festival: i === 2 ? special.festival : undefined,
+            },
+          },
+          event.when?.filter((c) => dayCondition(c) && !('weather' in c)),
+        )
+      );
+    });
+    const possible =
+      window.start <= window.end &&
+      (!morning ||
+        (window.start <= b.wakeMinute && b.wakeMinute <= window.end));
+    if (!possible || !remaining.length) {
+      state.eventQueue.splice(state.eventQueue.indexOf(id), 1);
+      state.flags = state.flags.filter((f) => f !== `travel-deferred:${id}`);
+      continue;
+    }
+    const today =
+      remaining.includes(index) &&
+      matches(state, event.when?.filter(dayCondition));
+    if (!today) {
+      if (index === 2) state.eventQueue.splice(state.eventQueue.indexOf(id), 1);
+      continue;
+    }
     const deferred = state.flags.includes(`travel-deferred:${id}`);
-    if (!deferred && index !== 2 && random(state) >= 1 / (3 - index)) continue;
+    if (
+      !deferred &&
+      !event.when?.some((c) => 'weather' in c) &&
+      remaining.length > 1 &&
+      random(state) >= 1 / remaining.length
+    )
+      continue;
     state.eventQueue.splice(state.eventQueue.indexOf(id), 1);
     state.flags = state.flags.filter((f) => f !== `travel-deferred:${id}`);
     state.day.deliveries.push({
@@ -1243,8 +1354,8 @@ function beginDay(state: GameState, index: DayState['index']) {
       channel,
       ...(channel === 'phone' && {
         minute:
-          b.phoneStart +
-          Math.floor(random(state) * (b.phoneEnd - b.phoneStart + 1)),
+          window.start +
+          Math.floor(random(state) * (window.end - window.start + 1)),
       }),
     });
   }
@@ -1272,7 +1383,19 @@ function advanceClock(state: GameState, minutes: number): GameState {
     )
     .filter((d) => {
       const event = pool(state).find((e) => e.id === d.eventId);
-      return event && available(state, event);
+      return (
+        event &&
+        available(
+          {
+            ...state,
+            day: {
+              ...state.day,
+              minute: Math.max(state.day.minute, d.minute ?? b.phoneStart),
+            },
+          },
+          event,
+        )
+      );
     })
     .sort((a, c) => (a.minute ?? b.phoneStart) - (c.minute ?? b.phoneStart))[0];
   state.day.minute =
@@ -1302,7 +1425,10 @@ export function enter(state: GameState, place: PlaceId): GameState {
   if (state.pendingEvent || state.trip || isOver(state)) return state;
   const next = structuredClone(state);
   next.day.place = place;
-  deliver(next, `place:${place}`);
+  if (place === 'home' && state.day.place !== 'home')
+    next.day.done.push('returned-home');
+  if (place !== 'home' || next.day.done.includes('returned-home'))
+    deliver(next, `place:${place}`);
   return next;
 }
 export function mailbox(state: GameState): string[] {
@@ -1338,8 +1464,9 @@ function sleepDay(state: GameState): GameState {
         next.eventQueue.push(delivery.eventId);
       setFlags(next, [`travel-deferred:${delivery.eventId}`]);
     }
-    next.day.deliveries = [];
   }
+  // Missed windows return to the pool without being marked as fired.
+  next.day.deliveries = [];
   applyEffects(next, [
     {
       type: 'stat',
