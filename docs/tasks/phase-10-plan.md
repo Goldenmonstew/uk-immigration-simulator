@@ -90,4 +90,5 @@ export function npcAt(state: GameState, npc: string): NpcLocation;
 
 - 2026-11-06 Wave 1：10.1（sol）合并到 `phase-10`（5e064b7），Fable 集成修正 c1d54d0。
 - 2026-11-06 Wave 2：10.3（astra，892a33f）、10.2（sol，75409fe）合并到 `phase-10`；全仓 gate 与浏览器走查通过后，`phase-10` 合并进 main（184b587）。
-- 下一步 Wave 3：10.4 质检。
+- 2026-11-06 Wave 3：10.4 质检（`docs/tasks/reports/10.4-qa-review.md`：MUST-FIX 15、SUGGESTION 31）；修改 10.4b（sol）合并进 main（56be86a），积极策略每局不重复汉字 16,939 / 16,176 / 15,556。Phase 10 完成。
+- 后续候选：随意玩家每局只解锁 21–23 段好感剧情（积极策略 39–40 段），可考虑调整好感获取；10.4b 补的 192 句日常台词只经 Fable 抽查；小动物素材。
