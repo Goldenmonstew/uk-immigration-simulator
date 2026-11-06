@@ -88,4 +88,6 @@ export function npcAt(state: GameState, npc: string): NpcLocation;
 
 ## 进度
 
-- 2026-11-06 Wave 1：10.1 派给 sol。
+- 2026-11-06 Wave 1：10.1（sol）合并到 `phase-10`（5e064b7），Fable 集成修正 c1d54d0。
+- 2026-11-06 Wave 2：10.3（astra，892a33f）、10.2（sol，75409fe）合并到 `phase-10`；全仓 gate 与浏览器走查通过后，`phase-10` 合并进 main（184b587）。
+- 下一步 Wave 3：10.4 质检。
