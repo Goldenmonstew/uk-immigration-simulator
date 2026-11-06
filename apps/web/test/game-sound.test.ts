@@ -44,6 +44,9 @@ test('sound waits for a gesture, changes seasonal tracks, and persists mute', as
   const firstPitch = voice.playbackRate;
   sound.playSound('voice', 'ade');
   expect(voice.playbackRate).not.toBe(firstPitch);
+  sound.playSound('voice', 'yao-flatmate');
+  expect(voice.playbackRate).toBeCloseTo(1.35);
+  expect(voice.preservesPitch).toBe(false);
   sound.setMuted(true);
   expect(sound.readMuted()).toBe(true);
   const calls = voice.play.mock.calls.length;

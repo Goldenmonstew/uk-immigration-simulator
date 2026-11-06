@@ -162,16 +162,23 @@ export function Dialogue({
   const meetingPlace = useRef(npcAt(state, npc));
   const stillHere = npcAt(state, npc) === meetingPlace.current;
   const event = currentEvent(state);
-  const line = localText(
+  const text = localText(
     event?.text ??
       feedbackText ??
       (state.outcome?.npc === npc ? state.outcome?.text : undefined) ??
       person.lines[0].text,
     locale,
   );
+  const [paragraph, setParagraph] = useState(0);
+  const paragraphs = event ? text.split('\n') : [text];
+  const line = paragraphs[paragraph] ?? paragraphs[0];
+  const lastParagraph = paragraph === paragraphs.length - 1;
   const [letters, setLetters] = useState(0);
   const [gifting, setGifting] = useState(false);
   const action = useLifeAction(onChange);
+  useEffect(() => {
+    setParagraph(0);
+  }, [text, event?.id, npc]);
   useEffect(() => {
     setLetters(0);
     const timer = setInterval(
@@ -179,7 +186,7 @@ export function Dialogue({
       28,
     );
     return () => clearInterval(timer);
-  }, [line]);
+  }, [line, paragraph, event?.id, npc]);
   useEffect(() => {
     if (letters && letters < line.length && letters % 3 === 0)
       playSound('voice', npc);
@@ -219,19 +226,33 @@ export function Dialogue({
           {t('game.reveal')}
         </button>
       )}
+      {event && !lastParagraph && letters >= line.length && (
+        <button
+          className={site.button}
+          onClick={() => {
+            setLetters(0);
+            setParagraph((n) => n + 1);
+          }}
+        >
+          {t('game.continuePlaying')}
+        </button>
+      )}
       {event ? (
-        <div className={styles.choices}>
-          {event.choices.map((c) => (
-            <button
-              key={c.id}
-              className={styles.choice}
-              onClick={() => onChange(resolve(state, c.id))}
-            >
-              {localText(c.label, locale)}
-              {c.note && <small>{localText(c.note, locale)}</small>}
-            </button>
-          ))}
-        </div>
+        (paragraphs.length === 1 ||
+          (lastParagraph && letters >= line.length)) && (
+          <div className={styles.choices}>
+            {event.choices.map((c) => (
+              <button
+                key={c.id}
+                className={styles.choice}
+                onClick={() => onChange(resolve(state, c.id))}
+              >
+                {localText(c.label, locale)}
+                {c.note && <small>{localText(c.note, locale)}</small>}
+              </button>
+            ))}
+          </div>
+        )
       ) : (
         <>
           {gifting ? (

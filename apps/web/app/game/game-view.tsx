@@ -404,7 +404,13 @@ export function EventCard({
   const event = currentEvent(state)!;
   return (
     <>
-      <p className={site.lead}>{localText(event.text, locale)}</p>
+      {localText(event.text, locale)
+        .split('\n')
+        .map((paragraph, index) => (
+          <p key={index} className={site.lead}>
+            {paragraph}
+          </p>
+        ))}
       <div className={styles.choices}>
         {event.choices.map((choice) => (
           <button

@@ -145,7 +145,9 @@ export class TownScene extends Phaser.Scene {
       };
       const npc = [...this.residents].find(
         ([, n]) =>
-          n.sprite.visible && n.sprite.getBounds().contains(point.x, point.y),
+          n.at !== 'away' &&
+          n.sprite.visible &&
+          n.sprite.getBounds().contains(point.x, point.y),
       );
       if (npc) {
         this.queued = { kind: 'npc', id: npc[0] };
@@ -426,6 +428,21 @@ export class TownScene extends Phaser.Scene {
     const residents = visibleResidents(this.view.state, this.view.interior);
     for (const [id, n] of this.residents) {
       if (!residents.some((npc) => npc.id === id)) {
+        if (
+          !this.view.interior &&
+          npcAt(this.view.state, id) === 'away' &&
+          n.sprite.visible
+        ) {
+          if (n.at !== 'away') {
+            n.at = 'away';
+            n.hide = true;
+            n.path = this.findPath(
+              n.target ?? n.cell,
+              this.anchors.get('station')!,
+            );
+          }
+          if (n.target || n.path.length) continue;
+        }
         n.sprite.destroy();
         this.residents.delete(id);
       }
@@ -754,7 +771,7 @@ export class TownScene extends Phaser.Scene {
   }
   walkToNpc(id: string) {
     const npc = this.residents.get(id);
-    if (!npc?.sprite.visible) return;
+    if (!npc?.sprite.visible || npc.at === 'away') return;
     this.destination = undefined;
     this.queued = { kind: 'npc', id };
     this.walkTo(npc.target ?? npc.cell);
@@ -766,7 +783,7 @@ export class TownScene extends Phaser.Scene {
   private activate(i: Interaction) {
     if (i.kind === 'npc') {
       const npc = this.residents.get(i.id);
-      if (!npc?.sprite.visible) return;
+      if (!npc?.sprite.visible || npc.at === 'away') return;
       if (distance(npc.cell, this.cell) > 1) {
         this.queued = i;
         this.walkTo(npc.target ?? npc.cell);
@@ -813,7 +830,12 @@ export class TownScene extends Phaser.Scene {
       if (n.target && this.move(n.sprite, n.target, 40, delta, id)) {
         n.cell = n.target;
         n.target = undefined;
-        if (!n.path.length && n.hide) n.sprite.setVisible(false);
+        if (!n.path.length && n.hide) {
+          if (n.at === 'away') {
+            n.sprite.destroy();
+            this.residents.delete(id);
+          } else n.sprite.setVisible(false);
+        }
       }
     }
     const keys = this.keys!;
@@ -888,7 +910,8 @@ export class TownScene extends Phaser.Scene {
       this.player.setFrame(this.direction);
     }
     const npc = [...this.residents].find(
-      ([, n]) => n.sprite.visible && distance(n.cell, this.cell) <= 1,
+      ([, n]) =>
+        n.at !== 'away' && n.sprite.visible && distance(n.cell, this.cell) <= 1,
     );
     const near: Interaction | undefined = npc
       ? { kind: 'npc', id: npc[0] }
