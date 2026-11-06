@@ -1,4 +1,4 @@
-import type { Festival, FestivalId, Text } from './types';
+import type { Festival, FestivalId, Quarter, Text } from './types';
 
 export const festivals: Festival[] = [
   {
@@ -487,7 +487,7 @@ export const festivalActivities: Partial<
     starts: 960,
   },
 };
-export const notices = [
+export const notices: { id: string; text: Text; season?: Quarter }[] = [
   {
     id: 'pub-quiz',
     text: {
@@ -529,5 +529,194 @@ export const notices = [
       zhCN: '池塘慢走小队不计速度。加雷思收工后到长椅集合，狗也能同行。',
       en: 'An unhurried pond walk. Meet Gareth at the bench after his round; dogs welcome.',
     },
+  },
+
+  {
+    id: 'repair',
+    text: {
+      zhCN: '咖啡馆收小件缝补，纽扣自带。不会穿针也能来坐坐。',
+      en: 'Small sewing repairs at the café. Bring buttons; company welcome too.',
+    },
+  },
+  {
+    id: 'puzzles',
+    text: {
+      zhCN: '图书馆拼图交换，请先数数盒角有没有藏着最后一块。',
+      en: 'Jigsaw swap at the library. Check the box corners for stray pieces.',
+    },
+  },
+  {
+    id: 'photos',
+    text: {
+      zhCN: '市政厅征集街景旧照片，背面请写地点，不必拍得端正。',
+      en: 'Old street photographs wanted at the town hall. Add the location; crooked pictures welcome.',
+    },
+  },
+  {
+    id: 'mugs',
+    text: {
+      zhCN: '小店门边有共用杯架，认领自己的杯子，别替邻居挑。',
+      en: 'Shared mug rack by the shop door. Claim your own mug, not your neighbour’s.',
+    },
+  },
+  {
+    id: 'winter-mending',
+    text: {
+      zhCN: '冬衣缝补桌在图书馆，断线的手套也能带来。',
+      en: 'Winter-clothes mending table at the library. Bring unravelled gloves.',
+    },
+    season: 1,
+  },
+  {
+    id: 'winter-soup',
+    text: {
+      zhCN: '酒吧交换热汤做法，先写锅里有什么，再写菜名。',
+      en: 'Winter soup recipes at the pub. Ingredients first, names second.',
+    },
+    season: 1,
+  },
+  {
+    id: 'winter-birds',
+    text: {
+      zhCN: '池塘冬季观鸟，借望远镜前先看看镜头盖。',
+      en: 'Winter birdwatching at the pond. Check binocular caps before borrowing.',
+    },
+    season: 1,
+  },
+  {
+    id: 'winter-draught',
+    text: {
+      zhCN: '市政厅展示挡风条样品，可以摸，不用拆自家窗户来比。',
+      en: 'Draught-strip samples at the town hall. No need to bring your window.',
+    },
+    season: 1,
+  },
+  {
+    id: 'winter-stories',
+    text: {
+      zhCN: '绿地帐篷讲冬天的故事，长椅边可借坐垫。',
+      en: 'Winter stories in the green’s tent. Borrow a cushion by the benches.',
+    },
+    season: 1,
+  },
+  {
+    id: 'spring-seeds',
+    text: {
+      zhCN: '春季分种子在菜地小屋，空纸袋比大计划有用。',
+      en: 'Spring seed sharing in the allotment shed. Bring empty paper bags.',
+    },
+    season: 2,
+  },
+  {
+    id: 'spring-pots',
+    text: {
+      zhCN: '小店交换空花盆，请把盆底的泥先刷掉。',
+      en: 'Spring pot swap at the shop. Brush the soil off the bottoms first.',
+    },
+    season: 2,
+  },
+  {
+    id: 'spring-path',
+    text: {
+      zhCN: '春季认路散步从车站门口出发，只在镇里绕一圈。',
+      en: 'Spring orientation walk from the station entrance, staying in town.',
+    },
+    season: 2,
+  },
+  {
+    id: 'spring-colours',
+    text: {
+      zhCN: '绿地画春芽，不必摘下来，纸和铅笔现场借。',
+      en: 'Draw spring buds on the green. Leave them growing; borrow paper and pencils.',
+    },
+    season: 2,
+  },
+  {
+    id: 'spring-books',
+    text: {
+      zhCN: '图书馆春季整理书架，书签请先取回，树叶也算。',
+      en: 'Spring shelf tidy at the library. Retrieve bookmarks, including leaves.',
+    },
+    season: 2,
+  },
+  {
+    id: 'summer-shade',
+    text: {
+      zhCN: '夏日绿地摆遮阳棚，帮忙的人请先认清哪边是入口。',
+      en: 'Summer shade tent on the green. Helpers: find the entrance first.',
+    },
+    season: 3,
+  },
+  {
+    id: 'summer-water',
+    text: {
+      zhCN: '菜地夏季轮流提水，空壶放左边，别只凭重量猜。',
+      en: 'Summer allotment watering. Empty cans on the left; don’t guess by weight.',
+    },
+    season: 3,
+  },
+  {
+    id: 'summer-drawing',
+    text: {
+      zhCN: '池塘夏季写生，画纸别搭在刚上漆的栏杆上。',
+      en: 'Summer pond sketching. Keep paper off the freshly painted rail.',
+    },
+    season: 3,
+  },
+  {
+    id: 'summer-recipes',
+    text: {
+      zhCN: '咖啡馆收夏季凉菜做法，抄一份也请留一份。',
+      en: 'Summer salad recipes at the café. Take a copy and leave one.',
+    },
+    season: 3,
+  },
+  {
+    id: 'summer-games',
+    text: {
+      zhCN: '酒吧花园玩桌游，风大时先把纸牌压住再谈战术。',
+      en: 'Summer board games in the pub garden. Secure cards before discussing tactics.',
+    },
+    season: 3,
+  },
+  {
+    id: 'autumn-leaves',
+    text: {
+      zhCN: '图书馆收秋叶做书签，只捡落下的，不折树枝。',
+      en: 'Autumn-leaf bookmarks at the library. Fallen leaves only; leave branches alone.',
+    },
+    season: 4,
+  },
+  {
+    id: 'autumn-apples',
+    text: {
+      zhCN: '小店交换苹果做法，酸的那种也请写清名字。',
+      en: 'Autumn apple recipes at the shop. Name the sharp varieties too.',
+    },
+    season: 4,
+  },
+  {
+    id: 'autumn-wheels',
+    text: {
+      zhCN: '车站门口检查自行车反光片，车铃也可以顺手试试。',
+      en: 'Autumn bicycle reflector checks outside the station. Try the bell too.',
+    },
+    season: 4,
+  },
+  {
+    id: 'autumn-lantern',
+    text: {
+      zhCN: '市政厅做纸灯罩，借剪刀，剪完记得传给旁边的人。',
+      en: 'Autumn paper-lantern shades at the town hall. Pass the scissors along.',
+    },
+    season: 4,
+  },
+  {
+    id: 'autumn-coats',
+    text: {
+      zhCN: '公告栏旁秋衣交换，口袋里的旧票请先拿出来。',
+      en: 'Autumn coat swap by the noticeboard. Empty old tickets from the pockets first.',
+    },
+    season: 4,
   },
 ];

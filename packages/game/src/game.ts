@@ -162,6 +162,20 @@ function random(state: GameState) {
   return ((value ^ (value >>> 14)) >>> 0) / 4294967296;
 }
 function draw(state: GameState, count: number) {
+  // Post this quarter’s notices before checking board-linked card prerequisites.
+  const options = notices.filter(
+    (notice) => !notice.season || notice.season === state.quarter,
+  );
+  const noticeCount =
+    b.boardCountMin +
+    Math.floor(random(state) * (b.boardCountMax - b.boardCountMin + 1));
+  for (let i = 0; i < noticeCount; i++) {
+    const [notice] = options.splice(
+      Math.floor(random(state) * options.length),
+      1,
+    );
+    setFlags(state, [`quarter-board-${notice.id}`]);
+  }
   for (let i = 0; i < count; i++) {
     const candidates = [
       ...commonEvents,
@@ -1252,19 +1266,6 @@ function beginDay(state: GameState, index: DayState['index']) {
     weights.findIndex((n) => (cursor -= n) < 0)
   ];
   const special = specialDay(state);
-  if (index === 0) {
-    const options = [...notices];
-    const count =
-      b.boardCountMin +
-      Math.floor(random(state) * (b.boardCountMax - b.boardCountMin + 1));
-    for (let i = 0; i < count; i++) {
-      const [notice] = options.splice(
-        Math.floor(random(state) * options.length),
-        1,
-      );
-      setFlags(state, [`quarter-board-${notice.id}`]);
-    }
-  }
   state.day = {
     index,
     kind: (['workday', 'weekend', 'special'] as const)[index],

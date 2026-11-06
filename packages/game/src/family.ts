@@ -454,7 +454,11 @@ export const familyNpcs: Npc[] = members.map(
           { from: 1320, at: 'home' },
         ],
       },
-      { weather: ['rain', 'snow'], stops: [{ from: 0, at: 'home' }] },
+      {
+        weather: ['rain', 'snow'],
+        dayKinds: ['weekend'],
+        stops: [{ from: 0, at: 'home' }],
+      },
       // Schedule times are game settings, not working-time or school rules.
       ...(id === 'jamie'
         ? [
@@ -1247,7 +1251,11 @@ familyNpcs.push({
         { from: 1320, at: 'home' },
       ],
     },
-    { weather: ['rain', 'snow'], stops: [{ from: 0, at: 'home' }] },
+    {
+      weather: ['rain', 'snow'],
+      dayKinds: ['weekend'],
+      stops: [{ from: 0, at: 'home' }],
+    },
     {
       dayKinds: ['workday'],
       stops: [
@@ -1569,8 +1577,8 @@ familyNpcs.push({
     {
       id: 'yao-flatmate-daily-32',
       text: {
-        zhCN: '你伴侣来英国那阵，我们还没这么多碗。',
-        en: 'When your partner came to the UK, we had fewer bowls than this.',
+        zhCN: '你伴侣说起初来英国的事，我才知道那箱子有多沉。',
+        en: 'Your partner told me about first arriving in the UK. That suitcase sounded heavy.',
       },
       requires: ['partner-arrived'],
     },
@@ -1865,23 +1873,14 @@ const moments: {
   {
     npc: 'jamie',
     hearts: 10,
-    title: {
-      zhCN: '写在椅背上',
-      en: 'Names on the chair backs',
-    },
+    title: { zhCN: '椅背上的木牌', en: 'Labels on the chairs' },
     text: {
-      zhCN: '杰米拿出两块薄木牌，放在修好的椅背上比了又比，始终没有钉下去。\n「写名字会不会太郑重？」他把笔递来，自己先写了一个小小的字母。\n你看见木牌背面还留着空白。他说以后换了地方，这两块也要带走。\n两把椅子终于各有了名字。门边的空地不大，已经够你们并排坐下。',
-      en: 'Jamie tries two thin wooden labels against the repaired chair backs without fastening them.\n“Are names too much?” He passes you the pen after adding a tiny initial of his own.\nThere is space on the reverse. He says the labels can come along if you ever move.\nThe chairs each have a name now. The patch by the door is small, but wide enough to sit together.',
+      zhCN: '杰米把薄木牌翻过来，露出原先椅背上那道深划痕，指腹沿着它慢慢走。\n「不用遮了，认得出是哪把。」他放下钉子，把新剪的软木垫递给你。\n你们把木牌系在椅背下方，一面画锅，一面画勺，转过来便知道谁坐哪边。\n他端来两杯水，先把自己的椅子挪近一点。木牌碰在一起，声音很轻。',
+      en: 'Jamie turns the wooden label over, exposing the deep scratch on the chair back, and runs a finger along it.\n“Leave it. We know this chair.” He puts down the nails and hands you the new cork pads.\nYou tie the labels beneath the backs: a pan on one, a spoon on the other, marking your places.\nHe brings two glasses of water and moves his chair closer. The labels touch with a small click.',
     },
     labels: [
-      {
-        zhCN: '写上名字系好木牌',
-        en: 'Write the names and tie on the labels',
-      },
-      {
-        zhCN: '在木牌背面画两把椅子',
-        en: 'Draw the two chairs on the reverse',
-      },
+      { zhCN: '替木牌画上锅和勺', en: 'Draw a pan and a spoon on the labels' },
+      { zhCN: '把两把椅子挪近一点', en: 'Move the chairs closer together' },
     ],
     requires: ['family-chairs-mended'],
     sets: ['family-named-chairs'],
@@ -1986,22 +1985,19 @@ const moments: {
   {
     npc: 'ka-ning-partner',
     hearts: 10,
-    title: {
-      zhCN: '每年留一页',
-      en: 'A page each year',
-    },
+    title: { zhCN: '相册旁的抽屉', en: 'The drawer by the album' },
     text: {
-      zhCN: '文舒在相册后面夹了一叠空纸，数量没有认真算，只让每页都留着宽边。\n「以后每年挑一张，模糊的也算。」她把已经贴好的那页翻到你面前。\n你问写什么，她说不用先决定。走过哪条路，做坏过什么菜，都能慢慢补。\n她在封底写下你们的名字，把相册放回伸手够得到的架子，没再塞进箱底。',
-      en: 'Man Shu slips blank sheets into the back of the album, leaving a wide margin on each.\n“One picture every year. Blurred ones count.” She turns the completed page towards you.\nYou ask what to write. There is no need to decide yet: a route walked or a meal gone wrong can wait.\nShe writes your names inside the back cover and returns the album to a reachable shelf, out of the box.',
+      zhCN: '文舒把相册放到矮柜上，空白页旁夹着那张被风吹歪的合照，胶角快松了。\n她拉开底下的抽屉，旧车票挤在一起，有张购物纸也混在里面。\n「这张也留吧，那次买齐了菜却忘了米。」你们翻找照片，她先笑出了声。\n胶角重新按好，购物纸夹到那顿饭旁。以后相册不够放，抽屉还能接着装。',
+      en: 'Man Shu places the album on the low cabinet. The windy photograph has a loose mounting corner.\nTickets crowd the drawer below. A shopping list has slipped among them.\n“Keep this too. All those vegetables and no rice.” She starts laughing while you find the photograph.\nYou fix the corner and tuck the list beside that meal. When the album fills, the drawer can hold more.',
     },
     labels: [
       {
-        zhCN: '在封底写下自己的名字',
-        en: 'Add your name inside the back cover',
+        zhCN: '替合照换好松掉的胶角',
+        en: 'Replace the photograph’s loose corner',
       },
       {
-        zhCN: '为下一年夹好空白页',
-        en: 'Mark a blank page for next year',
+        zhCN: '把购物纸夹到饭桌照片旁',
+        en: 'Put the list beside the dinner photograph',
       },
     ],
     requires: ['family-album-page'],
@@ -2100,23 +2096,17 @@ const moments: {
   {
     npc: 'ka-ning-child',
     hearts: 10,
-    title: {
-      zhCN: '带得走的身高',
-      en: 'Height to take along',
-    },
+    title: { zhCN: '带得走的身高', en: 'Height to take along' },
     text: {
-      zhCN: '乐言拿来一卷长纸，把纸端对准门框底下，另一头递给你，让你举稳。\n「要是搬家，门框不能装进箱子。」孩子认真把一条条旧线的位置抄过去。\n你添上日期，乐言在最上方画了一个小箭头，说这里先留给以后长高的自己。\n长纸卷好，系上一根松松的绳。孩子要你答应，每年都帮忙再打开一次。',
-      en: 'Lok Yin brings a long roll of paper, lines it up with the doorframe and asks you to hold it steady.\n“The frame won’t fit in a moving box.” Each old height mark is copied carefully onto the paper.\nYou add dates. At the top, a small arrow saves room for a taller future self.\nThe roll is tied loosely with string. The child asks you to promise to open it together every year.',
+      zhCN: '乐言拿来一卷长纸，把纸端对准门框底下，另一头递给你，让你举稳。\n「要是搬家，门框不能装进箱子。」孩子认真把一条条旧线的位置抄过去。\n你添上日期，乐言在最上方画了一个小箭头，说这里先留给以后长高的自己。\n孩子又跑去找那本鸭子故事，把长纸和书并排放好，说这两样都不能落下。',
+      en: 'Lok Yin brings a long roll of paper, lines it up with the doorframe and asks you to hold it steady.\n“The frame won’t fit in a moving box.” Each old height mark is copied carefully onto the paper.\nYou add dates. A small arrow at the top saves room for a taller future self.\nThe child fetches the duck story and lays it beside the roll. Neither of these can be left behind.',
     },
     labels: [
       {
         zhCN: '扶着长纸抄好旧线',
         en: 'Hold the paper while copying the marks',
       },
-      {
-        zhCN: '在纸边写好每条线的日期',
-        en: 'Date each mark along the paper',
-      },
+      { zhCN: '在纸边写好每条线的日期', en: 'Date each mark along the paper' },
     ],
     requires: ['heart-child-photo'],
     sets: ['family-height-roll'],
@@ -2152,8 +2142,8 @@ const moments: {
       en: 'Before the inspection',
     },
     text: {
-      zhCN: '房东约了以后来检查。周沅拿着便签站在玄关，把「有问题」三个字划掉了。\n「写清楚，比写严重管用。」她示意你听龙头的滴答，又去试松动的门把手。\n你们逐项记下要问的事，没有把满屋晾衣架算成故障，纸也终于没被挤皱。\n她把清单夹到门背。「他来的时候，我们都能看见，不用临时互相找人。」',
-      en: 'The landlord has arranged a future inspection. In the hall, Yuan crosses out “Something wrong” on a note.\n“Clearer beats louder.” She points out the dripping tap, then tests the loose door handle.\nYou list the questions together. The drying racks do not count as faults, and the page stays uncrumpled.\nShe clips it behind the door. “When he comes, either of us can find it without chasing the other.”',
+      zhCN: '房东约了下周来检查。周沅拿着便签站在玄关，把「有问题」三个字划掉了。\n「写清楚，比写严重管用。」她示意你听龙头的滴答，又去试松动的门把手。\n你们逐项记下要问的事，没有把满屋晾衣架算成故障，纸也终于没被挤皱。\n她把清单夹到门背。「他来的时候，我们都能看见，不用临时互相找人。」',
+      en: 'The landlord has arranged an inspection next week. In the hall, Yuan crosses out “Something wrong” on a note.\n“Clearer beats louder.” She points out the dripping tap, then tests the loose door handle.\nYou list the questions together. The drying racks do not count as faults, and the page stays uncrumpled.\nShe clips it behind the door. “When he comes, either of us can find it without chasing the other.”',
     },
     labels: [
       {
@@ -2224,19 +2214,13 @@ const moments: {
   {
     npc: 'yao-flatmate',
     hearts: 10,
-    title: {
-      zhCN: '屋里的小地图',
-      en: 'A map of the flat',
-    },
+    title: { zhCN: '屋里的小地图', en: 'A map of the flat' },
     text: {
-      zhCN: '周沅在门背的板上夹了一张小图，厨房画得最大，卧室只标了各自的门。\n「不是量房，别找比例尺。」她在共用那格画上两只碗，又把笔放到你面前。\n你添了一条从门口到厨房的线。她说以后换住处也带上它，再慢慢加别的门。\n纸角压好，两个人签了名字。这张没画准的地图，从此和租约分开收着。',
-      en: 'Yuan clips a little map to the board. The kitchen is largest; the bedrooms are only labelled doors.\n“No scale. Don’t check.” She draws two bowls in the shared square and puts the pen before you.\nYou add a route from the entrance to the kitchen. She suggests taking it along to future homes and adding doors.\nThe corners hold it flat, signed by both of you. This inaccurate map has its own place, separate from the tenancy papers.',
+      zhCN: '周沅把门背的板放到桌上，拿橡皮擦掉检查清单旁那条走错方向的箭头。\n「这条路在门外就画反了。」她画出厨房和门口，把笔交给你补路。\n你在拐角添上一把椅子，她又加上留汤的锅，地图看着比屋子还挤。\n背板重新挂好，铅笔用绳系在旁边。谁先想出去走走，就在门口画个圈。',
+      en: 'Yuan takes the board from behind the door and erases the arrow beside the inspection list.\n“This road turns the wrong way outside the flat.” She sketches the kitchen and entrance for you to join up.\nYou add a chair at the corner. She adds the soup pan. The map looks more crowded than the flat.\nThe board goes back with a pencil tied beside it. Whoever wants a walk can circle the doorway.',
     },
     labels: [
-      {
-        zhCN: '在小图下签上名字',
-        en: 'Sign beneath the little map',
-      },
+      { zhCN: '把铅笔系到背板旁', en: 'Tie the pencil beside the board' },
       {
         zhCN: '画上门口通往厨房的线',
         en: 'Draw the route from the entrance to the kitchen',

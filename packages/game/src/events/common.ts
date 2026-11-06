@@ -1,6 +1,8 @@
+import { noticeEvents, festivalEvents } from './days';
 import type { GameEvent } from '../types';
 import { additionalCommonEvents } from './common-additions';
 import { townEvents } from './town';
+import { placeEvents } from './places';
 
 // Fictional amounts and durations describe individual stories, not policy thresholds.
 export const commonEvents: GameEvent[] = [
@@ -3094,6 +3096,9 @@ export const commonEvents: GameEvent[] = [
   },
   ...additionalCommonEvents,
   ...townEvents,
+  ...placeEvents,
+  ...noticeEvents,
+  ...festivalEvents,
 ];
 
 export const systemEvents: GameEvent[] = [
