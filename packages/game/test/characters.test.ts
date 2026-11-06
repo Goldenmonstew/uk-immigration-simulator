@@ -272,7 +272,9 @@ describe('authored exclusive chains', () => {
       const character = characters.find((c) => c.id === id)!;
       const original = character.events;
       const common = commonEvents.splice(0);
-      character.events = original.filter((e) => [first, follow].includes(e.id));
+      character.events = original
+        .filter((e) => [first, follow].includes(e.id))
+        .map((e) => ({ ...e, when: e.when?.filter((c) => !('weather' in c)) }));
       try {
         const before = firstPending(newGame(id, 7));
         expect(currentEvent(before)?.id).toBe(first);

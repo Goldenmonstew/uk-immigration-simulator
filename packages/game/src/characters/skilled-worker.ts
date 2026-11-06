@@ -465,8 +465,8 @@ const events: GameEvent[] = [
       {
         id: 'plan',
         label: {
-          zhCN: '留下吃完晚饭',
-          en: 'Stay for dinner',
+          zhCN: '吃完这顿',
+          en: 'Finish the meal',
         },
         effects: [
           {
@@ -548,6 +548,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'sw-review',
+    when: [{ weather: 'rain' }],
     channel: 'place:work',
     title: {
       zhCN: '年度面谈',
@@ -1088,6 +1089,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'sw-first-rain',
+    when: [{ weather: 'rain' }],
     channel: 'place:work',
     title: {
       zhCN: '入职第一场雨',
@@ -1139,12 +1141,12 @@ const events: GameEvent[] = [
     id: 'sw-soup',
     channel: 'place:home',
     title: {
-      zhCN: '深夜的一碗汤',
-      en: 'A late bowl of soup',
+      zhCN: '留着的一碗汤',
+      en: 'A saved bowl of soup',
     },
     text: {
-      zhCN: '加完班回家，林遥发现室友在锅里留了一碗汤。',
-      en: 'After a late shift, Yao finds a bowl of soup saved by a flatmate.',
+      zhCN: '早上林遥才发现，室友给昨晚加班的她留了一碗汤。',
+      en: 'In the morning Yao discovers the soup her flatmate saved after last night’s late shift.',
     },
     weight: 3,
     choices: [
@@ -1300,8 +1302,8 @@ const events: GameEvent[] = [
       en: 'A sudden inspection',
     },
     text: {
-      zhCN: '房东说下午来检查，林遥看了看满屋晾着的衣服。',
-      en: 'The landlord plans an afternoon visit; laundry covers Yao’s room.',
+      zhCN: '房东说过两天来检查，林遥看了看满屋晾着的衣服。',
+      en: 'The landlord plans a visit in a couple of days; laundry covers Yao’s room.',
     },
     weight: 3,
     choices: [
@@ -1450,6 +1452,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'sw-winter-light',
+    season: 4,
     channel: 'place:home',
     title: {
       zhCN: '窗边的小灯',

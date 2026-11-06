@@ -134,8 +134,8 @@ export const additionalCommonEvents: GameEvent[] = [
       {
         id: 'tea',
         label: {
-          zhCN: '递杯热茶再去上班',
-          en: 'Bring tea before heading to work',
+          zhCN: '递杯热茶再出门',
+          en: 'Bring tea before heading out',
         },
         effects: [
           { type: 'money', delta: -2 },
@@ -305,8 +305,8 @@ export const additionalCommonEvents: GameEvent[] = [
     season: 2,
     title: { zhCN: '税码里的字母', en: 'Letters in the tax code' },
     text: {
-      zhCN: '工资单的税码换了字母，午休时你和同事一起翻旧信。',
-      en: 'A letter changes in the payslip tax code; you and a colleague compare old letters over lunch.',
+      zhCN: '工资单的税码换了字母，你和同事一起翻旧信。',
+      en: 'A letter changes in the payslip tax code; you and a colleague compare old letters.',
     },
     choices: [
       {
@@ -506,8 +506,8 @@ export const additionalCommonEvents: GameEvent[] = [
     requires: ['walking-group-joined'],
     title: { zhCN: '鞋底的新地图', en: 'A map on the soles' },
     text: {
-      zhCN: '步行小组绕完山坡，你的鞋底把整条泥路带回了家。',
-      en: 'After the group hill walk, your boots bring most of the muddy path home.',
+      zhCN: '鞋底还带着上次小组步行的泥，门垫接住了一小块山坡。',
+      en: 'Your boots still carry mud from the last group walk. The doormat catches a little hillside.',
     },
     choices: [
       {
@@ -603,8 +603,8 @@ export const additionalCommonEvents: GameEvent[] = [
     when: [{ yearMin: 5, yearMax: 6 }],
     title: { zhCN: '日历上的重复', en: 'The repeating calendar' },
     text: {
-      zhCN: '这个周一和上周一一样，连午饭盒都像复制来的。',
-      en: 'This Monday looks like the last one, right down to the identical lunchbox.',
+      zhCN: '这个工作日和上一个一样，连午饭盒都像复制来的。',
+      en: 'This workday looks like the last one, right down to the identical lunchbox.',
     },
     choices: [
       {
@@ -634,15 +634,15 @@ export const additionalCommonEvents: GameEvent[] = [
     requires: ['quiet-weekend-planned'],
     title: { zhCN: '没响的闹钟', en: 'An alarm that stays silent' },
     text: {
-      zhCN: '那个空白周末终于到了，醒来时你先确认了一遍今天不用上班。',
-      en: 'The blank weekend arrives; waking up, you check once more that there really is no work today.',
+      zhCN: '日历上那个空白周末还空着，你又看了一眼，没往里添安排。',
+      en: 'That blank weekend is still clear on the calendar. You check again without adding any plans.',
     },
     choices: [
       {
         id: 'sleep',
         label: {
-          zhCN: '再睡一会儿，慢慢做早饭',
-          en: 'Sleep a little longer, then make breakfast',
+          zhCN: '到时多睡一会儿，慢慢做早饭',
+          en: 'Then sleep a little longer and make breakfast',
         },
         effects: [
           { type: 'stat', key: 'health', delta: 5 },
@@ -652,8 +652,8 @@ export const additionalCommonEvents: GameEvent[] = [
       {
         id: 'coast',
         label: {
-          zhCN: '坐车去海边',
-          en: 'Take a trip to the coast',
+          zhCN: '到时坐车去海边',
+          en: 'Then take a trip to the coast',
         },
         effects: [
           { type: 'money', delta: -45 },
@@ -828,15 +828,15 @@ export const additionalCommonEvents: GameEvent[] = [
     season: 1,
     title: { zhCN: '下午四点的灯', en: 'Lights at four' },
     text: {
-      zhCN: '下午窗外就黑了，你开灯时差点以为自己睡过了晚饭。',
-      en: 'It is already dark outside; switching on the light, you wonder whether you slept through dinner.',
+      zhCN: '昨天下午四点窗外就黑了，你开灯时差点以为自己睡过了晚饭。',
+      en: 'It was already dark at four yesterday; switching on the light, you wondered whether you’d slept through dinner.',
     },
     choices: [
       {
         id: 'walk',
         label: {
-          zhCN: '趁还有一点天光出去走',
-          en: 'Catch the last daylight on a walk',
+          zhCN: '趁着天亮出去走',
+          en: 'Take a walk in the daylight',
         },
         effects: [{ type: 'stat', key: 'health', delta: 3 }],
       },
@@ -953,8 +953,8 @@ export const additionalCommonEvents: GameEvent[] = [
     season: 4,
     title: { zhCN: '保温杯的惊喜', en: 'A flask surprise' },
     text: {
-      zhCN: '午饭打开保温杯，汤还是热的，昨天的疲惫忽然没那么大了。',
-      en: 'The soup is still hot at lunchtime; yesterday’s tiredness suddenly feels a little smaller.',
+      zhCN: '打开保温杯，汤还是热的，昨天的疲惫忽然没那么大了。',
+      en: 'The soup is still hot in the flask; yesterday’s tiredness suddenly feels a little smaller.',
     },
     choices: [
       {
@@ -1020,7 +1020,7 @@ export const additionalCommonEvents: GameEvent[] = [
     weight: 2,
     once: true,
     season: 4,
-    title: { zhCN: '追帽子的下午', en: 'An afternoon chasing a hat' },
+    title: { zhCN: '追帽子', en: 'Chasing a hat' },
     text: {
       zhCN: '一阵风把帽子吹过停车场，你追到时它正卡在购物车里。',
       en: 'A gust sends your hat across the car park; you catch it resting in a trolley.',
@@ -1195,8 +1195,8 @@ export const additionalCommonEvents: GameEvent[] = [
     season: 2,
     title: { zhCN: '迟到的车和退款', en: 'A late bus and a refund' },
     text: {
-      zhCN: '长途车迟到了，退款短信却准时出现在晚饭桌上。',
-      en: 'The coach was late; its refund text arrives punctually at the dinner table.',
+      zhCN: '长途车迟到了，退款短信却准时到了。',
+      en: 'The coach was late; its refund text arrives punctually.',
     },
     choices: [
       {
@@ -1376,8 +1376,8 @@ export const additionalCommonEvents: GameEvent[] = [
     season: 1,
     title: { zhCN: '答错也碰杯', en: 'Cheers for a wrong answer' },
     text: {
-      zhCN: '酒吧问答轮到电影题，大家争了半天，把片名都争错了。',
-      en: 'At the pub quiz film round, the team argues for ages and still names the wrong film.',
+      zhCN: '吧台还贴着上周的题，你和朋友争了半天，把片名都争错了。',
+      en: 'Last week’s film question is still behind the bar. You and a friend argue for ages and still name the wrong film.',
     },
     choices: [
       {
@@ -1660,7 +1660,7 @@ export const additionalCommonEvents: GameEvent[] = [
   },
   {
     id: 'common-year-seven-cafe',
-    channel: 'place:cafe',
+    channel: 'morning',
     weight: 2,
     once: true,
     when: [{ yearMin: 7, yearMax: 7 }],
@@ -1819,6 +1819,7 @@ export const additionalCommonEvents: GameEvent[] = [
   },
   {
     id: 'common-gutter-rain',
+    when: [{ weather: 'rain' }],
     channel: 'place:home',
     weight: 2,
     once: true,

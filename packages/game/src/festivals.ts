@@ -7,7 +7,7 @@ export const festivals: Festival[] = [
     name: { zhCN: '春节聚会', en: 'Lunar New Year gathering' },
     text: {
       zhCN: '社区百家宴，保温盒摆满长桌。一起捏饺子，捏漏的先下锅尝。',
-      en: 'Covered dishes fill the potluck table. Fold dumplings together; taste the leaky ones first.',
+      en: 'Covered dishes fill the bring-and-share table. Fold dumplings together; taste the leaky ones first.',
     },
   },
   {
@@ -43,7 +43,7 @@ export const festivals: Festival[] = [
     name: { zhCN: '圣诞集市', en: 'Christmas market' },
     text: {
       zhCN: '小灯泡亮了，提盏灯听合唱，捧热杯暖手。姜饼摊的包装纸正追着风跑。',
-      en: 'Carry a lantern to hear the choir, warming your hands on a cup. The gingerbread wrapping chases the wind.',
+      en: 'The fairy lights are on. Carry a lantern to hear the choir, warming your hands on a cup. The gingerbread wrapping chases the wind.',
     },
   },
 ];
@@ -77,8 +77,8 @@ export const festivalDialogue: Record<
     {
       festival: 'bonfire-night',
       text: {
-        zhCN: '火光照着泥靴，今晚真省鞋油。',
-        en: 'Firelight on muddy boots. Saves on polish tonight.',
+        zhCN: '我拿错了园艺杯，太妃糖倒不挑杯子。',
+        en: 'Brought my gardening mug. The toffee doesn’t mind.',
       },
     },
     {
@@ -151,8 +151,8 @@ export const festivalDialogue: Record<
     {
       festival: 'bonfire-night',
       text: {
-        zhCN: '今晚这块天空，比办公室投影清楚。',
-        en: 'Tonight’s sky is clearer than the office projector.',
+        zhCN: '纸杯印着夏日特惠，手倒是暖起来了。',
+        en: 'Paper cup says summer special. Still warming my hands.',
       },
     },
     {
@@ -168,14 +168,14 @@ export const festivalDialogue: Record<
       festival: 'lunar-new-year',
       text: {
         zhCN: '今天的饺子课，我也从揉面开始学。',
-        en: 'Today I am a student too, starting with dumpling dough.',
+        en: 'Today I’m a student too, starting with dumpling dough.',
       },
     },
     {
       festival: 'may-day',
       text: {
         zhCN: '风把彩带拼成什么词，我还没读懂。',
-        en: 'Wind is spelling with ribbons. I cannot read it yet.',
+        en: 'The wind’s spelling something with the ribbons. I can’t read it yet.',
       },
     },
     {
@@ -188,8 +188,8 @@ export const festivalDialogue: Record<
     {
       festival: 'bonfire-night',
       text: {
-        zhCN: '烟花这道听力题，大家都答对了。',
-        en: 'Everyone passed the firework listening test.',
+        zhCN: '围巾上沾了糖，明天得换个结。',
+        en: 'Toffee on my scarf. A different knot tomorrow.',
       },
     },
     {
@@ -212,14 +212,14 @@ export const festivalDialogue: Record<
       festival: 'may-day',
       text: {
         zhCN: '彩带转得快，我那顶帽子跟不上。',
-        en: 'Fast ribbons. My hat cannot keep up.',
+        en: 'Fast ribbons. My hat can’t keep up.',
       },
     },
     {
       festival: 'summer-fair',
       text: {
         zhCN: '菜地评委不答电影题，我白准备了。',
-        en: 'The allotment judges do not take film questions. Wasted preparation.',
+        en: 'The allotment judges don’t take film questions. Wasted preparation.',
       },
     },
     {
@@ -293,7 +293,7 @@ export const festivalDialogue: Record<
       festival: 'summer-fair',
       text: {
         zhCN: '黄瓜也有评语，我先替它深呼吸。',
-        en: 'Cucumber getting judged too. I will take a breath for it.',
+        en: 'Cucumber getting judged too. I’ll take a breath for it.',
       },
     },
     {
@@ -367,14 +367,14 @@ export const festivalDialogue: Record<
       festival: 'summer-fair',
       text: {
         zhCN: '我扶着菜篮，你把标签写直一点。',
-        en: 'I will hold the basket. You keep the label straight.',
+        en: 'I’ll hold the basket. You keep the label straight.',
       },
     },
     {
       festival: 'bonfire-night',
       text: {
-        zhCN: '站我这边吧，这里没有烟往脸上飘。',
-        en: 'Stand beside me. The smoke misses us here.',
+        zhCN: '糖纸我来收，别让它抢了烟花的风头。',
+        en: 'I’ll collect the wrappers. Can’t have them upstaging the fireworks.',
       },
     },
     {
@@ -397,7 +397,7 @@ export const festivalDialogue: Record<
       festival: 'may-day',
       text: {
         zhCN: '孩子追着彩带跑，我替你拿住茶。',
-        en: 'The child is chasing ribbons. I will hold your tea.',
+        en: 'The child is chasing ribbons. I’ll hold your tea.',
       },
     },
     {
@@ -410,8 +410,8 @@ export const festivalDialogue: Record<
     {
       festival: 'bonfire-night',
       text: {
-        zhCN: '围巾往中间挪一点，两个人都不漏风。',
-        en: 'Move the scarf between us. Keeps both draughts out.',
+        zhCN: '手套我多带了一双，在你那边的口袋。',
+        en: 'Spare gloves in the pocket on your side.',
       },
     },
     {
@@ -506,7 +506,7 @@ export const notices = [
     id: 'cat',
     text: {
       zhCN: '走失的条纹猫叫饼干。若在小店附近看到，请告诉拉赫曼，别追它。',
-      en: 'Missing tabby called Biscuit. Tell Rahman if spotted near the shop; do not chase.',
+      en: 'Missing tabby called Biscuit. Tell Rahman if spotted near the shop; don’t chase.',
     },
   },
   {

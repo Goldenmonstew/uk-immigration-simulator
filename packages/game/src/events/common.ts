@@ -300,8 +300,8 @@ export const commonEvents: GameEvent[] = [
       en: 'Windowsill shoots',
     },
     text: {
-      zhCN: '超市薄荷活过了周末，邻居说可以拿去社区花园。',
-      en: 'The supermarket mint survives the weekend; a neighbour suggests the community garden.',
+      zhCN: '超市薄荷活过了一整周，邻居说可以拿去社区花园。',
+      en: 'The supermarket mint survives a whole week; a neighbour suggests the community garden.',
     },
     weight: 2,
     choices: [
@@ -542,8 +542,8 @@ export const commonEvents: GameEvent[] = [
       en: 'Outside the test centre',
     },
     text: {
-      zhCN: '复习了好几晚，今天走出考场时你终于松了口气。',
-      en: 'After evenings of revision, leaving the test centre brings relief.',
+      zhCN: '复习了好几晚，昨天走出考场时你终于松了口气。',
+      en: 'After evenings of revision, leaving the test centre yesterday brought relief.',
     },
     weight: 2,
     choices: [
@@ -661,8 +661,8 @@ export const commonEvents: GameEvent[] = [
       {
         id: 'other',
         label: {
-          zhCN: '资料留好，早点下班',
-          en: 'File the papers and leave on time',
+          zhCN: '资料留好，歇一会儿',
+          en: 'File the papers and take a break',
         },
         effects: [
           {
@@ -1534,8 +1534,8 @@ export const commonEvents: GameEvent[] = [
       en: 'A new classmate',
     },
     text: {
-      zhCN: '晚课的同桌也总带错课本，你们笑着交换了笔记。',
-      en: 'Your evening-class neighbour also brings the wrong book; you swap notes.',
+      zhCN: '课上的同桌也总带错课本，你们笑着交换了笔记。',
+      en: 'Your classmate also brings the wrong book; you swap notes.',
     },
     weight: 2,
     choices: [
@@ -2036,6 +2036,7 @@ export const commonEvents: GameEvent[] = [
   },
   {
     id: 'common-rain',
+    when: [{ weather: 'rain' }],
     channel: 'morning',
     title: {
       zhCN: '横着下的雨',
@@ -2095,7 +2096,7 @@ export const commonEvents: GameEvent[] = [
       en: 'Yellow-sticker supper',
     },
     text: {
-      zhCN: '超市最后一盒打折甜点，像在货架上等你下班。',
+      zhCN: '超市最后一盒打折甜点，像在货架上等你来。',
       en: 'The last reduced dessert seems to have waited on the shelf for you.',
     },
     weight: 2,
@@ -2337,7 +2338,7 @@ export const commonEvents: GameEvent[] = [
         ],
       },
     ],
-    season: 2,
+    season: 1,
   },
   {
     id: 'common-picnic',
@@ -2391,11 +2392,11 @@ export const commonEvents: GameEvent[] = [
     id: 'common-festival',
     channel: 'place:green',
     title: {
-      zhCN: '小镇夏日节',
-      en: 'The summer fair',
+      zhCN: '秋日集市',
+      en: 'The autumn fair',
     },
     text: {
-      zhCN: '夏日节的抽奖没中，邻居却塞来一袋自己种的豆角。',
+      zhCN: '秋日集市的抽奖没中，邻居却塞来一袋自己种的豆角。',
       en: 'The fair raffle yields nothing, but a neighbour hands you home-grown beans.',
     },
     weight: 2,
@@ -2939,14 +2940,14 @@ export const commonEvents: GameEvent[] = [
         ],
       },
     ],
-    season: 1,
+    season: 4,
   },
   {
     id: 'common-market',
     channel: 'place:green',
     title: {
-      zhCN: '周末集市',
-      en: 'The weekend market',
+      zhCN: '集市日',
+      en: 'Market day',
     },
     text: {
       zhCN: '集市摊主记住了你的面包口味，还多给了一片。',
@@ -3002,7 +3003,7 @@ export const commonEvents: GameEvent[] = [
     id: 'common-power',
     channel: 'morning',
     title: {
-      zhCN: '停电的晚上',
+      zhCN: '停电了',
       en: 'A power cut',
     },
     text: {
@@ -3028,8 +3029,8 @@ export const commonEvents: GameEvent[] = [
       {
         id: 'second',
         label: {
-          zhCN: '早点睡觉',
-          en: 'Go to bed early',
+          zhCN: '点蜡烛吃早饭',
+          en: 'Eat breakfast by candlelight',
         },
         effects: [
           {

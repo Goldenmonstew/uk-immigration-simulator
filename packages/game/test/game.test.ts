@@ -17,6 +17,7 @@ import {
 import type { Effect, GameEvent, GameState, Text } from '../src';
 import { balance } from '../src/balance';
 import { commonEvents, systemEvents } from '../src/events/common';
+import { heartEvents } from '../src/npcs';
 import { locationActions } from '../src/locations';
 
 const LAW = 'current-law-2026-11';
@@ -160,7 +161,10 @@ describe('v3 content contract', () => {
       }
     }
     const consumed = new Set([
-      ...all.flatMap((e) => [...(e.requires ?? []), ...(e.forbids ?? [])]),
+      ...[...all, ...heartEvents].flatMap((e) => [
+        ...(e.requires ?? []),
+        ...(e.forbids ?? []),
+      ]),
       ...npcs.flatMap((npc) =>
         npc.lines.flatMap((line) => [
           ...(line.requires ?? []),

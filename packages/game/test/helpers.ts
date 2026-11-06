@@ -7,6 +7,7 @@ import {
   resolve,
   newGame,
   sleep,
+  tick,
 } from '../src';
 import { locationActions, places } from '../src/locations';
 import type { GameState } from '../src';
@@ -49,8 +50,10 @@ export function quarter(state: GameState) {
 export function firstPending(state: GameState) {
   let next = state;
   const date = state.date;
-  while (!currentEvent(next) && !next.ending && next.date === date)
-    next = sleep(next);
+  while (!currentEvent(next) && !next.ending && next.date === date) {
+    next = tick(next, Math.max(0, 600 - next.day.minute));
+    if (!currentEvent(next)) next = sleep(next);
+  }
   return next;
 }
 export function drain(state: GameState) {

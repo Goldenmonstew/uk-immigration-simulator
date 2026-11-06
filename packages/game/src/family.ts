@@ -48,8 +48,8 @@ const dialogue: Record<string, [string, string][]> = {
       'Spring bulbs are growing. I resisted digging to check today.',
     ],
     [
-      '夏天的窗帘太薄，太阳老赖床。',
-      'Summer curtains are too thin. The sun will not go to bed.',
+      '夏天的窗帘太薄，太阳总不肯下山。',
+      'Summer curtains are too thin. The sun won’t go to bed.',
     ],
     [
       '落叶进了玄关，鞋子像带回来一个公园。',
@@ -67,7 +67,7 @@ const dialogue: Record<string, [string, string][]> = {
       '太阳照着餐桌，今天不用找那盏小灯。',
       'Sun on the table. No need to find the little lamp today.',
     ],
-    ['雪天先看窗外吧，茶我来倒。', 'Watch the snow. I will pour the tea.'],
+    ['雪天先看窗外吧，茶我来倒。', 'Watch the snow. I’ll pour the tea.'],
     [
       '周末难得都闲着，电影挑短一点的？',
       'A rare free weekend. Shall we choose a shorter film?',
@@ -78,7 +78,7 @@ const dialogue: Record<string, [string, string][]> = {
     ],
     [
       '和你坐着，水壶慢一点也没关系。',
-      'Sitting with you, I do not mind the slow kettle.',
+      'Sitting with you, I don’t mind the slow kettle.',
     ],
     [
       '上次你笑的那段，我今天才懂。',
@@ -90,11 +90,11 @@ const dialogue: Record<string, [string, string][]> = {
     ],
     [
       '书架空出一格，给我们以后带回的东西。',
-      'A shelf cleared for things we will bring home later.',
+      'A shelf cleared for things we’ll bring home later.',
     ],
     [
-      '这把椅子给你，我坐会吱呀的那把。',
-      'You take this chair. I will have the squeaky one.',
+      '沙发上的垫子翻好了，这面没有茶渍。',
+      'I’ve turned the sofa cushion over. No tea stains on this side.',
     ],
     [
       '今天不想赶路，陪我把茶喝完吧。',
@@ -106,7 +106,7 @@ const dialogue: Record<string, [string, string][]> = {
     ],
     [
       '表格先放一边，我想把这口茶喝热。',
-      'Forms aside for a moment. I want this tea while it is hot.',
+      'Forms aside for a moment. I want this tea while it’s hot.',
     ],
     [
       '夜灯的开关找到了，原来被小袜子盖住。',
@@ -124,7 +124,7 @@ const dialogue: Record<string, [string, string][]> = {
   'ka-ning-partner': [
     [
       '嘉宁，饭盒在最上层，别又拿成孩子的。',
-      "Ka Ning, your lunch is on top. Do not take the child's again.",
+      "Ka Ning, your lunch is on top. Don’t take the child's again.",
     ],
     [
       '这把伞装得下两个人，装不下两只包。',
@@ -152,7 +152,7 @@ const dialogue: Record<string, [string, string][]> = {
     ],
     [
       '家里的电话我来拨，你先把茶喝了。',
-      'I will call home. Finish your tea first.',
+      'I’ll call home. Finish your tea first.',
     ],
     [
       '那件外套我缝好了，针线还在找出口。',
@@ -271,11 +271,11 @@ const dialogue: Record<string, [string, string][]> = {
     ],
     [
       '我找到蓝毛衣了，名字倒着也认得。',
-      'Found the blue jumper. Recognise my name upside down too.',
+      'I found the blue jumper. I can recognise my name upside down too.',
     ],
     [
       '这张通知没折成船，老师会高兴吗？',
-      'Did not fold this note into a boat. Will the teacher be pleased?',
+      'I didn’t fold this note into a boat. Will the teacher be pleased?',
     ],
     [
       '画一张菜单吧，我想把晚饭圈出来。',
@@ -283,11 +283,11 @@ const dialogue: Record<string, [string, string][]> = {
     ],
     [
       '春天的小花不肯排队，草地上到处都是。',
-      'Spring flowers will not queue. They are all over the grass.',
+      'Spring flowers won’t queue. They’re all over the grass.',
     ],
     [
-      '夏天的太阳为什么还不下班？',
-      'Why has the summer sun not clocked off yet?',
+      '夏天的影子拉得好长，我快够到篱笆了。',
+      'My summer shadow’s so long I can nearly reach the fence.',
     ],
     [
       '秋叶夹好了，明天看看有没有变薄。',
@@ -295,7 +295,7 @@ const dialogue: Record<string, [string, string][]> = {
     ],
     [
       '冬天哈气像冒烟，我是小火车。',
-      'Winter breath looks like smoke. I am a little train.',
+      'Winter breath looks like smoke. I’m a little train.',
     ],
     [
       '雨在窗上赛跑，我挑最慢的那滴。',
@@ -343,7 +343,7 @@ const dialogue: Record<string, [string, string][]> = {
     ],
     [
       '给外婆发照片，我来挑笑得最大的。',
-      'Send Granny a photo. I will choose the biggest smile.',
+      'Send Granny a photo. I’ll choose the biggest smile.',
     ],
     [
       '我的树要排练，风来的时候不能乱跑。',
@@ -351,17 +351,64 @@ const dialogue: Record<string, [string, string][]> = {
     ],
     [
       '豆袋掉了，再捡起来也能继续跑。',
-      'Dropped the beanbag. Can pick it up and keep running.',
+      'I dropped the beanbag. I can pick it up and keep running.',
     ],
     [
       '学校那张照片，我少了牙还笑得最多。',
-      'In the school photo I have fewer teeth and the biggest smile.',
+      'In the school photo I’ve got fewer teeth and the biggest smile.',
     ],
     [
       '今晚再讲一遍吧，换我学鸭子叫。',
       'That story again tonight. My turn for the duck noises.',
     ],
   ],
+};
+const householdReactions: Record<
+  string,
+  Pick<Npc['reactions'], 'liked' | 'neutral' | 'disliked'>
+> = {
+  jamie: {
+    liked: t(
+      '我把食谱挪开，给你带的东西腾个位置。',
+      'I’ll move the recipe book and make room for this.',
+    ),
+    neutral: t(
+      '你出门还想着我啊，先放杯子旁边。',
+      'You thought of me while you were out. By my cup for now.',
+    ),
+    disliked: t(
+      '这味道比我的炖菜还大胆，先搁门外吧。',
+      'Bolder than my stew. Outside the door for now, eh?',
+    ),
+  },
+  'ka-ning-partner': {
+    liked: t(
+      '正合心意，我把桌上那叠纸收一收。',
+      'Lovely. I’ll clear that pile of papers off the table.',
+    ),
+    neutral: t(
+      '收到啦，等我擦干手再好好看。',
+      'Thank you. Let me dry my hands and have a proper look.',
+    ),
+    disliked: t(
+      '先别放饭盒旁边，我拿个袋子装着。',
+      'Away from the lunch boxes, please. I’ll fetch a bag.',
+    ),
+  },
+  'ka-ning-child': {
+    liked: t(
+      '我要画下来，旁边写是你送的！',
+      'I’ll draw it and write that it’s from you!',
+    ),
+    neutral: t(
+      '这是给我的呀？我先给它起个名字。',
+      'For me? I’ll give it a name first.',
+    ),
+    disliked: t(
+      '它闻起来像池塘的袜子，可以住外面吗？',
+      'It smells like pond socks. Can it live outside?',
+    ),
+  },
 };
 const members: [string, string, string, string, string[]][] = [
   ['jamie', '杰米', 'Jamie', 'family-partner', ['tea', 'baked-potato']],
@@ -441,18 +488,7 @@ export const familyNpcs: Npc[] = members.map(
           ? 'For me? My favourite plate for this.'
           : 'You remembered my favourite. Come and sit with me.',
       ),
-      liked: t(
-        '正好用得上，我给它腾个地方。',
-        'Just what we need. I will make room for it.',
-      ),
-      neutral: t(
-        '谢谢想着我，先放桌上吧。',
-        'Thanks for thinking of me. On the table for now.',
-      ),
-      disliked: t(
-        '这个味道，还是先放门外吧。',
-        'That smell. Outside the door for now, perhaps.',
-      ),
+      ...householdReactions[id],
     },
     lines: dialogue[id].map(([zhCN, en], i) => ({
       id: `${id}-daily-${i + 1}`,
@@ -584,3 +620,22 @@ export const familyHeartEvents: GameEvent[] = moments.map(
     ],
   }),
 );
+
+familyNpcs[0].lines[4].when = [{ minuteMin: 1020 }];
+familyNpcs[0].lines[9].weather = ['rain'];
+familyNpcs[0].lines[9].when = [{ minuteMin: 1020 }];
+familyNpcs[0].lines[25].forbids = ['family-jamie-reemployed'];
+familyNpcs[1].lines[0].when = [{ minuteMax: 720 }];
+familyNpcs[1].lines[24].dayKinds = ['weekend', 'special'];
+for (const i of [25, 27])
+  familyNpcs[1].lines[i].forbids = ['bno-partner-between-jobs'];
+familyNpcs[1].lines[25].once = true;
+familyNpcs[1].lines[26].forbids = ['bno-partner-restarted'];
+familyNpcs[2].lines[26].season = 4;
+familyNpcs[2].lines[27].season = 3;
+familyHeartEvents.find((e) => e.id === 'heart-ka-ning-partner-2')!.requires = [
+  'bno-partner-cv-seen',
+];
+familyHeartEvents.find((e) => e.id === 'heart-ka-ning-partner-6')!.when = [
+  { minuteMin: 1200 },
+];
