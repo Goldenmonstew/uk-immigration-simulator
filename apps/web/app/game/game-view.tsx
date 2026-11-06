@@ -342,7 +342,6 @@ export function LocationMenu({
           ) : (
             <>
               {location === 'station' && <p>{t('game.travelRecall')}</p>}
-              {location === 'board' && <p>{t('game.noticeText')}</p>}
               {location === 'green' &&
                 festivals
                   .filter((f) => f.id === state.day.festival)

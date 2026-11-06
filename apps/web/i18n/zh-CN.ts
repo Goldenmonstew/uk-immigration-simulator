@@ -538,7 +538,6 @@ export const zhCN = {
   'game.exitHome': '走出家门',
   'game.interact': '互动 · E / 空格 / 点按',
   'game.goHome': '回家',
-  'game.noticeText': '今晚酒吧有 pub quiz；绿地活动请看早晨卡。',
   'game.muted': '声音关',
   'game.unmuted': '声音开',
   'game.continueFast': '处理完事件后继续快进',

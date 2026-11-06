@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import type { RuleSetId } from '@uk-immigration/engine';
 import { useTranslation } from '../../i18n/locale';
 import {
+  activities,
   characters,
   currentEvent,
   enter,
@@ -609,7 +610,14 @@ export default function GameClient() {
                     location={overlay.id}
                     onChange={(next) => {
                       apply(next);
-                      if (!next.pendingEvent) setOverlay(undefined);
+                      // Board notices and show results come back as text of
+                      // their own; keep the menu open so they can be read.
+                      const ownText =
+                        next.outcome?.kind === 'activity' &&
+                        !activities(current, overlay.id).some(
+                          (a) => a.label.zhCN === next.outcome?.text?.zhCN,
+                        );
+                      if (!next.pendingEvent && !ownText) setOverlay(undefined);
                     }}
                     onTalk={(id) => {
                       if (interior) {
@@ -709,9 +717,7 @@ export default function GameClient() {
       <p className={styles.saveStatus} role="status">
         {t(available ? 'game.saved' : 'game.storageUnavailable')}
       </p>
-      <p className={styles.disclaimer}>
-        {t('game.disclaimer')}
-      </p>
+      <p className={styles.disclaimer}>{t('game.disclaimer')}</p>
     </div>
   );
 }

@@ -579,8 +579,6 @@ export const en: Record<keyof typeof zhCN, string> = {
   'game.exitHome': 'Leave home',
   'game.interact': 'Interact · E / Space / tap',
   'game.goHome': 'Go home',
-  'game.noticeText':
-    'Pub quiz tonight; check the morning card for events on the green.',
   'game.muted': 'Sound off',
   'game.unmuted': 'Sound on',
   'game.continueFast': 'Continue the routine after this event',

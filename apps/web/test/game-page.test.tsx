@@ -857,6 +857,17 @@ test('controller clears gift feedback before a shop, mailbox, or reopened menu',
   h.dispose();
 });
 
+test('reading the board keeps the menu open with this season\u2019s notices', () => {
+  const h = client(at(600, 'board'));
+  h.render().props(TownCanvas).onInteract({ kind: 'place', id: 'board' });
+  const menu = h.render().props(LocationMenu);
+  const next = core.doActivity(menu.state, 'board');
+  menu.onChange(next);
+  expect(next.outcome?.text?.zhCN).toBeTruthy();
+  expect(h.render().props(OutcomeText).text).toEqual(next.outcome?.text);
+  h.dispose();
+});
+
 test('heart dialogue focuses the NPC and shows the actual heart change', () => {
   const start = at(600);
   start.friendship.margaret = 190;
