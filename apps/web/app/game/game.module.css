@@ -469,3 +469,277 @@
     transition: none;
   }
 }
+
+/* Daily life overlays share the existing assessment and ending surfaces. */
+.clock {
+  font-variant-numeric: tabular-nums;
+  color: #ffe3a1;
+  font-size: 1.25rem;
+}
+.portrait {
+  background-size: 320px 240px;
+}
+.map {
+  transition: opacity 280ms ease;
+}
+.fading {
+  opacity: 0;
+}
+.toolbar {
+  margin: 12px 0;
+}
+.interactButton {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  min-height: 44px;
+  max-width: calc(100% - 24px);
+  padding: 10px 16px;
+  background: #fff3d6;
+  color: #243c34;
+  border: 2px solid #365d4f;
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: 3px 3px 0 #263d3850;
+}
+.mailBadge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: #a43d32;
+  color: #fff;
+  padding: 4px 10px;
+  border: 2px solid #fff4d9;
+  pointer-events: none;
+}
+.dialogueModal {
+  margin: auto auto 28px;
+  width: min(780px, calc(100% - 32px));
+  background: #fff9ec;
+  border-color: #4d6e59;
+}
+.dialogueBody {
+  display: grid;
+  grid-template-columns: 80px minmax(0, 1fr);
+  gap: 16px;
+  margin-bottom: 18px;
+}
+.dialogueBody small {
+  display: block;
+  color: #5d695d;
+  overflow-wrap: anywhere;
+}
+.dialogueBody p {
+  min-height: 4.5em;
+  line-height: 1.7;
+  margin-top: 10px;
+}
+.dialogueModal > button {
+  margin: 6px 10px 6px 0;
+}
+.morning {
+  text-align: center;
+}
+.weatherIcon {
+  font-size: 3.5rem;
+  color: #bd8532;
+  line-height: 1.2;
+  margin-bottom: 16px;
+}
+.morning p {
+  line-height: 1.65;
+}
+.tabs {
+  display: flex;
+  gap: 8px;
+  border-bottom: 1px solid #afc0b1;
+  margin-bottom: 20px;
+}
+.tabs button {
+  flex: 1;
+  min-height: 44px;
+  color: #29483c;
+  background: #eef4ed;
+  border: 1px solid #afc0b1;
+  cursor: pointer;
+}
+.tabs button[aria-selected='true'] {
+  background: #29483c;
+  color: white;
+}
+.itemGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 14px 0;
+}
+.itemCard {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 14px;
+  background: #f3f6ef;
+  border: 1px solid #b2c6b5;
+  min-width: 0;
+}
+.itemCard > button {
+  width: 100%;
+  margin-top: auto;
+  min-height: 44px;
+  padding: 8px;
+}
+.itemIcon {
+  display: inline-block;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  image-rendering: pixelated;
+  background-repeat: no-repeat;
+}
+.quantity {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 16px 0;
+}
+.quantity input {
+  width: 80px;
+  min-height: 44px;
+  padding: 8px;
+  border: 1px solid #7896aa;
+}
+.people {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid #c4d1c4;
+}
+.people button {
+  margin: 4px;
+  min-height: 44px;
+}
+.friendList {
+  padding: 0;
+  list-style: none;
+}
+.friendList li {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  border-bottom: 1px solid #ccd7cc;
+  padding: 12px 0;
+}
+.friendList li > span:last-child {
+  color: #a64843;
+  font-size: 0.85rem;
+}
+.friendList small {
+  display: block;
+}
+.smallPortrait {
+  width: 32px;
+  height: 32px;
+  background-size: 128px 96px;
+  image-rendering: pixelated;
+}
+.fishing {
+  text-align: center;
+}
+.floatWater {
+  height: 90px;
+  background: #538f9e;
+  display: grid;
+  place-items: center;
+  border: 3px solid #739e7b;
+  margin: 16px 0;
+}
+.floatWater span {
+  color: #fff4cf;
+  text-shadow: 0 -5px #bc4031;
+  font-size: 20px;
+}
+.floatBite span {
+  transform: translateY(12px);
+  color: #bc4031;
+}
+.outcomeToast {
+  border-left: 3px solid #647e54;
+  padding: 8px 12px;
+  margin: 18px 0 0;
+  background: #f4f6ed;
+  font-size: 0.9rem;
+}
+@media (max-width: 600px) {
+  .hudTop {
+    display: flex;
+    align-items: center;
+  }
+  .hudTop time {
+    display: block;
+    flex-basis: 100%;
+  }
+  .hudTop .music {
+    flex: 1 1 auto;
+  }
+  .hudTop .season {
+    margin-left: auto;
+  }
+  .portrait {
+    background-size: 256px 192px;
+  }
+  .dialogueBody {
+    grid-template-columns: 64px minmax(0, 1fr);
+    gap: 12px;
+  }
+  .dialogueModal {
+    margin-bottom: 12px;
+  }
+  .itemGrid {
+    gap: 8px;
+  }
+  .itemCard {
+    padding: 10px;
+  }
+  .interactButton {
+    font-size: 0.8rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .map {
+    transition: none;
+  }
+}
+
+.travel {
+  min-height: 280px;
+  padding: 32px 20px;
+  text-align: center;
+  color: #fff6df;
+  background: #294d65;
+}
+.travel p {
+  max-width: 32em;
+  margin: 16px auto;
+}
+.travelIcon {
+  display: block;
+  font-size: 3rem;
+  color: #f3d891;
+}
+.heartChange {
+  color: #a43d52;
+  font-weight: 700;
+}
+.festivalIntro {
+  padding: 16px;
+  margin-bottom: 16px;
+  background: #fff3d6;
+  border-left: 4px solid #bd8532;
+}
+.modal button:disabled {
+  opacity: 0.55;
+  cursor: default;
+}

@@ -3,11 +3,27 @@ import {
   characters,
   currentEvent,
   isOver,
+  npcAt,
+  townsfolk,
   visaMonthsLeft,
   type GameState,
   type StatKey,
 } from '@uk-immigration/game';
 import { createDraft, type Draft } from '../../lib/questionnaire';
+import type { DayMemory } from './diary';
+
+export function visibleResidents(state: GameState, interior: boolean) {
+  return townsfolk(state)
+    .filter((npc) => (npcAt(state, npc.id) === 'home') === interior)
+    .slice(0, 12);
+}
+
+export const homeSpot = (index: number) =>
+  [
+    { x: 5, y: 4 },
+    { x: 11, y: 4 },
+    { x: 5, y: 8 },
+  ][index % 3];
 
 export function withGameLocale(state: GameState, locale: Locale): GameState {
   if (state.locale === locale) return state;
@@ -29,7 +45,40 @@ export const statKeys: StatKey[] = [
   'english',
   'career',
 ];
-export const spritePath = (sprite: string) => `/game/assets/${sprite}`;
+const residentIds = [
+  'skilled-worker',
+  'hong-kong-bno',
+  'family-partner',
+  'margaret',
+  'priya',
+  'ade',
+  'helen',
+  'dave',
+  'rahman',
+  'lina',
+  'gareth',
+  'jamie',
+  'ka-ning-partner',
+  'ka-ning-child',
+];
+export const spritePath = (id: string) =>
+  `/game/assets/urban/${residentIds.includes(id) ? id : 'skilled-worker'}.png`;
+export const cropIds = [
+  'potato',
+  'strawberry',
+  'tomato',
+  'cucumber',
+  'turnip',
+  'corn',
+  'sunflower',
+  'tulip',
+];
+export const itemIcon = (id: string) => {
+  const crop = id.replace(/^seed-/, '');
+  return cropIds.includes(crop)
+    ? `/game/assets/crops/${crop}.png`
+    : '/game/assets/indoor/item.png';
+};
 export const visaMonths = (state: GameState) =>
   Math.floor(visaMonthsLeft(state));
 
@@ -57,19 +106,40 @@ export function needsVisaReminder(state: GameState): boolean {
 export function gameStorage(
   characterId: string,
   next?: GameState,
-): { state: GameState | undefined; available: boolean } {
+  diary: DayMemory[] = [],
+  quarterStart?: GameState['stats'],
+): {
+  state: GameState | undefined;
+  available: boolean;
+  diary?: DayMemory[];
+  quarterStart?: GameState['stats'];
+} {
   try {
-    const key = `uk-immigration-life-v2:${characterId}`;
+    const key = `uk-immigration-life-v3:${characterId}`;
     if (next) {
-      localStorage.setItem(key, JSON.stringify(next));
+      localStorage.setItem(
+        key,
+        JSON.stringify({ ...next, clientVersion: 1, diary, quarterStart }),
+      );
       return { state: next, available: true };
     }
     const saved = localStorage.getItem(key);
     if (!saved) return { state: undefined, available: true };
-    const state: GameState = JSON.parse(saved);
+    const {
+      clientVersion,
+      diary: savedDiary,
+      quarterStart: savedStart,
+      ...state
+    }: GameState & {
+      clientVersion?: number;
+      diary?: DayMemory[];
+      quarterStart?: GameState['stats'];
+    } = JSON.parse(saved);
+    // The earlier mock also used version 3; its saves are not real core saves.
+    if (clientVersion !== 1) return { state: undefined, available: true };
     if (
       !state ||
-      state.version !== 2 ||
+      state.version !== 3 ||
       state.characterId !== characterId ||
       !characters.some((item) => item.id === characterId) ||
       !Number.isInteger(state.seed) ||
@@ -77,8 +147,35 @@ export function gameStorage(
       !Number.isInteger(state.year) ||
       state.year < 1 ||
       ![1, 2, 3, 4].includes(state.quarter) ||
-      !Number.isInteger(state.actionsLeft) ||
-      state.actionsLeft < 0 ||
+      !Number.isInteger(state.dayNumber) ||
+      state.dayNumber < 0 ||
+      !state.day ||
+      ![0, 1, 2].includes(state.day.index) ||
+      !Number.isInteger(state.day.minute) ||
+      state.day.minute < 420 ||
+      state.day.minute > 1440 ||
+      !['workday', 'weekend', 'special'].includes(state.day.kind) ||
+      !['sunny', 'cloudy', 'rain', 'snow'].includes(state.day.weather) ||
+      !/^\d{4}-\d{2}-\d{2}$/.test(state.day.date) ||
+      !state.inventory ||
+      !state.friendship ||
+      !Object.values(state.inventory).every(
+        (n) => Number.isInteger(n) && n >= 0,
+      ) ||
+      !Object.values(state.friendship).every(
+        (n) => Number.isFinite(n) && n >= 0 && n <= 1000,
+      ) ||
+      !Array.isArray(state.plots) ||
+      !state.plots.every(
+        (p) => p && Number.isFinite(p.growth) && p.growth >= 0,
+      ) ||
+      !Array.isArray(state.day.deliveries) ||
+      !state.day.deliveries.every(
+        (d) =>
+          d &&
+          typeof d.channel === 'string' &&
+          currentEvent({ ...state, pendingEvent: d.eventId }),
+      ) ||
       !['zh-CN', 'en'].includes(state.locale) ||
       !/^\d{4}-\d{2}-\d{2}$/.test(state.date) ||
       !statKeys.every((key) => Number.isFinite(state.stats?.[key])) ||
@@ -87,11 +184,14 @@ export function gameStorage(
         state.firedEvents,
         state.achievements,
         state.eventQueue,
+        state.heard,
+        state.day.done,
+        state.day.talked,
+        state.day.gifted,
       ].every(
         (list) =>
           Array.isArray(list) && list.every((item) => typeof item === 'string'),
       ) ||
-      (state.eventQueue.length > 0 && !state.pendingEvent) ||
       !state.eventQueue.every((id) =>
         currentEvent({ ...state, pendingEvent: id }),
       ) ||
@@ -110,7 +210,30 @@ export function gameStorage(
       timeline: state.timeline,
       locale: state.locale,
     });
-    return { state, available: true };
+    const validDiary =
+      Array.isArray(savedDiary) &&
+      savedDiary.every(
+        (m) =>
+          m &&
+          Number.isInteger(m.year) &&
+          [1, 2, 3, 4].includes(m.quarter) &&
+          [0, 1, 2].includes(m.day) &&
+          typeof m.key === 'string' &&
+          Number.isInteger(m.count) &&
+          m.count > 0 &&
+          typeof m.text?.zhCN === 'string' &&
+          typeof m.text?.en === 'string' &&
+          Object.values(m.statDeltas ?? {}).every(Number.isFinite),
+      );
+    return {
+      state,
+      available: true,
+      diary: validDiary ? savedDiary : [],
+      quarterStart:
+        savedStart && statKeys.every((key) => Number.isFinite(savedStart[key]))
+          ? savedStart
+          : state.stats,
+    };
   } catch {
     return { state: next, available: false };
   }

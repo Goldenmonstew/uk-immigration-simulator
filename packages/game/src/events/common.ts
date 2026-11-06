@@ -1,10 +1,12 @@
 import type { GameEvent } from '../types';
 import { additionalCommonEvents } from './common-additions';
+import { townEvents } from './town';
 
 // Fictional amounts and durations describe individual stories, not policy thresholds.
 export const commonEvents: GameEvent[] = [
   {
     id: 'common-boiler',
+    channel: 'place:home',
     title: {
       zhCN: '锅炉的脾气',
       en: 'Boiler moods',
@@ -50,6 +52,7 @@ export const commonEvents: GameEvent[] = [
   },
   {
     id: 'common-boiler-after',
+    channel: 'place:home',
     title: {
       zhCN: '修理工的靴子',
       en: 'The plumber arrives',
@@ -98,6 +101,7 @@ export const commonEvents: GameEvent[] = [
   },
   {
     id: 'common-rail',
+    channel: 'place:station',
     title: {
       zhCN: '站台公告',
       en: 'Platform news',
@@ -143,6 +147,7 @@ export const commonEvents: GameEvent[] = [
   },
   {
     id: 'common-rail-after',
+    channel: 'letter',
     title: {
       zhCN: '退款邮件',
       en: 'A refund email',
@@ -190,6 +195,7 @@ export const commonEvents: GameEvent[] = [
   },
   {
     id: 'common-deposit',
+    channel: 'place:home',
     title: {
       zhCN: '退租检查',
       en: 'Checkout inspection',
@@ -237,6 +243,7 @@ export const commonEvents: GameEvent[] = [
   },
   {
     id: 'common-deposit-after',
+    channel: 'letter',
     title: {
       zhCN: '押金的下落',
       en: 'The deposit returns',
@@ -287,6 +294,7 @@ export const commonEvents: GameEvent[] = [
   },
   {
     id: 'common-garden',
+    channel: 'npc:margaret',
     title: {
       zhCN: '窗台发芽',
       en: 'Windowsill shoots',
@@ -332,6 +340,7 @@ export const commonEvents: GameEvent[] = [
   },
   {
     id: 'common-garden-after',
+    channel: 'place:allotment',
     title: {
       zhCN: '薄荷外交',
       en: 'Mint diplomacy',
@@ -381,6 +390,7 @@ export const commonEvents: GameEvent[] = [
   },
   {
     id: 'common-bike',
+    channel: 'morning',
     title: {
       zhCN: '二手自行车',
       en: 'A second-hand bicycle',
@@ -426,6 +436,7 @@ export const commonEvents: GameEvent[] = [
   },
   {
     id: 'common-bike-after',
+    channel: 'morning',
     title: {
       zhCN: '第一趟骑行',
       en: 'The first ride',
@@ -479,6 +490,7 @@ export const commonEvents: GameEvent[] = [
   },
   {
     id: 'common-book',
+    channel: 'npc:helen',
     title: {
       zhCN: '借来的考题',
       en: 'Borrowed questions',
@@ -524,6 +536,7 @@ export const commonEvents: GameEvent[] = [
   },
   {
     id: 'common-book-after',
+    channel: 'morning',
     title: {
       zhCN: '考场门口',
       en: 'Outside the test centre',
@@ -570,6 +583,7 @@ export const commonEvents: GameEvent[] = [
   },
   {
     id: 'common-tax',
+    channel: 'letter',
     title: {
       zhCN: 'HMRC 的信封',
       en: 'An HMRC envelope',
@@ -615,6 +629,7 @@ export const commonEvents: GameEvent[] = [
   },
   {
     id: 'common-tax-after',
+    channel: 'morning',
     title: {
       zhCN: '核对完毕',
       en: 'Reconciliation complete',
@@ -663,6 +678,7 @@ export const commonEvents: GameEvent[] = [
   },
   {
     id: 'common-wedding',
+    channel: 'letter',
     title: {
       zhCN: '婚礼邀请',
       en: 'A wedding invitation',
@@ -708,6 +724,7 @@ export const commonEvents: GameEvent[] = [
   },
   {
     id: 'common-wedding-after',
+    channel: 'place:home',
     title: {
       zhCN: '婚礼散场',
       en: 'After the wedding',
@@ -765,6 +782,7 @@ export const commonEvents: GameEvent[] = [
   },
   {
     id: 'common-conference',
+    channel: 'npc:ade',
     title: {
       zhCN: '同事的邀请',
       en: 'A colleague’s invitation',
@@ -810,6 +828,7 @@ export const commonEvents: GameEvent[] = [
   },
   {
     id: 'common-conference-after',
+    channel: 'morning',
     title: {
       zhCN: '会议帆布袋',
       en: 'The conference tote',
@@ -863,6 +882,7 @@ export const commonEvents: GameEvent[] = [
   },
   {
     id: 'common-family-call',
+    channel: 'phone',
     title: {
       zhCN: '视频里的厨房',
       en: 'A kitchen on screen',
@@ -908,6 +928,7 @@ export const commonEvents: GameEvent[] = [
   },
   {
     id: 'common-family-call-after',
+    channel: 'morning',
     title: {
       zhCN: '饭盒装不下',
       en: 'Too much for the lunchbox',
@@ -969,6 +990,7 @@ export const commonEvents: GameEvent[] = [
   },
   {
     id: 'common-passport',
+    channel: 'place:home',
     title: {
       zhCN: '护照里的便签',
       en: 'A note in the passport',
@@ -1014,6 +1036,7 @@ export const commonEvents: GameEvent[] = [
   },
   {
     id: 'common-passport-after',
+    channel: 'place:home',
     title: {
       zhCN: '晒黑的票根',
       en: 'Sun-faded tickets',
@@ -1071,6 +1094,7 @@ export const commonEvents: GameEvent[] = [
   },
   {
     id: 'common-budget',
+    channel: 'letter',
     title: {
       zhCN: '账单摊开',
       en: 'Bills on the table',
@@ -1122,6 +1146,7 @@ export const commonEvents: GameEvent[] = [
   },
   {
     id: 'common-budget-after',
+    channel: 'morning',
     title: {
       zhCN: '周转的选择',
       en: 'Making ends meet',
@@ -1181,6 +1206,7 @@ export const commonEvents: GameEvent[] = [
   },
   {
     id: 'common-council',
+    channel: 'letter',
     title: {
       zhCN: 'council tax 来信',
       en: 'Council tax post',
@@ -1226,6 +1252,7 @@ export const commonEvents: GameEvent[] = [
   },
   {
     id: 'common-council-after',
+    channel: 'letter',
     title: {
       zhCN: '欠款核对',
       en: 'Checking the debt',
@@ -1293,6 +1320,7 @@ export const commonEvents: GameEvent[] = [
   },
   {
     id: 'common-charity',
+    channel: 'morning',
     title: {
       zhCN: '慈善店招募',
       en: 'Charity shop volunteers',
@@ -1338,6 +1366,7 @@ export const commonEvents: GameEvent[] = [
   },
   {
     id: 'common-charity-after',
+    channel: 'morning',
     title: {
       zhCN: '书架恢复秩序',
       en: 'Order on the shelves',
@@ -1392,6 +1421,7 @@ export const commonEvents: GameEvent[] = [
   },
   {
     id: 'common-payslip',
+    channel: 'place:work',
     title: {
       zhCN: '工资单有疑问',
       en: 'A payslip puzzle',
@@ -1437,6 +1467,7 @@ export const commonEvents: GameEvent[] = [
   },
   {
     id: 'common-payslip-after',
+    channel: 'letter',
     title: {
       zhCN: '奖金补发',
       en: 'The missing bonus',
@@ -1497,6 +1528,7 @@ export const commonEvents: GameEvent[] = [
   },
   {
     id: 'common-course',
+    channel: 'place:college',
     title: {
       zhCN: '晚课新同桌',
       en: 'A new classmate',
@@ -1542,6 +1574,7 @@ export const commonEvents: GameEvent[] = [
   },
   {
     id: 'common-course-after',
+    channel: 'place:library',
     title: {
       zhCN: '图书馆的角落',
       en: 'A library corner',
@@ -1591,6 +1624,7 @@ export const commonEvents: GameEvent[] = [
   },
   {
     id: 'common-flat',
+    channel: 'place:home',
     title: {
       zhCN: '看房的鞋套',
       en: 'Viewing overshoes',
@@ -1638,6 +1672,7 @@ export const commonEvents: GameEvent[] = [
   },
   {
     id: 'common-flat-after',
+    channel: 'place:home',
     title: {
       zhCN: '第一把新钥匙',
       en: 'The first new key',
@@ -1689,6 +1724,7 @@ export const commonEvents: GameEvent[] = [
   },
   {
     id: 'common-keys',
+    channel: 'morning',
     title: {
       zhCN: '多出来的门垫',
       en: 'A spare doormat',
@@ -1736,6 +1772,7 @@ export const commonEvents: GameEvent[] = [
   },
   {
     id: 'common-keys-after',
+    channel: 'place:home',
     title: {
       zhCN: '搬家纸箱二号',
       en: 'Boxes, round two',
@@ -1787,6 +1824,7 @@ export const commonEvents: GameEvent[] = [
   },
   {
     id: 'common-rent',
+    channel: 'letter',
     title: {
       zhCN: '房租上涨',
       en: 'The rent rises',
@@ -1839,6 +1877,7 @@ export const commonEvents: GameEvent[] = [
   },
   {
     id: 'common-rent-after',
+    channel: 'place:home',
     title: {
       zhCN: '第三次打包',
       en: 'Packing again',
@@ -1889,6 +1928,7 @@ export const commonEvents: GameEvent[] = [
   },
   {
     id: 'common-winter-trip',
+    channel: 'morning',
     title: {
       zhCN: '冬天的邀约',
       en: 'A winter invitation',
@@ -1934,6 +1974,7 @@ export const commonEvents: GameEvent[] = [
   },
   {
     id: 'common-winter-trip-after',
+    channel: 'morning',
     title: {
       zhCN: '客房的早晨',
       en: 'Mornings in the spare room',
@@ -1995,6 +2036,7 @@ export const commonEvents: GameEvent[] = [
   },
   {
     id: 'common-rain',
+    channel: 'morning',
     title: {
       zhCN: '横着下的雨',
       en: 'Sideways rain',
@@ -2047,6 +2089,7 @@ export const commonEvents: GameEvent[] = [
   },
   {
     id: 'common-yellow-sticker',
+    channel: 'morning',
     title: {
       zhCN: '黄标晚餐',
       en: 'Yellow-sticker supper',
@@ -2098,6 +2141,7 @@ export const commonEvents: GameEvent[] = [
   },
   {
     id: 'common-nhs',
+    channel: 'place:gp',
     title: {
       zhCN: '候诊室的钟',
       en: 'The waiting-room clock',
@@ -2146,6 +2190,7 @@ export const commonEvents: GameEvent[] = [
   },
   {
     id: 'common-biscuits',
+    channel: 'place:work',
     title: {
       zhCN: '茶水间饼干',
       en: 'Kitchen biscuits',
@@ -2194,6 +2239,7 @@ export const commonEvents: GameEvent[] = [
   },
   {
     id: 'common-laundry',
+    channel: 'morning',
     title: {
       zhCN: '烘干机排队',
       en: 'The dryer queue',
@@ -2246,6 +2292,7 @@ export const commonEvents: GameEvent[] = [
   },
   {
     id: 'common-snow',
+    channel: 'place:home',
     title: {
       zhCN: '雪停了',
       en: 'After the snow',
@@ -2294,6 +2341,7 @@ export const commonEvents: GameEvent[] = [
   },
   {
     id: 'common-picnic',
+    channel: 'place:green',
     title: {
       zhCN: '野餐桌布',
       en: 'A picnic blanket',
@@ -2341,6 +2389,7 @@ export const commonEvents: GameEvent[] = [
   },
   {
     id: 'common-festival',
+    channel: 'place:green',
     title: {
       zhCN: '小镇夏日节',
       en: 'The summer fair',
@@ -2393,6 +2442,7 @@ export const commonEvents: GameEvent[] = [
   },
   {
     id: 'common-bonus',
+    channel: 'place:work',
     title: {
       zhCN: '到账的奖金',
       en: 'A bonus arrives',
@@ -2452,6 +2502,7 @@ export const commonEvents: GameEvent[] = [
   },
   {
     id: 'common-tax-return',
+    channel: 'letter',
     title: {
       zhCN: '税年结单',
       en: 'The annual statement',
@@ -2503,6 +2554,7 @@ export const commonEvents: GameEvent[] = [
   },
   {
     id: 'common-care',
+    channel: 'place:station',
     title: {
       zhCN: '短暂的探亲',
       en: 'A brief family visit',
@@ -2559,6 +2611,7 @@ export const commonEvents: GameEvent[] = [
   },
   {
     id: 'common-reunion',
+    channel: 'morning',
     title: {
       zhCN: '老同学聚会',
       en: 'A class reunion',
@@ -2615,6 +2668,7 @@ export const commonEvents: GameEvent[] = [
   },
   {
     id: 'common-kol-retake',
+    channel: 'morning',
     title: {
       zhCN: '书页上的茶渍',
       en: 'Tea on the textbook',
@@ -2665,6 +2719,7 @@ export const commonEvents: GameEvent[] = [
   },
   {
     id: 'common-debt-paid',
+    channel: 'place:home',
     title: {
       zhCN: '抽屉里的收据',
       en: 'Receipts in the drawer',
@@ -2726,6 +2781,7 @@ export const commonEvents: GameEvent[] = [
   },
   {
     id: 'common-remote-visit',
+    channel: 'morning',
     title: {
       zhCN: '远方的书桌',
       en: 'A desk far away',
@@ -2778,6 +2834,7 @@ export const commonEvents: GameEvent[] = [
   },
   {
     id: 'common-overtime-pay',
+    channel: 'place:work',
     title: {
       zhCN: '补发工资',
       en: 'Back pay',
@@ -2837,6 +2894,7 @@ export const commonEvents: GameEvent[] = [
   },
   {
     id: 'common-leaves',
+    channel: 'place:green',
     title: {
       zhCN: '落叶的声音',
       en: 'Leaves underfoot',
@@ -2885,6 +2943,7 @@ export const commonEvents: GameEvent[] = [
   },
   {
     id: 'common-market',
+    channel: 'place:green',
     title: {
       zhCN: '周末集市',
       en: 'The weekend market',
@@ -2941,6 +3000,7 @@ export const commonEvents: GameEvent[] = [
   },
   {
     id: 'common-power',
+    channel: 'morning',
     title: {
       zhCN: '停电的晚上',
       en: 'A power cut',
@@ -2984,6 +3044,7 @@ export const commonEvents: GameEvent[] = [
   },
   {
     id: 'common-parcel',
+    channel: 'morning',
     title: {
       zhCN: '错投的包裹',
       en: 'A misdelivered parcel',
@@ -3031,11 +3092,13 @@ export const commonEvents: GameEvent[] = [
     season: 4,
   },
   ...additionalCommonEvents,
+  ...townEvents,
 ];
 
 export const systemEvents: GameEvent[] = [
   {
     id: 'system-exam-failed',
+    channel: 'morning',
     title: {
       zhCN: '考场小插曲',
       en: 'A test-day setback',
@@ -3083,6 +3146,7 @@ export const systemEvents: GameEvent[] = [
   },
   {
     id: 'system-hospital',
+    channel: 'morning',
     title: {
       zhCN: '身体按下暂停',
       en: 'The body calls time',
@@ -3141,6 +3205,7 @@ export const systemEvents: GameEvent[] = [
   },
   {
     id: 'system-homesick',
+    channel: 'morning',
     title: {
       zhCN: '想回家',
       en: 'Homesick',
@@ -3188,6 +3253,7 @@ export const systemEvents: GameEvent[] = [
   },
   {
     id: 'system-debt',
+    channel: 'morning',
     forbids: ['quarter-housing-change'],
     title: {
       zhCN: '余额又红了',

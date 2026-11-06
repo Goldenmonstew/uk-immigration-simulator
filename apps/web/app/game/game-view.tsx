@@ -8,8 +8,13 @@ import { useTranslation } from '../../i18n/locale';
 import { displayedRuleSets } from '../../lib/policy';
 import { encodeDraft } from '../../lib/share';
 import {
-  actions,
-  act,
+  activities,
+  doActivity,
+  festivals,
+  places,
+  peopleAt,
+  npcs,
+  items,
   achievements,
   characters,
   currentEvent,
@@ -20,7 +25,7 @@ import {
   resolve,
   type Effect,
   type GameState,
-  type LocationId,
+  type PlaceId,
   type StatKey,
   type Text,
 } from '@uk-immigration/game';
@@ -31,12 +36,25 @@ import {
   spritePath,
   visaMonths,
 } from './session';
+import { groupedMemories, type DayMemory } from './diary';
 import site from '../site.module.css';
 import styles from './game.module.css';
 
 export function localText(text: Text, locale: string) {
   return locale === 'en' ? text.en : text.zhCN;
 }
+export const weatherIcon = { sunny: '☀', cloudy: '☁', rain: '☂', snow: '❄' };
+export const clockTime = (minute: number) =>
+  `${Math.floor(minute / 60)
+    .toString()
+    .padStart(2, '0')}:${(minute % 60).toString().padStart(2, '0')}`;
+export const dayDate = (date: string, locale: string) =>
+  new Intl.DateTimeFormat(locale === 'en' ? 'en-GB' : 'zh-CN', {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+    timeZone: 'UTC',
+  }).format(new Date(date));
 export function money(value: number) {
   return `£${value.toLocaleString('en-GB', { maximumFractionDigits: 0 })}`;
 }
@@ -71,7 +89,7 @@ export function CharacterSelect({
             <span
               className={styles.portrait}
               style={{
-                backgroundImage: `url("${spritePath(character.sprite)}")`,
+                backgroundImage: `url("${spritePath(character.id)}")`,
               }}
               role="img"
               aria-label={localText(character.name, locale)}
@@ -132,10 +150,14 @@ export function StatusBar({
             .replace('{quarter}', String(state.quarter))}{' '}
           · {t(`game.season${state.quarter}`)}
         </span>
-        <time dateTime={state.date}>{state.date}</time>
-        <strong className={styles.actionPoints}>
-          {t('game.actionsLeft').replace('{count}', String(state.actionsLeft))}
-        </strong>
+        <time dateTime={state.day.date}>{dayDate(state.day.date, locale)}</time>
+        <strong className={styles.clock}>{clockTime(state.day.minute)}</strong>
+        <span aria-label={t(`game.${state.day.weather}`)}>
+          {weatherIcon[state.day.weather]} {t(`game.${state.day.weather}`)}
+        </span>
+        <span>
+          {t('game.day').replace('{day}', String(state.day.index + 1))}
+        </span>
         <span
           className={
             months <= 6 ? `${styles.urgent} ${styles.visaFlash}` : styles.visa
@@ -248,7 +270,7 @@ export function ProgressDetail({
 }
 
 function EffectHints({ effects }: { effects: Effect[] }) {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   return (
     <span className={styles.hints}>
       {effects.map((effect, index) => (
@@ -257,13 +279,17 @@ function EffectHints({ effects }: { effects: Effect[] }) {
             ? `${t(`game.${effect.key}`)} ${signed(effect.delta, effect.key)}`
             : effect.type === 'money'
               ? signed(effect.delta, 'money')
-              : effect.type === 'none'
-                ? null
-                : t(
-                    effect.type === 'ending'
-                      ? 'game.endingEffect'
-                      : 'game.timelineEffect',
-                  )}
+              : effect.type === 'item'
+                ? `${localText(items.find((i) => i.id === effect.item)?.name ?? { zhCN: '物品', en: 'Item' }, locale)} ${effect.delta > 0 ? '+' : ''}${effect.delta}`
+                : effect.type === 'friendship'
+                  ? `${localText(npcs.find((n) => n.id === effect.npc)!.name, locale)} ${effect.delta > 0 ? '+' : ''}${effect.delta}`
+                  : effect.type === 'none'
+                    ? null
+                    : t(
+                        effect.type === 'ending'
+                          ? 'game.endingEffect'
+                          : 'game.timelineEffect',
+                      )}
         </span>
       ))}
     </span>
@@ -274,66 +300,95 @@ export function LocationMenu({
   state,
   location,
   onChange,
+  onTalk,
+  children,
 }: {
   state: GameState;
-  location: LocationId;
+  location: PlaceId;
   onChange: (next: GameState) => void;
+  onTalk?: (npc: string) => void;
+  children?: ReactNode;
 }) {
   const { t, locale } = useTranslation();
-  const available = actions(state)
-    .filter((action) => action.location === location)
-    .sort((a, b) => Number(b.id === 'extend') - Number(a.id === 'extend'));
-  if (location === 'council')
-    return (
-      <>
-        <p>{t('game.progressHint')}</p>
-        <AssessmentColumns
-          result={state.result}
-          simulationDate={state.date}
-          idPrefix="town-"
-        />
-      </>
-    );
+  const place = places.find((p) => p.id === location)!;
+  const open =
+    !place.hours ||
+    (state.day.minute >= place.hours.opens &&
+      state.day.minute < place.hours.closes &&
+      (!place.hours.dayKinds || place.hours.dayKinds.includes(state.day.kind)));
+  const available = activities(state, location).sort(
+    (a, b) => Number(b.id === 'extend') - Number(a.id === 'extend'),
+  );
   return (
     <>
-      {location === 'station' && <p>{t('game.travelRecall')}</p>}
-      {!available.length && <p>{t('game.noActions')}</p>}
-      <div className={styles.choices}>
-        {available.map((action) => (
-          <button
-            key={action.id}
-            className={styles.choice}
-            onClick={() => onChange(act(state, action.id))}
-          >
-            <strong>{localText(action.label, locale)}</strong>
-            <small>
-              {t('game.actionCost').replace(
-                '{count}',
-                String(action.cost ?? 1),
-              )}
-              {action.effects.some(
-                (effect) => effect.type === 'money' && effect.delta < 0,
-              ) && (
-                <>
-                  {' '}
-                  · {t('game.fee')}{' '}
-                  {money(
-                    -action.effects.reduce(
-                      (sum, effect) =>
-                        sum +
-                        (effect.type === 'money' && effect.delta < 0
-                          ? effect.delta
-                          : 0),
-                      0,
-                    ),
-                  )}
-                </>
-              )}
-            </small>
-            <EffectHints effects={action.effects} />
-          </button>
-        ))}
-      </div>
+      <p>
+        {t('game.hours')}:{' '}
+        {place.hours
+          ? `${clockTime(place.hours.opens)}–${clockTime(place.hours.closes)}`
+          : t('game.openAllDay')}
+        {place.hours?.dayKinds &&
+          ` · ${place.hours.dayKinds.map((k) => t(`game.${k}`)).join(', ')}`}
+      </p>
+      {!open ? (
+        <p role="status">{t('game.closed')}</p>
+      ) : (
+        <>
+          {location === 'council' ? (
+            <AssessmentColumns
+              result={state.result}
+              simulationDate={state.date}
+              idPrefix="town-"
+            />
+          ) : (
+            <>
+              {location === 'station' && <p>{t('game.travelRecall')}</p>}
+              {location === 'green' &&
+                festivals
+                  .filter((f) => f.id === state.day.festival)
+                  .map((f) => (
+                    <section key={f.id} className={styles.festivalIntro}>
+                      <h3>{localText(f.name, locale)}</h3>
+                      <p>{localText(f.text, locale)}</p>
+                    </section>
+                  ))}
+              <div className={styles.choices}>
+                {available.map((action) => (
+                  <button
+                    key={action.id}
+                    className={styles.choice}
+                    onClick={() => onChange(doActivity(state, action.id))}
+                  >
+                    <strong>{localText(action.label, locale)}</strong>
+                    <small>
+                      {t('game.minutes').replace(
+                        '{count}',
+                        String(action.minutes),
+                      )}
+                    </small>
+                    <EffectHints effects={action.effects} />
+                  </button>
+                ))}
+              </div>
+              {children}
+            </>
+          )}
+          {!!peopleAt(state, location).length && (
+            <section className={styles.people}>
+              <h3>{t('game.peopleHere')}</h3>
+              {peopleAt(state, location).map((id) => (
+                <button
+                  key={id}
+                  className={site.secondary}
+                  onClick={() => onTalk?.(id)}
+                >
+                  {localText(npcs.find((n) => n.id === id)!.name, locale)} ·{' '}
+                  {t('game.talk')}
+                </button>
+              ))}
+            </section>
+          )}
+        </>
+      )}
     </>
   );
 }
@@ -370,6 +425,8 @@ export function EventCard({
 export interface StateChange {
   before: GameState;
   after: GameState;
+  diary?: DayMemory[];
+  startStats?: GameState['stats'];
 }
 export function StatChanges({ before, after }: StateChange) {
   const { t } = useTranslation();
@@ -421,23 +478,23 @@ export function QuarterSummary({
   after,
   onContinue,
   onVisit,
+  diary = [],
+  startStats,
 }: StateChange & { onContinue: () => void; onVisit: () => void }) {
   const { t, locale } = useTranslation();
-  const entries = after.log.filter(
-    (entry) => entry.year === before.year && entry.quarter === before.quarter,
+  const settled = after.log
+    .slice(before.log.length)
+    .filter((entry) => entry.kind === 'quarter');
+  const quarters = settled.length
+    ? settled
+    : [{ year: before.year, quarter: before.quarter }];
+  const entries = after.log.filter((entry) =>
+    quarters.some((q) => q.year === entry.year && q.quarter === entry.quarter),
   );
   const net = entries
     .filter((entry) => entry.kind === 'quarter')
     .reduce((sum, entry) => sum + (entry.statDeltas?.money ?? 0), 0);
-  const moments = entries.filter(
-    (entry) => entry.kind === 'event' || entry.kind === 'action',
-  );
-  const quarterStart = { ...before, stats: { ...before.stats } };
-  for (const key of statKeys) {
-    quarterStart.stats[key] =
-      after.stats[key] -
-      entries.reduce((sum, entry) => sum + (entry.statDeltas?.[key] ?? 0), 0);
-  }
+  const quarterStart = { ...before, stats: startStats ?? before.stats };
   const previous = progress(before),
     next = progress(after);
   return (
@@ -449,31 +506,61 @@ export function QuarterSummary({
         </div>
       </dl>
       <h3>{t('game.quarterChanges')}</h3>
+      {after.flags.some(
+        (f) => f.startsWith('promotion-') && !before.flags.includes(f),
+      ) && (
+        <p role="status" className={styles.positive}>
+          {t('game.promotion')}
+        </p>
+      )}
       <StatChanges before={quarterStart} after={after} />
       <p className={visaMonths(after) <= 6 ? styles.urgent : undefined}>
         {t('game.visa').replace('{count}', String(visaMonths(after)))}
       </p>
-      <h3>{t('game.eventReview')}</h3>
-      {moments.length ? (
-        <ul className={styles.review}>
-          {moments.map((entry, index) => (
-            <li key={index}>
-              {localText(entry.text, locale)}
-              <span className={styles.hints}>
-                {statKeys
-                  .filter((key) => entry.statDeltas?.[key])
-                  .map((key) => (
-                    <small key={key}>
-                      {t(`game.${key}`)} {signed(entry.statDeltas![key]!, key)}
-                    </small>
-                  ))}
-              </span>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p>{t('game.noEvents')}</p>
-      )}
+      <h3>{t('game.daysReview')}</h3>
+      {quarters.map((quarter) => (
+        <section key={`${quarter.year}:${quarter.quarter}`}>
+          {quarters.length > 1 && (
+            <h3>
+              {t('game.yearQuarter')
+                .replace('{year}', String(quarter.year))
+                .replace('{quarter}', String(quarter.quarter))}
+            </h3>
+          )}
+          {groupedMemories(diary, quarter.year, quarter.quarter).map(
+            (moments, day) => (
+              <section
+                key={day}
+                aria-label={t('game.day').replace('{day}', String(day + 1))}
+              >
+                <h4>{t('game.day').replace('{day}', String(day + 1))}</h4>
+                {moments.length ? (
+                  <ul className={styles.review}>
+                    {moments.map((entry, index) => (
+                      <li key={index}>
+                        {localText(entry.text, locale)}
+                        {entry.count > 1 && ` × ${entry.count}`}
+                        <span className={styles.hints}>
+                          {statKeys
+                            .filter((key) => entry.statDeltas?.[key])
+                            .map((key) => (
+                              <small key={key}>
+                                {t(`game.${key}`)}{' '}
+                                {signed(entry.statDeltas![key]!, key)}
+                              </small>
+                            ))}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p>{t('game.noEvents')}</p>
+                )}
+              </section>
+            ),
+          )}
+        </section>
+      ))}
       {before.quarter === 4 && (
         <>
           <h3>{t('game.yearSummary')}</h3>
@@ -613,11 +700,13 @@ export function Modal({
   children,
   onClose,
   wide = false,
+  dialogue = false,
 }: {
   title: string;
   children: ReactNode;
   onClose?: () => void;
   wide?: boolean;
+  dialogue?: boolean;
 }) {
   const { t } = useTranslation();
   const ref = useRef<HTMLDialogElement>(null);
@@ -633,7 +722,7 @@ export function Modal({
   return (
     <dialog
       ref={ref}
-      className={`${styles.modal} ${wide ? styles.wideModal : ''}`}
+      className={`${styles.modal} ${wide ? styles.wideModal : ''} ${dialogue ? styles.dialogueModal : ''}`}
       aria-labelledby="game-dialog-heading"
       onCancel={(event) => {
         event.preventDefault();

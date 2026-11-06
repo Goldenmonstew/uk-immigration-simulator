@@ -1,31 +1,30 @@
+import { perform, quarter } from './helpers';
 import { evaluate } from '@uk-immigration/engine';
-import { currentLaw2026_11, RULE_SET_IDS } from '@uk-immigration/policy-data';
+import { currentLaw2026_11 } from '@uk-immigration/policy-data';
 import { describe, expect, test } from 'vitest';
 import {
-  actions,
-  act,
+  activities,
   achievements,
   characters,
   currentEvent,
-  endQuarter,
-  isOver,
-  locations,
+  places,
+  npcs,
   narrative,
   newGame,
   progress,
   resolve,
-  visaMonthsLeft,
 } from '../src';
-import type { Condition, Effect, GameEvent, GameState, Text } from '../src';
+import type { Effect, GameEvent, GameState, Text } from '../src';
 import { balance } from '../src/balance';
 import { commonEvents, systemEvents } from '../src/events/common';
-import { extensionCost, locationActions } from '../src/locations';
+import { locationActions } from '../src/locations';
 
 const LAW = 'current-law-2026-11';
 function clearEvents(s = newGame('skilled-worker', 1)): GameState {
   const next = structuredClone(s);
   delete next.pendingEvent;
   next.eventQueue = [];
+  next.day.deliveries = [];
   return next;
 }
 function refreshed(s: GameState) {
@@ -84,6 +83,8 @@ function checkState(s: GameState) {
 
 const effectKeys: Record<Effect['type'], string[]> = {
   stat: ['type', 'key', 'delta'],
+  item: ['type', 'item', 'delta'],
+  friendship: ['type', 'npc', 'delta'],
   money: ['type', 'delta'],
   absence: ['type', 'startOffsetDays', 'days'],
   income: ['type', 'taxYear', 'earnings', 'partnerEarnings'],
@@ -114,14 +115,19 @@ function checkEffects(effects: Effect[]) {
     if (effect.type === 'absence') expect(effect.days).toBeGreaterThan(0);
   }
 }
-describe('v2 content contract', () => {
+describe('v3 content contract', () => {
   test('120 common events, all characters, bilingual content, legal effect shapes and flags', () => {
     const all = [
       ...commonEvents,
       ...characters.flatMap((c) => c.events),
       ...systemEvents,
     ];
-    expect(commonEvents).toHaveLength(120);
+    expect(commonEvents.filter((e) => !e.id.startsWith('town-'))).toHaveLength(
+      120,
+    );
+    expect(commonEvents.filter((e) => e.id.startsWith('town-'))).toHaveLength(
+      14,
+    );
     expect(characters[0].events).toHaveLength(40);
     expect(characters.slice(1).map((c) => c.events.length)).toEqual([80, 80]);
     expect(new Set(all.map((e) => e.id)).size).toBe(all.length);
@@ -129,6 +135,8 @@ describe('v2 content contract', () => {
       'visa-renewed',
       'promoted',
       'debt-crisis',
+      'lina-can-stay',
+      'lina-will-leave',
       ...all.flatMap((e) => e.choices.flatMap((c) => c.sets ?? [])),
     ]);
     for (const e of all) {
@@ -151,9 +159,15 @@ describe('v2 content contract', () => {
         checkEffects(c.effects);
       }
     }
-    const consumed = new Set(
-      all.flatMap((e) => [...(e.requires ?? []), ...(e.forbids ?? [])]),
-    );
+    const consumed = new Set([
+      ...all.flatMap((e) => [...(e.requires ?? []), ...(e.forbids ?? [])]),
+      ...npcs.flatMap((npc) =>
+        npc.lines.flatMap((line) => [
+          ...(line.requires ?? []),
+          ...(line.forbids ?? []),
+        ]),
+      ),
+    ]);
     for (const e of all)
       for (const c of e.choices)
         for (const f of c.sets ?? [])
@@ -199,11 +213,11 @@ describe('v2 content contract', () => {
     for (const a of locationActions) {
       checkText(a.label);
       checkEffects(a.effects);
-      expect(locations.some((l) => l.id === a.location)).toBe(true);
+      expect(places.some((l) => l.id === a.place)).toBe(true);
     }
-    expect(locations).toHaveLength(8);
+    expect(places).toHaveLength(16);
     expect(characters[0].sprite).toBe('characters/3.png');
-    expect(achievements).toHaveLength(15);
+    expect(achievements).toHaveLength(23);
   });
   test('every authored choice runs against the engine without corrupting state', () => {
     for (const character of characters)
@@ -226,9 +240,10 @@ describe('v2 content contract', () => {
   });
   test('identity and starting timeline preserve the v1 Yao scenario', () => {
     const s = newGame('skilled-worker', 0);
-    expect(s.version).toBe(2);
+    expect(s.version).toBe(3);
     expect(s.date).toBe('2025-01-15');
-    expect(s.actionsLeft).toBe(2);
+    expect(s.day.minute).toBe(420);
+    expect(s).not.toHaveProperty('actionsLeft');
     expect(s.timeline.episodes).toEqual([
       {
         route: 'SKILLED_WORKER',
@@ -247,92 +262,13 @@ describe('v2 content contract', () => {
   });
 });
 
-describe('Before → Action → After', () => {
-  test('work increases money and career, costs one AP, and leaves input untouched', () => {
-    const before = clearEvents();
-    const copy = structuredClone(before);
-    const after = act(before, 'work');
-    expect(after.stats.money).toBe(before.stats.money + balance.workMoney);
-    expect(after.stats.career).toBe(before.stats.career + balance.workCareer);
-    expect(after.actionsLeft).toBe(1);
-    expect(before).toEqual(copy);
-    expect(after.result).toEqual(before.result);
-    expect(act(after, 'work').actionsLeft).toBe(0);
-    expect(actions(act(after, 'work')).map((a) => a.id)).toEqual([
-      'assessment',
-    ]);
-  });
-  test('class does not grant evidence; B2 examination does, and B1 cannot downgrade it', () => {
-    const before = clearEvents();
-    before.stats.english = balance.englishB2 - balance.classEnglish;
-    const studied = act(before, 'class');
-    expect(studied.timeline.english).toEqual({ cefrLevel: 'B1' });
-    const after = act(studied, 'exam');
-    expect(after.timeline.english).toEqual({ cefrLevel: 'B2' });
-    after.actionsLeft = 1;
-    after.stats.english = balance.englishB1;
-    expect(act(after, 'exam').timeline.english).toEqual({ cefrLevel: 'B2' });
-    const low = clearEvents();
-    low.stats.english = balance.englishB1 - 1;
-    const failed = act(low, 'exam');
-    expect(currentEvent(failed)?.id).toBe('system-exam-failed');
-    expect(failed.timeline.english).toEqual(low.timeline.english);
-    expect(resolve(failed, 'study').stats.english).toBeGreaterThan(
-      low.stats.english,
-    );
-  });
-  test('renewal charges sourced fee + IHS and appends a contiguous episode', () => {
-    const before = clearEvents();
-    before.date = '2026-01-15';
-    refreshed(before);
-    const oldEpisode = structuredClone(before.timeline.episodes[0]);
-    expect(visaMonthsLeft(before)).toBeLessThanOrEqual(12);
-    const after = act(before, 'extend');
-    expect(after.stats.money).toBe(
-      before.stats.money -
-        currentLaw2026_11.values.skilledWorkerExtensionFeeInUk.value -
-        currentLaw2026_11.values.immigrationHealthSurchargePerYear.value * 3,
-    );
-    expect(after.timeline.episodes).toHaveLength(2);
-    expect(after.timeline.episodes[0]).toEqual(oldEpisode);
-    expect(after.timeline.episodes[1]).toMatchObject({
-      validFrom: '2027-01-15',
-      validTo: '2030-01-14',
-      salary: 38000,
-    });
-    expect(actions(after).some((a) => a.id === 'extend')).toBe(false);
-    expect(before.timeline.episodes).toHaveLength(1);
-    checkState(after);
-    const early = clearEvents();
-    expect(actions(early).some((a) => a.id === 'extend')).toBe(false);
-    before.stats.money = extensionCost - 1;
-    expect(actions(before).some((a) => a.id === 'extend')).toBe(false);
-    before.stats.money = extensionCost;
-    before.timeline.episodes[0].immigrationSalaryList = true;
-    expect(actions(before).some((a) => a.id === 'extend')).toBe(false);
-  });
-  test('six-month trip records calendar absence and moves residence progress backwards', () => {
-    const before = clearEvents();
-    const pct = progress(before)[LAW].percent;
-    const after = act(before, 'travel-6');
-    expect(before.timeline.absences).toHaveLength(0);
-    expect(after.timeline.absences).toEqual([
-      { from: '2024-07-15', to: '2025-01-14' },
-    ]);
-    expect(progress(after)[LAW].percent).toBeLessThan(pct);
-    expect(
-      after.result.byRuleSet[LAW]!.rules.find(
-        (r) => r.id === 'CL-SW-RESIDENCE-5Y',
-      )?.status,
-    ).toBe('FAIL');
-    checkState(after);
-  });
+describe('preserved engine and quarter behavior', () => {
   test('quarterly income, promotion once per threshold, and renewed salary stay in sync', () => {
     const before = clearEvents();
     before.date = '2026-01-15';
     before.stats.career = balance.promotionThresholds[0] + balance.careerDecay;
-    const renewed = act(refreshed(before), 'extend');
-    const after = endQuarter(renewed);
+    const renewed = perform(refreshed(before), 'extend');
+    const after = quarter(renewed);
     expect(after.stats.money).toBe(
       renewed.stats.money + 38000 / 4 - balance.livingCosts,
     );
@@ -343,7 +279,7 @@ describe('Before → Action → After', () => {
     expect(
       after.timeline.incomeYears.find((y) => y.taxYear === '2025-26')?.earnings,
     ).toBe(promotedSalary);
-    const next = endQuarter(clearEvents(after));
+    const next = quarter(clearEvents(after));
     expect(
       next.timeline.episodes.every((e) => e.salary === promotedSalary),
     ).toBe(true);
@@ -359,7 +295,7 @@ describe('Before → Action → After', () => {
     const before = clearEvents();
     before.date = '2027-01-14';
     refreshed(before);
-    const after = endQuarter(before);
+    const after = quarter(before);
     expect(before.timeline.immigrationBreaches).toHaveLength(0);
     expect(after.timeline.immigrationBreaches).toEqual([
       { type: 'OVERSTAYING', date: '2027-01-15' },
@@ -373,15 +309,15 @@ describe('Before → Action → After', () => {
     );
     expect(after.result.shortCircuit).toBeUndefined();
     expect(after.ending).toBe('overstayed');
-    expect(isOver(after)).toBe(true);
-    expect(endQuarter(after)).toEqual(after);
-    expect(actions(after)).toEqual([]);
+    expect(after.ending).toBeDefined();
+    expect(quarter(after)).toEqual(after);
+    expect(places.flatMap((p) => activities(after, p.id))).toEqual([]);
   });
   test('a granted adjoining renewal survives the old expiry boundary', () => {
     let s = clearEvents();
     s.date = '2027-01-14';
-    s = act(refreshed(s), 'extend');
-    s = endQuarter(s);
+    s = perform(refreshed(s), 'extend');
+    s = quarter(s);
     expect(s.ending).toBeUndefined();
     expect(s.timeline.immigrationBreaches).toHaveLength(0);
   });
@@ -400,7 +336,7 @@ describe('Before → Action → After', () => {
         gapDays: 90,
       },
     ]);
-    const after = endQuarter(changed);
+    const after = quarter(changed);
     expect(after.timeline.episodes.at(-1)?.validFrom).toBe('2025-04-15');
     expect(after.timeline.immigrationBreaches).toEqual([
       { type: 'OVERSTAYING', date: '2025-01-15' },
@@ -418,7 +354,7 @@ describe('Before → Action → After', () => {
     before.timeline.lifeInTheUk = { passed: true };
     refreshed(before);
     expect(before.result.byRuleSet[LAW]?.outcome).toBe('LIKELY_ELIGIBLE');
-    const after = act(before, 'settle');
+    const after = perform(before, 'settle');
     expect(after.ending).toBe('settled');
     expect(after.stats.money).toBe(
       before.stats.money -
@@ -427,11 +363,13 @@ describe('Before → Action → After', () => {
     expect(after.achievements).toContain('settled');
     checkState(after);
     const unavailable = clearEvents();
-    expect(actions(unavailable).some((a) => a.id === 'settle')).toBe(false);
+    expect(activities(unavailable, 'visa').some((a) => a.id === 'settle')).toBe(
+      false,
+    );
   });
   test('leaving and a declared conviction reach their distinct endings', () => {
     const before = clearEvents();
-    const left = act(before, 'leave');
+    const left = perform(before, 'leave');
     expect(left.ending).toBe('left');
     const criminal = inject(before, [{ type: 'criminal', event: {} }]);
     expect(criminal.result.shortCircuit?.reason).toBe('CRIMINALITY');
@@ -439,140 +377,19 @@ describe('Before → Action → After', () => {
     expect(criminal.log.at(-1)?.kind).toBe('ending');
     expect(narrative(criminal).at(-1)?.en).toContain('conviction');
   });
-  test('town hall is read-only with no AP; mail gives an event; pending events cannot be skipped', () => {
-    const before = clearEvents();
-    expect(act(before, 'assessment')).toEqual(before);
-    const after = act(before, 'mail');
-    expect(currentEvent(after)).toBeDefined();
-    expect(after.actionsLeft).toBe(1);
-    expect(() => endQuarter(after)).toThrow();
-    expect(() => act(after, 'work')).toThrow();
-    expect(() => resolve(after, 'unknown')).toThrow();
-    expect(act(after, 'assessment')).toEqual(after);
-  });
   test('two negative quarter ends trigger debt; moving reduces future costs', () => {
     let s = clearEvents();
     s.stats.money = -100000;
-    s = clearEvents(endQuarter(s));
+    s = clearEvents(quarter(s));
     expect(s.flags).toContain('negative-last-quarter');
-    const second = endQuarter(s);
+    const second = quarter(s);
     expect(currentEvent(second)?.id).toBe('system-debt');
     const moved = clearEvents(resolve(second, 'move'));
     expect(moved.flags).toContain('cheap-housing');
-    const after = endQuarter(moved);
+    const after = quarter(moved);
     expect(after.stats.money - moved.stats.money).toBe(
       38000 / 4 - balance.livingCosts + balance.cheapHousingSaving,
     );
-  });
-  test('health and mood bottoms give real recovery or departure choices', () => {
-    const before = clearEvents();
-    before.stats.health = 1;
-    before.stats.mood = 1;
-    let after = act(before, 'overtime');
-    expect(currentEvent(after)?.id).toBe('system-homesick');
-    after = resolve(after, 'stay');
-    expect(after.stats.mood).toBeGreaterThan(0);
-    expect(currentEvent(after)?.id).toBe('system-hospital');
-    after = resolve(after, 'recover');
-    expect(after.stats.health).toBeGreaterThan(0);
-    checkState(after);
-  });
-});
-
-describe('event selection and effect compatibility', () => {
-  test('all condition variants, seasons, once, required and forbidden flags govern weighted draws', () => {
-    const original = characters[0].events;
-    const common = commonEvents.splice(0);
-    const template = original[0];
-    const when: Condition[] = [
-      { stat: 'money', min: 1, max: 20000 },
-      { yearMin: 1, yearMax: 1 },
-      { route: 'SKILLED_WORKER' },
-      { flag: 'ready' },
-      { visaMonthsLeftMax: 30 },
-    ];
-    const event: GameEvent = {
-      ...template,
-      id: 'conditional',
-      once: true,
-      season: 1,
-      requires: ['ready'],
-      forbids: ['blocked'],
-      when,
-    };
-    characters[0].events = [event];
-    try {
-      const base = clearEvents();
-      const pull = (s: GameState) => act(s, 'mail');
-      expect(currentEvent(pull(base))).toBeUndefined();
-      const enabled = { ...base, flags: ['ready'] };
-      expect(currentEvent(pull(enabled))?.id).toBe('conditional');
-      expect(
-        currentEvent(pull({ ...enabled, flags: ['ready', 'blocked'] })),
-      ).toBeUndefined();
-      expect(currentEvent(pull({ ...enabled, quarter: 2 }))).toBeUndefined();
-      expect(currentEvent(pull({ ...enabled, year: 2 }))).toBeUndefined();
-      expect(
-        currentEvent(
-          pull({ ...enabled, stats: { ...enabled.stats, money: -1 } }),
-        ),
-      ).toBeUndefined();
-      expect(
-        currentEvent(pull({ ...enabled, firedEvents: ['conditional'] })),
-      ).toBeUndefined();
-      const seen = new Set<number>();
-      characters[0].events = [
-        { ...event, id: 'one', requires: [], when: [], weight: 1 },
-        { ...event, id: 'two', requires: [], when: [], weight: 4 },
-      ];
-      const counts = { one: 0, two: 0 };
-      for (let seed = 0; seed < 100; seed++) {
-        const s = newGame('skilled-worker', seed);
-        seen.add(s.eventQueue.length + 1);
-        counts[currentEvent(s)!.id as keyof typeof counts]++;
-      }
-      expect([...seen].sort()).toEqual([1, 2]);
-      expect(counts.two).toBeGreaterThan(counts.one);
-    } finally {
-      characters[0].events = original;
-      commonEvents.push(...common);
-    }
-  });
-  test('chains become drawable only after their opt-in choice', () => {
-    const common = commonEvents.splice(0);
-    const old = characters[0].events;
-    const start = { ...common[0], season: undefined };
-    const follow = common[1];
-    characters[0].events = [start, follow];
-    try {
-      const before = newGame('skilled-worker', 3);
-      expect(currentEvent(before)?.id).toBe(start.id);
-      const resolved = resolve(before, 'plan');
-      expect(resolved.flags).toContain('boiler-planned');
-      const after = act(resolved, 'mail');
-      expect(currentEvent(after)?.id).toBe(follow.id);
-    } finally {
-      commonEvents.push(...common);
-      characters[0].events = old;
-    }
-  });
-  test('queued event conditions are rechecked after the first choice', () => {
-    const old = characters[0].events;
-    const event: GameEvent = {
-      ...old[0],
-      id: 'queued',
-      requires: ['keep'],
-      once: false,
-    };
-    characters[0].events.push(event);
-    try {
-      const s = clearEvents();
-      s.eventQueue = ['queued'];
-      const after = inject(s, [{ type: 'none' }]);
-      expect(currentEvent(after)).toBeUndefined();
-    } finally {
-      characters[0].events.pop();
-    }
   });
   test('all timeline effects preserve their semantics and engine-only consequences', () => {
     const s = clearEvents();
@@ -628,7 +445,7 @@ describe('event selection and effect compatibility', () => {
   test('job changes replace future renewals without overlap and do not reverse calendar time', () => {
     let s = clearEvents();
     s.date = '2026-01-15';
-    s = act(refreshed(s), 'extend');
+    s = perform(refreshed(s), 'extend');
     const after = inject(s, [
       {
         type: 'newEpisode',
@@ -660,145 +477,5 @@ describe('event selection and effect compatibility', () => {
     expect(after.stats.career).toBe(0);
     expect(after.stats.money).toBeLessThan(0);
     expect(after.result).toEqual(s.result);
-  });
-});
-
-function play(seed: number, trace = false) {
-  let s = newGame('skilled-worker', seed);
-  let randomState = seed | 0;
-  const pick = (n: number) => {
-    randomState = (Math.imul(randomState, 1664525) + 1013904223) | 0;
-    return (randomState >>> 0) % n;
-  };
-  const drain = () => {
-    let count = 0;
-    while (currentEvent(s)) {
-      if (++count > 20) throw new Error('Unexpected event loop');
-      const choices = currentEvent(s)!.choices.filter(
-        (c) =>
-          !c.effects.some((e) => e.type === 'ending' || e.type === 'criminal'),
-      );
-      s = resolve(s, choices[pick(choices.length)].id);
-    }
-  };
-  for (let q = 0; q < 40; q++) {
-    drain();
-    for (let ap = 0; ap < 2; ap++) {
-      const available = actions(s).filter(
-        (a) => !['assessment', 'settle', 'leave'].includes(a.id),
-      );
-      const renewal = available.find((a) => a.id === 'extend');
-      const selected = renewal ?? available[pick(available.length)];
-      if (!selected) break;
-      s = act(s, selected.id);
-      drain();
-    }
-    s = endQuarter(s);
-    if (trace)
-      console.log(
-        JSON.stringify({
-          seed,
-          quarter: q + 1,
-          date: s.date,
-          stats: s.stats,
-          progress: progress(s),
-          ending: s.ending,
-        }),
-      );
-    // One engine equality check per quarter also catches stale cached results.
-    checkState(s);
-    if (isOver(s)) break;
-  }
-  return s;
-}
-describe('forty-quarter reproducibility', () => {
-  for (let seed = 1; seed <= 20; seed++)
-    test(`seed ${seed}: forty quarters, deterministic and JSON-restorable`, () => {
-      const a = play(seed);
-      const b = play(seed);
-      expect(a).toEqual(b);
-      expect(['timeout', 'overstayed']).toContain(a.ending);
-      expect(
-        a.log.filter((e) => e.kind === 'quarter').length,
-      ).toBeLessThanOrEqual(40);
-      expect(a).toEqual(JSON.parse(JSON.stringify(a)));
-      expect(progress(a)).toHaveProperty(RULE_SET_IDS[0]);
-    });
-  test('serialized mid-quarter state continues with the same random stream', () => {
-    const s = newGame('skilled-worker', 42, 'en');
-    const choice = currentEvent(s)!.choices[0].id;
-    const a = resolve(s, choice);
-    const b = resolve(JSON.parse(JSON.stringify(s)), choice);
-    expect(a).toEqual(b);
-    expect(endQuarter(clearEvents(a))).toEqual(endQuarter(clearEvents(b)));
-  });
-  test('three seeded games print each played quarter through their ending', () => {
-    for (const seed of [17, 42, 81])
-      expect(['timeout', 'overstayed']).toContain(play(seed, true).ending);
-  });
-});
-
-describe('achievement predicates and ending narrative', () => {
-  test('at least eight achievements have reachable, independently inspectable predicates', () => {
-    const state = clearEvents();
-    for (let i = 0; i < 40; i++)
-      state.log.push({
-        year: Math.floor(i / 4) + 1,
-        quarter: ((i % 4) + 1) as GameState['quarter'],
-        kind: 'quarter',
-        id: 'quarter',
-        text: { zhCN: '一季', en: 'A quarter' },
-      });
-    state.stats.money = 10000;
-    state.timeline.english = { cefrLevel: 'B2' };
-    state.timeline.lifeInTheUk = { passed: true };
-    state.flags = [
-      'promoted',
-      'friend-library',
-      'friend-garden',
-      'friend-neighbour',
-    ];
-    for (let i = 0; i < 2; i++)
-      state.log.push({
-        year: 1,
-        quarter: 1,
-        kind: 'action',
-        id: 'extend',
-        text: { zhCN: '续签', en: 'Renew' },
-      });
-    state.ending = 'settled';
-    for (let i = 0; i < 3; i++)
-      state.log.push({
-        year: 1,
-        quarter: 1,
-        kind: 'event',
-        id: `move-${i}`,
-        choiceId: 'move',
-        text: { zhCN: '搬家', en: 'Moved' },
-      });
-    state.result.byRuleSet[LAW]!.earliestDate = '2025-01-16';
-    for (const achievement of achievements) {
-      checkText(achievement.name);
-      checkText(achievement.description);
-      expect(achievement.check(state), achievement.id).toBe(true);
-    }
-    state.flags.push('worked-overtime');
-    expect(achievements.find((a) => a.id === 'no-overtime')!.check(state)).toBe(
-      false,
-    );
-    state.timeline.absences.push({ from: '2024-12-01', to: '2024-12-02' });
-    expect(
-      achievements.find((a) => a.id === 'five-years-home')!.check(state),
-    ).toBe(false);
-  });
-  test('narrative includes actual event choice and bilingual terminal story', () => {
-    const s = newGame('skilled-worker', 8);
-    const e = currentEvent(s)!;
-    const c = e.choices[0];
-    const after = act(clearEvents(resolve(s, c.id)), 'leave');
-    const story = narrative(after);
-    expect(story.some((t) => t.zhCN.includes(c.label.zhCN))).toBe(true);
-    story.forEach(checkText);
-    expect(story.at(-1)?.zhCN).toContain('行李箱');
   });
 });

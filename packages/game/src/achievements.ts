@@ -1,8 +1,93 @@
 import type { Achievement, GameState } from './types';
+import { npcs } from './npcs';
+import { festivals } from './festivals';
+import { balance as b } from './balance';
 const quarters = (s: GameState) =>
   s.log.filter((e) => e.kind === 'quarter').length;
 // Achievement milestones are game goals, not legal eligibility tests.
+export const lifeAchievements: Achievement[] = [
+  {
+    id: 'harvest-twenty',
+    name: { zhCN: '沾泥的二十次', en: 'Twenty muddy harvests' },
+    description: {
+      zhCN: '在菜地收获二十次。',
+      en: 'Harvest an allotment plot twenty times.',
+    },
+    check: (s) =>
+      s.log.filter((e) => e.kind === 'action' && e.id === 'harvest').length >=
+      b.milestones.harvest,
+  },
+  {
+    id: 'caught-pike',
+    name: { zhCN: '池塘的大影子', en: 'A shadow in the pond' },
+    description: { zhCN: '钓到一条狗鱼。', en: 'Catch a pike.' },
+    check: (s) => s.flags.includes('caught-pike'),
+  },
+  {
+    id: 'eight-hearts',
+    name: { zhCN: '留着的那把椅子', en: 'The chair kept for you' },
+    description: {
+      zhCN: '和一位镇民或家人达到八心。',
+      en: 'Reach eight hearts with a resident or family member.',
+    },
+    check: (s) =>
+      Object.values(s.friendship).some(
+        (points) => points >= b.milestones.friendship,
+      ),
+  },
+  {
+    id: 'talked-everyone',
+    name: { zhCN: '一路都能打招呼', en: 'Greetings along the street' },
+    description: {
+      zhCN: '和八位常驻镇民都聊过天。',
+      en: 'Talk to all eight permanent residents.',
+    },
+    check: (s) =>
+      npcs
+        .filter((n) => !n.characters)
+        .every((n) => s.flags.includes(`talked-${n.id}`)),
+  },
+  {
+    id: 'five-festivals',
+    name: { zhCN: '一年又一年的灯', en: 'Lights year after year' },
+    description: { zhCN: '参加过五种节日。', en: 'Attend all five festivals.' },
+    check: (s) =>
+      festivals.every((f) => s.flags.includes(`visited-festival:${f.id}`)),
+  },
+  {
+    id: 'allotment-show',
+    name: { zhCN: '篮子上的标签', en: 'A label on the basket' },
+    description: {
+      zhCN: '在夏日菜地评比取得一次结果。',
+      en: 'Receive a result at the summer allotment show.',
+    },
+    check: (s) => s.flags.some((f) => f.startsWith('show-result-')),
+  },
+  {
+    id: 'quiz-four',
+    name: { zhCN: '队名不用再问', en: 'The team name remembered' },
+    description: {
+      zhCN: '参加四次 pub quiz。',
+      en: 'Join the pub quiz four times.',
+    },
+    check: (s) =>
+      s.log.filter((e) => e.kind === 'action' && e.id === 'pub-quiz').length >=
+      b.milestones.quiz,
+  },
+  {
+    id: 'loved-gifts-ten',
+    name: { zhCN: '还记得你喜欢', en: 'Remembering your favourite' },
+    description: {
+      zhCN: '送出十次对方最爱的礼物。',
+      en: 'Give a loved gift ten times.',
+    },
+    check: (s) =>
+      s.log.filter((e) => e.kind === 'action' && e.id === 'loved-gift')
+        .length >= b.milestones.lovedGifts,
+  },
+];
 export const achievements: Achievement[] = [
+  ...lifeAchievements,
   {
     id: 'never-overstayed',
     name: { zhCN: '签证从未逾期', en: 'Always in time' },
@@ -28,8 +113,8 @@ export const achievements: Achievement[] = [
     id: 'three-friends',
     name: { zhCN: '三个朋友', en: 'Three friends' },
     description: {
-      zhCN: '结识图书馆的艾莉、花园的山姆和邻居诺拉。',
-      en: 'Befriend Ellie at the library, Sam at the garden and Nora next door.',
+      zhCN: '在图书馆、菜地与邻里间交到三位朋友。',
+      en: 'Make three friends through library, allotment and neighbourhood life.',
     },
     check: (s) =>
       ['friend-library', 'friend-garden', 'friend-neighbour'].every((f) =>

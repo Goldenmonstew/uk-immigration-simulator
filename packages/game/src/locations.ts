@@ -1,17 +1,84 @@
 import { currentLaw2026_11 } from '@uk-immigration/policy-data';
 import type { Route } from '@uk-immigration/engine';
+import { festivalActivities } from './festivals';
 import { balance as b } from './balance';
-import type { Location, LocationAction } from './types';
+import type { Activity, Place } from './types';
 
-export const locations: Location[] = [
-  { id: 'home', name: { zhCN: '家', en: 'Home' } },
-  { id: 'work', name: { zhCN: '公司', en: 'Work' } },
-  { id: 'college', name: { zhCN: '语言学校', en: 'Language school' } },
-  { id: 'gp', name: { zhCN: 'GP 诊所', en: 'GP surgery' } },
-  { id: 'pub', name: { zhCN: '酒吧与公园', en: 'Pub and park' } },
-  { id: 'council', name: { zhCN: '市政厅', en: 'Town hall' } },
-  { id: 'visa', name: { zhCN: '签证中心', en: 'Visa centre' } },
-  { id: 'station', name: { zhCN: '火车站 / 机场', en: 'Station / airport' } },
+export const places: Place[] = [
+  { id: 'home', name: { zhCN: '家', en: 'Home' }, kind: 'building' },
+  {
+    id: 'work',
+    name: { zhCN: '公司', en: 'Work' },
+    kind: 'building',
+    hours: { opens: 540, closes: 1200, dayKinds: ['workday'] },
+  },
+  {
+    id: 'college',
+    name: { zhCN: '语言学校', en: 'Language school' },
+    kind: 'building',
+    hours: { opens: 540, closes: 1260 },
+  },
+  {
+    id: 'library',
+    name: { zhCN: '图书馆', en: 'Library' },
+    kind: 'building',
+    hours: { opens: 540, closes: 1080 },
+  },
+  {
+    id: 'gp',
+    name: { zhCN: 'GP 诊所', en: 'GP surgery' },
+    kind: 'building',
+    hours: { opens: 540, closes: 1020, dayKinds: ['workday'] },
+  },
+  {
+    id: 'pub',
+    name: { zhCN: '酒吧', en: 'Pub' },
+    kind: 'building',
+    hours: { opens: 720, closes: 1380 },
+  },
+  {
+    id: 'cafe',
+    name: { zhCN: '咖啡馆', en: 'Café' },
+    kind: 'building',
+    hours: { opens: 480, closes: 1080 },
+  },
+  {
+    id: 'shop',
+    name: { zhCN: '街角小店', en: 'Corner shop' },
+    kind: 'building',
+    hours: { opens: 480, closes: 1200 },
+  },
+  {
+    id: 'council',
+    name: { zhCN: '市政厅', en: 'Town hall' },
+    kind: 'building',
+    hours: { opens: 480, closes: 1200 },
+  },
+  {
+    id: 'visa',
+    name: { zhCN: '签证中心', en: 'Visa centre' },
+    kind: 'building',
+    hours: { opens: 480, closes: 1200 },
+  },
+  {
+    id: 'station',
+    name: { zhCN: '火车站', en: 'Station' },
+    kind: 'building',
+    hours: { opens: 420, closes: 1380 },
+  },
+  ...(['allotment', 'pond', 'board', 'green', 'bench'] as const).map(
+    (id, i): Place => ({
+      id,
+      kind: 'outdoor',
+      name: [
+        { zhCN: '社区菜地', en: 'Allotment' },
+        { zhCN: '公园池塘', en: 'Park pond' },
+        { zhCN: '公告栏', en: 'Noticeboard' },
+        { zhCN: '村绿地', en: 'Village green' },
+        { zhCN: '长椅', en: 'Bench' },
+      ][i],
+    }),
+  ),
 ];
 const fees = currentLaw2026_11.values;
 /** Standard adult, non-ISL Skilled Worker only; duration is a game scenario. */
@@ -42,27 +109,89 @@ export function extensionFor(route: Route) {
   return undefined;
 }
 
-/** Dynamic evidence, renewal episode and calendar travel dates are filled by actions(). */
-export const locationActions: LocationAction[] = [
+export const locationActions: Activity[] = [
+  {
+    id: 'pub-quiz',
+    place: 'pub',
+    label: { zhCN: '参加 pub quiz', en: 'Join the pub quiz' },
+    minutes: b.quizMinutes,
+    oncePerDay: true,
+    when: [
+      { dayKind: 'weekend' },
+      { flag: 'quarter-board-pub-quiz' },
+      { minuteMin: b.quizStart },
+    ],
+    effects: [
+      { type: 'stat', key: 'english', delta: b.quizEnglish },
+      { type: 'stat', key: 'mood', delta: b.quizMood },
+    ],
+  },
+  ...Object.entries(festivalActivities).map(
+    ([festival, activity]): Activity => ({
+      id: activity.id,
+      place: 'green',
+      label: activity.label,
+      minutes: b.minutes.festival,
+      oncePerDay: true,
+      when: [
+        { festival: festival as import('./types').FestivalId },
+        { minuteMin: activity.starts },
+      ],
+      effects: [{ type: 'stat', key: 'mood', delta: b.festivalMood }],
+    }),
+  ),
+  ...Object.keys(b.showVariety).map((crop): Activity => ({
+    id: `summer-show-${crop}`,
+    place: 'green',
+    label: {
+      zhCN: '带收成参加菜地评比',
+      en: 'Enter a harvest in the allotment show',
+    },
+    minutes: b.showMinutes,
+    when: [
+      { festival: 'summer-fair' },
+      { item: crop },
+      { minuteMin: b.showStart },
+    ],
+    effects: [{ type: 'none' }],
+  })),
   {
     id: 'rest',
-    location: 'home',
+    place: 'home',
     label: { zhCN: '休息', en: 'Rest' },
+    minutes: b.minutes.rest,
+    oncePerDay: true,
     effects: [
       { type: 'stat', key: 'mood', delta: b.restMood },
       { type: 'stat', key: 'health', delta: b.restHealth },
     ],
   },
   {
-    id: 'mail',
-    location: 'home',
-    label: { zhCN: '收信', en: 'Check the post' },
-    effects: [{ type: 'none' }],
+    id: 'nap',
+    place: 'home',
+    label: { zhCN: '午睡', en: 'Take a nap' },
+    minutes: b.minutes.nap,
+    oncePerDay: true,
+    effects: [
+      { type: 'stat', key: 'mood', delta: b.napMood },
+      { type: 'stat', key: 'health', delta: b.napHealth },
+    ],
   },
+  ...(['home', 'library'] as const).map((place): Activity => ({
+    id: `study-${place}`,
+    place,
+    label: { zhCN: '自学英语', en: 'Study English' },
+    minutes: b.minutes.study,
+    oncePerDay: true,
+    effects: [{ type: 'stat', key: 'english', delta: b.studyEnglish }],
+  })),
   {
     id: 'work',
-    location: 'work',
-    label: { zhCN: '上班', en: 'Work' },
+    place: 'work',
+    label: { zhCN: '上班', en: 'Work a shift' },
+    minutes: b.minutes.work,
+    oncePerDay: true,
+    when: [{ dayKind: 'workday' }],
     effects: [
       { type: 'money', delta: b.workMoney },
       { type: 'stat', key: 'career', delta: b.workCareer },
@@ -70,8 +199,11 @@ export const locationActions: LocationAction[] = [
   },
   {
     id: 'overtime',
-    location: 'work',
+    place: 'work',
     label: { zhCN: '加班', en: 'Work overtime' },
+    minutes: b.minutes.overtime,
+    oncePerDay: true,
+    when: [{ dayKind: 'workday' }, { minuteMin: 1020 }],
     effects: [
       { type: 'money', delta: b.overtimeMoney },
       { type: 'stat', key: 'career', delta: b.overtimeCareer },
@@ -81,8 +213,10 @@ export const locationActions: LocationAction[] = [
   },
   {
     id: 'class',
-    location: 'college',
+    place: 'college',
     label: { zhCN: '上课', en: 'Take a class' },
+    minutes: b.minutes.class,
+    oncePerDay: true,
     effects: [
       { type: 'money', delta: -b.classCost },
       { type: 'stat', key: 'english', delta: b.classEnglish },
@@ -90,55 +224,108 @@ export const locationActions: LocationAction[] = [
   },
   {
     id: 'exam',
-    location: 'college',
+    place: 'college',
     label: { zhCN: '参加英语考试', en: 'Take an English test' },
+    minutes: b.minutes.exam,
+    oncePerDay: true,
     effects: [{ type: 'none' }],
   },
   {
     id: 'gp',
-    location: 'gp',
+    place: 'gp',
     label: { zhCN: '看病', en: 'See the GP' },
+    minutes: b.minutes.gp,
+    oncePerDay: true,
     effects: [{ type: 'stat', key: 'health', delta: b.gpHealth }],
   },
   {
     id: 'relax',
-    location: 'pub',
+    place: 'pub',
     label: { zhCN: '放松', en: 'Relax' },
+    minutes: b.minutes.relax,
+    oncePerDay: true,
     effects: [
       { type: 'money', delta: -b.relaxCost },
       { type: 'stat', key: 'mood', delta: b.relaxMood },
     ],
   },
   {
+    id: 'coffee',
+    place: 'cafe',
+    label: { zhCN: '喝杯咖啡', en: 'Have a coffee' },
+    minutes: b.minutes.coffee,
+    oncePerDay: true,
+    effects: [
+      { type: 'money', delta: -b.coffeeCost },
+      { type: 'stat', key: 'mood', delta: b.coffeeMood },
+    ],
+  },
+  {
+    id: 'bench',
+    place: 'bench',
+    label: { zhCN: '坐一会儿', en: 'Sit for a while' },
+    minutes: b.minutes.bench,
+    oncePerDay: true,
+    effects: [{ type: 'stat', key: 'mood', delta: b.benchMood }],
+  },
+  {
+    id: 'board',
+    place: 'board',
+    label: { zhCN: '看看公告', en: 'Read the notices' },
+    minutes: b.minutes.board,
+    oncePerDay: true,
+    effects: [{ type: 'stat', key: 'mood', delta: b.boardMood }],
+  },
+  {
+    id: 'rent-plot',
+    place: 'allotment',
+    label: { zhCN: '租下菜地', en: 'Rent an allotment' },
+    minutes: b.minutes.rent,
+    effects: [{ type: 'money', delta: -b.plotAnnualRent }],
+  },
+  {
+    id: 'festival',
+    place: 'green',
+    label: { zhCN: '逛节日摊位', en: 'Join the festival' },
+    minutes: b.minutes.festival,
+    oncePerDay: true,
+    when: [{ dayKind: 'special' }],
+    effects: [{ type: 'stat', key: 'mood', delta: b.festivalMood }],
+  },
+  {
     id: 'assessment',
-    location: 'council',
-    cost: 0,
+    place: 'council',
     label: { zhCN: '查看两栏定居评估', en: 'Read both settlement assessments' },
+    minutes: 0,
     effects: [{ type: 'none' }],
   },
   {
     id: 'extend',
-    location: 'visa',
+    place: 'visa',
     label: { zhCN: '续签', en: 'Extend permission' },
+    minutes: b.minutes.paperwork,
+    oncePerDay: true,
     when: [{ visaMonthsLeftMax: b.renewalWindowMonths }],
     effects: [{ type: 'money', delta: -extensionCost }],
   },
   {
     id: 'settle',
-    location: 'visa',
+    place: 'visa',
     label: { zhCN: '申请定居', en: 'Apply for settlement' },
+    minutes: b.minutes.paperwork,
     effects: [
       { type: 'money', delta: -fees.settlementApplicationFee.value },
       { type: 'ending', ending: 'settled' },
     ],
   },
-  ...([1, 3, 6] as const).map((months): LocationAction => ({
+  ...([1, 3, 6] as const).map((months): Activity => ({
     id: `travel-${months}`,
-    location: 'station',
+    place: 'station',
     label: {
-      zhCN: `出国 ${months} 个月（归来）`,
-      en: `Return from ${months} month(s) abroad`,
+      zhCN: `出国 ${months} 个月`,
+      en: `Travel abroad for ${months} month(s)`,
     },
+    minutes: 0,
     effects: [
       { type: 'money', delta: -b.travelCostPerMonth * months },
       { type: 'stat', key: 'mood', delta: b.travelMood },
@@ -146,8 +333,9 @@ export const locationActions: LocationAction[] = [
   })),
   {
     id: 'leave',
-    location: 'station',
+    place: 'station',
     label: { zhCN: '离开英国', en: 'Leave the UK' },
+    minutes: 0,
     effects: [{ type: 'ending', ending: 'left' }],
   },
 ];

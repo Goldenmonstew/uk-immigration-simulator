@@ -7,6 +7,7 @@ const policy = currentLaw2026_11.values;
 const events: GameEvent[] = [
   {
     id: 'bno-school-gate',
+    channel: 'letter',
     title: { zhCN: '校门口的雨伞', en: 'Umbrellas at the school gate' },
     text: {
       zhCN: '孩子把家长会通知揉成小船，嘉宁从书包底找到了它。',
@@ -31,6 +32,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-school-chat',
+    channel: 'morning',
     title: { zhCN: '小椅子上的大人', en: 'Adults on tiny chairs' },
     text: {
       zhCN: '家长会的椅子低得像露营凳，老师把孩子的画摆在桌上。',
@@ -64,6 +66,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-cafe-window',
+    channel: 'place:cafe',
     title: { zhCN: '茶餐厅的招聘纸', en: 'A café window vacancy' },
     text: {
       zhCN: '港式茶餐厅的招聘纸被蒸汽熏卷了角，老板递来一杯热茶。',
@@ -97,6 +100,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-cafe-shifts',
+    channel: 'place:cafe',
     title: { zhCN: '收工后的奶茶', en: 'Milk tea after closing' },
     text: {
       zhCN: '周末帮工满了一轮，嘉宁的袖口沾着糖，日历却挤满了。',
@@ -135,6 +139,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-partner-cv',
+    channel: 'npc:ka-ning-partner',
     title: { zhCN: '餐桌上的简历', en: 'A CV on the table' },
     text: {
       zhCN: '伴侣把简历改到第七版，孩子给页脚画了一只猫。',
@@ -161,6 +166,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-partner-offer',
+    channel: 'letter',
     title: { zhCN: '第二张工牌', en: 'A second staff pass' },
     text: {
       zhCN: '伴侣终于拿到录用信，孩子在冰箱上的便签旁添了一颗星。',
@@ -194,6 +200,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-parents-ticket',
+    channel: 'phone',
     title: { zhCN: '父母的行李秤', en: 'The parents’ luggage scales' },
     text: {
       zhCN: '视频里聊起刚结束的团聚，父母笑说三个箱子一个也没少。',
@@ -231,6 +238,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-parents-visit',
+    channel: 'morning',
     title: { zhCN: '客房里的电饭锅', en: 'A rice cooker in the spare room' },
     text: {
       zhCN: '父母住过一阵，客房留下电饭锅，玄关多了双拖鞋。',
@@ -271,6 +279,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-summer-hk',
+    channel: 'npc:ka-ning-child',
     title: { zhCN: '暑假的两张日历', en: 'Two summer calendars' },
     text: {
       zhCN: '孩子想回港陪外婆，嘉宁把学校假期和机票摊在一起。',
@@ -301,6 +310,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-summer-return',
+    channel: 'place:home',
     title: { zhCN: '回来的书包', en: 'The returning school bag' },
     text: {
       zhCN: '陪孩子回港的日子结束了，书包里还夹着一张电车票。',
@@ -347,6 +357,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-kol-book',
+    channel: 'place:home',
     title: { zhCN: '烤箱旁的练习册', en: 'A workbook by the oven' },
     text: {
       zhCN: 'Life in the UK 练习册放在烤箱旁，翻页时掉出一点面粉。',
@@ -377,6 +388,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-kol-result',
+    channel: 'letter',
     title: { zhCN: '小小的通过通知', en: 'A small pass notice' },
     text: {
       zhCN: '复习过的题目终于派上用场，嘉宁把通过通知夹进文件夹。',
@@ -422,6 +434,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-b2-question',
+    channel: 'place:college',
     title: { zhCN: '老师的新课程表', en: 'The teacher’s new timetable' },
     text: {
       zhCN: '语言老师问嘉宁要不要读进阶班，孩子在旁边替大人举手。',
@@ -455,6 +468,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-b2-certificate',
+    channel: 'letter',
     title: { zhCN: '进阶班的文件袋', en: 'The advanced-class envelope' },
     text: {
       zhCN: '准备了一段时间后，嘉宁拿到进阶考试结果，信封被雨打湿一角。',
@@ -498,6 +512,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-budget-gap',
+    channel: 'morning',
     title: { zhCN: '月底的购物篮', en: 'The month-end shopping basket' },
     text: {
       zhCN: '购物篮删到只剩必需品，嘉宁还是把总价重算了一遍。',
@@ -528,6 +543,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-benefit-decision',
+    channel: 'letter',
     title: { zhCN: '咨询后的信封', en: 'The envelope after advice' },
     text: {
       zhCN: '咨询回来，嘉宁把福利信封和存款单并排放在桌上。',
@@ -572,6 +588,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-neighbour-noise',
+    channel: 'morning',
     title: { zhCN: '隔墙的低音炮', en: 'Bass through the wall' },
     text: {
       zhCN: '隔壁音乐响到午夜，嘉宁的茶杯也像跟着打拍子。',
@@ -595,6 +612,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-neighbour-outcome',
+    channel: 'morning',
     title: { zhCN: '走廊里的回声', en: 'An echo in the corridor' },
     text: {
       zhCN: '约好的谈话变成争执，走廊里每句话都响了两遍。',
@@ -629,6 +647,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-house-search',
+    channel: 'morning',
     title: { zhCN: '学校附近的窗户', en: 'A window near the school' },
     text: {
       zhCN: '放学路上出现招租牌，嘉宁看了看窗户，又看了看书包。',
@@ -660,6 +679,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-house-keys',
+    channel: 'place:home',
     title: { zhCN: '新门口的书包', en: 'The school bag at a new door' },
     text: {
       zhCN: '看过的房子留着同样的窗帘，嘉宁坐下来核对最后的合同。',
@@ -695,6 +715,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-salary-review',
+    channel: 'place:work',
     title: { zhCN: '年结单的折角', en: 'A folded annual statement' },
     text: {
       zhCN: '主管把年结单推过来，嘉宁发现自己的名字终于没被拼错。',
@@ -734,6 +755,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-shorter-hours',
+    channel: 'npc:ka-ning-partner',
     title: { zhCN: '接送表的新空格', en: 'A gap in the school-run rota' },
     text: {
       zhCN: '课后班时间改了，嘉宁和伴侣拿铅笔重画了一遍接送表。',
@@ -770,6 +792,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-partner-layoff',
+    channel: 'letter',
     title: { zhCN: '另一半的通知信', en: 'The partner’s notice' },
     text: {
       zhCN: '伴侣的办公室缩编，通知信比往常的广告还薄。',
@@ -808,6 +831,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-partner-restart',
+    channel: 'npc:ka-ning-partner',
     title: { zhCN: '重新响起的闹钟', en: 'An alarm clock rings again' },
     text: {
       zhCN: '伴侣找到新工作，清晨的闹钟又恢复了二重奏。',
@@ -839,6 +863,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-own-contract',
+    channel: 'place:work',
     title: { zhCN: '试用期结束', en: 'Probation ends' },
     text: {
       zhCN: '试用期结束，嘉宁的主管递来合同，手里还捏着半块饼干。',
@@ -882,6 +907,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-project-month',
+    channel: 'place:work',
     title: { zhCN: '项目结束的外卖盒', en: 'Takeaway boxes after a project' },
     text: {
       zhCN: '项目收尾了，会议室里最后留下的是一排空外卖盒。',
@@ -924,6 +950,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-cafe-manager',
+    channel: 'place:cafe',
     title: { zhCN: '店门口的新钥匙', en: 'A new key to the café' },
     text: {
       zhCN: '老板把值班钥匙递给嘉宁，钥匙圈比整串钥匙还大。',
@@ -959,6 +986,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-quiet-career',
+    channel: 'npc:ka-ning-child',
     title: { zhCN: '放慢一点的约定', en: 'An agreement to slow down' },
     text: {
       zhCN: '孩子问晚饭能不能早点吃，嘉宁把工作群调成了静音。',
@@ -996,6 +1024,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-hk-wedding',
+    channel: 'place:home',
     title: { zhCN: '喜帖里的金粉', en: 'Glitter in a wedding invitation' },
     text: {
       zhCN: '从香港婚礼回来，嘉宁收好喜帖，金粉又洒进了早餐麦片旁。',
@@ -1037,6 +1066,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-care-rota',
+    channel: 'morning',
     title: { zhCN: '病房外的轮班表', en: 'A care rota outside the ward' },
     text: {
       zhCN: '家人回顾这次照顾父亲的分工，嘉宁的车票还夹在手机壳里。',
@@ -1082,6 +1112,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-school-trip-abroad',
+    channel: 'place:home',
     title: { zhCN: '护照套里的贴纸', en: 'Stickers inside the passport cover' },
     text: {
       zhCN: '陪孩子的海外比赛结束了，护照套里多了一张奖牌贴纸。',
@@ -1127,6 +1158,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-anniversary-hk',
+    channel: 'place:home',
     title: { zhCN: '旧街道的新招牌', en: 'New signs on an old street' },
     text: {
       zhCN: '回港纪念日小旅行结束，嘉宁手机里拍满了街角的新招牌。',
@@ -1171,6 +1203,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-passport-renewal-trip',
+    channel: 'place:home',
     title: {
       zhCN: '证件照的僵硬笑容',
       en: 'A stiff smile in a passport photo',
@@ -1216,6 +1249,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-farewell-trip',
+    channel: 'place:home',
     title: { zhCN: '离别饭的最后一碗', en: 'The last bowl at a farewell meal' },
     text: {
       zhCN: '海外朋友搬走前的饭局结束了，嘉宁把合照设成手机壁纸。',
@@ -1261,6 +1295,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-long-family-summer',
+    channel: 'place:home',
     title: { zhCN: '忘在香港的外套', en: 'A coat left in Hong Kong' },
     text: {
       zhCN: '一整个长假回来，嘉宁才发现外套留在了亲戚家的衣柜。',
@@ -1306,6 +1341,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-benefit-second-envelope',
+    channel: 'place:home',
     title: { zhCN: '另一个薄信封', en: 'Another thin envelope' },
     text: {
       zhCN: '账单又挤到同一天，嘉宁把之前的咨询笔记翻了出来。',
@@ -1351,6 +1387,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-paid-debt',
+    channel: 'letter',
     title: { zhCN: '夹在菜单里的通知', en: 'A notice among takeaway menus' },
     text: {
       zhCN: '政府欠款通知躲在外卖菜单后，嘉宁擦桌子时才看见。',
@@ -1399,6 +1436,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-english-retest',
+    channel: 'place:college',
     title: { zhCN: '换了一张考桌', en: 'A different exam desk' },
     text: {
       zhCN: '复习后的考试又结束了，嘉宁这次没把水瓶忘在考场。',
@@ -1442,6 +1480,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-kol-copy',
+    channel: 'letter',
     title: { zhCN: '文件夹里的第二份', en: 'A second copy in the folder' },
     text: {
       zhCN: '嘉宁整理旧邮件，找回了已经通过的 Life in the UK 通知。',
@@ -1483,6 +1522,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-new-employer',
+    channel: 'morning',
     title: { zhCN: '公交通勤的新路线', en: 'A new bus route to work' },
     text: {
       zhCN: '新雇主的办公室换了方向，嘉宁在公交站研究了半天地图。',
@@ -1526,6 +1566,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-school-shoes',
+    channel: 'npc:ka-ning-child',
     title: { zhCN: '突然变小的鞋', en: 'Shoes that suddenly shrank' },
     text: {
       zhCN: '孩子说鞋子变小了，嘉宁怀疑是脚长得太有计划。',
@@ -1552,6 +1593,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-canteen-menu',
+    channel: 'npc:ka-ning-child',
     title: { zhCN: '菜单上的陌生词', en: 'An unfamiliar word on the menu' },
     text: {
       zhCN: '学校菜单写着一个嘉宁没见过的词，孩子说反正配土豆。',
@@ -1577,6 +1619,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-reading-aloud',
+    channel: 'npc:ka-ning-child',
     title: { zhCN: '倒过来的绘本', en: 'An upside-down picture book' },
     text: {
       zhCN: '睡前读到第三页，嘉宁才发现孩子一直把书拿倒了。',
@@ -1602,6 +1645,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-sports-day',
+    channel: 'npc:ka-ning-child',
     title: { zhCN: '草地上的豆袋', en: 'Beanbags on the grass' },
     text: {
       zhCN: '运动会家长组要夹豆袋，嘉宁的认真表情逗笑了孩子。',
@@ -1625,6 +1669,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-school-play',
+    channel: 'npc:ka-ning-child',
     title: { zhCN: '纸板做的树', en: 'A cardboard tree' },
     text: {
       zhCN: '孩子在学校戏剧里演一棵树，坚持树也需要排练。',
@@ -1654,6 +1699,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-lost-jumper',
+    channel: 'morning',
     title: { zhCN: '第二件蓝毛衣', en: 'A second blue jumper' },
     text: {
       zhCN: '失物箱里躺着七件一样的蓝毛衣，嘉宁认出了自己的针脚。',
@@ -1676,6 +1722,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-school-photo',
+    channel: 'letter',
     title: { zhCN: '照片里的缺牙笑', en: 'A gap-toothed school photograph' },
     text: {
       zhCN: '学校照片送到，孩子少了一颗牙，笑容却比去年更满。',
@@ -1701,6 +1748,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-school-email',
+    channel: 'letter',
     title: {
       zhCN: '一晚上的三封邮件',
       en: 'Three school emails in one evening',
@@ -1729,6 +1777,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-cafe-toast',
+    channel: 'place:cafe',
     title: { zhCN: '菠萝包的碎屑', en: 'Crumbs from a pineapple bun' },
     text: {
       zhCN: '茶餐厅桌上落满面包屑，嘉宁把热茶往里挪了挪。',
@@ -1751,6 +1800,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-cafe-queue',
+    channel: 'place:cafe',
     title: { zhCN: '排队时的闲聊', en: 'A conversation in the queue' },
     text: {
       zhCN: '午餐队伍绕过门口，嘉宁和前面的人聊起最近的雨。',
@@ -1776,6 +1826,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-recipe-call',
+    channel: 'phone',
     title: { zhCN: '视频里的半碗面粉', en: 'Half a bowl of flour on video' },
     text: {
       zhCN: '父亲隔着屏幕说面粉放一点，嘉宁问一点究竟是多大一点。',
@@ -1804,6 +1855,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-partner-umbrella',
+    channel: 'place:station',
     title: { zhCN: '两个人一把伞', en: 'One umbrella for two' },
     text: {
       zhCN: '伴侣忘带伞，嘉宁去车站接人，回家时左肩右肩都湿了。',
@@ -1827,6 +1879,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-partner-cinema',
+    channel: 'morning',
     title: { zhCN: '没听懂的笑点', en: 'The joke that got away' },
     text: {
       zhCN: '电影院全场大笑，嘉宁慢了半拍，伴侣已经在耳边解释。',
@@ -1852,6 +1905,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-parents-weather',
+    channel: 'phone',
     title: { zhCN: '两个城市的天气', en: 'Weather in two cities' },
     text: {
       zhCN: '父母每天问冷不冷，嘉宁干脆把天气预报发进了家庭群。',
@@ -1881,6 +1935,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-grocery-substitute',
+    channel: 'morning',
     title: { zhCN: '冰箱里的替补队员', en: 'Substitutes in the fridge' },
     text: {
       zhCN: '超市缺货，嘉宁拿陌生蔬菜替补，晚饭像临时组队。',
@@ -1903,6 +1958,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-heating-meter',
+    channel: 'place:home',
     title: { zhCN: '像跑步的电表', en: 'A meter going for a run' },
     text: {
       zhCN: '暖气一开，电表的数字像穿上了跑鞋。',
@@ -1932,6 +1988,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-draught-strip',
+    channel: 'place:home',
     title: { zhCN: '门缝里的口哨', en: 'A whistle through the door' },
     text: {
       zhCN: '门缝每晚吹口哨，嘉宁终于找到声音的主唱。',
@@ -1955,6 +2012,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-boiler-wait',
+    channel: 'morning',
     title: { zhCN: '锅炉前的保温杯', en: 'A flask beside the boiler' },
     text: {
       zhCN: '等维修工的下午，嘉宁抱着保温杯，孩子裹得像一只饭团。',
@@ -1981,6 +2039,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-garden-herbs',
+    channel: 'npc:ka-ning-child',
     title: { zhCN: '窗台上的葱', en: 'Spring onions on the sill' },
     text: {
       zhCN: '水杯里的葱根冒了芽，孩子宣布自己开了农场。',
@@ -2007,6 +2066,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-rain-school-run',
+    channel: 'morning',
     title: { zhCN: '斜着下的雨', en: 'Rain falling sideways' },
     text: {
       zhCN: '放学路上的雨是斜着下的，嘉宁觉得伞需要考个驾照。',
@@ -2033,6 +2093,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-bus-accent',
+    channel: 'morning',
     title: { zhCN: '公交车上的新口音', en: 'A new accent on the bus' },
     text: {
       zhCN: '司机说了一句玩笑，嘉宁直到下一站才听明白。',
@@ -2058,6 +2119,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-library-card',
+    channel: 'place:library',
     title: { zhCN: '孩子替大人选书', en: 'A child chooses the adult’s book' },
     text: {
       zhCN: '图书馆里，孩子替嘉宁挑了本厚书，说封面看起来很好吃。',
@@ -2083,6 +2145,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-park-friend',
+    channel: 'place:bench',
     title: { zhCN: '长椅的固定座位', en: 'The usual seat on a bench' },
     text: {
       zhCN: '每周在长椅遇到同一位家长，这次终于互相记住了名字。',
@@ -2105,6 +2168,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-gp-appointment',
+    channel: 'phone',
     title: { zhCN: '电话等候的音乐', en: 'Music while waiting on the phone' },
     text: {
       zhCN: 'GP 电话的等候音乐响了又响，嘉宁已经会哼副歌。',
@@ -2133,6 +2197,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-dentist-wait',
+    channel: 'morning',
     title: { zhCN: '候诊室的玩具箱', en: 'The waiting-room toy box' },
     text: {
       zhCN: '孩子摆弄候诊室的玩具，嘉宁盯着墙上的牙刷海报。',
@@ -2161,6 +2226,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-packed-lunch',
+    channel: 'npc:ka-ning-child',
     title: { zhCN: '便当盒的新隔层', en: 'A new compartment in the lunchbox' },
     text: {
       zhCN: '孩子嫌便当总是同一种颜色，嘉宁开始研究彩椒。',
@@ -2189,6 +2255,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-sunday-laundry',
+    channel: 'morning',
     title: { zhCN: '洗衣机的袜子账', en: 'The washing machine’s sock account' },
     text: {
       zhCN: '洗衣机又少交一只袜子，嘉宁在篮底找到孩子的玩具车。',
@@ -2211,6 +2278,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-birthday-cake',
+    channel: 'npc:ka-ning-child',
     title: { zhCN: '歪了一点的蛋糕', en: 'A slightly lopsided cake' },
     text: {
       zhCN: '生日蛋糕向左倾，孩子坚持说这是更有个性的版本。',
@@ -2233,6 +2301,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-anniversary-table',
+    channel: 'npc:ka-ning-partner',
     title: { zhCN: '餐桌上的旧车票', en: 'An old ticket on the dinner table' },
     text: {
       zhCN: '纪念日晚饭时，伴侣找出了两人第一次旅行的旧车票。',
@@ -2261,6 +2330,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-snow-footprints',
+    channel: 'morning',
     title: { zhCN: '雪地里的小脚印', en: 'Small footprints in snow' },
     text: {
       zhCN: '门前薄雪上留着孩子的脚印，绕了三圈才走向学校。',
@@ -2287,6 +2357,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-summer-light',
+    channel: 'npc:ka-ning-child',
     title: { zhCN: '不肯天黑的晚上', en: 'An evening that will not darken' },
     text: {
       zhCN: '夏天的窗外一直亮着，孩子说太阳是不是忘了下班。',
@@ -2313,6 +2384,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-autumn-leaves',
+    channel: 'morning',
     title: { zhCN: '夹在练习册里的叶子', en: 'Leaves inside an exercise book' },
     text: {
       zhCN: '孩子把秋叶夹进练习册，嘉宁翻页时像打开一小片公园。',
@@ -2342,6 +2414,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-fifth-year-drawer',
+    channel: 'place:home',
     title: { zhCN: '抽屉开始装不下', en: 'The drawer is getting full' },
     text: {
       zhCN: '住久了，抽屉里都是不知道该不该留的纸，嘉宁找不到剪刀。',
@@ -2368,6 +2441,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-eighth-year-friend',
+    channel: 'morning',
     title: { zhCN: '朋友留下的花盆', en: 'A flowerpot left by a friend' },
     text: {
       zhCN: '朋友搬离小镇，把养不好的花送给嘉宁，说换个人或许有希望。',
@@ -2397,6 +2471,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-ten-year-measure',
+    channel: 'morning',
     title: { zhCN: '门框上的铅笔线', en: 'Pencil marks on the doorframe' },
     text: {
       zhCN: '门框的铅笔线越画越高，嘉宁已经记不清第一条是哪年。',
@@ -2426,6 +2501,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-work-lunchroom',
+    channel: 'place:work',
     title: { zhCN: '微波炉前的队伍', en: 'A queue at the microwave' },
     text: {
       zhCN: '午休的微波炉排起长队，嘉宁发现人人都在守着一个饭盒。',
@@ -2451,6 +2527,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-local-election',
+    channel: 'letter',
     title: { zhCN: '门口的传单', en: 'A leaflet at the door' },
     text: {
       zhCN: '门口落下一叠社区传单，嘉宁把活动日期圈给家人看。',
@@ -2473,6 +2550,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-rainbow-window',
+    channel: 'morning',
     title: { zhCN: '窗户上的彩虹', en: 'A rainbow on the window' },
     text: {
       zhCN: '孩子画的彩虹贴歪了，嘉宁却觉得那正是它最像彩虹的地方。',
@@ -2495,6 +2573,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-tea-with-neighbour',
+    channel: 'morning',
     title: { zhCN: '终于放轻的音乐', en: 'Music finally turned down' },
     text: {
       zhCN: '邻居送来一小包茶，走廊这次安静得能听见开门声。',
@@ -2519,6 +2598,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-five-year-note',
+    channel: 'npc:ka-ning-child',
     title: { zhCN: '便签上的五年', en: 'Five years on a sticky note' },
     text: {
       zhCN: '嘉宁在日历旁贴了一张便签，孩子问为什么不用更大的纸。',

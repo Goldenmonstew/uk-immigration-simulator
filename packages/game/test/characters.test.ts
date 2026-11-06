@@ -1,13 +1,11 @@
+import { perform, availableActivities, quarter, firstPending } from './helpers';
 import { evaluate } from '@uk-immigration/engine';
 import { currentLaw2026_11 } from '@uk-immigration/policy-data';
 import { describe, expect, test } from 'vitest';
 import {
-  act,
-  actions,
   achievements,
   characters,
   currentEvent,
-  endQuarter,
   isOver,
   newGame,
   resolve,
@@ -21,6 +19,7 @@ const REFORM = 'earned-settlement-2026-11';
 function clear(state: GameState): GameState {
   delete state.pendingEvent;
   state.eventQueue = [];
+  state.day.deliveries = [];
   return state;
 }
 function refresh(state: GameState) {
@@ -53,12 +52,19 @@ describe('additional character timelines and decisions', () => {
       'REQUIRES_REGULATED_REVIEW',
     );
     expect(state.result.shortCircuit?.reason).toBe('OUTSIDE_FRAMEWORK');
-    expect(act(state, 'settle').ending).toBe('settled');
+    expect(perform(state, 'settle').ending).toBe('settled');
     const convicted = scene(state, 'bno-neighbour-outcome', 'second');
     expect(convicted.timeline.criminalRecord).toHaveLength(1);
     expect(convicted.result.shortCircuit?.reason).toBe('CRIMINALITY');
     expect(convicted.ending).toBe('criminal');
-    const trip = act(state, 'travel-6');
+    let trip = perform(
+      { ...state, day: { ...state.day, date: state.date } },
+      'travel-6',
+    );
+    while (trip.trip)
+      trip = currentEvent(trip)
+        ? resolve(trip, currentEvent(trip)!.choices[0].id)
+        : firstPending(trip);
     expect(trip.timeline.absences).toHaveLength(1);
     expect(rule(trip, 'CL-HKBNO-RESIDENCE-5Y').status).toBe('FAIL');
   });
@@ -71,7 +77,7 @@ describe('additional character timelines and decisions', () => {
       const before = clear(newGame(id, 1));
       before.date = date;
       refresh(before);
-      const after = act(before, 'extend');
+      const after = perform(before, 'extend');
       expect(extensionFor(before.timeline.episodes[0].route)?.cost).toBe(
         Number(fee) +
           currentLaw2026_11.values.immigrationHealthSurchargePerYear.value *
@@ -90,13 +96,15 @@ describe('additional character timelines and decisions', () => {
         validTo: to,
         route: before.timeline.episodes[0].route,
       });
-      expect(actions(after).some((a) => a.id === 'extend')).toBe(false);
+      expect(availableActivities(after).some((a) => a.id === 'extend')).toBe(
+        false,
+      );
       if (id === 'family-partner')
         expect(after.timeline.episodes[1].familyPermission).toBe(
           'PARTNER_FIVE_YEAR',
         );
       const expired = { ...before, date: before.timeline.episodes[0].validTo };
-      expect(endQuarter(refresh(expired)).ending).toBe('overstayed');
+      expect(quarter(refresh(expired)).ending).toBe('overstayed');
     },
   );
   test('family income, declared savings, partner PIP and personal public funds remain distinct', () => {
@@ -118,7 +126,7 @@ describe('additional character timelines and decisions', () => {
     expect(rule(saved, 'CL-FAMILY-FINANCIAL').status).toBe('PASS');
     saved.timeline.english = { cefrLevel: 'B2' };
     saved.timeline.lifeInTheUk = { passed: true };
-    expect(act(refresh(saved), 'settle').ending).toBe('settled');
+    expect(perform(refresh(saved), 'settle').ending).toBe('settled');
     const short = scene(
       { ...state, stats: { ...state.stats, money: 24000 } },
       'family-savings-short',
@@ -139,7 +147,7 @@ describe('additional character timelines and decisions', () => {
   test('partner wages persist over tax years, a job loss reduces actual household cash, spending reduces declared savings', () => {
     const before = clear(newGame('family-partner', 1));
     before.date = '2026-06-15';
-    const paid = endQuarter(refresh(before));
+    const paid = quarter(refresh(before));
     expect(
       paid.timeline.incomeYears.find((y) => y.taxYear === '2026-27'),
     ).toMatchObject({ earnings: 12000, partnerEarnings: 20000 });
@@ -149,7 +157,7 @@ describe('additional character timelines and decisions', () => {
         balance.householdCostContribution['family-partner'],
     );
     const lost = scene(before, 'family-jamie-lost-job', 'record');
-    const unpaid = endQuarter(clear(lost));
+    const unpaid = quarter(clear(lost));
     expect(unpaid.stats.money - lost.stats.money).toBe(
       12000 / 4 -
         balance.livingCosts +
@@ -158,7 +166,7 @@ describe('additional character timelines and decisions', () => {
     const savings = clear(newGame('family-partner', 1));
     savings.stats.money = 25000;
     const declared = scene(savings, 'family-savings-statement', 'declare');
-    const spent = act(clear(declared), 'class');
+    const spent = perform(clear(declared), 'class');
     expect(spent.timeline.cashSavings).toBe(25000 - balance.classCost);
     expect(spent.result).toEqual(
       evaluate({ timeline: spent.timeline, simulationDate: spent.date }),
@@ -210,7 +218,7 @@ describe('additional character timelines and decisions', () => {
       for (let q = 0; q < 40; q++) {
         expect(isOver(state)).toBe(false);
         expect(state.year).toBe(Math.floor(q / 4) + 1);
-        state = clear(endQuarter(state));
+        state = clear(quarter(state));
       }
       expect(state.ending).toBe('timeout');
       expect(state.date).toBe(
@@ -232,11 +240,17 @@ describe('authored exclusive chains', () => {
       const state = clear(newGame(bno.id, 1));
       state.year = 4;
       state.flags = ['bno-kol-revised', 'bno-cafe-shifts'];
-      expect(currentEvent(act(state, 'mail'))).toBeUndefined();
+      const scheduled = (s: GameState) =>
+        [
+          s.pendingEvent,
+          ...s.eventQueue,
+          ...s.day.deliveries.map((d) => d.eventId),
+        ].filter(Boolean);
+      expect(scheduled(quarter(state))).toHaveLength(0);
       state.flags.push('bno-kol-passed');
-      expect(currentEvent(act(state, 'mail'))?.id).toBe('bno-kol-copy');
+      expect(scheduled(quarter(state))).toContain('bno-kol-copy');
       state.flags = ['bno-cafe-regular'];
-      expect(currentEvent(act(state, 'mail'))?.id).toBe('bno-cafe-manager');
+      expect(scheduled(quarter(state))).toContain('bno-cafe-manager');
     } finally {
       bno.events = original;
       commonEvents.push(...common);
@@ -260,11 +274,11 @@ describe('authored exclusive chains', () => {
       const common = commonEvents.splice(0);
       character.events = original.filter((e) => [first, follow].includes(e.id));
       try {
-        const before = newGame(id, 7);
+        const before = firstPending(newGame(id, 7));
         expect(currentEvent(before)?.id).toBe(first);
         expect(before.eventQueue).not.toContain(follow);
         const opted = resolve(before, choose);
-        const after = act(opted, 'mail');
+        const after = firstPending(quarter(opted));
         expect(currentEvent(after)?.id).toBe(follow);
         const completed = resolve(after, finish);
         expect(

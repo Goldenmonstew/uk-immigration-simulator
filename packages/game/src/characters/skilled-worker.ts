@@ -5,6 +5,7 @@ import type { Character, GameEvent } from '../types';
 const events: GameEvent[] = [
   {
     id: 'sw-visa-folder',
+    channel: 'place:home',
     title: {
       zhCN: '桌上的文件夹',
       en: 'The folder on the desk',
@@ -54,6 +55,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'sw-visa-folder-after',
+    channel: 'place:home',
     title: {
       zhCN: '续签后的冰箱',
       en: 'The fridge after renewal',
@@ -102,6 +104,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'sw-job-invite',
+    channel: 'letter',
     title: {
       zhCN: '招聘邮件',
       en: 'A recruiter’s email',
@@ -151,6 +154,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'sw-job-invite-after',
+    channel: 'letter',
     title: {
       zhCN: '新工牌',
       en: 'A new pass',
@@ -224,6 +228,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'sw-parents-call',
+    channel: 'phone',
     title: {
       zhCN: '爸妈的新手机',
       en: 'The new family phone',
@@ -268,6 +273,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'sw-parents-call-after',
+    channel: 'place:home',
     title: {
       zhCN: '久违的早餐',
       en: 'A familiar breakfast',
@@ -329,6 +335,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'sw-partner-call',
+    channel: 'phone',
     title: {
       zhCN: '两个人的时差',
       en: 'Time zones for two',
@@ -373,6 +380,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'sw-partner-call-after',
+    channel: 'phone',
     title: {
       zhCN: '两把牙刷',
       en: 'Two toothbrushes',
@@ -443,6 +451,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'sw-dinner',
+    channel: 'place:pub',
     title: {
       zhCN: '同事的庆功饭',
       en: 'A team dinner',
@@ -487,6 +496,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'sw-dinner-after',
+    channel: 'place:pub',
     title: {
       zhCN: '散场的车钥匙',
       en: 'Keys at closing time',
@@ -538,6 +548,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'sw-review',
+    channel: 'place:work',
     title: {
       zhCN: '年度面谈',
       en: 'The annual review',
@@ -582,6 +593,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'sw-review-after',
+    channel: 'place:work',
     title: {
       zhCN: '带新人那天',
       en: 'A new starter’s first day',
@@ -636,6 +648,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'sw-assignment',
+    channel: 'place:work',
     title: {
       zhCN: '海外项目的空位',
       en: 'An overseas assignment',
@@ -685,6 +698,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'sw-assignment-after',
+    channel: 'place:home',
     title: {
       zhCN: '八个月的行李',
       en: 'Eight months in a suitcase',
@@ -743,6 +757,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'sw-four-days',
+    channel: 'place:work',
     title: {
       zhCN: '周五的可能性',
       en: 'A possible free Friday',
@@ -792,6 +807,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'sw-four-days-after',
+    channel: 'place:work',
     title: {
       zhCN: '空出来的星期五',
       en: 'A free Friday',
@@ -851,6 +867,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'sw-partner-budget',
+    channel: 'phone',
     title: {
       zhCN: '伴侣的坏消息',
       en: 'Bad news at home',
@@ -896,6 +913,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'sw-partner-budget-after',
+    channel: 'letter',
     title: {
       zhCN: '重新排预算',
       en: 'A revised budget',
@@ -964,6 +982,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'sw-bonus-review',
+    channel: 'place:work',
     title: {
       zhCN: '项目收尾',
       en: 'Closing the project',
@@ -1008,6 +1027,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'sw-bonus-review-after',
+    channel: 'place:work',
     title: {
       zhCN: '奖金那一行',
       en: 'The bonus line',
@@ -1068,6 +1088,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'sw-first-rain',
+    channel: 'place:work',
     title: {
       zhCN: '入职第一场雨',
       en: 'Rain on the way to work',
@@ -1116,6 +1137,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'sw-soup',
+    channel: 'place:home',
     title: {
       zhCN: '深夜的一碗汤',
       en: 'A late bowl of soup',
@@ -1169,6 +1191,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'sw-debug',
+    channel: 'place:work',
     title: {
       zhCN: '消失的 bug',
       en: 'A disappearing bug',
@@ -1222,6 +1245,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'sw-park-call',
+    channel: 'phone',
     title: {
       zhCN: '公园的电话',
       en: 'A call in the park',
@@ -1270,6 +1294,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'sw-landlord-visit',
+    channel: 'phone',
     title: {
       zhCN: '临时检查',
       en: 'A sudden inspection',
@@ -1323,6 +1348,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'sw-promotion-cake',
+    channel: 'place:work',
     title: {
       zhCN: '升职的蛋糕',
       en: 'Promotion cake',
@@ -1372,6 +1398,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'sw-market-noodles',
+    channel: 'place:green',
     title: {
       zhCN: '集市的面条',
       en: 'Noodles at the market',
@@ -1423,6 +1450,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'sw-winter-light',
+    channel: 'place:home',
     title: {
       zhCN: '窗边的小灯',
       en: 'A light by the window',
@@ -1475,6 +1503,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'sw-kol',
+    channel: 'place:home',
     title: {
       zhCN: '材料清单的一格',
       en: 'A box on the checklist',
@@ -1525,6 +1554,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'sw-new-role',
+    channel: 'letter',
     title: {
       zhCN: '开发岗位的新邀请',
       en: 'A development offer',
@@ -1595,6 +1625,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'sw-salary-talk',
+    channel: 'place:work',
     title: {
       zhCN: '工资面谈',
       en: 'Salary talks',
@@ -1648,6 +1679,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'sw-parent-care',
+    channel: 'morning',
     title: {
       zhCN: '家里的病房',
       en: 'A hospital room back home',
@@ -1717,6 +1749,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'sw-partner-work',
+    channel: 'phone',
     title: {
       zhCN: '另一张工资单',
       en: 'Another payslip',
@@ -1779,6 +1812,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'sw-partner-space',
+    channel: 'phone',
     title: {
       zhCN: '各自的空间',
       en: 'Room apart',
@@ -1831,6 +1865,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'sw-reunion',
+    channel: 'morning',
     title: {
       zhCN: '毕业多年以后',
       en: 'Years after graduation',
@@ -1887,6 +1922,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'sw-income-audit',
+    channel: 'place:home',
     title: {
       zhCN: '桌上的年结单',
       en: 'The annual statement',
@@ -1938,6 +1974,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'sw-arrears',
+    channel: 'letter',
     title: {
       zhCN: '忘记的一封信',
       en: 'A forgotten letter',
@@ -1999,6 +2036,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'sw-week-away',
+    channel: 'phone',
     title: {
       zhCN: '海边的朋友',
       en: 'A friend by the sea',
@@ -2059,6 +2097,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'sw-catch-up-pay',
+    channel: 'place:work',
     title: {
       zhCN: '补上的那一笔',
       en: 'The missing payment',
@@ -2118,6 +2157,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'sw-remote-care',
+    channel: 'place:home',
     title: {
       zhCN: '家里的备用房间',
       en: 'The spare room at home',
