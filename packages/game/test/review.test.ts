@@ -1,14 +1,13 @@
+import { perform, availableActivities, quarter, firstPending } from './helpers';
 import { describe, expect, test } from 'vitest';
 import {
-  act,
-  actions,
   characters,
   currentEvent,
-  endQuarter,
   narrative,
   newGame,
   progress,
   resolve,
+  sleep,
   visaMonthsLeft,
 } from '../src';
 import { balance } from '../src/balance';
@@ -18,6 +17,7 @@ import type { GameState } from '../src';
 function clear(s = newGame('skilled-worker', 1)): GameState {
   delete s.pendingEvent;
   s.eventQueue = [];
+  s.day.deliveries = [];
   return s;
 }
 describe('8.1 review corrections', () => {
@@ -33,28 +33,18 @@ describe('8.1 review corrections', () => {
       expect(Number.isInteger(p.percent)).toBe(true);
     expect(narrative(s)[0].zhCN).toContain('在 2025-01-15 开始');
   });
-  test('B1 learners need seven classes for B2 and an early exam gives a real setback', () => {
-    let s = clear();
-    for (let i = 0; i < 6; i++) {
-      s.actionsLeft = 1;
-      s = act(s, 'class');
-    }
-    expect(s.stats.english).toBeLessThan(balance.englishB2);
-    s.actionsLeft = 1;
-    const failed = act(s, 'exam');
+  test('classes improve skill, while early and successful exams retain v2 evidence behavior', () => {
+    const state = clear();
+    state.stats.english = balance.englishB2 - balance.classEnglish;
+    const failed = perform(state, 'exam');
     expect(currentEvent(failed)?.id).toBe('system-exam-failed');
     expect(failed.timeline.english).toEqual({ cefrLevel: 'B1' });
-    s.actionsLeft = 2;
-    s = act(s, 'class');
-    expect(act(s, 'exam').timeline.english).toEqual({ cefrLevel: 'B2' });
-  });
-  test('quarterly attrition stretches regular B2 study to eight classes', () => {
-    let s = clear();
-    for (let i = 0; i < 7; i++)
-      s = clear(endQuarter(act(act(s, 'class'), 'rest')));
-    expect(s.stats.english).toBeLessThan(balance.englishB2);
-    s = act(s, 'class');
-    expect(act(s, 'exam').timeline.english).toEqual({ cefrLevel: 'B2' });
+    const learned = perform(state, 'class');
+    expect(learned.stats.english).toBe(balance.englishB2);
+    expect(learned.timeline.english).toEqual({ cefrLevel: 'B1' });
+    expect(perform(learned, 'exam').timeline.english).toEqual({
+      cefrLevel: 'B2',
+    });
   });
   test('rent increases future expenses and a quarter housing lock blocks queued contradictions', () => {
     const before = clear();
@@ -63,7 +53,7 @@ describe('8.1 review corrections', () => {
       'skip',
     );
     expect(increased.flags).toContain('rent-rise-1');
-    const after = endQuarter(clear(increased));
+    const after = quarter(clear(increased));
     expect(after.stats.money - increased.stats.money).toBe(
       38000 / 4 - balance.livingCosts - balance.rentRisePerQuarter,
     );
@@ -94,15 +84,22 @@ describe('8.1 review corrections', () => {
     try {
       for (let seed = 1; seed <= 20; seed++) {
         let s = newGame('skilled-worker', seed);
-        expect(s.eventQueue).toHaveLength(0);
+        expect(
+          [
+            s.pendingEvent,
+            ...s.eventQueue,
+            ...s.day.deliveries.map((d) => d.eventId),
+          ].filter(Boolean),
+        ).toHaveLength(1);
+        s = firstPending(s);
         const e = currentEvent(s)!;
         s = resolve(s, e.choices[0].id);
-        expect(currentEvent(act(s, 'mail'))).toBeUndefined();
-        s = clear(endQuarter(s));
-        s.actionsLeft = 1;
+        expect(currentEvent(firstPending(s))).toBeUndefined();
+        s = clear(quarter(s));
+
         s.firedEvents = [move.id, renew.id];
-        expect(actions(s).some((a) => a.id === 'mail')).toBe(true);
-        expect(currentEvent(act(s, 'mail'))).toBeUndefined();
+        expect(availableActivities(s).some((a) => a.id === 'rest')).toBe(true);
+        expect(currentEvent(firstPending(s))).toBeUndefined();
       }
     } finally {
       characters[0].events = original;
@@ -117,10 +114,10 @@ describe('8.3b content chain corrections', () => {
   }
   function queued(state: GameState, id: string) {
     return currentEvent(
-      act(
-        { ...clear(structuredClone(state)), actionsLeft: 2, eventQueue: [id] },
-        'rest',
-      ),
+      sleep({
+        ...clear(structuredClone(state)),
+        day: { ...state.day, deliveries: [{ eventId: id, channel: 'letter' }] },
+      }),
     )?.id;
   }
   test.each(['advice', 'gp'])(
@@ -216,8 +213,8 @@ describe('8.3b content chain corrections', () => {
       const resumed = scene(arrived, 'family-pram-hall', choice);
       expect(resumed.timeline.episodes[0].salary).toBe(12000);
       expect(resumed.timeline.incomeYears.at(-1)?.earnings).toBe(12000);
-      const unpaid = endQuarter(clear(structuredClone(arrived)));
-      const paid = endQuarter(clear(structuredClone(resumed)));
+      const unpaid = quarter(clear(structuredClone(arrived)));
+      const paid = quarter(clear(structuredClone(resumed)));
       expect(
         paid.stats.money -
           resumed.stats.money -
@@ -261,8 +258,8 @@ describe('8.3b content chain corrections', () => {
       state = scene(state, id, id === 'bno-partner-cv' ? 'plan' : 'first');
       expect(state.timeline.incomeYears).toEqual(before.timeline.incomeYears);
       expect(state.timeline.episodes).toEqual(before.timeline.episodes);
-      const beforeQuarter = endQuarter(clear(before));
-      const afterQuarter = endQuarter(clear(structuredClone(state)));
+      const beforeQuarter = quarter(clear(before));
+      const afterQuarter = quarter(clear(structuredClone(state)));
       expect(afterQuarter.stats.money).toBe(beforeQuarter.stats.money);
     }
   });
@@ -273,7 +270,7 @@ describe('8.3b content chain corrections', () => {
       32000 / 4 -
       balance.livingCosts +
       balance.householdCostContribution['family-partner'];
-    const nextQuarter = clear(endQuarter(clear(raised)));
+    const nextQuarter = clear(quarter(clear(raised)));
     expect(nextQuarter.stats.money - raised.stats.money).toBe(
       quarterlyPay - balance.rentRisePerQuarter,
     );
@@ -285,7 +282,7 @@ describe('8.3b content chain corrections', () => {
         'family-move-boxes',
         choice,
       );
-      const after = endQuarter(clear(structuredClone(decided)));
+      const after = quarter(clear(structuredClone(decided)));
       expect(after.stats.money - decided.stats.money).toBe(
         quarterlyPay - (choice === 'stay' ? balance.rentRisePerQuarter : 0),
       );
@@ -296,7 +293,7 @@ describe('8.3b content chain corrections', () => {
           flags: [...decided.flags, 'rent-rise-1'],
         };
         expect(
-          endQuarter(clear(otherRise)).stats.money - otherRise.stats.money,
+          quarter(clear(otherRise)).stats.money - otherRise.stats.money,
         ).toBe(quarterlyPay - balance.rentRisePerQuarter);
       }
     }
@@ -350,8 +347,8 @@ describe('8.3b content chain corrections', () => {
       expect(managed.timeline.episodes).toEqual(employed.timeline.episodes);
       expect(managed.timeline.incomeYears.at(-1)?.earnings).toBe(40000);
       expect(managed.stats.career).toBe(employed.stats.career + 4);
-      const beforeQuarter = endQuarter(clear(employed));
-      const afterQuarter = endQuarter(clear(managed));
+      const beforeQuarter = quarter(clear(employed));
+      const afterQuarter = quarter(clear(managed));
       expect(afterQuarter.stats.money).toBe(beforeQuarter.stats.money);
     },
   );
