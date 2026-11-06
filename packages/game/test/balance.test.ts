@@ -464,7 +464,7 @@ describe('v3 seeded strategies', () => {
         });
       }
       console.log('BALANCE_V3', JSON.stringify(summary));
-    });
+    }, 180_000); // 40 seeded full games; the CI runner takes about 3x as long as a laptop.
   }
   test('full games reproduce across seeds and JSON restoration retains the one random stream', () => {
     for (const seed of [1, 17, 42]) {
