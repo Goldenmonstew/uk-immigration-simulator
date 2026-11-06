@@ -14,6 +14,7 @@ import {
   harvest,
   isOver,
   newGame,
+  npcAt,
   npcs,
   plant,
   recipes,
@@ -28,6 +29,7 @@ import {
 } from '../src';
 import type { GameState, PlaceId, StatKey } from '../src';
 import { balance as b } from '../src/balance';
+import { heartEvents } from '../src/npcs';
 
 const median = (values: number[]) => {
   const sorted = [...values].sort((a, b) => a - b);
@@ -49,8 +51,11 @@ function play(character: string, seed: number, active: boolean) {
   let recorded = 0;
   let listenedLines = 0;
   let chineseCharacters = 0;
+  const peakFriendship: Record<string, number> = {};
   const playedDays = new Set<number>();
   const record = () => {
+    for (const [npc, points] of Object.entries(state.friendship))
+      peakFriendship[npc] = Math.max(peakFriendship[npc] ?? 0, points);
     const quarters = state.log.filter((e) => e.kind === 'quarter').length;
     if (quarters > recorded) {
       quarterSamples.push({ ...state.stats });
@@ -68,6 +73,7 @@ function play(character: string, seed: number, active: boolean) {
       state = resolve(state, choices[pick(choices.length)].id);
       record();
     }
+    record();
   };
   const visit = (place: PlaceId, minute = 480) => {
     if (state.day.minute < minute) {
@@ -141,13 +147,15 @@ function play(character: string, seed: number, active: boolean) {
     }
     // A small everyday loop exercises gifts, crops and recipes alongside the
     // three/four main activities, rather than silently making legal decisions.
-    const offset = pick(townsfolk(state).length);
+    const present = () =>
+      townsfolk(state).filter((person) => npcAt(state, person.id) !== 'away');
+    const offset = pick(present().length);
     for (
       let chat = 0;
       chat < 5 && state.dayNumber === day && !isOver(state);
       chat++
     ) {
-      const people = townsfolk(state);
+      const people = present();
       const person = people[(offset + chat) % people.length];
       state = talk(state, person.id);
       if (state.outcome?.kind === 'talk' && state.outcome.text) {
@@ -157,7 +165,7 @@ function play(character: string, seed: number, active: boolean) {
       }
       drain();
     }
-    const people = townsfolk(state);
+    const people = present();
     const npc = people[offset % people.length];
     if (state.dayNumber !== day || isOver(state)) {
       record();
@@ -170,7 +178,12 @@ function play(character: string, seed: number, active: boolean) {
     ) {
       state = buy(state, 'tea', 1);
       drain();
-      if (!state.day.gifted.includes(npc.id) && state.inventory.tea > 0) {
+      if (
+        townsfolk(state).some((person) => person.id === npc.id) &&
+        npcAt(state, npc.id) !== 'away' &&
+        !state.day.gifted.includes(npc.id) &&
+        state.inventory.tea > 0
+      ) {
         state = gift(state, npc.id, 'tea');
         drain();
       }
@@ -249,6 +262,22 @@ function play(character: string, seed: number, active: boolean) {
     heard: listenedLines,
     uniqueLines: lines.length,
     words: chineseCharacters,
+    uniqueWords: lines.reduce(
+      (sum, line) =>
+        sum + (line.text.zhCN.match(/\p{Script=Han}/gu)?.length ?? 0),
+      0,
+    ),
+    heartScenes: Object.fromEntries(
+      [2, 4, 6, 8, 10].map((threshold) => [
+        threshold,
+        heartEvents.filter(
+          (event) =>
+            event.heart!.hearts === threshold &&
+            state.firedEvents.includes(event.id),
+        ).length,
+      ]),
+    ),
+    peakFriendship,
   };
 }
 
@@ -327,6 +356,27 @@ describe('v3 seeded strategies', () => {
             runs.reduce((sum, r) => sum + r.uniqueLines, 0) / runs.length,
           meanChineseCharacters:
             runs.reduce((sum, r) => sum + r.words, 0) / runs.length,
+          meanUniqueChineseCharacters:
+            runs.reduce((sum, r) => sum + r.uniqueWords, 0) / runs.length,
+          meanHeartScenes: Object.fromEntries(
+            [2, 4, 6, 8, 10].map((threshold) => [
+              threshold,
+              runs.reduce((sum, r) => sum + r.heartScenes[threshold], 0) /
+                runs.length,
+            ]),
+          ),
+          tenHeartReach: Object.fromEntries(
+            npcs
+              .filter(
+                (npc) =>
+                  !npc.characters || npc.characters.includes(character.id),
+              )
+              .map((npc) => [
+                npc.id,
+                runs.filter((run) => (run.peakFriendship[npc.id] ?? 0) >= 1000)
+                  .length / runs.length,
+              ]),
+          ),
         });
       }
       console.log('BALANCE_V3', JSON.stringify(summary));

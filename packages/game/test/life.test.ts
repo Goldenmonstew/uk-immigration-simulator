@@ -479,10 +479,10 @@ describe('actual travel, interrupted travel and financial boundaries', () => {
 });
 
 describe('townspeople, hearts, dialogue and gifts', () => {
-  test('eight residents; complete characters have forty bilingual short lines, four heart scenes and valid schedules', () => {
-    expect(npcs).toHaveLength(11);
+  test('eight residents and four household members have short bilingual lines, five heart scenes and valid schedules', () => {
+    expect(npcs).toHaveLength(12);
     for (const npc of npcs) {
-      expect(npc.lines.length).toBeGreaterThanOrEqual(npc.characters ? 30 : 40);
+      expect(npc.lines.length).toBeGreaterThanOrEqual(npc.characters ? 55 : 40);
       for (const line of npc.lines) {
         expect(line.text.zhCN.length, line.id).toBeLessThanOrEqual(40);
         expect(line.text.en.trim()).not.toBe('');
@@ -493,7 +493,7 @@ describe('townspeople, hearts, dialogue and gifts', () => {
           [...rule.stops.map((s) => s.from)].sort((a, b) => a - b),
         );
     }
-    expect(heartEvents).toHaveLength(38);
+    expect(heartEvents).toHaveLength(60);
     for (const event of heartEvents) {
       expect(event.choices.length).toBeGreaterThanOrEqual(2);
       expect(event.choices.length).toBeLessThanOrEqual(3);
@@ -621,24 +621,31 @@ describe('townspeople, hearts, dialogue and gifts', () => {
     );
     for (const npc of ['margaret', 'ade', 'helen']) {
       state = clear();
-      for (const threshold of [2, 4, 6, 8]) {
+      for (const threshold of [2, 4, 6, 8, 10]) {
+        const event = heartEvents.find(
+          (e) => e.id === `heart-${npc}-${threshold}`,
+        )!;
         state.friendship[npc] = threshold * 100 - b.talkFriendship;
         state.day.talked = [];
+        state.flags.push(...(event.requires ?? []));
         state.day.minute = Math.max(
           600,
-          ...(
-            heartEvents.find((e) => e.id === `heart-${npc}-${threshold}`)!
-              .when ?? []
-          ).map((c) => ('minuteMin' in c ? (c.minuteMin ?? 0) : 0)),
+          ...(event.when ?? []).map((c) =>
+            'minuteMin' in c ? (c.minuteMin ?? 0) : 0,
+          ),
         );
+        for (const c of event.when ?? []) {
+          if ('dayKind' in c) state.day.kind = c.dayKind;
+          if ('flag' in c) state.flags.push(c.flag);
+        }
         state = talk(state, npc);
         expect(currentEvent(state)?.id).toBe(`heart-${npc}-${threshold}`);
-        state = resolve(state, 'stay');
+        state = resolve(state, event.choices[0].id);
         expect(talk(state, npc).pendingEvent).toBeUndefined();
       }
       expect(
         state.firedEvents.filter((id) => id.startsWith(`heart-${npc}`)),
-      ).toHaveLength(4);
+      ).toHaveLength(5);
     }
   });
 });
@@ -761,6 +768,6 @@ describe('items, allotment, cooking, fishing and festival', () => {
     const after = doActivity(buy(state, 'bonfire-toffee', 1), 'festival');
     expect(after.friendship.ade).toBe(b.festivalFriendship);
     expect(after.stats.mood).toBe(state.stats.mood + b.festivalMood);
-    expect(peopleAt(after, 'green')).toHaveLength(8);
+    expect(peopleAt(after, 'green')).toHaveLength(9);
   });
 });
