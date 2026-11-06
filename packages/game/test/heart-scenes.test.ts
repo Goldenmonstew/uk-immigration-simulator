@@ -34,6 +34,23 @@ function beforeScene(event: GameEvent) {
 }
 
 describe('10.1 complete heart scenes', () => {
+  test('ten-heart scenes have individual endings rather than shared signing or annual promises', () => {
+    const endings = heartEvents.filter((event) => event.heart!.hearts === 10);
+    expect(endings).toHaveLength(12);
+    const copy = endings.map((event) =>
+      [
+        event.title.zhCN,
+        event.text.zhCN,
+        ...event.choices.map((c) => c.label.zhCN),
+      ].join('\n'),
+    );
+    expect(
+      copy.filter((text) => /签名|签上|签了|写.*名字/.test(text)).length,
+    ).toBeLessThanOrEqual(3);
+    expect(
+      copy.filter((text) => /每年|年年/.test(text)).length,
+    ).toBeLessThanOrEqual(3);
+  });
   test('every person has exactly one scene at each of the five thresholds', () => {
     expect(heartEvents).toHaveLength(60);
     expect(new Set(heartEvents.map((event) => event.id)).size).toBe(60);

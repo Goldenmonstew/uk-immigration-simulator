@@ -1,3 +1,4 @@
+import { skilledWorkerAdditions } from './skilled-worker-additions';
 import { extensionCost } from '../locations';
 import type { Character, GameEvent } from '../types';
 
@@ -2257,5 +2258,5 @@ export const skilledWorker: Character = {
   },
   sprite: 'characters/3.png',
   stats: { money: 9000, mood: 65, health: 75, english: 45, career: 10 },
-  events,
+  events: [...events, ...skilledWorkerAdditions],
 };

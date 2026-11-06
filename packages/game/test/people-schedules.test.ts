@@ -4,6 +4,7 @@ import type { Npc, Weather } from '../src';
 import { clear } from './helpers';
 
 const households = [
+  ['skilled-worker', 'yao-flatmate'],
   ['family-partner', 'jamie'],
   ['hong-kong-bno', 'ka-ning-partner'],
   ['hong-kong-bno', 'ka-ning-child'],
@@ -26,10 +27,10 @@ describe('10.1 household schedules', () => {
   test.each(households)(
     '%s / %s leaves for work or school and comes home',
     (character, npc) => {
-      for (const weather of ['sunny', 'cloudy'] as const) {
+      for (const weather of ['sunny', 'cloudy', 'rain', 'snow'] as const) {
         const before = weekday(character, 420, weather);
         expect(npcAt(before, npc)).toBe('home');
-        for (const minute of [600, 720]) {
+        for (const minute of [600, 660, 720]) {
           const daytime = { ...before, day: { ...before.day, minute } };
           expect(npcAt(daytime, npc)).toBe('away');
           expect(townsfolk(daytime).map((person) => person.id)).toContain(npc);
@@ -106,7 +107,9 @@ describe('10.1 household schedules', () => {
       for (const weather of ['rain', 'snow'] as const) {
         state.day.kind = 'workday';
         state.day.weather = weather;
-        state.day.minute = 600;
+        state.day.minute = 660;
+        expect(npcAt(state, npc)).toBe('away');
+        state.day.kind = 'weekend';
         expect(npcAt(state, npc)).toBe('home');
         state.day.kind = 'special';
         state.day.festival = 'lunar-new-year';
