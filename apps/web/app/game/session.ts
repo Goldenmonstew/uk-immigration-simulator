@@ -6,7 +6,7 @@ import {
   visaMonthsLeft,
   type GameState,
   type StatKey,
-} from '@uk-immigration/game';
+} from './mock-core';
 import { createDraft, type Draft } from '../../lib/questionnaire';
 
 export function withGameLocale(state: GameState, locale: Locale): GameState {
@@ -29,7 +29,40 @@ export const statKeys: StatKey[] = [
   'english',
   'career',
 ];
-export const spritePath = (sprite: string) => `/game/assets/${sprite}`;
+const residentIds = [
+  'skilled-worker',
+  'hong-kong-bno',
+  'family-partner',
+  'margaret',
+  'priya',
+  'ade',
+  'helen',
+  'dave',
+  'rahman',
+  'lina',
+  'gareth',
+  'jamie',
+  'ka-ning-partner',
+  'ka-ning-child',
+];
+export const spritePath = (id: string) =>
+  `/game/assets/urban/${residentIds.includes(id) ? id : 'skilled-worker'}.png`;
+export const cropIds = [
+  'potato',
+  'strawberry',
+  'tomato',
+  'cucumber',
+  'turnip',
+  'corn',
+  'sunflower',
+  'tulip',
+];
+export const itemIcon = (id: string) => {
+  const crop = id.replace(/^seed-/, '');
+  return cropIds.includes(crop)
+    ? `/game/assets/crops/${crop}.png`
+    : '/game/assets/indoor/item.png';
+};
 export const visaMonths = (state: GameState) =>
   Math.floor(visaMonthsLeft(state));
 
@@ -59,7 +92,7 @@ export function gameStorage(
   next?: GameState,
 ): { state: GameState | undefined; available: boolean } {
   try {
-    const key = `uk-immigration-life-v2:${characterId}`;
+    const key = `uk-immigration-life-v3:${characterId}`;
     if (next) {
       localStorage.setItem(key, JSON.stringify(next));
       return { state: next, available: true };
@@ -69,7 +102,7 @@ export function gameStorage(
     const state: GameState = JSON.parse(saved);
     if (
       !state ||
-      state.version !== 2 ||
+      state.version !== 3 ||
       state.characterId !== characterId ||
       !characters.some((item) => item.id === characterId) ||
       !Number.isInteger(state.seed) ||
@@ -77,8 +110,35 @@ export function gameStorage(
       !Number.isInteger(state.year) ||
       state.year < 1 ||
       ![1, 2, 3, 4].includes(state.quarter) ||
-      !Number.isInteger(state.actionsLeft) ||
-      state.actionsLeft < 0 ||
+      !Number.isInteger(state.dayNumber) ||
+      state.dayNumber < 0 ||
+      !state.day ||
+      ![0, 1, 2].includes(state.day.index) ||
+      !Number.isInteger(state.day.minute) ||
+      state.day.minute < 420 ||
+      state.day.minute > 1440 ||
+      !['workday', 'weekend', 'special'].includes(state.day.kind) ||
+      !['sunny', 'cloudy', 'rain', 'snow'].includes(state.day.weather) ||
+      !/^\d{4}-\d{2}-\d{2}$/.test(state.day.date) ||
+      !state.inventory ||
+      !state.friendship ||
+      !Object.values(state.inventory).every(
+        (n) => Number.isInteger(n) && n >= 0,
+      ) ||
+      !Object.values(state.friendship).every(
+        (n) => Number.isFinite(n) && n >= 0 && n <= 1000,
+      ) ||
+      !Array.isArray(state.plots) ||
+      !state.plots.every(
+        (p) => p && Number.isFinite(p.growth) && p.growth >= 0,
+      ) ||
+      !Array.isArray(state.day.deliveries) ||
+      !state.day.deliveries.every(
+        (d) =>
+          d &&
+          typeof d.channel === 'string' &&
+          currentEvent({ ...state, pendingEvent: d.eventId }),
+      ) ||
       !['zh-CN', 'en'].includes(state.locale) ||
       !/^\d{4}-\d{2}-\d{2}$/.test(state.date) ||
       !statKeys.every((key) => Number.isFinite(state.stats?.[key])) ||
@@ -87,6 +147,10 @@ export function gameStorage(
         state.firedEvents,
         state.achievements,
         state.eventQueue,
+        state.heard,
+        state.day.done,
+        state.day.talked,
+        state.day.gifted,
       ].every(
         (list) =>
           Array.isArray(list) && list.every((item) => typeof item === 'string'),

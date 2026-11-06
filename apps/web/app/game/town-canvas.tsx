@@ -3,18 +3,22 @@
 import { useEffect, useRef } from 'react';
 import * as Phaser from 'phaser';
 import { useTranslation } from '../../i18n/locale';
-import type { LocationId } from '@uk-immigration/game';
+import type { GameState, PlaceId } from './mock-core';
+import type { Interaction } from './scene';
 import { TownScene } from './scene';
 import styles from './town-canvas.module.css';
 
 export interface TownCanvasProps {
   locale: 'zh-CN' | 'en';
-  quarter: 1 | 2 | 3 | 4;
-  sprite: string;
+  state: GameState;
+  interior: boolean;
   paused: boolean;
   onReady: () => void;
-  onLocation: (id: LocationId) => void;
-  destination?: { location: LocationId; request: number };
+  onInteract: (interaction: Interaction) => void;
+  onNearby: (interaction?: Interaction) => void;
+  onStep: () => void;
+  interactRequest: number;
+  destination?: { location: PlaceId; request: number };
 }
 
 export function observeTownSize(
@@ -61,10 +65,11 @@ export default function TownCanvas(props: TownCanvasProps) {
     const element = host.current!;
     const stop = observeTownSize(element, (type) => {
       const town = new TownScene(
-        props.sprite,
         latest.current,
-        (id) => latest.current.onLocation(id),
+        (interaction) => latest.current.onInteract(interaction),
+        (interaction) => latest.current.onNearby(interaction),
         () => latest.current.onReady(),
+        () => latest.current.onStep(),
       );
       scene.current = town;
       if (latest.current.destination)
@@ -86,15 +91,15 @@ export default function TownCanvas(props: TownCanvasProps) {
       stop();
       scene.current = undefined;
     };
-  }, [props.sprite]);
+  }, [props.state.characterId]);
 
   useEffect(() => {
-    scene.current?.sync({
-      locale: props.locale,
-      quarter: props.quarter,
-      paused: props.paused,
-    });
-  }, [props.locale, props.quarter, props.paused]);
+    scene.current?.sync(props);
+  }, [props.locale, props.state, props.paused, props.interior]);
+
+  useEffect(() => {
+    if (props.interactRequest) scene.current?.interact();
+  }, [props.interactRequest]);
 
   useEffect(() => {
     if (props.destination)

@@ -2,87 +2,102 @@ import * as React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { afterEach, beforeEach, expect, test, vi } from 'vitest';
 import { evaluate, type Locale } from '@uk-immigration/engine';
-import * as core from '@uk-immigration/game';
-import type { GameState } from '@uk-immigration/game';
+import * as core from '../app/game/mock-core';
+import type { GameState } from '../app/game/mock-core';
 import GameClient from '../app/game/game-client';
 import TownCanvas from '../app/game/town-canvas';
 import {
-  ActionFeedback,
   CharacterSelect,
   Ending,
   EventCard,
   LocationMenu,
   Modal,
   ProgressBars,
-  ProgressDetail,
   QuarterSummary,
   StatusBar,
-  money,
 } from '../app/game/game-view';
 import {
-  gameDraft,
+  Dialogue,
+  Fishing,
+  Inventory,
+  ItemIcon,
+  Kitchen,
+  Mailbox,
+  MorningCard,
+  PlotMenu,
+  Shop,
+} from '../app/game/life-overlays';
+import {
   gameStorage,
-  needsVisaReminder,
+  gameDraft,
+  itemIcon,
   spritePath,
-  statKeys,
-  visaMonths,
   withGameLocale,
 } from '../app/game/session';
-import Home from '../app/home-content';
 import { t } from '../i18n';
 import { LocaleContext } from '../i18n/locale';
-import { displayedRuleSets } from '../lib/policy';
-import { runSimulation } from '../lib/questionnaire';
 import { decodeDraft, encodeDraft } from '../lib/share';
-
 vi.mock('react', { spy: true });
 vi.mock('../app/game/town-canvas', () => ({ default: () => null }));
-
+vi.mock('../app/game/sound', () => ({
+  playSound: vi.fn(),
+  hideSound: vi.fn(),
+  readMuted: () => true,
+  setMuted: vi.fn(),
+  setSoundSeason: vi.fn(),
+  stopSound: vi.fn(),
+  unlockSound: vi.fn(),
+}));
+const actualReact = await vi.importActual<typeof React>('react');
 const storage = new Map<string, string>();
-const originalCharacters = [...core.characters];
 const cjk = /[\u3400-\u9fff]/;
-const keyFor = (id: string) => `uk-immigration-life-v2:${id}`;
-const getItem = vi.fn((key: string) => storage.get(key) ?? null);
-const language = (locale: Locale) => (locale === 'en' ? 'en' : 'zhCN');
-const initial = (locale: Locale = 'zh-CN') =>
-  core.newGame(core.characters[0].id, 42, locale);
-const escapeText = (text: string) => renderToStaticMarkup(<>{text}</>);
-
+const initial = (locale: Locale = 'zh-CN', id = core.characters[0].id) =>
+  core.newGame(id, 42, locale);
+const active = (locale: Locale = 'zh-CN') =>
+  core.resolve(initial(locale), 'yes');
+const at = (
+  minute: number,
+  place: core.PlaceId = 'home',
+  locale: Locale = 'zh-CN',
+) => {
+  const s = active(locale);
+  s.day.minute = minute;
+  s.day.place = place;
+  return s;
+};
 beforeEach(() => {
   storage.clear();
-  getItem.mockClear();
   vi.stubGlobal('localStorage', {
-    getItem,
-    setItem: (key: string, value: string) => storage.set(key, value),
+    getItem: (key: string) => storage.get(key) ?? null,
+    setItem: (key: string, v: string) => storage.set(key, v),
   });
 });
 afterEach(() => {
-  core.characters.splice(0, core.characters.length, ...originalCharacters);
   vi.restoreAllMocks();
   vi.unstubAllGlobals();
+  vi.useRealTimers();
 });
-
-type ElementProps = {
+type Props = {
   children?: React.ReactNode;
   onClick?: () => void;
   disabled?: boolean;
+  onChange?: (event: { target: { value: string } }) => void;
 };
 function walk(
   node: React.ReactNode,
-  visit: (element: React.ReactElement<ElementProps>) => void,
+  visit: (e: React.ReactElement<Props>) => void,
 ) {
-  React.Children.forEach(node, (child) => {
-    if (!React.isValidElement<ElementProps>(child)) return;
-    visit(child);
-    walk(child.props.children, visit);
+  React.Children.forEach(node, (c) => {
+    if (React.isValidElement<Props>(c)) {
+      visit(c);
+      walk(c.props.children, visit);
+    }
   });
 }
-function textContent(node: React.ReactNode): string {
+function content(node: React.ReactNode): string {
   return React.Children.toArray(node)
-    .map((child) =>
-      React.isValidElement<ElementProps>(child)
-        ? textContent(child.props.children)
-        : String(child),
+    .map((c) =>
+      React.isValidElement<Props>(c) ? content(c.props.children) : String(c),
     )
     .join('');
 }
@@ -92,12 +107,12 @@ function renderView(make: () => React.ReactNode, locale: Locale = 'zh-CN') {
   let tree: React.ReactNode;
   function Probe() {
     tree = make();
-    walk(tree, (element) => {
-      if (element.type === 'button' && element.props.onClick)
+    walk(tree, (e) => {
+      if (e.type === 'button' && e.props.onClick)
         buttons.push({
-          label: textContent(element.props.children),
-          click: element.props.onClick,
-          disabled: element.props.disabled,
+          label: content(e.props.children),
+          click: e.props.onClick,
+          disabled: e.props.disabled,
         });
     });
     return tree;
@@ -111,563 +126,409 @@ function renderView(make: () => React.ReactNode, locale: Locale = 'zh-CN') {
     html,
     buttons,
     click(prefix: string) {
-      const button = buttons.find((item) => item.label.startsWith(prefix));
-      expect(button, `Expected button starting with ${prefix}`).toBeDefined();
-      expect(button!.disabled).not.toBe(true);
-      button!.click();
+      const b = buttons.find((b) => b.label.startsWith(prefix));
+      expect(b, `Button: ${prefix}`).toBeDefined();
+      expect(b!.disabled).not.toBe(true);
+      b!.click();
     },
     props<P extends object>(component: React.JSXElementConstructor<P>): P {
-      let found: P | undefined;
-      walk(tree, (element) => {
-        if (element.type === component) found = element.props as P;
+      let result: P | undefined;
+      walk(tree, (e) => {
+        if (e.type === component) result = e.props as P;
       });
-      expect(found, 'Expected child component').toBeDefined();
-      return found!;
+      expect(result).toBeDefined();
+      return result!;
+    },
+    input(value: string) {
+      walk(tree, (e) => {
+        if (e.type === 'input') e.props.onChange?.({ target: { value } });
+      });
     },
   };
 }
-function resolveEvents(start: GameState): GameState {
-  let state = start;
-  for (let count = 0; core.currentEvent(state); count++) {
-    expect(count).toBeLessThan(12);
-    const event = core.currentEvent(state)!;
-    const choice =
-      event.choices.find((item) =>
-        item.effects.every(
-          (effect) => !['ending', 'criminal', 'breach'].includes(effect.type),
-        ),
-      ) ?? event.choices[0];
-    state = core.resolve(state, choice.id);
-  }
-  expect(state.eventQueue).toEqual([]);
-  return state;
-}
-const active = (locale: Locale = 'zh-CN') => resolveEvents(initial(locale));
-function atDate(date: string, locale: Locale = 'zh-CN') {
-  const state = active(locale);
-  state.date = date;
-  state.result = evaluate({
-    timeline: state.timeline,
-    simulationDate: date,
-    locale,
+// Minimal hook runner for controller transitions and timed overlays, without a DOM or Phaser.
+function harness(make: () => React.ReactNode, locale: Locale = 'zh-CN') {
+  const stateHook = actualReact.useState,
+    refHook = actualReact.useRef,
+    effectHook = actualReact.useEffect;
+  const values: unknown[] = [],
+    refs: { current: unknown }[] = [],
+    effects: { deps?: React.DependencyList; cleanup?: () => void }[] = [];
+  let running = false,
+    si = 0,
+    ri = 0,
+    ei = 0;
+  let pending: {
+    i: number;
+    fn: React.EffectCallback;
+    deps?: React.DependencyList;
+  }[] = [];
+  vi.spyOn(React, 'useState').mockImplementation(((initial: unknown) => {
+    if (!running) return stateHook(initial);
+    const i = si++;
+    if (!(i in values))
+      values[i] = typeof initial === 'function' ? initial() : initial;
+    return [
+      values[i],
+      (next: unknown) => {
+        values[i] = typeof next === 'function' ? next(values[i]) : next;
+      },
+    ];
+  }) as typeof React.useState);
+  vi.spyOn(React, 'useRef').mockImplementation(((initial: unknown) => {
+    if (!running) return refHook(initial);
+    const i = ri++;
+    return refs[i] ?? (refs[i] = { current: initial });
+  }) as typeof React.useRef);
+  vi.spyOn(React, 'useEffect').mockImplementation((fn, deps) => {
+    if (!running) return effectHook(fn, deps);
+    const i = ei++,
+      old = effects[i];
+    if (!old || !deps || deps.some((d, j) => !Object.is(d, old.deps?.[j])))
+      pending.push({ i, fn, deps });
   });
-  return state;
-}
-function finishGame(locale: Locale = 'zh-CN') {
-  const state = core.act(active(locale), 'leave');
-  expect(core.isOver(state)).toBe(true);
-  return state;
-}
-
-// These tests call overlay handlers, then compare their results with the real core.
-test.each(['zh-CN', 'en'] as const)(
-  'homepage and arbitrary character lists support start and per-character continue in %s',
-  (locale) => {
-    expect(renderView(() => <Home />, locale).html).toContain('href="/game"');
-    vi.spyOn(Date, 'now').mockReturnValue(2 ** 31 + 42);
-    for (const count of [1, 4]) {
-      const characters = Array.from({ length: count }, (_, index) => ({
-        ...originalCharacters[0],
-        id: `character-${index}`,
-        name: { zhCN: `角色 ${index}`, en: `Character ${index}` },
-        intro: { zhCN: `简介 ${index}`, en: `Introduction ${index}` },
-      }));
-      core.characters.splice(0, core.characters.length, ...characters);
-      const saved = core.act(active(), 'work');
-      const onChange = vi.fn<(state: GameState) => void>();
-      const view = renderView(
-        () =>
-          CharacterSelect({ saves: { [saved.characterId]: saved }, onChange }),
-        locale,
-      );
-      expect(view.buttons).toHaveLength(count + 1);
-      for (const character of characters) {
-        expect(view.html).toContain(character.name[language(locale)]);
-        expect(view.html).toContain(character.intro[language(locale)]);
-        expect(view.html).toContain(spritePath(character.sprite));
+  return {
+    render() {
+      si = ri = ei = 0;
+      pending = [];
+      return renderView(() => {
+        running = true;
+        const tree = make();
+        running = false;
+        return tree;
+      }, locale);
+    },
+    flush() {
+      const work = pending;
+      pending = [];
+      for (const { i, fn, deps } of work) {
+        effects[i]?.cleanup?.();
+        effects[i] = { deps, cleanup: fn() || undefined };
       }
-      view.click(t('game.continue', locale));
-      expect(onChange).toHaveBeenLastCalledWith(withGameLocale(saved, locale));
-      view.click(
-        t('game.startAs', locale).replace(
-          '{name}',
-          characters.at(-1)!.name[language(locale)],
-        ),
-      );
-      expect(onChange).toHaveBeenLastCalledWith(
-        core.newGame(characters.at(-1)!.id, 42, locale),
-      );
-      if (locale === 'en') expect(view.html).not.toMatch(cjk);
-    }
-  },
-);
+    },
+    dispose() {
+      effects.forEach((e) => e.cleanup?.());
+    },
+    values,
+  };
+}
 
 test.each(['zh-CN', 'en'] as const)(
-  'HUD renders real stats, winter-first seasons, integer countdown and expiry warning in %s',
+  'clock, weather, morning and all character choices in %s',
   (locale) => {
-    const state = initial(locale);
-    const before = renderView(() => StatusBar({ state }), locale).html;
-    expect(before.match(/<meter /g)).toHaveLength(5);
-    expect(before).toContain(money(state.stats.money));
-    expect(before).toContain(state.date);
-    expect(before).toContain(t('game.season1', locale));
-    for (const stat of statKeys)
-      expect(before).toContain(`aria-label="${t(`game.${stat}`, locale)}"`);
-    expect(before).not.toContain(`title="${t('game.visaUrgent', locale)}"`);
-    const urgent = atDate('2026-07-15', locale);
-    urgent.quarter = 3;
-    const after = renderView(() => StatusBar({ state: urgent }), locale).html;
-    expect(core.visaMonthsLeft(urgent)).toBeLessThanOrEqual(6);
-    expect(visaMonths(urgent)).toBe(Math.floor(core.visaMonthsLeft(urgent)));
-    expect(after).toContain(`title="${t('game.visaUrgent', locale)}"`);
-    expect(after).toContain(
-      t('game.visa', locale).replace('{count}', String(visaMonths(urgent))),
+    const state = initial(locale),
+      onContinue = vi.fn(),
+      onChange = vi.fn();
+    const hud = renderView(() => StatusBar({ state }), locale);
+    expect(hud.html).toContain('07:00');
+    expect(hud.html).toContain(state.day.date);
+    expect(hud.html).toContain(t(`game.${state.day.weather}`, locale));
+    expect(hud.html).not.toContain('action points');
+    const morning = renderView(
+      () => MorningCard({ state, onContinue }),
+      locale,
     );
-    expect(after).toContain(t('game.season3', locale));
-    if (locale === 'en') expect(after).not.toMatch(cjk);
-  },
-);
-
-test.each(['zh-CN', 'en'] as const)(
-  'eight location overlays use real availability, AP costs, money effects and engine details in %s',
-  (locale) => {
-    const state = active(locale);
-    for (const { id } of core.locations) {
-      const onChange = vi.fn<(state: GameState) => void>();
-      const view = renderView(
-        () => LocationMenu({ state, location: id, onChange }),
-        locale,
-      );
-      const actions = core
-        .actions(state)
-        .filter((action) => action.location === id);
-      expect(view.buttons).toHaveLength(id === 'council' ? 0 : actions.length);
-      if (id === 'council') {
-        expect(core.act(state, 'assessment')).toBe(state);
-        expect(view.html).toContain(t('result.why', locale));
-        for (const { id: ruleSet } of displayedRuleSets) {
-          const assessment = state.result.byRuleSet[ruleSet]!;
-          expect(view.html).toContain(
-            t(`outcome.${assessment.outcome}`, locale),
-          );
-          for (const rule of assessment.rules) {
-            expect(view.html).toContain(escapeText(rule.explanation));
-            for (const source of rule.sources)
-              expect(view.html).toContain(source.srcId);
-          }
-        }
-      } else
-        for (const action of actions) {
-          expect(view.html).toContain(
-            escapeText(action.label[language(locale)]),
-          );
-          expect(view.html).toContain(
-            t('game.actionCost', locale).replace(
-              '{count}',
-              String(action.cost ?? 1),
-            ),
-          );
-          view.click(action.label[language(locale)]);
-          const next = onChange.mock.lastCall![0];
-          expect(next).toEqual(core.act(state, action.id));
-          expect(next.actionsLeft).toBe(
-            core.isOver(next) ? 0 : state.actionsLeft - (action.cost ?? 1),
-          );
-        }
-      if (id === 'station')
-        expect(view.html).toContain(t('game.travelRecall', locale));
-      if (locale === 'en') expect(view.html).not.toMatch(cjk);
-    }
-    const work = core.act(state, 'work');
-    expect(work.stats.money).toBeGreaterThan(state.stats.money);
-    expect(work.stats.career).toBeGreaterThan(state.stats.career);
-    const exhausted = renderView(
+    expect(morning.html).toContain(
+      t('game.mailCount', locale).replace('{count}', '1'),
+    );
+    morning.click(t('game.beginDay', locale));
+    expect(onContinue).toHaveBeenCalledOnce();
+    const select = renderView(
       () =>
-        LocationMenu({
-          state: { ...state, actionsLeft: 0 },
-          location: 'work',
-          onChange: vi.fn(),
-        }),
+        CharacterSelect({ saves: { [state.characterId]: state }, onChange }),
       locale,
     );
-    expect(exhausted.buttons).toHaveLength(0);
-    expect(exhausted.html).toContain(t('game.noActions', locale));
+    for (const c of core.characters)
+      expect(select.html).toContain(spritePath(c.id));
+    select.click(t('game.continue', locale));
+    expect(onChange).toHaveBeenCalledWith(state);
+    if (locale === 'en')
+      for (const v of [hud, morning, select]) expect(v.html).not.toMatch(cjk);
   },
 );
 
 test.each(['zh-CN', 'en'] as const)(
-  'initial event choices preserve the queue and show real notes and changes in %s',
+  'hours, workday restrictions, office shift and indoor people in %s',
   (locale) => {
-    const state = initial(locale);
-    const event = core.currentEvent(state)!;
-    expect(event).toBeDefined();
-    expect(() => core.endQuarter(state)).toThrow();
-    expect(
-      core.actions(state).filter((action) => action.id !== 'assessment'),
-    ).toEqual([]);
-    const onChange = vi.fn<(state: GameState) => void>();
-    const view = renderView(() => EventCard({ state, onChange }), locale);
-    expect(view.buttons).toHaveLength(event.choices.length);
-    expect(view.html).toContain(escapeText(event.text[language(locale)]));
-    for (const choice of event.choices) {
-      if (choice.note)
-        expect(view.html).toContain(escapeText(choice.note[language(locale)]));
-      view.click(choice.label[language(locale)]);
-      const next = onChange.mock.lastCall![0];
-      expect(next).toEqual(core.resolve(state, choice.id));
-      expect(
-        next.log.some(
-          (entry) => entry.id === event.id && entry.choiceId === choice.id,
-        ),
-      ).toBe(true);
-      const onContinue = vi.fn();
-      const feedback = renderView(
-        () => ActionFeedback({ before: state, after: next, onContinue }),
-        locale,
-      );
-      for (const key of statKeys.filter(
-        (key) => next.stats[key] !== state.stats[key],
-      ))
-        expect(feedback.html).toContain(t(`game.${key}`, locale));
-      expect(feedback.html.includes(t('game.timelineChanged', locale))).toBe(
-        JSON.stringify(next.timeline) !== JSON.stringify(state.timeline),
-      );
-      feedback.click(t('game.continuePlaying', locale));
-      expect(onContinue).toHaveBeenCalledOnce();
-      if (locale === 'en') expect(feedback.html).not.toMatch(cjk);
-    }
-    if (locale === 'en') expect(view.html).not.toMatch(cjk);
-  },
-);
-
-test.each(['zh-CN', 'en'] as const)(
-  'progress overlays round real percentages and link to town hall in %s',
-  (locale) => {
-    const state = initial(locale);
-    const onOpen = vi.fn();
-    const view = renderView(() => ProgressBars({ state, onOpen }), locale);
-    expect(view.html.match(/role="progressbar"/g)).toHaveLength(2);
-    for (const [{ id }, index] of displayedRuleSets.map(
-      (item, index) => [item, index] as const,
-    )) {
-      const bar = core.progress(state)[id];
-      expect(view.html).toContain(`aria-valuenow="${Math.round(bar.percent)}"`);
-      view.click(t(index === 0 ? 'game.currentLaw' : 'game.reform', locale));
-      expect(onOpen).toHaveBeenLastCalledWith(id);
-      const onVisit = vi.fn();
-      const detail = renderView(
-        () => ProgressDetail({ state, id, onVisit }),
-        locale,
-      );
-      const assessment = state.result.byRuleSet[id]!;
-      expect(detail.html).toContain(t(`outcome.${assessment.outcome}`, locale));
-      if (assessment.earliestDate)
-        expect(detail.html).toContain(assessment.earliestDate);
-      detail.click(t('game.councilDetails', locale));
-      expect(onVisit).toHaveBeenCalledOnce();
-      if (locale === 'en') expect(detail.html).not.toMatch(cjk);
-    }
-    if (locale === 'en') expect(view.html).not.toMatch(cjk);
-  },
-);
-
-test.each(['zh-CN', 'en'] as const)(
-  'quarter and year-end summaries show actual net settlement, moments and progress in %s',
-  (locale) => {
-    let before = core.act(active(locale), 'work');
-    for (let quarter = 1; quarter <= 4; quarter++) {
-      before = resolveEvents(before);
-      const after = core.endQuarter(before);
-      const onContinue = vi.fn(),
-        onVisit = vi.fn();
-      const view = renderView(
-        () => QuarterSummary({ before, after, onContinue, onVisit }),
-        locale,
-      );
-      const entry = after.log.find(
-        (item) =>
-          item.kind === 'quarter' &&
-          item.year === before.year &&
-          item.quarter === before.quarter,
-      )!;
-      const net = entry.statDeltas!.money!;
-      expect(view.html).toContain(t('game.netIncome', locale));
-      expect(view.html).toContain(
-        `${net > 0 ? '+' : net < 0 ? '−' : ''}${money(Math.abs(net))}`,
-      );
-      for (const moment of before.log.filter(
-        (item) => item.year === before.year && item.quarter === before.quarter,
-      ))
-        expect(view.html).toContain(escapeText(moment.text[language(locale)]));
-      expect(view.html).toContain(
-        t('game.visa', locale).replace('{count}', String(visaMonths(after))),
-      );
-      if (quarter === 4) {
-        expect(after.year).toBe(before.year + 1);
-        expect(after.quarter).toBe(1);
-        expect(view.html).toContain(t('game.yearSummary', locale));
-        expect(view.html.match(/role="progressbar"/g)).toHaveLength(2);
-        for (const { id } of displayedRuleSets)
-          expect(view.html).toContain(
-            `${Math.round(core.progress(before)[id].percent)}% → ${Math.round(core.progress(after)[id].percent)}%`,
-          );
-        view.click(t('game.councilDetails', locale));
-        expect(onVisit).toHaveBeenCalledOnce();
-      } else expect(view.html).not.toContain(t('game.yearSummary', locale));
-      view.click(t('game.nextQuarter', locale));
-      expect(onContinue).toHaveBeenCalledOnce();
-      if (locale === 'en') expect(view.html).not.toMatch(cjk);
-      before = after;
-    }
-  },
-);
-
-test.each(['zh-CN', 'en'] as const)(
-  'renewal is first, charges the exported action fee and suppresses only this expiry reminder in %s',
-  (locale) => {
-    const before = atDate('2026-10-15', locale);
-    expect(needsVisaReminder(before)).toBe(true);
-    const action = core.actions(before).find((item) => item.id === 'extend')!;
-    expect(action).toBeDefined();
-    const fee = -action.effects.reduce(
-      (sum, effect) => sum + (effect.type === 'money' ? effect.delta : 0),
-      0,
-    );
-    const onChange = vi.fn<(state: GameState) => void>();
-    const view = renderView(
-      () => LocationMenu({ state: before, location: 'visa', onChange }),
+    let state = at(420, 'work', locale);
+    const onChange = vi.fn();
+    const closed = renderView(
+      () => LocationMenu({ state, location: 'work', onChange }),
       locale,
     );
-    expect(view.buttons[0].label).toContain(action.label[language(locale)]);
-    expect(view.html).toContain(money(fee));
-    view.click(action.label[language(locale)]);
-    const after = onChange.mock.lastCall![0];
-    expect(after.stats.money).toBe(before.stats.money - fee);
-    expect(after.actionsLeft).toBe(before.actionsLeft - (action.cost ?? 1));
-    expect(
-      after.timeline.episodes.slice(0, before.timeline.episodes.length),
-    ).toEqual(before.timeline.episodes);
-    expect(after.timeline.episodes).toHaveLength(
-      before.timeline.episodes.length + 1,
+    expect(closed.html).toContain('08:00–20:00');
+    expect(closed.html).toContain(t('game.closed', locale));
+    expect(closed.buttons).toHaveLength(0);
+    state = at(540, 'work', locale);
+    const onTalk = vi.fn();
+    const menu = renderView(
+      () => LocationMenu({ state, location: 'work', onChange, onTalk }),
+      locale,
     );
-    expect(needsVisaReminder(after)).toBe(false);
-    expect(core.actions(after).some((item) => item.id === 'extend')).toBe(
-      false,
-    );
-    expect(needsVisaReminder({ ...after, date: '2029-10-15' })).toBe(true);
-    const gap = structuredClone(after);
-    gap.timeline.episodes.at(-1)!.validFrom = '2027-01-16';
-    expect(needsVisaReminder(gap)).toBe(true);
-    expect(
-      needsVisaReminder({
-        ...before,
-        pendingEvent: initial(locale).pendingEvent,
-        actionsLeft: 0,
-        stats: { ...before.stats, money: 0 },
-      }),
-    ).toBe(true);
-    const unavailable = structuredClone(before);
-    unavailable.timeline.episodes[0].immigrationSalaryList = true;
-    expect(
-      renderView(
-        () => LocationMenu({ state: unavailable, location: 'visa', onChange }),
-        locale,
-      ).html,
-    ).not.toContain(`<strong>${action.label[language(locale)]}</strong>`);
-    if (locale === 'en') expect(view.html).not.toMatch(cjk);
+    menu.click(locale === 'en' ? 'Work until' : '上班到');
+    const next = onChange.mock.lastCall![0];
+    expect(next.day.minute).toBe(1020);
+    expect(next.stats.money).toBeGreaterThan(state.stats.money);
+    expect(next.stats.career).toBeGreaterThan(state.stats.career);
+    menu.click(locale === 'en' ? 'Ade' : '阿德');
+    expect(onTalk).toHaveBeenCalledWith('ade');
+    state.day.kind = 'weekend';
+    expect(core.activities(state, 'work')).toEqual([]);
+    expect(core.activities(state, 'gp')).toEqual([]);
+    state.day.minute = 480;
+    for (const place of ['council', 'visa'] as const)
+      expect(core.activities(state, place).length).toBeGreaterThan(0);
+    if (locale === 'en') expect(menu.html).not.toMatch(cjk);
   },
 );
 
-test('six-month return records past absence and visibly reduces progress without moving the date', () => {
-  const before = active();
-  const onChange = vi.fn<(state: GameState) => void>();
-  const action = core.actions(before).find((item) => item.id === 'travel-6')!;
-  renderView(() =>
-    LocationMenu({ state: before, location: 'station', onChange }),
-  ).click(action.label.zhCN);
-  const after = onChange.mock.lastCall![0];
-  expect(after.date).toBe(before.date);
-  expect(after.timeline.absences.length).toBe(
-    before.timeline.absences.length + 1,
-  );
-  expect(after.timeline.absences.at(-1)!.to).toBe('2025-01-14');
-  const law = 'current-law-2026-11';
-  expect(core.progress(after)[law].percent).toBeLessThan(
-    core.progress(before)[law].percent,
-  );
-  const rendered = renderView(() =>
-    ProgressBars({ state: after, onOpen: vi.fn() }),
-  ).html;
-  expect(rendered).toContain(
-    `aria-valuenow="${Math.round(core.progress(after)[law].percent)}"`,
-  );
-  expect(
-    renderView(() => ActionFeedback({ before, after, onContinue: vi.fn() }))
-      .html,
-  ).toContain(t('game.timelineChanged'));
-});
-
 test.each(['zh-CN', 'en'] as const)(
-  'ending renders narrative, earned/unearned and character achievements, results and exact simulator timeline in %s',
+  'dialogue, gift inventory and a speaker heart event in %s',
   (locale) => {
-    core.characters[0] = {
-      ...core.characters[0],
-      achievements: [
-        {
-          id: 'personal-earned',
-          name: { zhCN: '自有纪念', en: 'Personal keepsake' },
-          description: { zhCN: '留下故事。', en: 'Leave a story.' },
-          check: () => true,
-        },
-        {
-          id: 'personal-unearned',
-          name: { zhCN: '未来纪念', en: 'Future keepsake' },
-          description: { zhCN: '下一段故事。', en: 'Another story.' },
-          check: () => false,
-        },
-      ],
+    let state = core.talk(active(locale), 'margaret');
+    const onChange = (next: GameState) => {
+      state = next;
     };
-    const state = finishGame(locale);
-    const onChange = vi.fn<(next: GameState | undefined) => void>();
-    const view = renderView(() => Ending({ state, onChange }), locale);
-    for (const line of core.narrative(state))
-      expect(view.html).toContain(escapeText(line[language(locale)]));
-    const earned = view.html
-      .split(`<h3>${t('game.earned', locale)}</h3>`)[1]
-      .split('</section>')[0];
-    const unearned = view.html
-      .split(`<h3>${t('game.unearned', locale)}</h3>`)[1]
-      .split('</section>')[0];
-    for (const achievement of [
-      ...core.achievements,
-      ...core.characters[0].achievements!,
-    ]) {
-      expect(
-        state.achievements.includes(achievement.id) ? earned : unearned,
-      ).toContain(escapeText(achievement.name[language(locale)]));
-      expect(
-        state.achievements.includes(achievement.id) ? unearned : earned,
-      ).not.toContain(escapeText(achievement.name[language(locale)]));
-    }
-    for (const { id } of displayedRuleSets)
-      expect(view.html).toContain(
-        t(`outcome.${state.result.byRuleSet[id]!.outcome}`, locale),
-      );
-    const href = view.html.match(/href="(\/result#s=[^"]+)"/)![1];
-    const draft = decodeDraft(
-      new URLSearchParams(href.split('#')[1]).get('s')!,
-    )!;
-    expect(draft.timeline).toEqual(state.timeline);
-    expect(draft.simulationDate).toBe(state.date);
-    expect(draft.completed).toBe(true);
-    expect(runSimulation(draft, locale).byRuleSet).toEqual(
-      state.result.byRuleSet,
+    const h = harness(
+      () => Dialogue({ state, npc: 'margaret', onChange, onClose: () => {} }),
+      locale,
     );
-    vi.spyOn(Date, 'now').mockReturnValue(2 ** 31 + 42);
-    view.click(t('game.replay', locale));
-    expect(onChange).toHaveBeenLastCalledWith(
-      core.newGame(state.characterId, 42, locale),
+    let view = h.render();
+    expect(view.html).toContain(
+      core.npcs[0].name[locale === 'en' ? 'en' : 'zhCN'],
     );
-    view.click(t('game.changeCharacter', locale));
-    expect(onChange).toHaveBeenLastCalledWith(undefined);
+    expect(core.hearts(state, 'margaret')).toBe(1);
+    view.click(t('game.gift', locale));
+    view = h.render();
+    const before = state.inventory.tea;
+    const giftButton = view.buttons.find((b) => b.label.includes('× 2'))!;
+    giftButton.click();
+    expect(state.day.gifted).toContain('margaret');
+    expect(Object.values(state.inventory).reduce((a, b) => a + b, 0)).toBe(5);
+    expect(state.friendship.margaret).toBeGreaterThan(100);
+    expect(state.inventory.tea).toBeLessThanOrEqual(before);
+    view = h.render();
+    expect(
+      view.buttons.find((b) => b.label === t('game.giftDone', locale))
+        ?.disabled,
+    ).toBe(true);
+    state = {
+      ...state,
+      day: { ...state.day, talked: [] },
+      friendship: { margaret: 100 },
+    };
+    state = core.talk(state, 'margaret');
+    expect(core.currentEvent(state)?.speaker).toBe('margaret');
+    view = h.render();
+    view.click(locale === 'en' ? 'All right' : '好，记下了');
+    expect(state.pendingEvent).toBeUndefined();
+    expect(state.firedEvents).toContain('heart-margaret');
     if (locale === 'en') expect(view.html).not.toMatch(cjk);
+    h.dispose();
   },
 );
 
-test('per-character saves preserve public events, queue and random cursor through continued play', () => {
-  const first = initial();
-  expect(first.eventQueue.length).toBeGreaterThan(0);
-  expect(gameStorage(first.characterId)).toEqual({
-    state: undefined,
-    available: true,
-  });
-  const publicEventState = core.newGame(core.characters[0].id, 7);
-  expect(
-    originalCharacters[0].events.some(
-      (event) => event.id === publicEventState.pendingEvent,
-    ),
-  ).toBe(false);
-  gameStorage(publicEventState.characterId, publicEventState);
-  expect(gameStorage(publicEventState.characterId).state).toEqual(
-    publicEventState,
-  );
-  core.characters.push({
-    ...originalCharacters[0],
-    id: 'second',
-    name: { zhCN: '第二位', en: 'Second' },
-  });
-  const second = core.newGame('second', 7, 'en');
-  gameStorage(first.characterId, first);
-  gameStorage(second.characterId, second);
-  const restored = gameStorage(first.characterId).state!;
-  expect(restored).toEqual(first);
-  expect(gameStorage(second.characterId).state).toEqual(second);
-  expect(restored.randomState).toBe(first.randomState);
-  expect(restored.eventQueue).toEqual(first.eventQueue);
-  expect(core.endQuarter(resolveEvents(restored))).toEqual(
-    core.endQuarter(resolveEvents(first)),
-  );
-  const systemStart = active();
-  const system = core.act(
-    { ...systemStart, stats: { ...systemStart.stats, english: 0 } },
-    'exam',
-  );
-  expect(core.currentEvent(system)!.id).toBe('system-exam-failed');
-  gameStorage(system.characterId, system);
-  expect(gameStorage(system.characterId).state).toEqual(system);
-  expect(
-    getItem.mock.calls.every(([key]) =>
-      key.startsWith('uk-immigration-life-v2:'),
-    ),
-  ).toBe(true);
+test('shop quantity deducts actual money and adds seeds, then plot planting/watering/harvest', () => {
+  let state = at(600, 'shop');
+  const onChange = (s: GameState) => {
+    state = s;
+  };
+  const h = harness(() => Shop({ state, place: 'shop', onChange }));
+  let v = h.render();
+  v.input('3.5');
+  v = h.render();
+  const before = state.stats.money;
+  v.click('买');
+  expect(state.stats.money).toBe(before - 12);
+  expect(state.inventory['seed-potato']).toBe(5);
+  h.dispose();
+  vi.restoreAllMocks();
+  state = core.doActivity(core.enter(state, 'allotment'), 'rent');
+  expect(state.plots).toHaveLength(6);
+  const plot = () => renderView(() => PlotMenu({ state, plot: 0, onChange }));
+  plot().click('土豆种子');
+  expect(state.inventory['seed-potato']).toBe(4);
+  expect(state.plots[0].seed).toBe('seed-potato');
+  plot().click('浇水');
+  expect(state.plots[0].wateredOn).toBe(state.dayNumber);
+  state.day.deliveries = [];
+  state = core.sleep(state);
+  expect(state.plots[0].growth).toBe(2);
+  plot().click('浇水');
+  state = core.sleep(state);
+  expect(state.plots[0].growth).toBe(4);
+  plot().click('收获');
+  expect(state.plots[0].seed).toBeUndefined();
+  expect(state.inventory.potato).toBeGreaterThanOrEqual(1);
 });
 
-test('invalid saves including old mock saves are rejected and unavailable storage does not stop play', () => {
-  const state = initial();
-  const invalid = [
-    '{broken',
-    'null',
-    '{}',
-    JSON.stringify({ ...state, version: 1 }),
-    JSON.stringify({ ...state, stats: {} }),
-    JSON.stringify({ ...state, quarter: 5 }),
-    JSON.stringify({ ...state, log: [null] }),
-    JSON.stringify({ ...state, pendingEvent: 'missing' }),
-    JSON.stringify({ ...state, eventQueue: ['missing'] }),
-    JSON.stringify({ ...state, eventQueue: undefined, randomState: undefined }),
-    JSON.stringify({ ...state, timeline: {} }),
-  ];
-  for (const saved of invalid) {
-    storage.set(keyFor(state.characterId), saved);
-    expect(gameStorage(state.characterId)).toEqual({
-      state: undefined,
-      available: false,
+test.each([true, false])(
+  'fishing reaction window records success=%s',
+  (success) => {
+    vi.useFakeTimers();
+    vi.spyOn(Math, 'random').mockReturnValue(0);
+    vi.stubGlobal('window', {
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
     });
+    let state = at(600, 'pond');
+    const before = { ...state.inventory };
+    const change = vi.fn((s: GameState) => {
+      state = s;
+    });
+    const h = harness(() => Fishing({ state, onChange: change }));
+    h.render();
+    h.flush();
+    h.render().click('抛竿');
+    h.render();
+    vi.advanceTimersByTime(1000);
+    expect(h.render().html).toContain('咬钩了');
+    if (success) {
+      vi.advanceTimersByTime(400);
+      h.render().click('收竿');
+    } else vi.advanceTimersByTime(601);
+    expect(change).toHaveBeenCalledOnce();
+    expect(state.outcome?.kind).toBe('catch');
+    expect(state.day.minute).toBe(620);
+    expect(
+      Object.values(state.inventory).reduce((a, b) => a + b, 0) -
+        Object.values(before).reduce((a, b) => a + b, 0),
+    ).toBe(success ? 1 : 0);
+    vi.advanceTimersByTime(1000);
+    expect(change).toHaveBeenCalledOnce();
+    h.dispose();
+  },
+);
+
+test('mailbox read removes a letter, resolves an event and adds its enclosed item', () => {
+  let state = active();
+  const change = (s: GameState) => {
+    state = s;
+  };
+  expect(core.mailbox(state)).toHaveLength(1);
+  renderView(() => Mailbox({ state, onChange: change })).click('读下一封信');
+  expect(core.mailbox(state)).toHaveLength(0);
+  expect(core.currentEvent(state)?.id).toBe('letter');
+  const before = state.inventory['seed-potato'];
+  renderView(() => EventCard({ state, onChange: change })).click('好，记下了');
+  expect(state.pendingEvent).toBeUndefined();
+  expect(state.inventory['seed-potato']).toBe(before + 1);
+});
+
+test('kitchen consumes recipe ingredients and eating changes health', () => {
+  let state = active();
+  state.inventory.potato = 2;
+  state.day.place = 'home';
+  const change = (s: GameState) => {
+    state = s;
+  };
+  renderView(() => Kitchen({ state, onChange: change })).click('烤土豆');
+  expect(state.inventory.potato).toBe(1);
+  expect(state.inventory['baked-potato']).toBe(1);
+  const health = state.stats.health;
+  state = core.eat(state, 'baked-potato');
+  expect(state.inventory['baked-potato']).toBe(0);
+  expect(state.stats.health).toBeGreaterThan(health);
+});
+
+test.each(['zh-CN', 'en'] as const)(
+  'sleep, pending events, three days and seasonal summary in %s',
+  (locale) => {
+    let state = active(locale);
+    const before = state;
+    state = core.sleep(state);
+    expect(state.dayNumber).toBe(0);
+    expect(state.pendingEvent).toBeDefined();
+    while (state.pendingEvent) {
+      state = core.resolve(state, 'yes');
+      state = core.sleep(state);
+    }
+    expect(state.dayNumber).toBe(1);
+    expect(state.day.minute).toBe(420);
+    state = core.sleep(state);
+    expect(state.day.index).toBe(2);
+    expect(state.dayNumber).toBe(2);
+    state = core.sleep(state);
+    expect(state.quarter).not.toBe(before.quarter);
+    expect(state.day.index).toBe(0);
+    expect(state.dayNumber).toBe(3);
+    expect(state.log.filter((e) => e.kind === 'quarter')).toHaveLength(1);
+    const onContinue = vi.fn();
+    const v = renderView(
+      () =>
+        QuarterSummary({ before, after: state, onContinue, onVisit: vi.fn() }),
+      locale,
+    );
+    expect(v.html).toContain(t('game.daysReview', locale));
+    v.click(t('game.nextQuarter', locale));
+    expect(onContinue).toHaveBeenCalledOnce();
+    if (locale === 'en') expect(v.html).not.toMatch(cjk);
+  },
+);
+
+test('fast-forward stops at every event and only finishes the current season', () => {
+  let state = initial();
+  const q = state.quarter;
+  expect(core.fastForward(state)).toBe(state);
+  const seen = [];
+  for (let n = 0; n < 10 && state.quarter === q; n++) {
+    if (state.pendingEvent) {
+      seen.push(state.pendingEvent);
+      state = core.resolve(state, 'yes');
+    }
+    state = core.fastForward(state);
+  }
+  expect(seen).toContain('morning');
+  expect(seen).toContain('phone');
+  expect(state.log.filter((e) => e.id === 'relax')).toHaveLength(2);
+  expect(seen).toContain('letter');
+  expect(state.dayNumber).toBe(3);
+  expect(state.log.filter((l) => l.kind === 'quarter')).toHaveLength(1);
+  expect(state.day.minute).toBe(420);
+});
+
+test('v3 saves restore inventories and random cursor; v2 and invalid saves are never read', () => {
+  const state = active();
+  storage.set(
+    `uk-immigration-life-v2:${state.characterId}`,
+    JSON.stringify(state),
+  );
+  expect(gameStorage(state.characterId).state).toBeUndefined();
+  gameStorage(state.characterId, state);
+  expect(gameStorage(state.characterId).state).toEqual(state);
+  for (const change of [
+    { version: 2 },
+    { day: undefined },
+    { inventory: { tea: -1 } },
+    { plots: [null] },
+    { day: { ...state.day, minute: 2000 } },
+    { pendingEvent: 'missing' },
+  ]) {
+    storage.set(
+      `uk-immigration-life-v3:${state.characterId}`,
+      JSON.stringify({ ...state, ...change }),
+    );
+    expect(gameStorage(state.characterId).available).toBe(false);
   }
   vi.stubGlobal('localStorage', {
     getItem: () => {
-      throw new Error('Unavailable');
+      throw Error();
     },
     setItem: () => {
-      throw new Error('Quota exceeded');
+      throw Error();
     },
   });
-  expect(gameStorage(state.characterId).available).toBe(false);
   expect(gameStorage(state.characterId, state)).toEqual({
     state,
     available: false,
   });
-  const playable = active();
-  expect(core.act(playable, 'rest').stats.health).toBeGreaterThan(
-    playable.stats.health,
-  );
+  expect(core.tick(state, 10).day.minute).toBe(430);
 });
 
-test('locale switching only replaces locale and engine text while preserving the random stream and history', () => {
-  const state = initial();
-  const snapshot = structuredClone(state);
-  const translated = withGameLocale(state, 'en');
-  expect(translated).toEqual({
+test('language replacement preserves timeline, random state, inventory and simulator export', () => {
+  const state = active();
+  const next = withGameLocale(state, 'en');
+  expect(next).toEqual({
     ...state,
     locale: 'en',
     result: evaluate({
@@ -676,249 +537,172 @@ test('locale switching only replaces locale and engine text while preserving the
       locale: 'en',
     }),
   });
-  expect(translated.timeline).toBe(state.timeline);
-  expect(translated.log).toBe(state.log);
-  expect(translated.stats).toBe(state.stats);
-  expect(translated.eventQueue).toBe(state.eventQueue);
-  expect(translated.randomState).toBe(state.randomState);
-  expect(state).toEqual(snapshot);
-  expect(withGameLocale(translated, 'en')).toBe(translated);
+  expect(next.inventory).toBe(state.inventory);
+  expect(next.randomState).toBe(state.randomState);
+  expect(decodeDraft(encodeDraft(gameDraft(next)))!.timeline).toEqual(
+    state.timeline,
+  );
 });
 
-function clientHarness(start?: GameState) {
-  // Drive the controller's effects; Phaser needs separate browser verification.
-  const values: unknown[] = [
-    start,
-    {},
-    true,
-    true,
-    undefined,
-    undefined,
-    undefined,
-    undefined,
-    undefined,
-    true,
-    undefined,
-    false,
-    false,
+test('all new overlays are English-only, with an unknown-item fallback', () => {
+  const state = at(720, 'shop', 'en');
+  state.plots = [{ growth: 0 }];
+  state.inventory['future-item'] = 1;
+  expect(itemIcon('future-item')).toBe('/game/assets/indoor/item.png');
+  const views = [
+    () => Inventory({ state, onChange: vi.fn(), onKitchen: vi.fn() }),
+    () => Shop({ state, place: 'shop', onChange: vi.fn() }),
+    () => PlotMenu({ state, plot: 0, onChange: vi.fn() }),
+    () => Kitchen({ state, onChange: vi.fn() }),
+    () => Mailbox({ state, onChange: vi.fn() }),
+    () => Fishing({ state, onChange: vi.fn() }),
+    () => ItemIcon({ id: 'future-item' }),
+    () => Ending({ state: { ...state, ending: 'left' }, onChange: vi.fn() }),
+    () => ProgressBars({ state, onOpen: vi.fn() }),
   ];
-  const setters = values.map((_, index) => (next: unknown) => {
-    values[index] = typeof next === 'function' ? next(values[index]) : next;
-  });
-  const state = vi.spyOn(React, 'useState');
-  let effects: React.EffectCallback[] = [];
-  vi.spyOn(React, 'useEffect').mockImplementation((effect) => {
-    effects.push(effect);
-  });
-  return {
-    values,
-    render(locale: Locale = 'zh-CN') {
-      effects = [];
-      for (let index = 0; index < values.length; index++)
-        state.mockReturnValueOnce([values[index], setters[index]]);
-      const view = renderView(() => GameClient(), locale);
-      return { ...view, effects: effects.slice(0, 4) };
-    },
+  for (const make of views)
+    expect(renderView(make, 'en').html).not.toMatch(cjk);
+});
+
+function client(start: GameState) {
+  const documentStub = {
+    hidden: false,
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
   };
+  vi.stubGlobal('document', documentStub);
+  gameStorage(start.characterId, start);
+  const h = harness(() => GameClient());
+  h.render();
+  h.flush();
+  const selection = h.render().props(CharacterSelect);
+  selection.onChange(start);
+  h.render().props(TownCanvas).onReady();
+  h.render();
+  h.flush();
+  return { ...h, documentStub };
 }
-
-test('zero AP waits for two queued system events and both feedback cards before settling exactly once', () => {
-  const base = active();
-  const pending = core.act(
-    { ...base, actionsLeft: 1, stats: { ...base.stats, mood: 1, health: 1 } },
-    'overtime',
-  );
-  expect(pending.actionsLeft).toBe(0);
-  expect(core.currentEvent(pending)!.id).toBe('system-homesick');
-  expect(pending.eventQueue).toContain('system-hospital');
-  const client = clientHarness(pending);
-  for (const choiceId of ['stay', 'recover']) {
-    const beforeEvent = client.values[0];
-    const first = client.render();
-    first.effects[3]();
-    expect(client.values[7]).toBeUndefined();
-    expect(client.values[0]).toBe(beforeEvent);
-    expect(
-      first.buttons.find((button) => button.label === t('game.endQuarter'))
-        ?.disabled,
-    ).toBe(true);
-    const props = first.props(EventCard);
-    renderView(() => EventCard(props)).click(
-      core
-        .currentEvent(props.state)!
-        .choices.find((choice) => choice.id === choiceId)!.label.zhCN,
-    );
-    const resolved = client.values[0] as GameState;
-    const feedback = client.render();
-    feedback.effects[3]();
-    expect(client.values[0]).toBe(resolved);
-    expect(client.values[7]).toBeUndefined();
-    feedback.props(ActionFeedback).onContinue();
-  }
-  const resolved = client.values[0] as GameState;
-  expect(resolved.pendingEvent).toBeUndefined();
-  expect(resolved.eventQueue).toEqual([]);
-  client.render().effects[3]();
-  const settled = client.values[0] as GameState;
-  expect(settled).toEqual(core.endQuarter(resolved));
-  const summary = client.render();
-  summary.effects[3]();
-  expect(client.values[0]).toBe(settled);
-  summary.props(QuarterSummary).onContinue();
-  client.render().effects[3]();
-  expect(client.values[0]).toBe(settled);
-  expect(settled.log.filter((entry) => entry.kind === 'quarter')).toHaveLength(
-    1,
-  );
+test('controller clock ticks only outdoors; menus, events, hidden page and morning pause it', () => {
+  vi.useFakeTimers();
+  const start = at(480);
+  const h = client(start);
+  const v = h.render();
+  const get = () => h.render().props(TownCanvas).state;
+  vi.advanceTimersByTime(2000);
+  expect(get().day.minute).toBe(480);
+  v.props(TownCanvas).onInteract({ kind: 'home', id: 'exit' });
+  h.render();
+  h.flush();
+  vi.advanceTimersByTime(2000);
+  expect(get().day.minute).toBe(490);
+  h.render();
+  h.flush();
+  h.render().click('背包');
+  h.render();
+  h.flush();
+  vi.advanceTimersByTime(4000);
+  expect(get().day.minute).toBe(490);
+  h.render().props(Modal).onClose!();
+  h.render();
+  h.flush();
+  h.documentStub.hidden = true;
+  const handler = h.documentStub.addEventListener.mock.calls.find(
+    (c) => c[0] === 'visibilitychange',
+  )![1] as () => void;
+  handler();
+  h.render();
+  h.flush();
+  vi.advanceTimersByTime(4000);
+  expect(get().day.minute).toBe(490);
+  h.documentStub.hidden = false;
+  handler();
+  h.render();
+  h.flush();
+  vi.advanceTimersByTime(2000);
+  expect(get().day.minute).toBe(500);
+  h.dispose();
 });
 
-test('controller waits for scene ready, restores a save, persists language and retains it on character change', () => {
-  const saved = initial();
-  gameStorage(saved.characterId, saved);
-  const client = clientHarness();
-  client.values[2] = false;
-  expect(client.render().html).toContain(t('game.loading'));
-  client.render().effects[0]();
-  const selection = client.render().props(CharacterSelect);
-  renderView(() => CharacterSelect(selection)).click(t('game.continue'));
-  expect(client.values[0]).toEqual(saved);
-  const loading = client.render();
-  expect(loading.html).toContain(t('game.loading'));
-  expect(
-    loading.buttons.find((button) => button.label === t('game.endQuarter'))
-      ?.disabled,
-  ).toBe(true);
-  loading.props(TownCanvas).onReady();
-  client.render('en').effects[1]();
-  const english = client.render('en');
-  english.effects[2]();
-  expect(english.html).not.toMatch(cjk);
-  expect(gameStorage(saved.characterId).state!.locale).toBe('en');
-  while (core.currentEvent(client.values[0] as GameState)) {
-    const eventProps = client.render('en').props(EventCard);
-    const event = core.currentEvent(eventProps.state)!;
-    eventProps.onChange(core.resolve(eventProps.state, event.choices[0].id));
-    client.render('en').props(ActionFeedback).onContinue();
+test('controller sleeping resumes after delivery then shows exactly one new morning', () => {
+  vi.useFakeTimers();
+  const h = client(at(600));
+  h.render().click('今天到此为止');
+  h.render().click('确认');
+  h.render();
+  h.flush();
+  vi.advanceTimersByTime(280);
+  h.render();
+  h.flush();
+  for (let i = 0; i < 5; i++) {
+    h.render();
+    h.flush();
+    const state = h.render().props(TownCanvas).state;
+    if (state.pendingEvent) {
+      const v = h.render();
+      if (core.currentEvent(state)?.speaker)
+        v.props(Dialogue).onChange(core.resolve(state, 'yes'));
+      else v.props(EventCard).onChange(core.resolve(state, 'yes'));
+    } else break;
   }
-  const current = client.render('en');
-  current.effects[2]();
-  const stored = gameStorage(saved.characterId).state!;
-  current.click(t('game.changeCharacter', 'en'));
-  expect(client.values[0]).toBeUndefined();
-  expect(gameStorage(saved.characterId).state).toEqual(stored);
-  client.render('en').effects[0]();
-  expect(
-    client.render('en').props(CharacterSelect).saves[saved.characterId],
-  ).toEqual(stored);
+  h.render();
+  h.flush();
+  const v = h.render();
+  expect(v.props(TownCanvas).state.dayNumber).toBe(1);
+  expect(v.props(MorningCard).state.day.minute).toBe(420);
+  expect(v.props(TownCanvas).paused).toBe(true);
+  h.dispose();
 });
 
-test('quarter reminder can be acknowledged once, preserves pending events and reappears next quarter', () => {
-  const state = atDate('2026-10-15');
-  state.year = 2;
+test('fresh controller waits for scene and morning before exposing the initial event', () => {
+  vi.useFakeTimers();
+  const h = client(initial());
+  let v = h.render();
+  expect(v.props(MorningCard).state.dayNumber).toBe(0);
+  v.props(MorningCard).onContinue();
+  v = h.render();
+  expect(v.props(EventCard).state.pendingEvent).toBe('morning');
+  h.dispose();
+});
+
+test('display workday is a weekday without moving the policy anchor date', () => {
+  for (const character of core.characters) {
+    const state = initial('en', character.id);
+    expect(state.date).toBe(character.startDate);
+    expect([1, 2, 3, 4, 5]).toContain(new Date(state.day.date).getUTCDay());
+  }
+});
+
+test('midnight returns home and sleeps automatically after remaining events', () => {
+  vi.useFakeTimers();
+  const state = at(1430, 'bench');
+  state.day.deliveries = [];
+  const h = client(state);
+  vi.advanceTimersByTime(2000);
+  for (let i = 0; i < 4; i++) {
+    h.render();
+    h.flush();
+  }
+  const view = h.render();
+  expect(view.props(TownCanvas).state.dayNumber).toBe(1);
+  expect(view.props(TownCanvas).interior).toBe(true);
+  expect(view.props(MorningCard).state.day.minute).toBe(420);
+  h.dispose();
+});
+
+test('final season leads to the ending without another morning event', () => {
+  const state = active('en');
+  state.year = 10;
   state.quarter = 4;
-  state.pendingEvent = initial().pendingEvent;
-  const client = clientHarness(state);
-  const first = client.render();
-  expect(first.props(Modal).title).toBe(t('game.visaReminderTitle'));
-  first.click(t('game.continuePlaying'));
-  expect(client.render().props(EventCard).state.pendingEvent).toBe(
-    state.pendingEvent,
+  state.day.index = 2;
+  state.day.deliveries = [];
+  const after = core.sleep(state);
+  expect(core.isOver(after)).toBe(true);
+  expect(after.pendingEvent).toBeUndefined();
+  expect(after.day.deliveries).toEqual([]);
+  const ending = renderView(
+    () => Ending({ state: after, onChange: vi.fn() }),
+    'en',
   );
-  client.values[0] = { ...state, year: 3, quarter: 1 };
-  expect(client.render().props(Modal).title).toBe(t('game.visaReminderTitle'));
-});
-
-test.each(originalCharacters.map((character) => character.id))(
-  'real character %s plays eight quarters through overlay callbacks with save restoration',
-  (characterId) => {
-    let state = core.newGame(characterId, 42, 'en');
-    const startQuarter = state.quarter;
-    const handleEvents = () => {
-      for (let count = 0; core.currentEvent(state); count++) {
-        expect(count).toBeLessThan(12);
-        const event = core.currentEvent(state)!;
-        const choice =
-          event.choices.find((item) =>
-            item.effects.every(
-              (effect) =>
-                !['ending', 'criminal', 'breach'].includes(effect.type),
-            ),
-          ) ?? event.choices[0];
-        const onChange = (next: GameState) => {
-          state = next;
-        };
-        const eventView = renderView(
-          () => EventCard({ state, onChange }),
-          'en',
-        );
-        expect(eventView.html).not.toMatch(cjk);
-        eventView.click(choice.label.en);
-      }
-      expect(state.eventQueue).toEqual([]);
-    };
-    for (let quarter = 0; quarter < 8; quarter++) {
-      handleEvents();
-      while (state.actionsLeft > 0) {
-        const available = core.actions(state);
-        const action =
-          available.find((item) => item.id === 'extend') ??
-          available.find((item) => item.id === 'work')!;
-        const view = renderView(
-          () =>
-            LocationMenu({
-              state,
-              location: action.location,
-              onChange: (next) => {
-                state = next;
-              },
-            }),
-          'en',
-        );
-        view.click(action.label.en);
-        handleEvents();
-        expect(core.isOver(state)).toBe(false);
-      }
-      const before = state;
-      state = core.endQuarter(state);
-      const summary = renderView(
-        () =>
-          QuarterSummary({
-            before,
-            after: state,
-            onContinue: vi.fn(),
-            onVisit: vi.fn(),
-          }),
-        'en',
-      );
-      expect(summary.html).not.toMatch(cjk);
-      expect(core.isOver(state)).toBe(false);
-      expect(
-        state.log.filter((entry) => entry.kind === 'quarter'),
-      ).toHaveLength(quarter + 1);
-      gameStorage(state.characterId, state);
-      const restored = gameStorage(state.characterId).state!;
-      expect(restored).toEqual(state);
-      state = restored;
-    }
-    expect(state.year).toBe(3);
-    expect(state.quarter).toBe(startQuarter);
-    expect(state.timeline.immigrationBreaches).toEqual([]);
-  },
-);
-
-test('simulator draft derives screening from the final timeline', () => {
-  const state = finishGame();
-  state.timeline.criminalRecord = [{ date: state.date }];
-  state.timeline.immigrationBreaches = [
-    { type: 'ILLEGAL_ENTRY', date: state.date },
-  ];
-  state.timeline.governmentDebt = { outstanding: true };
-  const draft = decodeDraft(encodeDraft(gameDraft(state)))!;
-  expect(draft.timeline).toEqual(state.timeline);
-  expect(draft.simulationDate).toBe(state.date);
-  expect(draft.screening).toEqual({
-    criminality: 'yes',
-    breach: 'yes',
-    debt: 'yes',
-  });
+  expect(ending.html).toContain('href="/result#s=');
+  expect(ending.html).not.toMatch(cjk);
 });
