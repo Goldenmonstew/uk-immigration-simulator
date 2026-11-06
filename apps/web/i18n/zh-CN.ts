@@ -541,6 +541,5 @@ export const zhCN = {
   'game.noticeText': '今晚酒吧有 pub quiz；绿地活动请看早晨卡。',
   'game.muted': '声音关',
   'game.unmuted': '声音开',
-  'game.preview': '小镇客户端预览 · 日常生活为演示数据',
   'game.continueFast': '处理完事件后继续快进',
 } as const;

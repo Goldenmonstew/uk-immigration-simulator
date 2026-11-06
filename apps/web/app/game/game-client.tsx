@@ -710,7 +710,7 @@ export default function GameClient() {
         {t(available ? 'game.saved' : 'game.storageUnavailable')}
       </p>
       <p className={styles.disclaimer}>
-        {t('game.preview')} · {t('game.disclaimer')}
+        {t('game.disclaimer')}
       </p>
     </div>
   );

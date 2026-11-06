@@ -583,6 +583,5 @@ export const en: Record<keyof typeof zhCN, string> = {
     'Pub quiz tonight; check the morning card for events on the green.',
   'game.muted': 'Sound off',
   'game.unmuted': 'Sound on',
-  'game.preview': 'Town client preview · Daily life uses demonstration data',
   'game.continueFast': 'Continue the routine after this event',
 };
