@@ -2,8 +2,8 @@ import * as React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { afterEach, beforeEach, expect, test, vi } from 'vitest';
 import { evaluate, type Locale } from '@uk-immigration/engine';
-import * as core from '../app/game/mock-core';
-import type { GameState } from '../app/game/mock-core';
+import * as core from '@uk-immigration/game';
+import type { GameState } from '@uk-immigration/game';
 import GameClient from '../app/game/game-client';
 import TownCanvas from '../app/game/town-canvas';
 import {
@@ -26,6 +26,8 @@ import {
   MorningCard,
   PlotMenu,
   Shop,
+  TravelCard,
+  OutcomeText,
 } from '../app/game/life-overlays';
 import {
   gameStorage,
@@ -33,8 +35,17 @@ import {
   itemIcon,
   spritePath,
   withGameLocale,
+  visibleResidents,
+  homeSpot,
 } from '../app/game/session';
+import {
+  recordMemories,
+  groupedMemories,
+  type DayMemory,
+} from '../app/game/diary';
 import { t } from '../i18n';
+import townMap from '../public/game/town.json';
+import homeMap from '../public/game/home.json';
 import { LocaleContext } from '../i18n/locale';
 import { decodeDraft, encodeDraft } from '../lib/share';
 vi.mock('react', { spy: true });
@@ -51,8 +62,37 @@ vi.mock('../app/game/sound', () => ({
 const actualReact = await vi.importActual<typeof React>('react');
 const storage = new Map<string, string>();
 const cjk = /[\u3400-\u9fff]/;
-const initial = (locale: Locale = 'zh-CN', id = core.characters[0].id) =>
-  core.newGame(id, 42, locale);
+const fixtures: core.GameEvent[] = ['morning', 'letter', 'phone'].map((id) => ({
+  id,
+  title: { zhCN: '测试消息', en: 'Test message' },
+  text: { zhCN: '今天的小事。', en: 'A moment today.' },
+  weight: 0,
+  once: true,
+  channel: id as core.Channel,
+  choices: [
+    {
+      id: 'yes',
+      label: { zhCN: '好，记下了', en: 'All right' },
+      effects:
+        id === 'letter'
+          ? [{ type: 'item', item: 'seed-potato', delta: 1 }]
+          : [{ type: 'none' }],
+    },
+  ],
+}));
+// Test-only deliveries; all transitions still run through the real core.
+const initial = (locale: Locale = 'zh-CN', id = core.characters[0].id) => {
+  const state = core.newGame(id, 42, locale);
+  state.eventQueue = [];
+  state.pendingEvent = 'morning';
+  state.day.deliveries = [
+    { eventId: 'letter', channel: 'letter' },
+    { eventId: 'phone', channel: 'phone', minute: 1080 },
+  ];
+  state.inventory = { tea: 2, biscuits: 1, 'seed-potato': 2, flowers: 1 };
+  state.friendship.margaret = 86;
+  return state;
+};
 const active = (locale: Locale = 'zh-CN') =>
   core.resolve(initial(locale), 'yes');
 const at = (
@@ -67,12 +107,17 @@ const at = (
 };
 beforeEach(() => {
   storage.clear();
+  for (const character of core.characters) character.events.push(...fixtures);
   vi.stubGlobal('localStorage', {
     getItem: (key: string) => storage.get(key) ?? null,
     setItem: (key: string, v: string) => storage.set(key, v),
   });
 });
 afterEach(() => {
+  for (const character of core.characters)
+    character.events = character.events.filter(
+      (event) => !fixtures.includes(event),
+    );
   vi.restoreAllMocks();
   vi.unstubAllGlobals();
   vi.useRealTimers();
@@ -256,7 +301,8 @@ test.each(['zh-CN', 'en'] as const)(
       () => LocationMenu({ state, location: 'work', onChange }),
       locale,
     );
-    expect(closed.html).toContain('08:00–20:00');
+    expect(closed.html).toContain('09:00–20:00');
+    expect(core.places.find((p) => p.id === 'work')!.hours!.opens).toBe(540);
     expect(closed.html).toContain(t('game.closed', locale));
     expect(closed.buttons).toHaveLength(0);
     state = at(540, 'work', locale);
@@ -265,7 +311,7 @@ test.each(['zh-CN', 'en'] as const)(
       () => LocationMenu({ state, location: 'work', onChange, onTalk }),
       locale,
     );
-    menu.click(locale === 'en' ? 'Work until' : '上班到');
+    menu.click(locale === 'en' ? 'Work a shift' : '上班');
     const next = onChange.mock.lastCall![0];
     expect(next.day.minute).toBe(1020);
     expect(next.stats.money).toBeGreaterThan(state.stats.money);
@@ -276,8 +322,12 @@ test.each(['zh-CN', 'en'] as const)(
     expect(core.activities(state, 'work')).toEqual([]);
     expect(core.activities(state, 'gp')).toEqual([]);
     state.day.minute = 480;
-    for (const place of ['council', 'visa'] as const)
-      expect(core.activities(state, place).length).toBeGreaterThan(0);
+    expect(core.activities(state, 'council').length).toBeGreaterThan(0);
+    const visa = renderView(
+      () => LocationMenu({ state, location: 'visa', onChange }),
+      locale,
+    );
+    expect(visa.html).not.toContain(t('game.closed', locale));
     if (locale === 'en') expect(menu.html).not.toMatch(cjk);
   },
 );
@@ -315,14 +365,15 @@ test.each(['zh-CN', 'en'] as const)(
     state = {
       ...state,
       day: { ...state.day, talked: [] },
-      friendship: { margaret: 100 },
+      friendship: { margaret: 190 },
     };
     state = core.talk(state, 'margaret');
     expect(core.currentEvent(state)?.speaker).toBe('margaret');
     view = h.render();
-    view.click(locale === 'en' ? 'All right' : '好，记下了');
+    const heartEvent = core.currentEvent(state)!;
+    view.click(heartEvent.choices[0].label[locale === 'en' ? 'en' : 'zhCN']);
     expect(state.pendingEvent).toBeUndefined();
-    expect(state.firedEvents).toContain('heart-margaret');
+    expect(state.firedEvents).toContain(heartEvent.id);
     if (locale === 'en') expect(view.html).not.toMatch(cjk);
     h.dispose();
   },
@@ -330,6 +381,8 @@ test.each(['zh-CN', 'en'] as const)(
 
 test('shop quantity deducts actual money and adds seeds, then plot planting/watering/harvest', () => {
   let state = at(600, 'shop');
+  state.quarter = 2;
+  state.day.deliveries = [];
   const onChange = (s: GameState) => {
     state = s;
   };
@@ -339,11 +392,13 @@ test('shop quantity deducts actual money and adds seeds, then plot planting/wate
   v = h.render();
   const before = state.stats.money;
   v.click('买');
-  expect(state.stats.money).toBe(before - 12);
+  expect(state.stats.money).toBe(
+    before - 3 * core.items.find((i) => i.id === 'seed-potato')!.price!,
+  );
   expect(state.inventory['seed-potato']).toBe(5);
   h.dispose();
   vi.restoreAllMocks();
-  state = core.doActivity(core.enter(state, 'allotment'), 'rent');
+  state = core.doActivity(core.enter(state, 'allotment'), 'rent-plot');
   expect(state.plots).toHaveLength(6);
   const plot = () => renderView(() => PlotMenu({ state, plot: 0, onChange }));
   plot().click('土豆种子');
@@ -354,9 +409,11 @@ test('shop quantity deducts actual money and adds seeds, then plot planting/wate
   state.day.deliveries = [];
   state = core.sleep(state);
   expect(state.plots[0].growth).toBe(2);
+  state = core.enter(state, 'allotment');
   plot().click('浇水');
   state = core.sleep(state);
   expect(state.plots[0].growth).toBe(4);
+  state = core.enter(state, 'allotment');
   plot().click('收获');
   expect(state.plots[0].seed).toBeUndefined();
   expect(state.inventory.potato).toBeGreaterThanOrEqual(1);
@@ -389,7 +446,7 @@ test.each([true, false])(
     } else vi.advanceTimersByTime(601);
     expect(change).toHaveBeenCalledOnce();
     expect(state.outcome?.kind).toBe('catch');
-    expect(state.day.minute).toBe(620);
+    expect(state.day.minute).toBe(630);
     expect(
       Object.values(state.inventory).reduce((a, b) => a + b, 0) -
         Object.values(before).reduce((a, b) => a + b, 0),
@@ -480,7 +537,8 @@ test('fast-forward stops at every event and only finishes the current season', (
   }
   expect(seen).toContain('morning');
   expect(seen).toContain('phone');
-  expect(state.log.filter((e) => e.id === 'relax')).toHaveLength(2);
+  expect(state.log.filter((e) => e.id === 'relax')).toHaveLength(1);
+  expect(state.log.some((e) => e.id === 'work')).toBe(true);
   expect(seen).toContain('letter');
   expect(state.dayNumber).toBe(3);
   expect(state.log.filter((l) => l.kind === 'quarter')).toHaveLength(1);
@@ -506,7 +564,7 @@ test('v3 saves restore inventories and random cursor; v2 and invalid saves are n
   ]) {
     storage.set(
       `uk-immigration-life-v3:${state.characterId}`,
-      JSON.stringify({ ...state, ...change }),
+      JSON.stringify({ ...state, clientVersion: 1, ...change }),
     );
     expect(gameStorage(state.characterId).available).toBe(false);
   }
@@ -693,6 +751,13 @@ test('final season leads to the ending without another morning event', () => {
   const state = active('en');
   state.year = 10;
   state.quarter = 4;
+  state.log = Array.from({ length: 39 }, (_, i) => ({
+    year: Math.floor(i / 4) + 1,
+    quarter: ((i % 4) + 1) as core.Quarter,
+    kind: 'quarter',
+    id: 'quarter',
+    text: { zhCN: '季末', en: 'Quarter' },
+  }));
   state.day.index = 2;
   state.day.deliveries = [];
   const after = core.sleep(state);
@@ -706,3 +771,380 @@ test('final season leads to the ending without another morning event', () => {
   expect(ending.html).toContain('href="/result#s=');
   expect(ending.html).not.toMatch(cjk);
 });
+
+test('hours render from places, and core filters activities that cannot finish before closing', () => {
+  const place = core.places.find((p) => p.id === 'work')!;
+  const original = place.hours;
+  try {
+    place.hours = { opens: 600, closes: 1200, dayKinds: ['workday'] };
+    const state = at(590, 'work');
+    const menu = renderView(() =>
+      LocationMenu({ state, location: 'work', onChange: vi.fn() }),
+    );
+    expect(menu.html).toContain('10:00–20:00');
+    expect(menu.html).toContain(t('game.closed'));
+    state.day.minute = 900;
+    expect(core.activities(state, 'work').some((a) => a.id === 'work')).toBe(
+      false,
+    );
+    expect(
+      renderView(() =>
+        LocationMenu({ state, location: 'work', onChange: vi.fn() }),
+      ).buttons.some((b) => b.label.startsWith('上班')),
+    ).toBe(false);
+  } finally {
+    place.hours = original;
+  }
+});
+
+test('home residents use fixed accessible positions and never appear in the town while home', () => {
+  const household: core.Npc = {
+    ...core.npcs[0],
+    id: 'jamie',
+    name: { zhCN: '杰米', en: 'Jamie' },
+    characters: ['family-partner'],
+    schedule: [{ stops: [{ from: 0, at: 'home' }] }],
+  };
+  core.npcs.push(household);
+  try {
+    const state = core.newGame('family-partner', 42, 'en');
+    delete state.pendingEvent;
+    state.eventQueue = [];
+    state.day.deliveries = [];
+    expect(visibleResidents(state, true).map((n) => n.id)).toEqual(['jamie']);
+    expect(visibleResidents(state, false).some((n) => n.id === 'jamie')).toBe(
+      false,
+    );
+    expect(visibleResidents(active(), true)).toEqual([]);
+    expect(core.peopleAt(state, 'home')).toContain('jamie');
+    const chatted = core.talk(state, 'jamie');
+    expect(chatted.day.talked).toContain('jamie');
+    expect(
+      renderView(
+        () =>
+          Dialogue({
+            state: chatted,
+            npc: 'jamie',
+            onChange: vi.fn(),
+            onClose: vi.fn(),
+          }),
+        'en',
+      ).html,
+    ).toContain('Jamie');
+    const collision = homeMap.layers.find((l) => l.name === 'collision')!;
+    for (let index = 0; index < 3; index++) {
+      const spot = homeSpot(index);
+      expect(collision.data![spot.y * homeMap.width + spot.x]).toBe(0);
+    }
+  } finally {
+    core.npcs.splice(core.npcs.indexOf(household), 1);
+  }
+});
+
+test('controller clears gift feedback before a shop, mailbox, or reopened menu', () => {
+  const h = client(at(600));
+  h.render().props(TownCanvas).onInteract({ kind: 'npc', id: 'margaret' });
+  const dialogue = h.render().props(Dialogue);
+  const next = core.gift(dialogue.state, 'margaret', 'tea');
+  dialogue.onChange(next);
+  expect(h.render().props(Dialogue).feedbackText).toEqual(next.outcome?.text);
+  h.render().props(Modal).onClose!();
+  h.render().props(TownCanvas).onInteract({ kind: 'place', id: 'shop' });
+  expect(h.render().props(OutcomeText).text).toBeUndefined();
+  expect(
+    h
+      .render()
+      .buttons.filter((b) => ['家', '公司', '街角小店'].includes(b.label))
+      .every((b) => b.disabled),
+  ).toBe(true);
+  const shop = h.render().props(Shop);
+  shop.onChange(core.buy(shop.state, 'tea', 1));
+  expect(h.render().props(OutcomeText).text).toEqual(
+    core.items.find((i) => i.id === 'tea')!.name,
+  );
+  h.render().props(Modal).onClose!();
+  h.render().props(TownCanvas).onInteract({ kind: 'place', id: 'shop' });
+  expect(h.render().props(OutcomeText).text).toBeUndefined();
+  h.dispose();
+});
+
+test('heart dialogue focuses the NPC and shows the actual heart change', () => {
+  const start = at(600);
+  start.friendship.margaret = 190;
+  const h = client(start);
+  h.render().props(TownCanvas).onInteract({ kind: 'npc', id: 'margaret' });
+  const view = h.render();
+  expect(view.props(TownCanvas).focusNpc).toBe('margaret');
+  expect(view.props(Dialogue).heartChange).toEqual({ before: 1, after: 2 });
+  expect(view.html).toContain('♥ 1 → 2');
+  h.dispose();
+});
+
+test('one-month journey pauses abroad, restores there, and records only a completed absence on return', () => {
+  const start = at(600, 'station');
+  const h = client(start);
+  h.render().props(TownCanvas).onInteract({ kind: 'place', id: 'station' });
+  const menu = h.render().props(LocationMenu);
+  menu.onChange(core.doActivity(menu.state, 'travel-1'));
+  let view = h.render();
+  expect(view.props(TravelCard).state.trip).toBeDefined();
+  expect(view.props(TravelCard).state.timeline.absences).toEqual(
+    start.timeline.absences,
+  );
+  expect(view.html).not.toContain('role="application"');
+  const abroad = view.props(TravelCard).state;
+  gameStorage(abroad.characterId, abroad);
+  expect(gameStorage(abroad.characterId).state!.trip).toEqual(abroad.trip);
+  for (let i = 0; i < 15; i++) {
+    view = h.render();
+    const card = view.props(TravelCard);
+    if (card.returned) break;
+    const state = card.state;
+    if (state.pendingEvent) {
+      const event = core.currentEvent(state)!;
+      const next = core.resolve(state, event.choices[0].id);
+      if (event.speaker || event.heart) view.props(Dialogue).onChange(next);
+      else view.props(EventCard).onChange(next);
+    } else card.onContinue();
+  }
+  view = h.render();
+  const returned = view.props(TravelCard);
+  expect(returned.returned).toBeDefined();
+  expect(returned.state.trip).toBeUndefined();
+  expect(returned.state.timeline.absences).toHaveLength(
+    start.timeline.absences.length + 1,
+  );
+  expect(
+    returned.state.timeline.absences.every((a) => a.to <= returned.state.date),
+  ).toBe(true);
+  expect(
+    view.props(QuarterSummary).after.log.some((e) => e.kind === 'quarter'),
+  ).toBe(true);
+  returned.onContinue();
+  expect(h.render().props(TownCanvas).interior).toBe(true);
+  h.dispose();
+});
+
+test('real fast-forward diary groups all three days and merges repeat conversations', () => {
+  let state = active('en');
+  state.day.deliveries = [];
+  let diary: DayMemory[] = [];
+  for (let i = 0; i < 2; i++) {
+    const next = core.talk(state, 'margaret');
+    diary = recordMemories(diary, state, next, 'action');
+    state = next;
+  }
+  const before = state;
+  const after = core.fastForward(state);
+  diary = recordMemories(diary, state, after, 'fast');
+  const groups = groupedMemories(diary, before.year, before.quarter);
+  expect(groups[0].find((m) => m.key.startsWith('talk:'))!.count).toBe(2);
+  expect(groups[0].some((m) => m.key === 'action:work:')).toBe(true);
+  expect(groups[1].some((m) => m.key === 'action:rest:')).toBe(true);
+  expect(groups[1].some((m) => m.key === 'action:relax:')).toBe(true);
+  expect(groups[2].some((m) => m.key === 'action:festival:')).toBe(true);
+  const view = renderView(
+    () =>
+      QuarterSummary({
+        before,
+        after,
+        diary,
+        onContinue: vi.fn(),
+        onVisit: vi.fn(),
+      }),
+    'en',
+  );
+  for (let i = 1; i <= 3; i++)
+    expect(view.html).toContain(
+      t('game.day', 'en').replace('{day}', String(i)),
+    );
+  expect(view.html).toContain('× 2');
+  expect(view.html).not.toMatch(cjk);
+  gameStorage(after.characterId, after, diary);
+  expect(gameStorage(after.characterId).diary).toEqual(diary);
+});
+
+test('unassigned real event queue restores, but mock-era v3 saves are ignored', () => {
+  const state = core.newGame(core.characters[0].id, 4, 'en');
+  delete state.pendingEvent;
+  state.eventQueue = ['letter'];
+  gameStorage(state.characterId, state);
+  expect(gameStorage(state.characterId).state?.eventQueue).toEqual(['letter']);
+  storage.set(
+    `uk-immigration-life-v3:${state.characterId}`,
+    JSON.stringify(state),
+  );
+  expect(gameStorage(state.characterId).state).toBeUndefined();
+});
+
+test('Tiled layers retain finite offsets, opacity and visibility after map regeneration', () => {
+  for (const map of [townMap, homeMap])
+    for (const layer of map.layers) {
+      expect(Number.isFinite(layer.x)).toBe(true);
+      expect(Number.isFinite(layer.y)).toBe(true);
+      expect(layer.opacity).toBeGreaterThanOrEqual(0);
+      expect(layer.opacity).toBeLessThanOrEqual(1);
+      expect(typeof layer.visible).toBe('boolean');
+    }
+});
+
+test.each(core.festivals)(
+  'festival $id reads its title, text and activities from real data',
+  (festival) => {
+    const state = at(1080, 'green', 'en');
+    state.day.festival = festival.id;
+    state.day.kind = 'special';
+    state.day.index = 2;
+    state.day.deliveries = [];
+    const changed = vi.fn();
+    const menu = renderView(
+      () => LocationMenu({ state, location: 'green', onChange: changed }),
+      'en',
+    );
+    expect(menu.html).toContain(festival.name.en);
+    expect(menu.html).not.toMatch(cjk);
+    const activity = core.activities(state, 'green')[0];
+    menu.click(activity.label.en);
+    expect(changed.mock.lastCall![0].day.done).toContain(activity.id);
+  },
+);
+
+test('rejected late fishing never claims a catch or changes the state', () => {
+  vi.useFakeTimers();
+  vi.spyOn(Math, 'random').mockReturnValue(0);
+  vi.stubGlobal('window', {
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+  });
+  const state = at(1435, 'pond');
+  const onChange = vi.fn();
+  const h = harness(() => Fishing({ state, onChange }));
+  h.render().click(t('game.cast'));
+  h.render();
+  vi.advanceTimersByTime(1000);
+  h.render().click(t('game.reel'));
+  expect(onChange).not.toHaveBeenCalled();
+  expect(h.render().html).toContain(t('game.actionUnavailable'));
+  expect(h.render().html).not.toContain(t('game.fishWin'));
+  h.dispose();
+});
+
+test('controller resolves a phone interruption without replaying or dropping the remaining work time', () => {
+  const start = at(540, 'work');
+  start.day.deliveries = [{ eventId: 'phone', channel: 'phone', minute: 720 }];
+  const h = client(start);
+  h.render().props(TownCanvas).onInteract({ kind: 'place', id: 'work' });
+  const menu = h.render().props(LocationMenu);
+  menu.onChange(core.doActivity(menu.state, 'work'));
+  let state = h.render().props(TownCanvas).state;
+  expect(state.day.minute).toBe(720);
+  expect(state.day.resumeMinute).toBe(1020);
+  h.render().props(EventCard).onChange(core.resolve(state, 'yes'));
+  state = h.render().props(TownCanvas).state;
+  expect(state.day.minute).toBe(1020);
+  expect(state.day.resumeMinute).toBeUndefined();
+  expect(state.log.filter((l) => l.id === 'work')).toHaveLength(1);
+  h.dispose();
+});
+
+test('season opening stats survive reload and include daily life changes in the summary', () => {
+  const start = at(600);
+  const opening = { ...start.stats };
+  const afterMeal = core.eat(start, 'tea');
+  gameStorage(afterMeal.characterId, afterMeal, [], opening);
+  expect(gameStorage(afterMeal.characterId).quarterStart).toEqual(opening);
+  const settled = {
+    ...afterMeal,
+    stats: { ...afterMeal.stats, mood: afterMeal.stats.mood + 3 },
+  };
+  const summary = renderView(() =>
+    QuarterSummary({
+      before: afterMeal,
+      after: settled,
+      startStats: opening,
+      onContinue: vi.fn(),
+      onVisit: vi.fn(),
+    }),
+  );
+  const changes = summary.html;
+  expect(changes).toContain(`+${settled.stats.mood - opening.mood}`);
+});
+
+test('sleeping through a promotion generates feedback and still shows the final quarter summary', () => {
+  vi.useFakeTimers();
+  const start = at(1200);
+  start.day.index = 2;
+  start.day.deliveries = [];
+  start.stats.career = 60;
+  const h = client(start);
+  h.render().click(t('game.endDay'));
+  h.render().click(t('game.confirm'));
+  h.render();
+  h.flush();
+  vi.advanceTimersByTime(280);
+  h.render();
+  h.flush();
+  const view = h.render();
+  expect(view.props(TownCanvas).feedback?.promotion).toBe(true);
+  expect(view.props(QuarterSummary).startStats).toEqual(start.stats);
+  h.dispose();
+});
+
+test.each(core.characters)(
+  'real $id can complete a day using real work, pub, shop, mail and sleep transitions',
+  (character) => {
+    let state = core.newGame(character.id, 42, 'en');
+    const resolvePending = () => {
+      for (let i = 0; i < 10 && state.pendingEvent; i++)
+        state = core.resolve(state, core.currentEvent(state)!.choices[0].id);
+    };
+    resolvePending();
+    state = core.tick(state, 540 - state.day.minute);
+    resolvePending();
+    state = core.enter(state, 'work');
+    resolvePending();
+    state = core.doActivity(state, 'work');
+    resolvePending();
+    expect(state.day.done).toContain('work');
+    state = core.enter(state, 'shop');
+    resolvePending();
+    state = core.buy(state, 'tea', 1);
+    expect(state.inventory.tea).toBeGreaterThan(0);
+    state = core.tick(state, Math.max(0, 1080 - state.day.minute));
+    resolvePending();
+    state = core.enter(state, 'pub');
+    resolvePending();
+    const menu = renderView(
+      () =>
+        LocationMenu({
+          state,
+          location: 'pub',
+          onChange: (next) => {
+            state = next;
+          },
+        }),
+      'en',
+    );
+    menu.click(
+      core.activities(state, 'pub').find((a) => a.id === 'relax')!.label.en,
+    );
+    expect(state.day.done).toContain('relax');
+    resolvePending();
+    state = core.enter(state, 'home');
+    resolvePending();
+    if (core.mailbox(state).length) {
+      state = core.readMail(state);
+      resolvePending();
+    }
+    const day = state.dayNumber;
+    for (let i = 0; i < 10 && state.dayNumber === day; i++) {
+      state = core.sleep(state);
+      resolvePending();
+    }
+    expect(state.dayNumber).toBe(day + 1);
+    expect(state.day.place).toBe('home');
+    expect(
+      renderView(() => MorningCard({ state, onContinue: vi.fn() }), 'en').html,
+    ).not.toMatch(cjk);
+  },
+);

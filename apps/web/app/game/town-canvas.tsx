@@ -3,8 +3,8 @@
 import { useEffect, useRef } from 'react';
 import * as Phaser from 'phaser';
 import { useTranslation } from '../../i18n/locale';
-import type { GameState, PlaceId } from './mock-core';
-import type { Interaction } from './scene';
+import type { GameState, PlaceId } from '@uk-immigration/game';
+import type { Interaction, SceneFeedback } from './scene';
 import { TownScene } from './scene';
 import styles from './town-canvas.module.css';
 
@@ -13,6 +13,9 @@ export interface TownCanvasProps {
   state: GameState;
   interior: boolean;
   paused: boolean;
+  feedback?: SceneFeedback;
+  focusNpc?: string;
+  approachNpc?: { id: string; request: number };
   onReady: () => void;
   onInteract: (interaction: Interaction) => void;
   onNearby: (interaction?: Interaction) => void;
@@ -63,6 +66,16 @@ export default function TownCanvas(props: TownCanvasProps) {
 
   useEffect(() => {
     const element = host.current!;
+    const fitHeight = () => {
+      element.style.setProperty(
+        '--game-map-top',
+        `${element.getBoundingClientRect().top + window.scrollY}px`,
+      );
+    };
+    fitHeight();
+    const layout = new ResizeObserver(fitHeight);
+    layout.observe(element.parentElement!.previousElementSibling!);
+    window.addEventListener('resize', fitHeight);
     const stop = observeTownSize(element, (type) => {
       const town = new TownScene(
         latest.current,
@@ -88,6 +101,8 @@ export default function TownCanvas(props: TownCanvasProps) {
       });
     });
     return () => {
+      layout.disconnect();
+      window.removeEventListener('resize', fitHeight);
       stop();
       scene.current = undefined;
     };
@@ -95,7 +110,18 @@ export default function TownCanvas(props: TownCanvasProps) {
 
   useEffect(() => {
     scene.current?.sync(props);
-  }, [props.locale, props.state, props.paused, props.interior]);
+  }, [
+    props.locale,
+    props.state,
+    props.paused,
+    props.interior,
+    props.feedback,
+    props.focusNpc,
+  ]);
+
+  useEffect(() => {
+    if (props.approachNpc) scene.current?.walkToNpc(props.approachNpc.id);
+  }, [props.approachNpc]);
 
   useEffect(() => {
     if (props.interactRequest) scene.current?.interact();

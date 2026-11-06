@@ -10,7 +10,7 @@ import { encodeDraft } from '../../lib/share';
 import {
   activities,
   doActivity,
-  isOpen,
+  festivals,
   places,
   peopleAt,
   npcs,
@@ -28,7 +28,7 @@ import {
   type PlaceId,
   type StatKey,
   type Text,
-} from './mock-core';
+} from '@uk-immigration/game';
 import {
   gameDraft,
   withGameLocale,
@@ -36,6 +36,7 @@ import {
   spritePath,
   visaMonths,
 } from './session';
+import { groupedMemories, type DayMemory } from './diary';
 import site from '../site.module.css';
 import styles from './game.module.css';
 
@@ -310,7 +311,11 @@ export function LocationMenu({
 }) {
   const { t, locale } = useTranslation();
   const place = places.find((p) => p.id === location)!;
-  const open = isOpen(state, location);
+  const open =
+    !place.hours ||
+    (state.day.minute >= place.hours.opens &&
+      state.day.minute < place.hours.closes &&
+      (!place.hours.dayKinds || place.hours.dayKinds.includes(state.day.kind)));
   const available = activities(state, location).sort(
     (a, b) => Number(b.id === 'extend') - Number(a.id === 'extend'),
   );
@@ -338,6 +343,15 @@ export function LocationMenu({
             <>
               {location === 'station' && <p>{t('game.travelRecall')}</p>}
               {location === 'board' && <p>{t('game.noticeText')}</p>}
+              {location === 'green' &&
+                festivals
+                  .filter((f) => f.id === state.day.festival)
+                  .map((f) => (
+                    <section key={f.id} className={styles.festivalIntro}>
+                      <h3>{localText(f.name, locale)}</h3>
+                      <p>{localText(f.text, locale)}</p>
+                    </section>
+                  ))}
               <div className={styles.choices}>
                 {available.map((action) => (
                   <button
@@ -349,11 +363,7 @@ export function LocationMenu({
                     <small>
                       {t('game.minutes').replace(
                         '{count}',
-                        String(
-                          action.id === 'work'
-                            ? 1020 - state.day.minute
-                            : action.minutes,
-                        ),
+                        String(action.minutes),
                       )}
                     </small>
                     <EffectHints effects={action.effects} />
@@ -416,6 +426,8 @@ export function EventCard({
 export interface StateChange {
   before: GameState;
   after: GameState;
+  diary?: DayMemory[];
+  startStats?: GameState['stats'];
 }
 export function StatChanges({ before, after }: StateChange) {
   const { t } = useTranslation();
@@ -467,23 +479,23 @@ export function QuarterSummary({
   after,
   onContinue,
   onVisit,
+  diary = [],
+  startStats,
 }: StateChange & { onContinue: () => void; onVisit: () => void }) {
   const { t, locale } = useTranslation();
-  const entries = after.log.filter(
-    (entry) => entry.year === before.year && entry.quarter === before.quarter,
+  const settled = after.log
+    .slice(before.log.length)
+    .filter((entry) => entry.kind === 'quarter');
+  const quarters = settled.length
+    ? settled
+    : [{ year: before.year, quarter: before.quarter }];
+  const entries = after.log.filter((entry) =>
+    quarters.some((q) => q.year === entry.year && q.quarter === entry.quarter),
   );
   const net = entries
     .filter((entry) => entry.kind === 'quarter')
     .reduce((sum, entry) => sum + (entry.statDeltas?.money ?? 0), 0);
-  const moments = entries.filter(
-    (entry) => entry.kind === 'event' || entry.kind === 'action',
-  );
-  const quarterStart = { ...before, stats: { ...before.stats } };
-  for (const key of statKeys) {
-    quarterStart.stats[key] =
-      after.stats[key] -
-      entries.reduce((sum, entry) => sum + (entry.statDeltas?.[key] ?? 0), 0);
-  }
+  const quarterStart = { ...before, stats: startStats ?? before.stats };
   const previous = progress(before),
     next = progress(after);
   return (
@@ -495,31 +507,61 @@ export function QuarterSummary({
         </div>
       </dl>
       <h3>{t('game.quarterChanges')}</h3>
+      {after.flags.some(
+        (f) => f.startsWith('promotion-') && !before.flags.includes(f),
+      ) && (
+        <p role="status" className={styles.positive}>
+          {t('game.promotion')}
+        </p>
+      )}
       <StatChanges before={quarterStart} after={after} />
       <p className={visaMonths(after) <= 6 ? styles.urgent : undefined}>
         {t('game.visa').replace('{count}', String(visaMonths(after)))}
       </p>
       <h3>{t('game.daysReview')}</h3>
-      {moments.length ? (
-        <ul className={styles.review}>
-          {moments.map((entry, index) => (
-            <li key={index}>
-              {localText(entry.text, locale)}
-              <span className={styles.hints}>
-                {statKeys
-                  .filter((key) => entry.statDeltas?.[key])
-                  .map((key) => (
-                    <small key={key}>
-                      {t(`game.${key}`)} {signed(entry.statDeltas![key]!, key)}
-                    </small>
-                  ))}
-              </span>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p>{t('game.noEvents')}</p>
-      )}
+      {quarters.map((quarter) => (
+        <section key={`${quarter.year}:${quarter.quarter}`}>
+          {quarters.length > 1 && (
+            <h3>
+              {t('game.yearQuarter')
+                .replace('{year}', String(quarter.year))
+                .replace('{quarter}', String(quarter.quarter))}
+            </h3>
+          )}
+          {groupedMemories(diary, quarter.year, quarter.quarter).map(
+            (moments, day) => (
+              <section
+                key={day}
+                aria-label={t('game.day').replace('{day}', String(day + 1))}
+              >
+                <h4>{t('game.day').replace('{day}', String(day + 1))}</h4>
+                {moments.length ? (
+                  <ul className={styles.review}>
+                    {moments.map((entry, index) => (
+                      <li key={index}>
+                        {localText(entry.text, locale)}
+                        {entry.count > 1 && ` × ${entry.count}`}
+                        <span className={styles.hints}>
+                          {statKeys
+                            .filter((key) => entry.statDeltas?.[key])
+                            .map((key) => (
+                              <small key={key}>
+                                {t(`game.${key}`)}{' '}
+                                {signed(entry.statDeltas![key]!, key)}
+                              </small>
+                            ))}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p>{t('game.noEvents')}</p>
+                )}
+              </section>
+            ),
+          )}
+        </section>
+      ))}
       {before.quarter === 4 && (
         <>
           <h3>{t('game.yearSummary')}</h3>

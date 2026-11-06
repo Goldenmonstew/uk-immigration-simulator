@@ -1,6 +1,16 @@
 import type { zhCN } from './zh-CN';
 
 export const en: Record<keyof typeof zhCN, string> = {
+  'game.actionUnavailable':
+    'This cannot be done now. Check the time, place and what you have.',
+  'game.abroad': 'Away from town',
+  'game.abroadText':
+    'The days pass while you are abroad. Read any messages before continuing your journey.',
+  'game.continueJourney': 'Continue the journey',
+  'game.returned': 'Welcome home',
+  'game.returnedText':
+    'Your journey has been added to your timeline. The town is waiting for you.',
+  'game.promotion': 'Promotion!',
   'game.entry': 'Play a round · Immigration Life',
   'game.disclaimer':
     'Fictional characters and events for learning. This is not immigration advice.',

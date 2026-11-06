@@ -75,3 +75,9 @@ floor (24,2)；rug (24,5)；wall (24,14)；bedT (14,6)；bedB (14,7)；kitchen (
 `theme-9/2/3/4.ogg` 分别为冬、春、夏、秋背景音乐，`theme-5.ogg` 为节日。`1/voice-1/menu-1/gold-1/succes.ogg` 分别用于脚步、说话、菜单、金币与成就；说话播放速率按镇民区别。`hud/heart.png` 为表情，`fx/1.png` 为收获反馈。
 
 `town.json` 与 `home.json` 为项目编排；不包含素材包中未使用的图块、旧忍者村瓦片或旧角色。
+
+## 9.4 客户端布置
+
+节日摊位、彩旗、灯笼、彩灯、篝火、烟花、窗灯与路灯光晕由 Phaser 几何图形绘制，未引入外部图像。现有可核验 CC0 素材未找到合适的鸭、猫或鸽子，因此本轮未加入小动物。
+
+重新导出 `town.json` / `home.json` 时，**每个图层**必须保留 Tiled 的 `x: 0`、`y: 0`、`opacity: 1` 与 `visible` 字段；`collision` 的 `visible` 为 `false`。缺失坐标会使 Phaser 算出 NaN 而不渲染图块。组件测试覆盖这项地图格式约束。

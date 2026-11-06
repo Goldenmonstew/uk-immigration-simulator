@@ -1,4 +1,11 @@
 export const zhCN = {
+  'game.actionUnavailable': '现在还不能做这件事，请看看时间、地点和背包。',
+  'game.abroad': '在国外',
+  'game.abroadText': '出国期间，日子继续向前。处理收到的消息后，再继续旅程。',
+  'game.continueJourney': '继续旅程',
+  'game.returned': '回到小镇',
+  'game.returnedText': '这次旅行已写入时间线，小镇在等你回来。',
+  'game.promotion': '升职了！',
   'game.entry': '玩一局 · Immigration Life',
   'game.disclaimer': '虚构角色与生活事件，仅作教学体验，不是移民建议。',
   'game.intro': '在小镇安顿下来。上班、学习、交朋友，把四季过成自己的故事。',
