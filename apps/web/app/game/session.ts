@@ -61,6 +61,7 @@ const residentIds = [
   'jamie',
   'ka-ning-partner',
   'ka-ning-child',
+  'yao-flatmate',
 ];
 export const spritePath = (id: string) =>
   `/game/assets/urban/${residentIds.includes(id) ? id : 'skilled-worker'}.png`;
