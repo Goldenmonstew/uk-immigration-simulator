@@ -14,6 +14,7 @@ import {
   items,
   mailbox,
   npcs,
+  npcAt,
   plant,
   readMail,
   recipes,
@@ -24,13 +25,69 @@ import {
   type GameState,
   type PlaceId,
   type Text,
-} from './mock-core';
+} from '@uk-immigration/game';
 import { dayDate, localText, money, weatherIcon } from './game-view';
 import { itemIcon, spritePath } from './session';
 import { playSound } from './sound';
 import styles from './game.module.css';
 import site from '../site.module.css';
 type Change = { state: GameState; onChange: (state: GameState) => void };
+// Core availability is authoritative, including the remaining minutes today.
+function useLifeAction(onChange: Change['onChange']) {
+  const { t } = useTranslation();
+  const [error, setError] = useState(false);
+  return {
+    run(action: () => GameState) {
+      let next: GameState;
+      try {
+        next = action();
+      } catch {
+        setError(true);
+        return false;
+      }
+      setError(false);
+      onChange(next);
+      return true;
+    },
+    message: error ? <p role="status">{t('game.actionUnavailable')}</p> : null,
+  };
+}
+
+export function TravelCard({
+  state,
+  returned,
+  onContinue,
+}: {
+  state: GameState;
+  returned?: GameState['trip'];
+  onContinue: () => void;
+}) {
+  const { t, locale } = useTranslation();
+  const trip = returned ?? state.trip!;
+  return (
+    <section
+      className={styles.travel}
+      aria-label={t(returned ? 'game.returned' : 'game.abroad')}
+    >
+      <span className={styles.travelIcon} aria-hidden="true">
+        {returned ? '⌂' : '✈'}
+      </span>
+      <h2>{t(returned ? 'game.returned' : 'game.abroad')}</h2>
+      <p>
+        {dayDate(trip.from, locale)} → {dayDate(trip.to, locale)}
+      </p>
+      <time dateTime={state.day.date}>{dayDate(state.day.date, locale)}</time>
+      <p>{t(returned ? 'game.returnedText' : 'game.abroadText')}</p>
+      <button
+        className={site.button}
+        disabled={!!state.pendingEvent && !returned}
+        onClick={onContinue}
+      >
+        {t(returned ? 'game.continuePlaying' : 'game.continueJourney')}
+      </button>
+    </section>
+  );
+}
 export function MorningCard({
   state,
   onContinue,
@@ -92,16 +149,29 @@ export function Dialogue({
   npc,
   onChange,
   onClose,
-}: Change & { npc: string; onClose: () => void }) {
+  feedbackText,
+  heartChange,
+}: Change & {
+  npc: string;
+  onClose: () => void;
+  feedbackText?: Text;
+  heartChange?: { before: number; after: number };
+}) {
   const { t, locale } = useTranslation();
   const person = npcs.find((n) => n.id === npc)!;
+  const meetingPlace = useRef(npcAt(state, npc));
+  const stillHere = npcAt(state, npc) === meetingPlace.current;
   const event = currentEvent(state);
   const line = localText(
-    event?.text ?? state.outcome?.text ?? person.lines[0].text,
+    event?.text ??
+      feedbackText ??
+      (state.outcome?.npc === npc ? state.outcome?.text : undefined) ??
+      person.lines[0].text,
     locale,
   );
   const [letters, setLetters] = useState(0);
   const [gifting, setGifting] = useState(false);
+  const action = useLifeAction(onChange);
   useEffect(() => {
     setLetters(0);
     const timer = setInterval(
@@ -116,6 +186,12 @@ export function Dialogue({
   }, [letters, line, npc]);
   return (
     <>
+      {action.message}
+      {heartChange && (
+        <p role="status" className={styles.heartChange}>
+          ♥ {heartChange.before} → {heartChange.after}
+        </p>
+      )}
       <div className={styles.dialogueBody}>
         <span
           className={styles.portrait}
@@ -166,8 +242,9 @@ export function Dialogue({
                   <button
                     key={id}
                     className={styles.choice}
+                    disabled={!stillHere}
                     onClick={() => {
-                      onChange(gift(state, npc, id));
+                      action.run(() => gift(state, npc, id));
                       setGifting(false);
                     }}
                   >
@@ -181,7 +258,7 @@ export function Dialogue({
           ) : (
             <button
               className={site.secondary}
-              disabled={state.day.gifted.includes(npc)}
+              disabled={state.day.gifted.includes(npc) || !stillHere}
               onClick={() => setGifting(true)}
             >
               {t(
@@ -204,9 +281,11 @@ export function Inventory({
 }: Change & { onKitchen: () => void }) {
   const { t, locale } = useTranslation();
   const [tab, setTab] = useState<'bag' | 'friends'>('bag');
+  const action = useLifeAction(onChange);
   const inventory = Object.entries(state.inventory).filter(([, n]) => n > 0);
   return (
     <>
+      {action.message}
       <div className={styles.tabs} role="tablist">
         <button
           role="tab"
@@ -256,7 +335,7 @@ export function Inventory({
                 {items.find((i) => i.id === id)?.edible && (
                   <button
                     className={site.secondary}
-                    onClick={() => onChange(eat(state, id))}
+                    onClick={() => action.run(() => eat(state, id))}
                   >
                     {t('game.eat')}
                   </button>
@@ -275,16 +354,21 @@ export function Inventory({
 }
 export function Kitchen({ state, onChange }: Change) {
   const { t, locale } = useTranslation();
+  const action = useLifeAction(onChange);
   return (
     <div className={styles.choices}>
+      {action.message}
       {recipes.map((r) => (
         <button
           key={r.id}
           className={styles.choice}
-          disabled={Object.entries(r.needs).some(
-            ([id, n]) => (state.inventory[id] ?? 0) < n,
-          )}
-          onClick={() => onChange(cook(state, r.id))}
+          disabled={
+            state.day.minute + r.minutes > 1440 ||
+            Object.entries(r.needs).some(
+              ([id, n]) => (state.inventory[id] ?? 0) < n,
+            )
+          }
+          onClick={() => action.run(() => cook(state, r.id))}
         >
           <strong>{localText(r.label, locale)}</strong>
           <span>
@@ -347,6 +431,7 @@ export function Shop({ state, place, onChange }: Change & { place: PlaceId }) {
 }
 export function PlotMenu({ state, plot, onChange }: Change & { plot: number }) {
   const { t, locale } = useTranslation();
+  const action = useLifeAction(onChange);
   const p = state.plots[plot];
   if (!p) return <p>{t('game.rentFirst')}</p>;
   const seed = items.find((i) => i.id === p.seed);
@@ -357,6 +442,7 @@ export function PlotMenu({ state, plot, onChange }: Change & { plot: number }) {
   );
   return p.seed ? (
     <>
+      {action.message}
       <p>
         <ItemName id={seed?.grows?.crop ?? p.seed} /> ·{' '}
         {t('game.growth').replace('{count}', String(p.growth))}
@@ -365,14 +451,14 @@ export function PlotMenu({ state, plot, onChange }: Change & { plot: number }) {
         <button
           className={site.secondary}
           disabled={p.wateredOn === state.dayNumber}
-          onClick={() => onChange(water(state, plot))}
+          onClick={() => action.run(() => water(state, plot))}
         >
           {t(p.wateredOn === state.dayNumber ? 'game.watered' : 'game.water')}
         </button>
         <button
           className={site.button}
           disabled={p.growth < (seed?.grows?.days ?? 4)}
-          onClick={() => onChange(harvest(state, plot))}
+          onClick={() => action.run(() => harvest(state, plot))}
         >
           {t('game.harvest')}
         </button>
@@ -380,6 +466,7 @@ export function PlotMenu({ state, plot, onChange }: Change & { plot: number }) {
     </>
   ) : (
     <>
+      {action.message}
       <p>{t('game.plant')}</p>
       {!seeds.length && <p>{t('game.noSeeds')}</p>}
       <div className={styles.choices}>
@@ -387,7 +474,7 @@ export function PlotMenu({ state, plot, onChange }: Change & { plot: number }) {
           <button
             key={i.id}
             className={styles.choice}
-            onClick={() => onChange(plant(state, plot, i.id))}
+            onClick={() => action.run(() => plant(state, plot, i.id))}
           >
             {localText(i.name, locale)} × {state.inventory[i.id]}
           </button>
@@ -418,6 +505,7 @@ export function Mailbox({ state, onChange }: Change) {
 }
 export function Fishing({ state, onChange }: Change) {
   const { t } = useTranslation();
+  const action = useLifeAction(onChange);
   const [phase, setPhase] = useState<
     'idle' | 'waiting' | 'bite' | 'win' | 'miss'
   >('idle');
@@ -429,10 +517,10 @@ export function Fishing({ state, onChange }: Change) {
   latest.current = { state, onChange };
   const finish = (success: boolean) => {
     if (!['waiting', 'bite'].includes(stage.current)) return;
-    stage.current = success ? 'win' : 'miss';
     clearTimeout(timer.current);
+    const accepted = action.run(() => fish(latest.current.state, success));
+    stage.current = accepted ? (success ? 'win' : 'miss') : 'idle';
     setPhase(stage.current);
-    latest.current.onChange(fish(latest.current.state, success));
   };
   useEffect(() => {
     const key = (e: KeyboardEvent) => {
@@ -462,6 +550,7 @@ export function Fishing({ state, onChange }: Change) {
   };
   return (
     <div className={styles.fishing}>
+      {action.message}
       <p>{t('game.fishHint')}</p>
       <div
         className={`${styles.floatWater} ${phase === 'bite' ? styles.floatBite : ''}`}

@@ -712,3 +712,34 @@
     transition: none;
   }
 }
+
+.travel {
+  min-height: 280px;
+  padding: 32px 20px;
+  text-align: center;
+  color: #fff6df;
+  background: #294d65;
+}
+.travel p {
+  max-width: 32em;
+  margin: 16px auto;
+}
+.travelIcon {
+  display: block;
+  font-size: 3rem;
+  color: #f3d891;
+}
+.heartChange {
+  color: #a43d52;
+  font-weight: 700;
+}
+.festivalIntro {
+  padding: 16px;
+  margin-bottom: 16px;
+  background: #fff3d6;
+  border-left: 4px solid #bd8532;
+}
+.modal button:disabled {
+  opacity: 0.55;
+  cursor: default;
+}

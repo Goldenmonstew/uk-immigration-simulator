@@ -3,11 +3,27 @@ import {
   characters,
   currentEvent,
   isOver,
+  npcAt,
+  townsfolk,
   visaMonthsLeft,
   type GameState,
   type StatKey,
-} from './mock-core';
+} from '@uk-immigration/game';
 import { createDraft, type Draft } from '../../lib/questionnaire';
+import type { DayMemory } from './diary';
+
+export function visibleResidents(state: GameState, interior: boolean) {
+  return townsfolk(state)
+    .filter((npc) => (npcAt(state, npc.id) === 'home') === interior)
+    .slice(0, 12);
+}
+
+export const homeSpot = (index: number) =>
+  [
+    { x: 5, y: 4 },
+    { x: 11, y: 4 },
+    { x: 5, y: 8 },
+  ][index % 3];
 
 export function withGameLocale(state: GameState, locale: Locale): GameState {
   if (state.locale === locale) return state;
@@ -90,16 +106,37 @@ export function needsVisaReminder(state: GameState): boolean {
 export function gameStorage(
   characterId: string,
   next?: GameState,
-): { state: GameState | undefined; available: boolean } {
+  diary: DayMemory[] = [],
+  quarterStart?: GameState['stats'],
+): {
+  state: GameState | undefined;
+  available: boolean;
+  diary?: DayMemory[];
+  quarterStart?: GameState['stats'];
+} {
   try {
     const key = `uk-immigration-life-v3:${characterId}`;
     if (next) {
-      localStorage.setItem(key, JSON.stringify(next));
+      localStorage.setItem(
+        key,
+        JSON.stringify({ ...next, clientVersion: 1, diary, quarterStart }),
+      );
       return { state: next, available: true };
     }
     const saved = localStorage.getItem(key);
     if (!saved) return { state: undefined, available: true };
-    const state: GameState = JSON.parse(saved);
+    const {
+      clientVersion,
+      diary: savedDiary,
+      quarterStart: savedStart,
+      ...state
+    }: GameState & {
+      clientVersion?: number;
+      diary?: DayMemory[];
+      quarterStart?: GameState['stats'];
+    } = JSON.parse(saved);
+    // The earlier mock also used version 3; its saves are not real core saves.
+    if (clientVersion !== 1) return { state: undefined, available: true };
     if (
       !state ||
       state.version !== 3 ||
@@ -155,7 +192,6 @@ export function gameStorage(
         (list) =>
           Array.isArray(list) && list.every((item) => typeof item === 'string'),
       ) ||
-      (state.eventQueue.length > 0 && !state.pendingEvent) ||
       !state.eventQueue.every((id) =>
         currentEvent({ ...state, pendingEvent: id }),
       ) ||
@@ -174,7 +210,30 @@ export function gameStorage(
       timeline: state.timeline,
       locale: state.locale,
     });
-    return { state, available: true };
+    const validDiary =
+      Array.isArray(savedDiary) &&
+      savedDiary.every(
+        (m) =>
+          m &&
+          Number.isInteger(m.year) &&
+          [1, 2, 3, 4].includes(m.quarter) &&
+          [0, 1, 2].includes(m.day) &&
+          typeof m.key === 'string' &&
+          Number.isInteger(m.count) &&
+          m.count > 0 &&
+          typeof m.text?.zhCN === 'string' &&
+          typeof m.text?.en === 'string' &&
+          Object.values(m.statDeltas ?? {}).every(Number.isFinite),
+      );
+    return {
+      state,
+      available: true,
+      diary: validDiary ? savedDiary : [],
+      quarterStart:
+        savedStart && statKeys.every((key) => Number.isFinite(savedStart[key]))
+          ? savedStart
+          : state.stats,
+    };
   } catch {
     return { state: next, available: false };
   }

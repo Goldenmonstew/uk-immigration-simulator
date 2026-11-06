@@ -6,22 +6,30 @@ import {
   npcAt,
   npcs,
   places,
-  townsfolk,
   type GameState,
   type PlaceId,
-} from './mock-core';
-import { cropIds, spritePath } from './session';
+  type Outcome,
+} from '@uk-immigration/game';
+import { cropIds, spritePath, visibleResidents, homeSpot } from './session';
 type Cell = { x: number; y: number };
 export type Interaction =
   | { kind: 'place'; id: PlaceId }
   | { kind: 'npc'; id: string }
   | { kind: 'plot'; id: number }
   | { kind: 'home'; id: 'bed' | 'kitchen' | 'desk' | 'mailbox' | 'exit' };
+export type SceneFeedback = {
+  token: number;
+  outcome?: Outcome;
+  hearts?: Record<string, { before: number; after: number }>;
+  promotion?: boolean;
+};
 export type SceneView = {
   state: GameState;
   locale: 'zh-CN' | 'en';
   paused: boolean;
   interior: boolean;
+  feedback?: SceneFeedback;
+  focusNpc?: string;
 };
 type Spot = Cell & {
   interaction: Interaction;
@@ -62,7 +70,11 @@ export class TownScene extends Phaser.Scene {
   private entered?: string;
   private nearby?: Interaction;
   private ready = false;
-  private previousOutcome?: string;
+  private feedbackToken?: number;
+  private focusNpc?: string;
+  private windows?: Phaser.GameObjects.Graphics;
+  private celebration?: Phaser.GameObjects.Graphics;
+  private transients = new Set<Phaser.GameObjects.GameObject>();
   private dayNumber: number;
   private worldObjects: Phaser.GameObjects.GameObject[] = [];
   constructor(
@@ -75,12 +87,14 @@ export class TownScene extends Phaser.Scene {
     super('town');
     this.view = view;
     this.dayNumber = view.state.dayNumber;
+    this.feedbackToken = view.feedback?.token;
   }
   preload() {
     this.load.tilemapTiledJSON('town', '/game/town.json');
     this.load.tilemapTiledJSON('home', '/game/home.json');
     this.load.image('town-tiles', '/game/assets/modern-city/tiles.png');
     this.load.image('home-tiles', '/game/assets/indoor/tiles.png');
+    this.load.image('item-fallback', '/game/assets/indoor/item.png');
     for (const id of [this.view.state.characterId, ...npcs.map((n) => n.id)])
       this.load.spritesheet(id, spritePath(id), {
         frameWidth: 16,
@@ -167,6 +181,11 @@ export class TownScene extends Phaser.Scene {
     this.residents.clear();
     this.cropSprites = [];
     this.lampLights = [];
+    this.windows = undefined;
+    this.celebration = undefined;
+    this.focusNpc = undefined;
+    for (const o of this.transients) o.destroy();
+    this.transients.clear();
     for (const o of this.worldObjects) o.destroy();
     this.worldObjects = [];
     this.map?.destroy();
@@ -252,29 +271,28 @@ export class TownScene extends Phaser.Scene {
         });
       }
       for (const lamp of map.getObjectLayer('lamps')!.objects) {
-        const g = this.own(this.add.graphics().setDepth(1300));
-        for (let r = 24; r > 0; r -= 4)
-          g.fillStyle(0xffd88b, 0.045).fillCircle(lamp.x! + 8, lamp.y! - 4, r);
+        const g = this.own(this.add.graphics().setDepth(1550));
+        for (let r = 30; r > 0; r -= 5)
+          g.fillStyle(0xffd88b, 0.075).fillCircle(lamp.x! + 8, lamp.y! - 4, r);
         this.lampLights.push(g);
       }
-      for (const npc of townsfolk(this.view.state)) {
-        const at = npcAt(this.view.state, npc.id);
-        const cell = this.anchors.get(at)!;
-        const hide = places.some((p) => p.id === at && p.kind === 'building');
-        const sprite = this.own(
-          this.add
-            .sprite(cell.x * size + 8, cell.y * size + 10, npc.id)
-            .setOrigin(0.5, 0.8)
-            .setVisible(!hide),
-        );
-        this.residents.set(npc.id, {
-          sprite,
-          cell: { ...cell },
-          path: [],
-          at,
-          hide,
-        });
-      }
+      this.windows = this.own(this.add.graphics().setDepth(1550));
+      map.getLayer('decor')!.tilemapLayer.forEachTile((tile) => {
+        if ([17, 20, 22].includes(tile.index)) {
+          this.windows!.fillStyle(0xffd889, 0.85).fillRect(
+            tile.pixelX + 5,
+            tile.pixelY + 5,
+            6,
+            7,
+          );
+          this.windows!.fillStyle(0xffd889, 0.08).fillCircle(
+            tile.pixelX + 8,
+            tile.pixelY + 8,
+            13,
+          );
+        }
+      });
+      this.decorateFestival();
     }
     this.sky = this.own(this.add.graphics().setScrollFactor(0).setDepth(1500));
     this.rain = this.own(this.add.graphics().setScrollFactor(0).setDepth(1600));
@@ -305,7 +323,11 @@ export class TownScene extends Phaser.Scene {
     if (!this.map) return;
     this.cameras.main.setZoom(
       this.view.interior
-        ? Math.min(3, Math.max(1, this.scale.width / (18 * size)))
+        ? Math.min(
+            3,
+            this.scale.width / (18 * size),
+            this.scale.height / (13 * size),
+          )
         : this.scale.width < 600
           ? 2
           : 2.5,
@@ -353,27 +375,123 @@ export class TownScene extends Phaser.Scene {
       const p = view.state.plots[i],
         crop = items.find((it) => it.id === p?.seed)?.grows?.crop;
       sprite.setVisible(!!crop);
-      if (crop) sprite.setTexture(`crop-${crop}`, Math.min(4, p.growth));
+      if (crop) {
+        const grows = items.find((it) => it.id === p.seed)!.grows!;
+        sprite.setTexture(
+          cropIds.includes(crop) ? `crop-${crop}` : 'item-fallback',
+          cropIds.includes(crop)
+            ? Math.min(4, Math.floor((p.growth / grows.days) * 4))
+            : 0,
+        );
+      }
     });
-    for (const [id, npc] of this.residents) {
-      const at = npcAt(view.state, id);
-      if (at === npc.at) continue;
-      const target = this.anchors.get(at)!;
-      npc.at = at;
-      npc.hide = places.some((p) => p.id === at && p.kind === 'building');
-      npc.sprite.setVisible(true);
-      npc.path = this.findPath(npc.target ?? npc.cell, target);
-      if (!npc.path.length && !npc.target && npc.hide)
-        npc.sprite.setVisible(false);
+    this.syncResidents();
+    const focus = view.focusNpc
+      ? this.residents.get(view.focusNpc)?.sprite
+      : undefined;
+    if (this.focusNpc !== view.focusNpc) {
+      this.focusNpc = view.focusNpc;
+      this.cameras.main.startFollow(
+        focus?.visible ? focus : this.player!,
+        true,
+        0.15,
+        0.15,
+      );
     }
     this.paintLight();
-    const signature = JSON.stringify([
-      view.state.log.length,
-      view.state.outcome,
-    ]);
-    if (signature !== this.previousOutcome) {
-      this.previousOutcome = signature;
-      if (view.state.outcome) this.feedback();
+    if (view.feedback && view.feedback.token !== this.feedbackToken) {
+      this.feedbackToken = view.feedback.token;
+      this.feedback(view.feedback);
+    }
+  }
+  private syncResidents() {
+    const residents = visibleResidents(this.view.state, this.view.interior);
+    for (const [id, n] of this.residents) {
+      if (!residents.some((npc) => npc.id === id)) {
+        n.sprite.destroy();
+        this.residents.delete(id);
+      }
+    }
+    residents.forEach((person, index) => {
+      const at = npcAt(this.view.state, person.id);
+      const target = this.view.interior
+        ? homeSpot(index)
+        : this.anchors.get(at)!;
+      const hide =
+        !this.view.interior &&
+        this.view.focusNpc !== person.id &&
+        places.some((p) => p.id === at && p.kind === 'building');
+      const npc = this.residents.get(person.id);
+      if (!npc) {
+        const sprite = this.own(
+          this.add
+            .sprite(target.x * size + 8, target.y * size + 10, person.id)
+            .setOrigin(0.5, 0.8)
+            .setDepth(10 + target.y * size)
+            .setVisible(!hide),
+        );
+        this.residents.set(person.id, {
+          sprite,
+          cell: { ...target },
+          path: [],
+          at,
+          hide,
+        });
+      } else if (npc.at !== at || npc.hide !== hide) {
+        npc.at = at;
+        npc.hide = hide;
+        npc.sprite.setVisible(true);
+        npc.path = this.findPath(npc.target ?? npc.cell, target);
+        if (!npc.path.length && !npc.target && hide)
+          npc.sprite.setVisible(false);
+      }
+    });
+  }
+  private decorateFestival() {
+    const festival = this.view.state.day.festival;
+    this.celebration = undefined;
+    if (!festival) return;
+    const g = this.own(this.add.graphics().setDepth(530));
+    const colors =
+      festival === 'christmas-market'
+        ? [0xd44b43, 0x418660, 0xffd778]
+        : [0xd85d4a, 0xf4c86c, 0x62a6ac];
+    for (const x of [500, 572]) {
+      g.fillStyle(0x865d3b).fillRect(x - 13, 493, 26, 16);
+      g.fillStyle(colors[0]).fillRect(x - 16, 480, 32, 10);
+      g.fillStyle(0xffedc2)
+        .fillRect(x - 12, 481, 5, 9)
+        .fillRect(x, 481, 5, 9)
+        .fillRect(x + 11, 481, 4, 9);
+      g.fillStyle(0xd69c58)
+        .fillRect(x - 15, 507, 3, 12)
+        .fillRect(x + 12, 507, 3, 12);
+    }
+    g.lineStyle(1, 0x604f3b).lineBetween(486, 464, 600, 464);
+    for (let i = 0; i < 10; i++) {
+      const x = 489 + i * 11;
+      g.fillStyle(colors[i % colors.length]).fillTriangle(
+        x,
+        465,
+        x + 8,
+        465,
+        x + 4,
+        474,
+      );
+      if (festival === 'lunar-new-year') {
+        g.fillStyle(0xc73e35).fillRoundedRect(x, 475, 7, 9, 2);
+        g.lineStyle(1, 0xffd26d).lineBetween(x + 3, 484, x + 3, 489);
+      }
+      if (festival === 'christmas-market') {
+        g.fillStyle(colors[i % 3], 0.15).fillCircle(x + 4, 469, 8);
+        g.fillStyle(0xfff3b3).fillCircle(x + 4, 469, 2);
+      }
+    }
+    if (festival === 'bonfire-night') {
+      g.lineStyle(4, 0x604333)
+        .lineBetween(558, 545, 575, 552)
+        .lineBetween(558, 552, 575, 545);
+      this.celebration = this.own(this.add.graphics().setDepth(1560));
     }
   }
   private paintLight() {
@@ -401,11 +519,16 @@ export class TownScene extends Phaser.Scene {
       this.sky.fillStyle(color, alpha).fillRect(0, 0, w, h);
     }
     this.lampLights.forEach((l) => l.setVisible(minute >= 1080));
+    this.windows?.setVisible(minute >= 1080);
   }
-  private feedback() {
+  private feedback(feedback: SceneFeedback) {
     if (!this.player) return;
-    const out = this.view.state.outcome!;
+    const out = feedback.outcome;
+    if (!out) return;
     const parts: string[] = [];
+    if (feedback.promotion) parts.push(t('game.promotion', this.view.locale));
+    for (const change of Object.values(feedback.hearts ?? {}))
+      parts.push(`♥ ${change.before} → ${change.after}`);
     for (const [key, value] of Object.entries(out.statDeltas ?? {}))
       if (value)
         parts.push(
@@ -419,53 +542,80 @@ export class TownScene extends Phaser.Scene {
         );
       }
     if (parts.length) {
-      const text = this.own(
-        this.add
-          .text(this.player.x, this.player.y - 20, parts.join('\n'), {
-            fontSize: '9px',
-            fontFamily: 'Arial, sans-serif',
-            color: '#fff9ce',
-            stroke: '#263e39',
-            strokeThickness: 3,
-            align: 'center',
-          })
-          .setOrigin(0.5, 1)
-          .setDepth(1800),
-      );
-      this.tweens.add({
-        targets: text,
-        y: text.y - 24,
-        alpha: 0,
-        duration: 2200,
-        onComplete: () => text.destroy(),
-      });
+      const text = this.add
+        .text(this.player.x, this.player.y - 20, parts.join('\n'), {
+          fontSize: '9px',
+          fontFamily: 'Arial, sans-serif',
+          color: '#fff9ce',
+          stroke: '#263e39',
+          strokeThickness: 3,
+          align: 'center',
+        })
+        .setOrigin(0.5, 1)
+        .setDepth(1800);
+      this.float(text, 2200, 24);
     }
     if (out.kind === 'talk' || out.kind === 'gift') {
       const actor = this.residents.get(out.npc ?? '')?.sprite ?? this.player;
-      const bubble = this.own(
-        this.add.sprite(actor.x, actor.y - 21, 'heart', 0).setDepth(1800),
-      );
-      this.tweens.add({
-        targets: bubble,
-        y: bubble.y - 8,
-        alpha: 0,
-        duration: 1800,
-        onComplete: () => bubble.destroy(),
-      });
+      const person = npcs.find((n) => n.id === out.npc);
+      const item = Object.keys(out.items ?? {})[0];
+      const expression =
+        out.kind === 'talk'
+          ? '♪'
+          : person?.gifts.loved.includes(item)
+            ? '♥ ♥'
+            : person?.gifts.liked.includes(item)
+              ? '♥'
+              : person?.gifts.disliked.includes(item)
+                ? '…'
+                : '☺';
+      const bubble = this.add
+        .text(actor.x, actor.y - 25, expression, {
+          fontSize: '10px',
+          color: '#b34150',
+          backgroundColor: '#fff8df',
+          padding: { x: 4, y: 3 },
+        })
+        .setOrigin(0.5, 1)
+        .setDepth(1800);
+      this.float(bubble, 1800, 8);
     }
-    if (out.kind === 'harvest' || out.kind === 'catch') {
-      const spark = this.own(
-        this.add
-          .sprite(this.player.x, this.player.y - 8, 'spark')
-          .setDepth(1800),
-      );
-      this.tweens.add({
-        targets: spark,
-        alpha: 0,
-        duration: 500,
-        onComplete: () => spark.destroy(),
-      });
+    if (
+      out.kind === 'harvest' ||
+      (out.kind === 'catch' && out.items) ||
+      feedback.promotion
+    ) {
+      const spark = this.add
+        .sprite(this.player.x, this.player.y - 8, 'spark')
+        .setDepth(1800);
+      this.float(spark, 500, 0);
     }
+  }
+  private float(
+    object: Phaser.GameObjects.Text | Phaser.GameObjects.Sprite,
+    duration: number,
+    rise: number,
+  ) {
+    if (this.transients.size >= 12) {
+      const oldest = this.transients.values().next().value!;
+      this.tweens.killTweensOf(oldest);
+      oldest.destroy();
+      this.transients.delete(oldest);
+    }
+    this.transients.add(object);
+    const reduced = window.matchMedia(
+      '(prefers-reduced-motion: reduce)',
+    ).matches;
+    this.tweens.add({
+      targets: object,
+      y: object.y - (reduced ? 0 : rise),
+      alpha: 0,
+      duration,
+      onComplete: () => {
+        object.destroy();
+        this.transients.delete(object);
+      },
+    });
   }
   halt() {
     this.path = [];
@@ -553,6 +703,13 @@ export class TownScene extends Phaser.Scene {
     )!;
     this.walkTo(spot);
   }
+  walkToNpc(id: string) {
+    const npc = this.residents.get(id);
+    if (!npc?.sprite.visible) return;
+    this.destination = undefined;
+    this.queued = { kind: 'npc', id };
+    this.walkTo(npc.target ?? npc.cell);
+  }
   interact() {
     if (this.view.paused) return;
     if (this.nearby) this.activate(this.nearby);
@@ -600,6 +757,7 @@ export class TownScene extends Phaser.Scene {
   update(time: number, delta: number) {
     if (!this.ready || !this.player) return;
     this.weather(time);
+    this.festivalEffects(time);
     if (this.view.paused) return;
     for (const [id, n] of this.residents) {
       if (!n.target) n.target = n.path.shift();
@@ -691,6 +849,35 @@ export class TownScene extends Phaser.Scene {
       this.onNearby(near);
     }
   }
+  private festivalEffects(time: number) {
+    const g = this.celebration;
+    if (!g) return;
+    g.clear();
+    if (this.view.state.day.minute < 1080) return;
+    const reduced = window.matchMedia(
+      '(prefers-reduced-motion: reduce)',
+    ).matches;
+    const flicker = reduced ? 0 : Math.sin(time / 120) * 2;
+    g.fillStyle(0xffa334, 0.13).fillCircle(566, 541, 28);
+    g.fillStyle(0xee6c32).fillTriangle(557, 547, 576, 547, 567 + flicker, 520);
+    g.fillStyle(0xffd976).fillTriangle(562, 547, 572, 547, 566 - flicker, 530);
+    if (reduced) return;
+    const phase = (time % 2600) / 2600;
+    const radius = phase * 34;
+    const cycle = Math.floor(time / 2600);
+    const x = cycle % 2 ? 510 : 590;
+    for (let i = 0; i < 16; i++) {
+      const angle = (i / 16) * Math.PI * 2;
+      g.fillStyle(
+        [0xffd978, 0xe9a4bc, 0xb1e2e9][cycle % 3],
+        1 - phase,
+      ).fillCircle(
+        x + Math.cos(angle) * radius,
+        430 + Math.sin(angle) * radius + phase * 8,
+        1.5,
+      );
+    }
+  }
   private weather(time: number) {
     if (!this.rain) return;
     this.rain.clear();
@@ -699,7 +886,7 @@ export class TownScene extends Phaser.Scene {
     if (weather !== 'rain' && weather !== 'snow') return;
     const w = this.scale.width / this.cameras.main.zoom,
       h = this.scale.height / this.cameras.main.zoom;
-    for (let i = 0; i < 70; i++) {
+    for (let i = 0; i < (this.scale.width < 600 ? 36 : 70); i++) {
       const x =
           (i * 47 +
             Math.sin(i) * 18 +
