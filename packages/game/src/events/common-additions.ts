@@ -4,6 +4,7 @@ import type { GameEvent } from '../types';
 export const additionalCommonEvents: GameEvent[] = [
   {
     id: 'common-library-card',
+    channel: 'place:library',
     weight: 2,
     once: true,
     season: 2,
@@ -28,6 +29,7 @@ export const additionalCommonEvents: GameEvent[] = [
   },
   {
     id: 'common-library-table',
+    channel: 'place:library',
     weight: 3,
     once: true,
     requires: ['friend-library'],
@@ -57,6 +59,7 @@ export const additionalCommonEvents: GameEvent[] = [
   },
   {
     id: 'common-seed-swap',
+    channel: 'place:allotment',
     weight: 2,
     once: true,
     season: 2,
@@ -84,6 +87,7 @@ export const additionalCommonEvents: GameEvent[] = [
   },
   {
     id: 'common-courgette-harvest',
+    channel: 'morning',
     weight: 3,
     once: true,
     season: 3,
@@ -112,6 +116,7 @@ export const additionalCommonEvents: GameEvent[] = [
   },
   {
     id: 'common-spare-key',
+    channel: 'morning',
     weight: 2,
     once: true,
     title: { zhCN: '隔壁的备用钥匙', en: 'The spare key next door' },
@@ -141,6 +146,7 @@ export const additionalCommonEvents: GameEvent[] = [
   },
   {
     id: 'common-watering-rota',
+    channel: 'morning',
     weight: 3,
     once: true,
     requires: ['friend-neighbour'],
@@ -173,6 +179,7 @@ export const additionalCommonEvents: GameEvent[] = [
   },
   {
     id: 'common-used-car',
+    channel: 'morning',
     weight: 2,
     once: true,
     when: [{ yearMin: 2 }],
@@ -203,6 +210,7 @@ export const additionalCommonEvents: GameEvent[] = [
   },
   {
     id: 'common-car-rattle',
+    channel: 'morning',
     weight: 3,
     once: true,
     requires: ['used-car-bought'],
@@ -235,6 +243,7 @@ export const additionalCommonEvents: GameEvent[] = [
   },
   {
     id: 'common-parking-envelope',
+    channel: 'letter',
     weight: 2,
     once: true,
     forbids: ['used-car-bought'],
@@ -260,6 +269,7 @@ export const additionalCommonEvents: GameEvent[] = [
   },
   {
     id: 'common-parking-answer',
+    channel: 'letter',
     weight: 3,
     once: true,
     requires: ['parking-appealed'],
@@ -289,6 +299,7 @@ export const additionalCommonEvents: GameEvent[] = [
   },
   {
     id: 'common-tax-code-check',
+    channel: 'place:work',
     weight: 2,
     once: true,
     season: 2,
@@ -316,6 +327,7 @@ export const additionalCommonEvents: GameEvent[] = [
   },
   {
     id: 'common-tax-code-refund',
+    channel: 'phone',
     weight: 3,
     once: true,
     requires: ['tax-code-checked'],
@@ -345,6 +357,7 @@ export const additionalCommonEvents: GameEvent[] = [
   },
   {
     id: 'common-rent-review',
+    channel: 'letter',
     weight: 2,
     once: true,
     when: [{ yearMin: 4 }],
@@ -371,6 +384,7 @@ export const additionalCommonEvents: GameEvent[] = [
   },
   {
     id: 'common-rent-signature',
+    channel: 'morning',
     weight: 3,
     once: true,
     requires: ['rent-review-discussed'],
@@ -400,6 +414,7 @@ export const additionalCommonEvents: GameEvent[] = [
   },
   {
     id: 'common-meter-photo',
+    channel: 'letter',
     weight: 2,
     once: true,
     season: 1,
@@ -430,6 +445,7 @@ export const additionalCommonEvents: GameEvent[] = [
   },
   {
     id: 'common-meter-credit',
+    channel: 'phone',
     weight: 3,
     once: true,
     requires: ['meter-reading-sent'],
@@ -459,6 +475,7 @@ export const additionalCommonEvents: GameEvent[] = [
   },
   {
     id: 'common-walking-poster',
+    channel: 'place:board',
     weight: 2,
     once: true,
     season: 2,
@@ -483,6 +500,7 @@ export const additionalCommonEvents: GameEvent[] = [
   },
   {
     id: 'common-muddy-boots',
+    channel: 'place:home',
     weight: 3,
     once: true,
     requires: ['walking-group-joined'],
@@ -518,6 +536,7 @@ export const additionalCommonEvents: GameEvent[] = [
   },
   {
     id: 'common-dental-call',
+    channel: 'phone',
     weight: 2,
     once: true,
     when: [{ yearMin: 2 }],
@@ -545,6 +564,7 @@ export const additionalCommonEvents: GameEvent[] = [
   },
   {
     id: 'common-dental-chair',
+    channel: 'morning',
     weight: 3,
     once: true,
     requires: ['dental-check-booked'],
@@ -577,6 +597,7 @@ export const additionalCommonEvents: GameEvent[] = [
   },
   {
     id: 'common-empty-calendar',
+    channel: 'place:work',
     weight: 2,
     once: true,
     when: [{ yearMin: 5, yearMax: 6 }],
@@ -607,6 +628,7 @@ export const additionalCommonEvents: GameEvent[] = [
   },
   {
     id: 'common-unplanned-saturday',
+    channel: 'place:home',
     weight: 3,
     once: true,
     requires: ['quiet-weekend-planned'],
@@ -642,6 +664,7 @@ export const additionalCommonEvents: GameEvent[] = [
   },
   {
     id: 'common-friend-departure',
+    channel: 'morning',
     weight: 3,
     once: true,
     when: [{ yearMin: 8, yearMax: 9 }],
@@ -672,6 +695,7 @@ export const additionalCommonEvents: GameEvent[] = [
   },
   {
     id: 'common-friend-postcard',
+    channel: 'letter',
     weight: 3,
     once: true,
     requires: ['friend-new-address'],
@@ -699,6 +723,7 @@ export const additionalCommonEvents: GameEvent[] = [
   },
   {
     id: 'common-first-kettle',
+    channel: 'place:home',
     weight: 2,
     once: true,
     when: [{ yearMax: 1 }],
@@ -728,6 +753,7 @@ export const additionalCommonEvents: GameEvent[] = [
   },
   {
     id: 'common-red-postbox',
+    channel: 'morning',
     weight: 2,
     once: true,
     when: [{ yearMax: 1 }],
@@ -760,6 +786,7 @@ export const additionalCommonEvents: GameEvent[] = [
   },
   {
     id: 'common-supermarket-aisle',
+    channel: 'morning',
     weight: 2,
     once: true,
     when: [{ yearMax: 1 }],
@@ -795,6 +822,7 @@ export const additionalCommonEvents: GameEvent[] = [
   },
   {
     id: 'common-dark-afternoon',
+    channel: 'place:home',
     weight: 2,
     once: true,
     season: 1,
@@ -824,6 +852,7 @@ export const additionalCommonEvents: GameEvent[] = [
   },
   {
     id: 'common-window-mould',
+    channel: 'place:home',
     weight: 2,
     once: true,
     season: 1,
@@ -856,6 +885,7 @@ export const additionalCommonEvents: GameEvent[] = [
   },
   {
     id: 'common-phone-at-midnight',
+    channel: 'place:home',
     weight: 2,
     once: true,
     title: { zhCN: '枕边的蓝光', en: 'Blue light on the pillow' },
@@ -884,6 +914,7 @@ export const additionalCommonEvents: GameEvent[] = [
   },
   {
     id: 'common-shoulder-stretch',
+    channel: 'place:work',
     weight: 2,
     once: true,
     when: [{ yearMin: 3 }],
@@ -916,6 +947,7 @@ export const additionalCommonEvents: GameEvent[] = [
   },
   {
     id: 'common-lunch-soup',
+    channel: 'place:work',
     weight: 2,
     once: true,
     season: 4,
@@ -951,6 +983,7 @@ export const additionalCommonEvents: GameEvent[] = [
   },
   {
     id: 'common-new-glasses',
+    channel: 'morning',
     weight: 2,
     once: true,
     when: [{ yearMin: 3 }],
@@ -983,6 +1016,7 @@ export const additionalCommonEvents: GameEvent[] = [
   },
   {
     id: 'common-autumn-gust',
+    channel: 'morning',
     weight: 2,
     once: true,
     season: 4,
@@ -1018,6 +1052,7 @@ export const additionalCommonEvents: GameEvent[] = [
   },
   {
     id: 'common-spare-torch',
+    channel: 'place:home',
     weight: 2,
     once: true,
     season: 1,
@@ -1047,6 +1082,7 @@ export const additionalCommonEvents: GameEvent[] = [
   },
   {
     id: 'common-hay-fever',
+    channel: 'place:green',
     weight: 2,
     once: true,
     season: 3,
@@ -1082,6 +1118,7 @@ export const additionalCommonEvents: GameEvent[] = [
   },
   {
     id: 'common-car-insurance',
+    channel: 'letter',
     weight: 2,
     once: true,
     requires: ['used-car-bought'],
@@ -1115,6 +1152,7 @@ export const additionalCommonEvents: GameEvent[] = [
   },
   {
     id: 'common-car-tyres',
+    channel: 'morning',
     weight: 2,
     once: true,
     requires: ['used-car-bought'],
@@ -1151,6 +1189,7 @@ export const additionalCommonEvents: GameEvent[] = [
   },
   {
     id: 'common-delayed-bus-refund',
+    channel: 'phone',
     weight: 2,
     once: true,
     season: 2,
@@ -1180,6 +1219,7 @@ export const additionalCommonEvents: GameEvent[] = [
   },
   {
     id: 'common-winter-boots',
+    channel: 'place:work',
     weight: 2,
     once: true,
     season: 1,
@@ -1212,6 +1252,7 @@ export const additionalCommonEvents: GameEvent[] = [
   },
   {
     id: 'common-heater-timer',
+    channel: 'place:home',
     weight: 2,
     once: true,
     season: 4,
@@ -1241,6 +1282,7 @@ export const additionalCommonEvents: GameEvent[] = [
   },
   {
     id: 'common-bin-calendar',
+    channel: 'morning',
     weight: 2,
     once: true,
     title: { zhCN: '垃圾桶的颜色', en: 'The colours of the bins' },
@@ -1272,6 +1314,7 @@ export const additionalCommonEvents: GameEvent[] = [
   },
   {
     id: 'common-charity-jumper',
+    channel: 'morning',
     weight: 2,
     once: true,
     season: 4,
@@ -1301,6 +1344,7 @@ export const additionalCommonEvents: GameEvent[] = [
   },
   {
     id: 'common-paperback-note',
+    channel: 'morning',
     weight: 2,
     once: true,
     title: { zhCN: '旧书里的纸条', en: 'A note in a used book' },
@@ -1326,6 +1370,7 @@ export const additionalCommonEvents: GameEvent[] = [
   },
   {
     id: 'common-pub-quiz',
+    channel: 'place:pub',
     weight: 2,
     once: true,
     season: 1,
@@ -1356,6 +1401,7 @@ export const additionalCommonEvents: GameEvent[] = [
   },
   {
     id: 'common-phone-spelling',
+    channel: 'phone',
     weight: 2,
     once: true,
     title: { zhCN: '电话里的字母表', en: 'The telephone alphabet' },
@@ -1384,6 +1430,7 @@ export const additionalCommonEvents: GameEvent[] = [
   },
   {
     id: 'common-local-radio',
+    channel: 'place:home',
     weight: 2,
     once: true,
     season: 2,
@@ -1407,6 +1454,7 @@ export const additionalCommonEvents: GameEvent[] = [
   },
   {
     id: 'common-station-name',
+    channel: 'place:station',
     weight: 2,
     once: true,
     title: { zhCN: '站名怎么念', en: 'How to say the station name' },
@@ -1429,6 +1477,7 @@ export const additionalCommonEvents: GameEvent[] = [
   },
   {
     id: 'common-community-choir',
+    channel: 'morning',
     weight: 2,
     once: true,
     season: 4,
@@ -1458,6 +1507,7 @@ export const additionalCommonEvents: GameEvent[] = [
   },
   {
     id: 'common-museum-label',
+    channel: 'morning',
     weight: 2,
     once: true,
     season: 3,
@@ -1487,6 +1537,7 @@ export const additionalCommonEvents: GameEvent[] = [
   },
   {
     id: 'common-bus-small-talk',
+    channel: 'morning',
     weight: 2,
     once: true,
     title: { zhCN: '同一班车的人', en: 'Faces on the same bus' },
@@ -1515,6 +1566,7 @@ export const additionalCommonEvents: GameEvent[] = [
   },
   {
     id: 'common-book-club-biscuits',
+    channel: 'place:library',
     weight: 2,
     once: true,
     when: [{ yearMin: 3 }],
@@ -1544,6 +1596,7 @@ export const additionalCommonEvents: GameEvent[] = [
   },
   {
     id: 'common-year-five-box',
+    channel: 'place:home',
     weight: 2,
     once: true,
     when: [{ yearMin: 5, yearMax: 5 }],
@@ -1576,6 +1629,7 @@ export const additionalCommonEvents: GameEvent[] = [
   },
   {
     id: 'common-year-six-detour',
+    channel: 'morning',
     weight: 2,
     once: true,
     when: [{ yearMin: 6, yearMax: 6 }],
@@ -1606,6 +1660,7 @@ export const additionalCommonEvents: GameEvent[] = [
   },
   {
     id: 'common-year-seven-cafe',
+    channel: 'place:cafe',
     weight: 2,
     once: true,
     when: [{ yearMin: 7, yearMax: 7 }],
@@ -1638,6 +1693,7 @@ export const additionalCommonEvents: GameEvent[] = [
   },
   {
     id: 'common-year-eight-arrival',
+    channel: 'morning',
     weight: 2,
     once: true,
     when: [{ yearMin: 8, yearMax: 8 }],
@@ -1664,6 +1720,7 @@ export const additionalCommonEvents: GameEvent[] = [
   },
   {
     id: 'common-year-nine-tree',
+    channel: 'morning',
     weight: 2,
     once: true,
     when: [{ yearMin: 9, yearMax: 9 }],
@@ -1693,6 +1750,7 @@ export const additionalCommonEvents: GameEvent[] = [
   },
   {
     id: 'common-year-ten-album',
+    channel: 'morning',
     weight: 3,
     once: true,
     when: [{ yearMin: 10 }],
@@ -1725,6 +1783,7 @@ export const additionalCommonEvents: GameEvent[] = [
   },
   {
     id: 'common-duplicate-payment',
+    channel: 'phone',
     weight: 2,
     once: true,
     when: [{ yearMin: 2 }],
@@ -1760,6 +1819,7 @@ export const additionalCommonEvents: GameEvent[] = [
   },
   {
     id: 'common-gutter-rain',
+    channel: 'place:home',
     weight: 2,
     once: true,
     season: 4,

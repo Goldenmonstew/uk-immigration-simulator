@@ -28,8 +28,8 @@ export const achievements: Achievement[] = [
     id: 'three-friends',
     name: { zhCN: '三个朋友', en: 'Three friends' },
     description: {
-      zhCN: '结识图书馆的艾莉、花园的山姆和邻居诺拉。',
-      en: 'Befriend Ellie at the library, Sam at the garden and Nora next door.',
+      zhCN: '在图书馆、菜地与邻里间交到三位朋友。',
+      en: 'Make three friends through library, allotment and neighbourhood life.',
     },
     check: (s) =>
       ['friend-library', 'friend-garden', 'friend-neighbour'].every((f) =>

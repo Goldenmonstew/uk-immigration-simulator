@@ -1,8 +1,28 @@
 export type * from './types';
 export {
   newGame,
-  actions,
-  act,
+  activities,
+  doActivity,
+  enter,
+  tick,
+  talk,
+  gift,
+  buy,
+  plant,
+  water,
+  harvest,
+  fish,
+  cook,
+  eat,
+  readMail,
+  sleep,
+  fastForward,
+  mailbox,
+  shop,
+  townsfolk,
+  npcAt,
+  peopleAt,
+  hearts,
   currentEvent,
   resolve,
   endQuarter,
@@ -12,5 +32,8 @@ export {
   visaMonthsLeft,
   characters,
 } from './game';
-export { locations } from './locations';
+export { places } from './locations';
+export { npcs } from './npcs';
+export { items, recipes } from './items';
+export { festivals } from './festivals';
 export { achievements } from './achievements';

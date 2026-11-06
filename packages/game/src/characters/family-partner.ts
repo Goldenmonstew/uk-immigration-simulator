@@ -16,6 +16,7 @@ const financialNote = t(
 const events: GameEvent[] = [
   {
     id: 'family-hours',
+    channel: 'place:work',
     title: t('多出来的班表', 'An extra shift pattern'),
     text: t(
       '经理递来全职班表，索菲娅数了数还能一起吃晚饭的日子。',
@@ -50,6 +51,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-hours-trial',
+    channel: 'morning',
     title: t('试过之后', 'After the trial'),
     text: t(
       '连着几周全职，冰箱有了整排饭盒，杰米学会了找锅盖。',
@@ -87,6 +89,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-first-full-payslip',
+    channel: 'letter',
     title: t('第一张完整工资单', 'The first full payslip'),
     text: t(
       '工资单比以前长了半页，索菲娅把它放进不再夹食谱的文件夹。',
@@ -121,6 +124,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-savings-jar',
+    channel: 'morning',
     title: t('罐子上的标签', 'The label on the jar'),
     text: t(
       '杰米把饼干罐标成存钱罐，里面暂时只有两张超市小票。',
@@ -152,6 +156,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-savings-statement',
+    channel: 'place:home',
     title: t('攒下来的余额', 'The balance built up'),
     text: t(
       '储蓄记录终于装满一页，索菲娅拿出荧光笔，却先画了个笑脸。',
@@ -187,6 +192,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-car-or-savings',
+    channel: 'morning',
     title: t('展厅玻璃上的雨', 'Rain on the showroom glass'),
     text: t(
       '旧车价签贴得歪歪扭扭，杰米说它至少有四个轮子和暖气。',
@@ -227,6 +233,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-savings-short',
+    channel: 'place:home',
     title: t('还差一截的进度', 'A little further to go'),
     text: t(
       '存钱罐很沉，银行记录却提醒索菲娅，硬币的声音不等于余额。',
@@ -262,6 +269,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-jamie-rumour',
+    channel: 'morning',
     title: t('会议后的沉默', 'Silence after the meeting'),
     text: t(
       '杰米下班后没开收音机，公司让大家等周五的消息。',
@@ -295,6 +303,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-jamie-lost-job',
+    channel: 'morning',
     title: t('纸箱里的马克杯', 'A mug in a cardboard box'),
     text: t(
       '杰米把办公室的杯子带回家，纸箱比想象中轻。',
@@ -333,6 +342,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-jamie-interview',
+    channel: 'morning',
     title: t('面试前的领带', 'A tie before the interview'),
     text: t(
       '杰米找到零工，也等到正式面试，久没戴的领带终于有了用场。',
@@ -372,6 +382,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-jamie-new-job',
+    channel: 'letter',
     title: t('新的午餐盒', 'A new lunch box'),
     text: t(
       '录用邮件到了，杰米先去洗了那个闲了几周的饭盒。',
@@ -409,6 +420,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-jamie-health',
+    channel: 'morning',
     title: t('楼梯中间的停顿', 'A pause on the stairs'),
     text: t(
       '杰米的旧病反复，去楼上取件外套也要歇一会儿。',
@@ -442,6 +454,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-pip-form',
+    channel: 'morning',
     title: t('表格与冷掉的茶', 'Forms and cold tea'),
     text: t(
       'PIP 表格摊满餐桌，杰米写完一页，茶就凉了一次。',
@@ -477,6 +490,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-pip-decision',
+    channel: 'letter',
     title: t('杰米的决定信', 'Jamie’s decision letter'),
     text: t(
       '决定信到了，索菲娅先清出餐桌的一角，给杰米慢慢看。',
@@ -521,6 +535,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-pip-review',
+    channel: 'morning',
     title: t('复核的日历格', 'A date for review'),
     text: t(
       'PIP 复核的提醒夹在日历里，杰米把复诊和买面包写在同一页。',
@@ -556,6 +571,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-b2-letter',
+    channel: 'letter',
     title: t('书页里的便签', 'A note between the pages'),
     text: t(
       '索菲娅把英语要求的更新夹进课本，杰米在旁边画了一只鼓劲的猫。',
@@ -594,6 +610,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-b2-study',
+    channel: 'morning',
     title: t('餐桌上的口试', 'A speaking test at the dinner table'),
     text: t(
       '杰米拿菜谱模拟口试，索菲娅讲了三分钟为什么不能再吃焗豆。',
@@ -625,6 +642,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-b2-result',
+    channel: 'letter',
     title: t('成绩邮件的提示音', 'The results email chimes'),
     text: t(
       '练过的题目终于派上用场，索菲娅在公交车上反复打开成绩邮件。',
@@ -663,6 +681,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-kol-book',
+    channel: 'place:home',
     title: t('第二本床头书', 'A second bedside book'),
     text: t(
       'Life in the UK 书占了床头柜，杰米的侦探小说被挤到了地板上。',
@@ -687,6 +706,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-kol-quiz',
+    channel: 'morning',
     title: t('杰米答错的题', 'The question Jamie gets wrong'),
     text: t(
       '索菲娅提问，杰米连错三题，终于不再说这本书应该很简单。',
@@ -712,6 +732,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-kol-result',
+    channel: 'morning',
     title: t('书签可以退休了', 'The bookmark can retire'),
     text: t(
       '考试结束，索菲娅走出门时发现，那张旧购物小票书签已经揉软了。',
@@ -751,6 +772,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-parents-call',
+    channel: 'phone',
     title: t('电话里的背景声', 'Sounds behind the call'),
     text: t(
       '探亲回来，索菲娅和母亲通电话，回顾这次父亲咳嗽时大家怎样照顾。',
@@ -787,6 +809,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-parents-care',
+    channel: 'place:home',
     title: t('回程箱里的药盒', 'Medicine boxes in the returning suitcase'),
     text: t(
       '照顾家人的日子结束，索菲娅回到英国，把旅行日期补进日记。',
@@ -834,6 +857,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-care-home',
+    channel: 'morning',
     title: t('熟悉的杯子', 'The familiar cup'),
     text: t(
       '回家第一晚，杰米把索菲娅的杯子放在老位置，连茶渍都没变。',
@@ -873,6 +897,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-small-socks',
+    channel: 'morning',
     title: t('小得离谱的袜子', 'Impossibly small socks'),
     text: t(
       '宝宝的袜子比杰米的手掌还小，两个人对着购物篮傻笑。',
@@ -911,6 +936,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-baby-arrival',
+    channel: 'morning',
     title: t('多了一盏夜灯', 'One more night light'),
     text: t(
       '孩子出生了，夜灯亮着，杰米把所有轻声关门都练成了慢动作。',
@@ -950,6 +976,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-pram-hall',
+    channel: 'morning',
     title: t('走廊的新家具', 'The hallway’s new furniture'),
     text: t(
       '婴儿车堵在门口，索菲娅和杰米研究出侧着身子进家的新步法。',
@@ -991,6 +1018,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-neighbour-drill',
+    channel: 'morning',
     title: t('周日的电钻', 'A Sunday drill'),
     text: t(
       '隔壁周日一早又开电钻，杰米的枕头盖住耳朵也没用。',
@@ -1015,6 +1043,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-neighbour-mediation',
+    channel: 'morning',
     title: t('门口的对话', 'A conversation at the door'),
     text: t(
       '邻居开门时还拿着电钻，索菲娅把事先写好的话又读了一遍。',
@@ -1042,6 +1071,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-impulse',
+    channel: 'morning',
     title: t('冲动的一刻', 'A moment of impulse'),
     text: t(
       '争执后又一次碰面，索菲娅听见自己攥紧钥匙的声音。',
@@ -1072,6 +1102,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-renewal-calendar',
+    channel: 'morning',
     title: t('日历上的星号', 'An asterisk on the calendar'),
     text: t(
       '索菲娅给续签提醒画了星号，杰米问是不是又一个纪念日。',
@@ -1104,6 +1135,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-renewed-folder',
+    channel: 'place:home',
     title: t('少一张便签', 'One fewer sticky note'),
     text: t(
       '续签材料归档后，冰箱少了一张便签，露出下面的婚礼照片。',
@@ -1133,6 +1165,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-public-funds-letter',
+    channel: 'letter',
     title: t('预算旁的传单', 'A leaflet beside the budget'),
     text: t(
       '社区中心的福利传单压在账单下面，索菲娅把自己的许可也拿来对照。',
@@ -1172,6 +1205,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-uc-scenario',
+    channel: 'morning',
     title: t('账本上的两种写法', 'Two versions of the ledger'),
     text: t(
       '索菲娅和杰米把这季的账单摊在桌上，茶凉了，计算器还没歇。',
@@ -1216,6 +1250,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-rent-letter',
+    channel: 'letter',
     title: t('房租信上的新数字', 'A new number in the rent letter'),
     text: t(
       '房东的邮件比平时客气，索菲娅看到最后一行才明白原因。',
@@ -1248,6 +1283,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-move-boxes',
+    channel: 'morning',
     title: t('标着厨房的纸箱', 'A box marked kitchen'),
     text: t(
       '写着厨房的箱子里全是书，杰米坚持说这也算精神食粮。',
@@ -1285,6 +1321,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-anniversary',
+    channel: 'phone',
     title: t('手机里的日期提醒', 'A date reminder on the phone'),
     text: t(
       '纪念日又到了，两个人翻看日历，刚结束的旅行和今晚的晚饭挤在一起。',
@@ -1326,6 +1363,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-anniversary-photo',
+    channel: 'morning',
     title: t('没有对焦的照片', 'The out-of-focus photo'),
     text: t(
       '上次纪念日的照片洗出来了，菜糊了，人也糊了，笑容倒很清楚。',
@@ -1352,6 +1390,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-british-connection',
+    channel: 'place:council',
     title: t('两栏之间的铅笔线', 'A pencil line between two columns'),
     text: t(
       '索菲娅在市政厅看到两栏不同的解释，杰米把椅子搬近了一点。',
@@ -1391,6 +1430,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-five-year-folder',
+    channel: 'place:home',
     title: t('文件夹变厚了', 'A thicker folder'),
     text: t(
       '索菲娅翻到第一张许可复印件，日期旁还留着当年手写的小太阳。',
@@ -1424,6 +1464,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-rain-bus',
+    channel: 'morning',
     title: t('同一把伞', 'The same umbrella'),
     text: t(
       '公交还没来，杰米把伞往索菲娅那边倾，自己半边肩膀已经湿透。',
@@ -1450,6 +1491,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-yellow-stickers',
+    channel: 'morning',
     title: t('黄标晚餐', 'A yellow-sticker dinner'),
     text: t(
       '超市黄标区剩下西兰花和一块蛋糕，杰米说营养已经很平衡。',
@@ -1481,6 +1523,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-phone-accent',
+    channel: 'phone',
     title: t('电话另一头', 'At the other end of the phone'),
     text: t(
       '索菲娅打电话改预约，对方说得飞快，杰米在旁边也没听懂。',
@@ -1506,6 +1549,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-recipe-note',
+    channel: 'morning',
     title: t('面粉袋上的食谱', 'A recipe on the flour bag'),
     text: t(
       '两个人照袋子上的食谱烤面包，成品有点像可以撑门的砖。',
@@ -1534,6 +1578,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-weekend-rota',
+    channel: 'morning',
     title: t('周末班表', 'The weekend rota'),
     text: t(
       '两个人难得同时休息，窗外却下起雨，连鸽子都躲在站牌下面。',
@@ -1559,6 +1604,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-shared-lunch',
+    channel: 'place:work',
     title: t('午餐盒换了主人', 'Lunch boxes swap owners'),
     text: t(
       '索菲娅拿错杰米的午餐，同事看着整盒三明治，问是不是要开会。',
@@ -1584,6 +1630,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-charlie-library',
+    channel: 'place:library',
     title: t('图书馆的同一张桌', 'The same table at the library'),
     text: t(
       '查理每周都坐在窗边，这次主动把插座让给索菲娅。',
@@ -1613,6 +1660,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-charlie-book',
+    channel: 'morning',
     title: t('查理的推荐书', 'Charlie’s recommended book'),
     text: t(
       '查理借来的小说夹着一张路线图，说里面那家咖啡馆真的存在。',
@@ -1639,6 +1687,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-mina-art',
+    channel: 'morning',
     title: t('沾颜料的袖口', 'Paint on a sleeve'),
     text: t(
       '社区画室里，米娜把颜料蹭到袖口，索菲娅递来的纸巾也染蓝了。',
@@ -1666,6 +1715,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-mina-exhibition',
+    channel: 'morning',
     title: t('墙上的小画', 'A little painting on the wall'),
     text: t(
       '米娜的小画在社区展出了，索菲娅一眼认出那块蓝得出格的天空。',
@@ -1692,6 +1742,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-noor-walk',
+    channel: 'place:green',
     title: t('公园绕圈', 'Laps of the park'),
     text: t(
       '努尔在公园走得很快，每说完一句话都要等索菲娅赶上来。',
@@ -1719,6 +1770,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-noor-lake',
+    channel: 'place:pond',
     title: t('湖边的岔路', 'A fork by the lake'),
     text: t(
       '努尔说这次是轻松路线，索菲娅看着眼前的坡，决定暂时不评论。',
@@ -1749,6 +1801,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-winter-duvet',
+    channel: 'morning',
     title: t('被子的边界', 'The duvet border'),
     text: t(
       '冬夜的被子总往杰米那边跑，索菲娅开始认真考虑两床被子的外交方案。',
@@ -1778,6 +1831,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-spring-bulbs',
+    channel: 'morning',
     title: t('窗台上的绿尖', 'Green tips on the windowsill'),
     text: t(
       '秋天种的球根终于发芽，杰米每天都问是不是又长高了一点。',
@@ -1804,6 +1858,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-summer-picnic',
+    channel: 'place:green',
     title: t('草地上的午饭', 'Lunch on the grass'),
     text: t(
       '天气预报说有太阳，两个人把野餐毯带出门，顺便也带了雨衣。',
@@ -1830,6 +1885,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-autumn-jam',
+    channel: 'morning',
     title: t('多了一排果酱', 'An extra row of jam jars'),
     text: t(
       '杰米买错了苹果的数量，厨房现在像个规模很小的果酱工厂。',
@@ -1856,6 +1912,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-late-shift',
+    channel: 'place:home',
     title: t('门口的拖鞋', 'Slippers by the door'),
     text: t(
       '忙完一周的班，索菲娅回家只想确认拖鞋没有被吸尘器藏起来。',
@@ -1878,6 +1935,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-shoe-repair',
+    channel: 'morning',
     title: t('鞋底的小洞', 'A little hole in the sole'),
     text: t(
       '杰米直到踩进水坑才发现鞋底破了，回家时一只脚发出了海浪声。',
@@ -1903,6 +1961,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-council-tax',
+    channel: 'letter',
     title: t('棕色信封', 'A brown envelope'),
     text: t(
       'council tax 的信封混在披萨广告里，索菲娅差点把两张都当优惠券。',
@@ -1937,6 +1996,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-wedding-invite',
+    channel: 'letter',
     title: t('又一张请柬', 'Another wedding invitation'),
     text: t(
       '朋友的婚礼在城外，杰米翻出西装，口袋里还有上次的停车票。',
@@ -1966,6 +2026,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-garage-quote',
+    channel: 'morning',
     title: t('修车单上的逗号', 'A comma on the garage quote'),
     text: t(
       '借来的车亮了警告灯，修车师傅叹气的速度让索菲娅有点担心。',
@@ -1995,6 +2056,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-kettle',
+    channel: 'morning',
     title: t('水壶最后的演出', 'The kettle’s final performance'),
     text: t(
       '水壶响了半天却没烧开，杰米说它只是想参与厨房的谈话。',
@@ -2020,6 +2082,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-gp-wait',
+    channel: 'place:gp',
     title: t('候诊室里的杂志', 'A magazine in the waiting room'),
     text: t(
       'GP 候诊室的杂志还在介绍上个夏天，索菲娅已经穿上第二件毛衣。',
@@ -2052,6 +2115,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-nhs-text',
+    channel: 'phone',
     title: t('来得很早的短信', 'A very early text'),
     text: t(
       'NHS 的预约短信清晨就到了，杰米以为闹钟提前了一个时代。',
@@ -2080,6 +2144,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-exam-setback',
+    channel: 'place:home',
     title: t('模拟题上的红圈', 'Red circles on the mock test'),
     text: t(
       '模拟听力错得比上次多，索菲娅发现自己一直把烤箱声当背景噪音。',
@@ -2106,6 +2171,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-joke',
+    channel: 'place:work',
     title: t('慢半拍的笑声', 'Laughter a beat late'),
     text: t(
       '同事讲完笑话，索菲娅走到咖啡机旁才懂，结果对着空杯子笑出声。',
@@ -2134,6 +2200,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-laundry',
+    channel: 'morning',
     title: t('袜子的平行宇宙', 'The parallel universe of socks'),
     text: t(
       '洗完衣服又少了一只袜子，杰米建议给失踪的袜子单独建个相册。',
@@ -2156,6 +2223,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-post-office',
+    channel: 'morning',
     title: t('邮局里的队伍', 'The post-office queue'),
     text: t(
       '寄给家人的包裹排了很久，轮到索菲娅时，她已经读懂了整张价目表。',
@@ -2187,6 +2255,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-fridge-hum',
+    channel: 'morning',
     title: t('冰箱的低音', 'The fridge’s bass note'),
     text: t(
       '冰箱整晚嗡嗡响，杰米说它正在练低音，索菲娅只想让乐队休息。',
@@ -2221,6 +2290,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-work-training',
+    channel: 'place:work',
     title: t('名字写在名单上', 'A name on the training list'),
     text: t(
       '培训名单上有索菲娅的名字，旁边的同事小声提醒教室其实在楼下。',
@@ -2249,6 +2319,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-late-dinner',
+    channel: 'morning',
     title: t('保温中的晚饭', 'Dinner kept warm'),
     text: t(
       '索菲娅到家时晚饭已经热过两次，杰米把锅盖揭得像宣布彩票开奖。',
@@ -2274,6 +2345,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-home-spice',
+    channel: 'morning',
     title: t('厨房里熟悉的味道', 'A familiar smell in the kitchen'),
     text: t(
       '熟悉的香料终于买齐，杰米进门就问今天是不是有什么好消息。',
@@ -2299,6 +2371,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-camping',
+    channel: 'morning',
     title: t('帐篷说明书', 'The tent instructions'),
     text: t(
       '营地就在英国海边，两个人研究帐篷说明书时，海鸥先看懂了零食袋。',
@@ -2329,6 +2402,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-heating',
+    channel: 'morning',
     title: t('暖气旋钮', 'The heating dial'),
     text: t(
       '杰米把暖气调低一点，索菲娅把毛衣加厚一点，来串门的猫占了最暖的位置。',
@@ -2361,6 +2435,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-fifth-anniversary',
+    channel: 'place:bench',
     title: t('同一条河的长椅', 'A bench by the same river'),
     text: t(
       '又走到初来时的河边，索菲娅发现杰米连长椅掉漆的位置都记得。',
@@ -2390,6 +2465,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-friends-leaving',
+    channel: 'morning',
     title: t('少了一张椅子', 'One fewer chair'),
     text: t(
       '常聚的朋友搬去别的城市，晚餐少摆一张椅子，房间忽然有点空。',
@@ -2419,6 +2495,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-new-cafe',
+    channel: 'place:cafe',
     title: t('换了招牌的街角', 'A new sign on the corner'),
     text: t(
       '街角换了第三家咖啡馆，索菲娅已经能给新人讲这栋店面的历史。',
@@ -2451,6 +2528,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-ten-year-box',
+    channel: 'place:home',
     title: t('没拆完的最后一箱', 'The last unopened box'),
     text: t(
       '搬来时最后一箱终于打开，里面有旧充电器、婚礼卡片和一把不知哪里的钥匙。',
@@ -2477,6 +2555,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-late-call',
+    channel: 'phone',
     title: t('睡前的一通电话', 'A call before bed'),
     text: t(
       '家里的电话打来时英国已经很晚，索菲娅披着毯子坐到了窗边。',
@@ -2508,6 +2587,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-back-step',
+    channel: 'morning',
     title: t('后门的小台阶', 'The step by the back door'),
     text: t(
       '难得没有急事的傍晚，两个人坐在后门台阶上，看蜗牛完成它的通勤。',
