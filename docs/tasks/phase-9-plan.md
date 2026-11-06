@@ -312,3 +312,4 @@ currentEvent, resolve, endQuarter, progress, isOver, narrative, visaMonthsLeft
 - Wave 1（并行）：sol 9.1；astra 9.2（mock）。合并顺序先 9.2 后 9.1：9.1 删掉 v2 的 `act` / `actions` 会让 v2 客户端编译失败，而 9.2 已把客户端换到 mock 上。
 - Wave 2（并行）：sol 9.3；astra 9.4。
 - Wave 3：Fable 9.5；修改发回各 writer；`phase-9` 合并进 main、推送、部署。
+- 进度（2026-11-06）：Wave 1、Wave 2 全部合到 `phase-9`（9.2 fd454a8、9.1 0fa5854、9.4 13f6c38、9.3 4132952；Fable 修正 c4a066f 地图图层字段、e4cc396 页脚、a296baa 出国期间早上卡、b09fbd7 家人测试、b1b9617 公告显示），浏览器验收后合进 main 部署。9.5 的整局 QA 与文案评审待做。
