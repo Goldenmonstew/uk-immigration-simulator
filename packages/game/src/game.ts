@@ -6,7 +6,7 @@ import type {
 } from '@uk-immigration/engine';
 import { RULE_SET_IDS } from '@uk-immigration/policy-data';
 import { balance as b } from './balance';
-import { achievements } from './achievements';
+import { achievements, lifeAchievements } from './achievements';
 import { skilledWorker } from './characters/skilled-worker';
 import { hongKongBno } from './characters/hong-kong-bno';
 import { familyPartner } from './characters/family-partner';
@@ -14,6 +14,12 @@ import { commonEvents, systemEvents } from './events/common';
 import { extensionFor, locationActions, places } from './locations';
 import { npcs, heartEvents } from './npcs';
 import { items, recipes } from './items';
+import {
+  festivals,
+  festivalFoods,
+  festivalActivities,
+  notices,
+} from './festivals';
 import type {
   Condition,
   Effect,
@@ -173,6 +179,12 @@ function makePending(state: GameState, id: string) {
 function deliver(state: GameState, channel: Channel | 'leftovers') {
   if (state.pendingEvent || isOver(state)) return;
   for (const delivery of [...state.day.deliveries]) {
+    if (
+      state.trip &&
+      delivery.channel !== 'phone' &&
+      !delivery.eventId.startsWith('system-')
+    )
+      continue;
     if (channel !== 'leftovers' && delivery.channel !== channel) continue;
     if (
       channel === 'phone' &&
@@ -256,17 +268,26 @@ function recalculate(state: GameState) {
   if (state.result.shortCircuit?.reason === 'IMMIGRATION_BREACH')
     finish(state, 'overstayed');
 }
-function award(state: GameState) {
-  for (const a of [
-    ...achievements,
-    ...(characterOf(state.characterId).achievements ?? []),
-  ]) {
+function award(state: GameState, lifeOnly = false) {
+  const candidates = lifeOnly
+    ? lifeAchievements
+    : [...achievements, ...(characterOf(state.characterId).achievements ?? [])];
+  for (const a of candidates) {
     if (!state.achievements.includes(a.id) && a.check(state))
       state.achievements.push(a.id);
   }
 }
 function setFlags(state: GameState, flags: string[] = []) {
   state.flags = [...new Set([...state.flags, ...flags])];
+}
+function recordLife(state: GameState, id: string, text: Text) {
+  state.log.push({
+    year: state.year,
+    quarter: state.quarter,
+    kind: 'action',
+    id,
+    text,
+  });
 }
 function recordIncome(
   state: GameState,
@@ -502,6 +523,12 @@ export function activities(state: GameState, place: PlaceId): Activity[] {
       )
         return false;
       if (a.oncePerDay && state.day.done.includes(a.id)) return false;
+      if (
+        a.id.startsWith('summer-show-') &&
+        (state.day.done.includes('summer-show') ||
+          showQuantity(state, a.id.slice(12)) === 0)
+      )
+        return false;
       if (!matches(state, a.when)) return false;
       if (a.id === 'rent-plot' && state.plots.length) return false;
       if (
@@ -541,6 +568,14 @@ export function activities(state: GameState, place: PlaceId): Activity[] {
     })
     .map((a) => {
       const action = structuredClone(a);
+      if (a.id.startsWith('summer-show-')) {
+        const crop = a.id.slice(12);
+        const name = items.find((i) => i.id === crop)!.name;
+        action.label = {
+          zhCN: `带${showQuantity(state, crop)}份${name.zhCN}参加评比`,
+          en: `Show ${showQuantity(state, crop)} ${name.en.toLowerCase()}`,
+        };
+      }
       if (a.id === 'exam' && state.stats.english >= b.englishB1)
         action.effects = [
           {
@@ -570,6 +605,16 @@ export function activities(state: GameState, place: PlaceId): Activity[] {
         };
       return action;
     });
+}
+function showQuantity(state: GameState, crop: string) {
+  const record = state.flags.find((f) =>
+    f.startsWith(`quarter-harvest:${crop}:`),
+  );
+  return Math.min(
+    state.inventory[crop] ?? 0,
+    record ? Number(record.split(':')[2]) : 0,
+    b.showMaxQuantity,
+  );
 }
 function affordable(state: GameState, effects: Effect[]) {
   const cost = -effects.reduce(
@@ -623,6 +668,73 @@ export function doActivity(state: GameState, actionId: string): GameState {
     text: action.label,
     statDeltas: deltas(state, next),
   };
+  if (action.id === 'board') {
+    const posted = notices.filter((n) =>
+      next.flags.includes(`quarter-board-${n.id}`),
+    );
+    const quizDate = firstWeekday(firstWeekday(addDays(state.date, 7), 2), 6);
+    next.outcome.text = {
+      zhCN: posted
+        .map(
+          (n) =>
+            n.text.zhCN + (n.id === 'pub-quiz' ? `（${quizDate} 18:00）` : ''),
+        )
+        .join('\n'),
+      en: posted
+        .map(
+          (n) =>
+            n.text.en + (n.id === 'pub-quiz' ? ` (${quizDate}, 18:00)` : ''),
+        )
+        .join('\n'),
+    };
+  }
+  if (action.id === 'festival' && next.day.festival)
+    next.outcome.text = festivals.find((f) => f.id === next.day.festival)!.text;
+  const celebration = Object.entries(festivalActivities).find(
+    ([, a]) => a.id === action.id,
+  );
+  if (celebration) {
+    const food = festivalFoods[celebration[0] as FestivalId];
+    applyEffects(next, [{ type: 'item', item: food, delta: 1 }]);
+    next.outcome.items = { [food]: 1 };
+    next.outcome.text = festivals.find((f) => f.id === celebration[0])!.text;
+  }
+  if (action.id.startsWith('summer-show-')) {
+    const crop = action.id.slice(12);
+    const quantity = showQuantity(state, crop);
+    const score = b.showVariety[crop] + quantity;
+    const rank =
+      score >= b.showRibbonScore
+        ? 'ribbon'
+        : score >= b.showCommendedScore
+          ? 'commended'
+          : 'first';
+    applyEffects(next, [
+      { type: 'stat', key: 'mood', delta: b.showMood[rank] },
+      { type: 'friendship', npc: 'margaret', delta: b.showFriendship },
+    ]);
+    setFlags(next, [`show-result-${rank}`]);
+    next.day.done.push('summer-show');
+    const result =
+      rank === 'ribbon'
+        ? { zhCN: '拿到一枚蓝丝带', en: 'a blue ribbon' }
+        : rank === 'commended'
+          ? { zhCN: '得到评委的特别夸奖', en: 'a special commendation' }
+          : { zhCN: '留下第一次参展的标签', en: 'a first-entry label' };
+    next.outcome.text = {
+      zhCN: `${action.label.zhCN}，${result.zhCN}。玛格丽特帮你把收成装回篮子。`,
+      en: `${action.label.en}: ${result.en}. Margaret helps return the harvest to your basket.`,
+    };
+  }
+  next.outcome.statDeltas = deltas(state, next);
+  if (
+    next.day.festival &&
+    (action.id === 'festival' ||
+      celebration ||
+      action.id.startsWith('summer-show-'))
+  )
+    setFlags(next, [`visited-festival:${next.day.festival}`]);
+  award(next, true);
   if (isOver(next)) {
     award(next);
     return next;
@@ -661,6 +773,13 @@ export function resolve(state: GameState, choiceId: string): GameState {
   delete next.pendingEvent;
   const changed = applyEffects(next, choice.effects);
   setFlags(next, choice.sets);
+  if (event.id === 'town-lina-papers') {
+    const chance =
+      choice.id === 'stay' ? b.linaStaySupported : b.linaStayUnaccompanied;
+    setFlags(next, [
+      random(next) < chance ? 'lina-can-stay' : 'lina-will-leave',
+    ]);
+  }
   const endingLog = next.log.filter((e) => e.kind === 'ending');
   next.log = next.log.filter((e) => e.kind !== 'ending');
   next.log.push({
@@ -677,6 +796,7 @@ export function resolve(state: GameState, choiceId: string): GameState {
   });
   next.log.push(...endingLog);
   if (changed) recalculate(next);
+  award(next, true);
   if (!isOver(next)) {
     pressure(next);
     nextEvent(next);
@@ -698,7 +818,11 @@ export function endQuarter(state: GameState): GameState {
   if (
     state.day.index !== 2 ||
     state.day.deliveries.length ||
-    state.eventQueue.some((id) => !id.startsWith('system-'))
+    state.eventQueue.some(
+      (id) =>
+        !id.startsWith('system-') &&
+        !(state.trip && state.flags.includes(`travel-deferred:${id}`)),
+    )
   )
     throw new Error(
       'Finish the three days and their deliveries before ending the quarter',
@@ -883,6 +1007,40 @@ export function narrative(state: GameState): Text[] {
       en: `${name.en} began keeping a town diary on ${characterOf(state.characterId).startDate}.`,
     },
   ];
+  const friends = npcs
+    .filter((npc) => !npc.characters && (state.friendship[npc.id] ?? 0) > 0)
+    .sort(
+      (a, c) =>
+        (state.friendship[c.id] ?? 0) - (state.friendship[a.id] ?? 0) ||
+        a.id.localeCompare(c.id),
+    )
+    .slice(0, 3);
+  if (friends.length)
+    sentences.push({
+      zhCN: `想起小镇时，总会先想起${friends.map((n) => n.name.zhCN).join('、')}，还有他们留着的座位。`,
+      en: `Thoughts of town bring ${friends.map((n) => n.name.en).join(', ')} to mind, and the seats they kept for you.`,
+    });
+  const harvests = state.log.filter(
+    (e) => e.kind === 'action' && e.id === 'harvest',
+  ).length;
+  const casts = state.log.filter(
+    (e) => e.kind === 'action' && e.id === 'fishing',
+  ).length;
+  const catches = state.log.filter(
+    (e) => e.kind === 'action' && e.id === 'catch-fish',
+  ).length;
+  sentences.push({
+    zhCN: `菜地收成 ${harvests} 次，池塘抛竿 ${casts} 次，钓到鱼 ${catches} 次；篮子和鱼竿都留下了使用的痕迹。`,
+    en: `There were ${harvests} harvests, ${casts} casts and ${catches} successful fish catches; basket and rod show their use.`,
+  });
+  const visited = festivals.filter((f) =>
+    state.flags.includes(`visited-festival:${f.id}`),
+  );
+  if (visited.length)
+    sentences.push({
+      zhCN: `去过${visited.map((f) => f.name.zhCN).join('、')}，灯下的面孔渐渐都熟悉了。`,
+      en: `You joined ${visited.map((f) => f.name.en).join(', ')}; the faces beneath the lights grew familiar.`,
+    });
   const groups: [string[], Text][] = [
     [
       ['work', 'overtime'],
@@ -1016,7 +1174,8 @@ function specialDay(state: GameState): { date: IsoDate; festival: FestivalId } {
   ) {
     const festival = pick(year);
     const date = festivalDate(festival, year);
-    if (date >= state.date && date < end) return { date, festival };
+    const weekend = firstWeekday(firstWeekday(addDays(state.date, 7), 2), 6);
+    if (date > weekend && date < end) return { date, festival };
   }
   let date = addDays(end, -1);
   while (new Date(date).getUTCDay() !== 6) date = addDays(date, -1);
@@ -1029,6 +1188,19 @@ function beginDay(state: GameState, index: DayState['index']) {
     weights.findIndex((n) => (cursor -= n) < 0)
   ];
   const special = specialDay(state);
+  if (index === 0) {
+    const options = [...notices];
+    const count =
+      b.boardCountMin +
+      Math.floor(random(state) * (b.boardCountMax - b.boardCountMin + 1));
+    for (let i = 0; i < count; i++) {
+      const [notice] = options.splice(
+        Math.floor(random(state) * options.length),
+        1,
+      );
+      setFlags(state, [`quarter-board-${notice.id}`]);
+    }
+  }
   state.day = {
     index,
     kind: (['workday', 'weekend', 'special'] as const)[index],
@@ -1036,7 +1208,7 @@ function beginDay(state: GameState, index: DayState['index']) {
       index === 0
         ? firstWeekday(addDays(state.date, 7), 2)
         : index === 1
-          ? firstWeekday(addDays(state.date, 30), 6)
+          ? firstWeekday(firstWeekday(addDays(state.date, 7), 2), 6)
           : special.date,
     minute: b.wakeMinute,
     weather,
@@ -1051,9 +1223,21 @@ function beginDay(state: GameState, index: DayState['index']) {
   // remaining day, without storing a second calendar or another random stream.
   for (const id of [...state.eventQueue]) {
     if (id.startsWith('system-')) continue;
-    if (index !== 2 && random(state) >= 1 / (3 - index)) continue;
-    state.eventQueue.splice(state.eventQueue.indexOf(id), 1);
     const channel = pool(state).find((e) => e.id === id)?.channel ?? 'morning';
+    if (state.trip && channel === 'morning') {
+      // A town-set morning card does not happen while the player is abroad;
+      // it goes back to the pool and may be drawn in a later quarter.
+      state.eventQueue.splice(state.eventQueue.indexOf(id), 1);
+      continue;
+    }
+    if (state.trip && channel !== 'phone') {
+      setFlags(state, [`travel-deferred:${id}`]);
+      continue;
+    }
+    const deferred = state.flags.includes(`travel-deferred:${id}`);
+    if (!deferred && index !== 2 && random(state) >= 1 / (3 - index)) continue;
+    state.eventQueue.splice(state.eventQueue.indexOf(id), 1);
+    state.flags = state.flags.filter((f) => f !== `travel-deferred:${id}`);
     state.day.deliveries.push({
       eventId: id,
       channel,
@@ -1122,12 +1306,13 @@ export function enter(state: GameState, place: PlaceId): GameState {
   return next;
 }
 export function mailbox(state: GameState): string[] {
+  if (state.trip) return [];
   return state.day.deliveries
     .filter((d) => d.channel === 'letter')
     .map((d) => d.eventId);
 }
 export function readMail(state: GameState): GameState {
-  if (state.pendingEvent || isOver(state)) return state;
+  if (state.pendingEvent || state.trip || isOver(state)) return state;
   const next = structuredClone(state);
   deliver(next, 'letter');
   return next;
@@ -1147,6 +1332,14 @@ function sleepDay(state: GameState): GameState {
   const next = structuredClone(state);
   deliver(next, 'leftovers');
   if (next.pendingEvent) return next;
+  if (next.trip) {
+    for (const delivery of next.day.deliveries) {
+      if (!next.eventQueue.includes(delivery.eventId))
+        next.eventQueue.push(delivery.eventId);
+      setFlags(next, [`travel-deferred:${delivery.eventId}`]);
+    }
+    next.day.deliveries = [];
+  }
   applyEffects(next, [
     {
       type: 'stat',
@@ -1227,8 +1420,18 @@ export function fastForward(state: GameState): GameState {
         const evening =
           next.stats.english < b.englishB2 && next.stats.money >= b.classCost
             ? 'class'
-            : 'relax';
-        routine(evening, evening === 'class' ? 'college' : 'pub', 1080);
+            : next.stats.mood < b.routineMoodTarget
+              ? 'relax'
+              : 'bench';
+        routine(
+          evening,
+          evening === 'class'
+            ? 'college'
+            : evening === 'relax'
+              ? 'pub'
+              : 'bench',
+          1080,
+        );
         if (
           next.day.done.includes(evening) ||
           next.day.done.includes(`auto-${evening}`)
@@ -1238,7 +1441,12 @@ export function fastForward(state: GameState): GameState {
     } else if (next.day.kind === 'weekend') {
       routine('rest', 'home', b.wakeMinute);
       if (next.pendingEvent) break;
-      routine('relax', 'pub', 720);
+      if (next.stats.health < b.routineHealthTarget)
+        routine('nap', 'home', 600);
+      if (next.pendingEvent) break;
+      if (next.stats.mood < b.routineMoodTarget) routine('bench', 'bench', 660);
+      if (next.pendingEvent) break;
+      if (next.stats.mood < b.routineMoodTarget) routine('relax', 'pub', 720);
     } else
       routine(
         'festival',
@@ -1254,7 +1462,9 @@ export function fastForward(state: GameState): GameState {
 }
 export function townsfolk(state: GameState): Npc[] {
   return npcs.filter(
-    (npc) => !npc.characters || npc.characters.includes(state.characterId),
+    (npc) =>
+      (!npc.characters || npc.characters.includes(state.characterId)) &&
+      !(npc.id === 'lina' && state.flags.includes('lina-left')),
   );
 }
 function npcOf(state: GameState, id: string) {
@@ -1294,6 +1504,7 @@ export function talk(state: GameState, npc: string): GameState {
     ]);
     next.day.talked.push(npc);
     setFlags(next, [`quarter-talked-${npc}`]);
+    setFlags(next, [`talked-${npc}`]);
   }
   const eligible = person.lines.filter(
     (line) =>
@@ -1309,7 +1520,15 @@ export function talk(state: GameState, npc: string): GameState {
       matches(next, line.when),
   );
   const fresh = eligible.filter((line) => !next.heard.includes(line.id));
-  const options = fresh.length ? fresh : eligible;
+  const festivalLines = fresh.filter(
+    (line) =>
+      line.festival === next.day.festival && line.festival !== undefined,
+  );
+  const options = festivalLines.length
+    ? festivalLines
+    : fresh.length
+      ? fresh
+      : eligible;
   const line = options[Math.floor(random(next) * options.length)];
   if (line && !next.heard.includes(line.id)) next.heard.push(line.id);
   next.outcome = {
@@ -1328,6 +1547,7 @@ export function talk(state: GameState, npc: string): GameState {
     );
     if (heart) makePending(next, heart.id);
   }
+  award(next, true);
   return advanceClock(next, b.minutes.talk);
 }
 export function gift(state: GameState, npc: string, item: ItemId): GameState {
@@ -1348,12 +1568,14 @@ export function gift(state: GameState, npc: string, item: ItemId): GameState {
     { type: 'friendship', npc, delta: b.gifts[liking] },
   ]);
   next.day.gifted.push(npc);
+  if (liking === 'loved') recordLife(next, 'loved-gift', person.name);
   next.outcome = {
     kind: 'gift',
     npc,
     text: person.reactions[liking],
     items: { [item]: -1 },
   };
+  award(next, true);
   return advanceClock(next, b.minutes.gift);
 }
 export function shop(state: GameState, place: PlaceId) {
@@ -1365,8 +1587,8 @@ export function shop(state: GameState, place: PlaceId) {
     state.day.minute + b.minutes.buy > closingTime(state, place)
   )
     return [];
-  if (place === 'green' && state.day.festival === 'bonfire-night')
-    return items.filter((i) => i.id === 'bonfire-toffee');
+  if (place === 'green' && state.day.festival)
+    return items.filter((i) => i.id === festivalFoods[state.day.festival!]);
   if (place !== 'shop') return [];
   return items.filter(
     (i) =>
@@ -1454,13 +1676,21 @@ export function harvest(state: GameState, plot: number): GameState {
   const qty =
     b.harvestMin + Math.floor(random(next) * (b.harvestMax - b.harvestMin + 1));
   applyEffects(next, [{ type: 'item', item: grows.crop, delta: qty }]);
+  const prefix = `quarter-harvest:${grows.crop}:`;
+  const previous = next.flags.find((f) => f.startsWith(prefix));
+  const total = (previous ? Number(previous.split(':')[2]) : 0) + qty;
+  next.flags = next.flags.filter((f) => !f.startsWith(prefix));
+  setFlags(next, [`${prefix}${total}`]);
   next.plots[plot] = { growth: 0 };
   next.outcome = { kind: 'harvest', items: { [grows.crop]: qty } };
+  recordLife(next, 'harvest', items.find((i) => i.id === grows.crop)!.name);
+  award(next, true);
   return advanceClock(next, b.minutes.harvest);
 }
 export function fish(state: GameState, caught: boolean): GameState {
   ready(state, 'pond', b.minutes.fish);
   const next = structuredClone(state);
+  recordLife(next, 'fishing', { zhCN: '在池塘抛竿', en: 'Cast at the pond' });
   if (!caught) {
     next.outcome = {
       kind: 'catch',
@@ -1483,12 +1713,17 @@ export function fish(state: GameState, caught: boolean): GameState {
     const available = junk ? ['old-boot', 'shopping-trolley'] : choices;
     const item = available[Math.floor(random(next) * available.length)];
     applyEffects(next, [{ type: 'item', item, delta: 1 }]);
+    if (!junk) {
+      recordLife(next, 'catch-fish', items.find((i) => i.id === item)!.name);
+      if (item === 'pike') setFlags(next, ['caught-pike']);
+    }
     next.outcome = {
       kind: 'catch',
       text: items.find((i) => i.id === item)!.name,
       items: { [item]: 1 },
     };
   }
+  award(next, true);
   return advanceClock(next, b.minutes.fish);
 }
 export function cook(state: GameState, recipe: string): GameState {

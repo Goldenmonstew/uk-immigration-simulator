@@ -94,7 +94,9 @@ describe('8.1 review corrections', () => {
         s = firstPending(s);
         const e = currentEvent(s)!;
         s = resolve(s, e.choices[0].id);
-        expect(currentEvent(firstPending(s))).toBeUndefined();
+        const rest = firstPending(s);
+        // A card delivered at the next quarter's wake-up is a new draw.
+        if (rest.date === s.date) expect(currentEvent(rest)).toBeUndefined();
         s = clear(quarter(s));
 
         s.firedEvents = [move.id, renew.id];

@@ -1,5 +1,6 @@
 import { currentLaw2026_11 } from '@uk-immigration/policy-data';
 import type { Route } from '@uk-immigration/engine';
+import { festivalActivities } from './festivals';
 import { balance as b } from './balance';
 import type { Activity, Place } from './types';
 
@@ -109,6 +110,51 @@ export function extensionFor(route: Route) {
 }
 
 export const locationActions: Activity[] = [
+  {
+    id: 'pub-quiz',
+    place: 'pub',
+    label: { zhCN: '参加 pub quiz', en: 'Join the pub quiz' },
+    minutes: b.quizMinutes,
+    oncePerDay: true,
+    when: [
+      { dayKind: 'weekend' },
+      { flag: 'quarter-board-pub-quiz' },
+      { minuteMin: b.quizStart },
+    ],
+    effects: [
+      { type: 'stat', key: 'english', delta: b.quizEnglish },
+      { type: 'stat', key: 'mood', delta: b.quizMood },
+    ],
+  },
+  ...Object.entries(festivalActivities).map(
+    ([festival, activity]): Activity => ({
+      id: activity.id,
+      place: 'green',
+      label: activity.label,
+      minutes: b.minutes.festival,
+      oncePerDay: true,
+      when: [
+        { festival: festival as import('./types').FestivalId },
+        { minuteMin: activity.starts },
+      ],
+      effects: [{ type: 'stat', key: 'mood', delta: b.festivalMood }],
+    }),
+  ),
+  ...Object.keys(b.showVariety).map((crop): Activity => ({
+    id: `summer-show-${crop}`,
+    place: 'green',
+    label: {
+      zhCN: '带收成参加菜地评比',
+      en: 'Enter a harvest in the allotment show',
+    },
+    minutes: b.showMinutes,
+    when: [
+      { festival: 'summer-fair' },
+      { item: crop },
+      { minuteMin: b.showStart },
+    ],
+    effects: [{ type: 'none' }],
+  })),
   {
     id: 'rest',
     place: 'home',

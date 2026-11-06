@@ -1,4 +1,4 @@
-import type { Festival } from './types';
+import type { Festival, FestivalId, Text } from './types';
 
 export const festivals: Festival[] = [
   {
@@ -6,8 +6,8 @@ export const festivals: Festival[] = [
     season: 1,
     name: { zhCN: '春节聚会', en: 'Lunar New Year gathering' },
     text: {
-      zhCN: '社区百家宴，保温盒摆满了长桌。',
-      en: 'Covered dishes fill the long table at the community potluck.',
+      zhCN: '社区百家宴，保温盒摆满长桌。一起捏饺子，捏漏的先下锅尝。',
+      en: 'Covered dishes fill the potluck table. Fold dumplings together; taste the leaky ones first.',
     },
   },
   {
@@ -15,8 +15,8 @@ export const festivals: Festival[] = [
     season: 2,
     name: { zhCN: '五月节集市', en: 'May Day fair' },
     text: {
-      zhCN: '彩带绕过摊位，风先替大家跳起了舞。',
-      en: 'Ribbons weave between stalls; the wind starts dancing first.',
+      zhCN: '彩带绕过摊位，风先跳起舞。牵一头绕着走，甜面包在摊上等着。',
+      en: 'Ribbons weave between stalls. Take an end and join the dance; sweet buns wait on the stall.',
     },
   },
   {
@@ -24,8 +24,8 @@ export const festivals: Festival[] = [
     season: 3,
     name: { zhCN: '夏日集市', en: 'Summer fair' },
     text: {
-      zhCN: '菜地评比开场，黄瓜比参赛者更紧张。',
-      en: 'The allotment show opens; the cucumbers look more nervous than their growers.',
+      zhCN: '带当季收成来评比，标签写好品种与数量。黄瓜排着队，烤玉米冒着热气。',
+      en: 'Bring this season’s harvest to the show, labelled with variety and quantity. Cucumbers queue beside steaming grilled corn.',
     },
   },
   {
@@ -42,8 +42,492 @@ export const festivals: Festival[] = [
     season: 4,
     name: { zhCN: '圣诞集市', en: 'Christmas market' },
     text: {
-      zhCN: '小灯泡亮了，摊主开始抢救被风吹跑的包装纸。',
-      en: 'Little lights come on as stallholders rescue wrapping paper from the wind.',
+      zhCN: '小灯泡亮了，提盏灯听合唱，捧热杯暖手。姜饼摊的包装纸正追着风跑。',
+      en: 'Carry a lantern to hear the choir, warming your hands on a cup. The gingerbread wrapping chases the wind.',
+    },
+  },
+];
+
+export const festivalDialogue: Record<
+  string,
+  { festival: FestivalId; text: Text }[]
+> = {
+  margaret: [
+    {
+      festival: 'lunar-new-year',
+      text: {
+        zhCN: '饺子捏得像芜菁，馅倒是没跑。',
+        en: 'My dumplings look like turnips. The filling stayed put.',
+      },
+    },
+    {
+      festival: 'may-day',
+      text: {
+        zhCN: '彩带在我帽子上绕了圈，算开花了。',
+        en: 'A ribbon round my hat. A sort of bloom.',
+      },
+    },
+    {
+      festival: 'summer-fair',
+      text: {
+        zhCN: '我的黄瓜长得弯，摆盘得留个转弯位。',
+        en: 'My cucumber bends. Leave room for the corner.',
+      },
+    },
+    {
+      festival: 'bonfire-night',
+      text: {
+        zhCN: '火光照着泥靴，今晚真省鞋油。',
+        en: 'Firelight on muddy boots. Saves on polish tonight.',
+      },
+    },
+    {
+      festival: 'christmas-market',
+      text: {
+        zhCN: '这棵小树挂得下手套，圣诞袜可得减肥。',
+        en: 'This little tree fits gloves. Stockings must travel light.',
+      },
+    },
+  ],
+  priya: [
+    {
+      festival: 'lunar-new-year',
+      text: {
+        zhCN: '包饺子的桌子这么长，总算够放我的胳膊。',
+        en: 'A dumpling table long enough for my elbows at last.',
+      },
+    },
+    {
+      festival: 'may-day',
+      text: {
+        zhCN: '彩带打结了，今天不用接电话解释。',
+        en: 'Tangled ribbons. No phone calls to explain them today.',
+      },
+    },
+    {
+      festival: 'summer-fair',
+      text: {
+        zhCN: '我给番茄找了张纸垫，它比我还讲究。',
+        en: 'A paper mat for the tomato. Fussier than I am.',
+      },
+    },
+    {
+      festival: 'bonfire-night',
+      text: {
+        zhCN: '纸杯捧暖了，手指终于不用挤在袖口。',
+        en: 'Cup warmed my hands. Fingers can leave my cuffs.',
+      },
+    },
+    {
+      festival: 'christmas-market',
+      text: {
+        zhCN: '热饮上撒的香料，闻着就像放假。',
+        en: 'The spices on this drink smell like a day off.',
+      },
+    },
+  ],
+  ade: [
+    {
+      festival: 'lunar-new-year',
+      text: {
+        zhCN: '这个饺子封口比我的文件夹严。',
+        en: 'This dumpling seals better than my folder.',
+      },
+    },
+    {
+      festival: 'may-day',
+      text: {
+        zhCN: '彩带绕得我眼花，幸好不用写会议纪要。',
+        en: 'Dizzy ribbons. Luckily no minutes to take.',
+      },
+    },
+    {
+      festival: 'summer-fair',
+      text: {
+        zhCN: '玉米摆得像一队同事，就差开会了。',
+        en: 'Corn lined up like colleagues. All it needs is a meeting.',
+      },
+    },
+    {
+      festival: 'bonfire-night',
+      text: {
+        zhCN: '今晚这块天空，比办公室投影清楚。',
+        en: 'Tonight’s sky is clearer than the office projector.',
+      },
+    },
+    {
+      festival: 'christmas-market',
+      text: {
+        zhCN: '摊位灯一亮，我差点拿出工牌打卡。',
+        en: 'Stall lights came on. Nearly swiped my badge.',
+      },
+    },
+  ],
+  helen: [
+    {
+      festival: 'lunar-new-year',
+      text: {
+        zhCN: '今天的饺子课，我也从揉面开始学。',
+        en: 'Today I am a student too, starting with dumpling dough.',
+      },
+    },
+    {
+      festival: 'may-day',
+      text: {
+        zhCN: '风把彩带拼成什么词，我还没读懂。',
+        en: 'Wind is spelling with ribbons. I cannot read it yet.',
+      },
+    },
+    {
+      festival: 'summer-fair',
+      text: {
+        zhCN: '菜名都写清楚了，终于能专心尝味道。',
+        en: 'All the vegetables labelled. I can focus on tasting.',
+      },
+    },
+    {
+      festival: 'bonfire-night',
+      text: {
+        zhCN: '烟花这道听力题，大家都答对了。',
+        en: 'Everyone passed the firework listening test.',
+      },
+    },
+    {
+      festival: 'christmas-market',
+      text: {
+        zhCN: '合唱歌词飞走了，幸好这段我还记得。',
+        en: 'The carol sheet blew away. Luckily I know this verse.',
+      },
+    },
+  ],
+  dave: [
+    {
+      festival: 'lunar-new-year',
+      text: {
+        zhCN: '饺子里的馅不用抢答，先吹凉。',
+        en: 'No speed round for dumpling fillings. Cool them first.',
+      },
+    },
+    {
+      festival: 'may-day',
+      text: {
+        zhCN: '彩带转得快，我那顶帽子跟不上。',
+        en: 'Fast ribbons. My hat cannot keep up.',
+      },
+    },
+    {
+      festival: 'summer-fair',
+      text: {
+        zhCN: '菜地评委不答电影题，我白准备了。',
+        en: 'The allotment judges do not take film questions. Wasted preparation.',
+      },
+    },
+    {
+      festival: 'bonfire-night',
+      text: {
+        zhCN: '烟花一响，我的麦克风就输了。',
+        en: 'One firework and my microphone loses.',
+      },
+    },
+    {
+      festival: 'christmas-market',
+      text: {
+        zhCN: '今天抽奖先放好票，别和购物小票混了。',
+        en: 'Keep the raffle ticket separate from shopping receipts.',
+      },
+    },
+  ],
+  rahman: [
+    {
+      festival: 'lunar-new-year',
+      text: {
+        zhCN: '百家宴的盒子，收摊时又要猜主人。',
+        en: 'At potluck closing we get to guess who owns each box.',
+      },
+    },
+    {
+      festival: 'may-day',
+      text: {
+        zhCN: '我把种子摊摆好了，风想自己选品种。',
+        en: 'Seed stall ready. The wind wants to choose varieties.',
+      },
+    },
+    {
+      festival: 'summer-fair',
+      text: {
+        zhCN: '这颗番茄红得好，老店牌都羡慕。',
+        en: 'Lovely red tomato. My old shop sign is jealous.',
+      },
+    },
+    {
+      festival: 'bonfire-night',
+      text: {
+        zhCN: '太妃糖别放暖杯旁，又要黏成一家人。',
+        en: 'Toffee away from hot cups, or it all sticks together.',
+      },
+    },
+    {
+      festival: 'christmas-market',
+      text: {
+        zhCN: '这串灯用了好多年，还是有颗爱迟到。',
+        en: 'Years with these lights. One bulb still turns up late.',
+      },
+    },
+  ],
+  lina: [
+    {
+      festival: 'lunar-new-year',
+      text: {
+        zhCN: '我包的饺子漏了一点，盘子替我接住了。',
+        en: 'A dumpling leaked. The plate caught it for me.',
+      },
+    },
+    {
+      festival: 'may-day',
+      text: {
+        zhCN: '今天文件夹留在家，彩带占了它的位置。',
+        en: 'Folder at home. Ribbons have taken its place today.',
+      },
+    },
+    {
+      festival: 'summer-fair',
+      text: {
+        zhCN: '黄瓜也有评语，我先替它深呼吸。',
+        en: 'Cucumber getting judged too. I will take a breath for it.',
+      },
+    },
+    {
+      festival: 'bonfire-night',
+      text: {
+        zhCN: '烟花亮起来的时候，我忘了看手机。',
+        en: 'When the fireworks lit up I forgot my phone.',
+      },
+    },
+    {
+      festival: 'christmas-market',
+      text: {
+        zhCN: '手套捧住热杯，今天想多站一会儿。',
+        en: 'Gloves round a warm cup. I want to stay a little longer.',
+      },
+    },
+  ],
+  gareth: [
+    {
+      festival: 'lunar-new-year',
+      text: {
+        zhCN: '今天送的不是信，是这盘歪歪的饺子。',
+        en: 'Today’s delivery is a plate of crooked dumplings.',
+      },
+    },
+    {
+      festival: 'may-day',
+      text: {
+        zhCN: '彩带缠上车铃，铃声都像穿了外套。',
+        en: 'Ribbon on my bike bell. Even the sound has a coat.',
+      },
+    },
+    {
+      festival: 'summer-fair',
+      text: {
+        zhCN: '评比标签写得清楚，送信也想遇上这字。',
+        en: 'Clear show labels. Wish every address looked like this.',
+      },
+    },
+    {
+      festival: 'bonfire-night',
+      text: {
+        zhCN: '信送完来看烟花，肩膀终于能放下来。',
+        en: 'Post done before fireworks. My shoulder can finally drop.',
+      },
+    },
+    {
+      festival: 'christmas-market',
+      text: {
+        zhCN: '贺卡写好再投，我先喝完这一杯。',
+        en: 'Write before posting the cards. My drink comes first.',
+      },
+    },
+  ],
+  jamie: [
+    {
+      festival: 'lunar-new-year',
+      text: {
+        zhCN: '这盘带回家的饺子，得先留出冰箱位置。',
+        en: 'These dumplings need a little room in our fridge.',
+      },
+    },
+    {
+      festival: 'may-day',
+      text: {
+        zhCN: '彩带像我们家那团线，终于有用处了。',
+        en: 'Ribbons like our tangled string. A use for it at last.',
+      },
+    },
+    {
+      festival: 'summer-fair',
+      text: {
+        zhCN: '我扶着菜篮，你把标签写直一点。',
+        en: 'I will hold the basket. You keep the label straight.',
+      },
+    },
+    {
+      festival: 'bonfire-night',
+      text: {
+        zhCN: '站我这边吧，这里没有烟往脸上飘。',
+        en: 'Stand beside me. The smoke misses us here.',
+      },
+    },
+    {
+      festival: 'christmas-market',
+      text: {
+        zhCN: '这张贺卡给家里，字留点位置让我也写。',
+        en: 'This card is for home. Leave room for my handwriting.',
+      },
+    },
+  ],
+  'ka-ning-partner': [
+    {
+      festival: 'lunar-new-year',
+      text: {
+        zhCN: '我们带的那盒先打开，别又忘在桌底。',
+        en: 'Open our dish first. Not under the table again.',
+      },
+    },
+    {
+      festival: 'may-day',
+      text: {
+        zhCN: '孩子追着彩带跑，我替你拿住茶。',
+        en: 'The child is chasing ribbons. I will hold your tea.',
+      },
+    },
+    {
+      festival: 'summer-fair',
+      text: {
+        zhCN: '篮子垫好布了，收成一路都没压坏。',
+        en: 'Cloth in the basket kept the harvest safe on the way.',
+      },
+    },
+    {
+      festival: 'bonfire-night',
+      text: {
+        zhCN: '围巾往中间挪一点，两个人都不漏风。',
+        en: 'Move the scarf between us. Keeps both draughts out.',
+      },
+    },
+    {
+      festival: 'christmas-market',
+      text: {
+        zhCN: '这盏小灯好看，回家摆窗边试试。',
+        en: 'A lovely little light. We can try it by our window.',
+      },
+    },
+  ],
+  'ka-ning-child': [
+    {
+      festival: 'lunar-new-year',
+      text: {
+        zhCN: '这个饺子是小船，汤里不能开太快。',
+        en: 'This dumpling is a boat. Not too fast in the soup.',
+      },
+    },
+    {
+      festival: 'may-day',
+      text: {
+        zhCN: '彩带跑得比我快，它是不是不用吃饭？',
+        en: 'Ribbons run faster than me. Do they not need dinner?',
+      },
+    },
+    {
+      festival: 'summer-fair',
+      text: {
+        zhCN: '我给黄瓜画了笑脸，评委会不会也笑？',
+        en: 'A smile on the cucumber. Will the judge smile too?',
+      },
+    },
+    {
+      festival: 'bonfire-night',
+      text: {
+        zhCN: '刚才那朵烟花，像我的书被翻到天上。',
+        en: 'That firework looked like my book opening in the sky.',
+      },
+    },
+    {
+      festival: 'christmas-market',
+      text: {
+        zhCN: '这只姜饼人穿不穿围巾？它也站外面呢。',
+        en: 'Does the gingerbread person need a scarf outside too?',
+      },
+    },
+  ],
+};
+
+export const festivalFoods: Record<FestivalId, string> = {
+  'lunar-new-year': 'dumplings',
+  'may-day': 'may-bun',
+  'summer-fair': 'summer-corn',
+  'bonfire-night': 'bonfire-toffee',
+  'christmas-market': 'gingerbread',
+};
+export const festivalActivities: Partial<
+  Record<FestivalId, { id: string; label: Text; starts: number }>
+> = {
+  'lunar-new-year': {
+    id: 'lunar-dumplings',
+    label: { zhCN: '一起包饺子', en: 'Fold dumplings together' },
+    starts: 600,
+  },
+  'may-day': {
+    id: 'may-ribbons',
+    label: { zhCN: '绕彩带跳支舞', en: 'Dance with the ribbons' },
+    starts: 600,
+  },
+  'christmas-market': {
+    id: 'christmas-lanterns',
+    label: { zhCN: '提着小灯听合唱', en: 'Hear the choir with a lantern' },
+    starts: 960,
+  },
+};
+export const notices = [
+  {
+    id: 'pub-quiz',
+    text: {
+      zhCN: '周末傍晚，戴夫在酒吧主持 pub quiz。铅笔已削好，队名自备。',
+      en: 'Weekend evening: Dave hosts the pub quiz. Pencils ready; bring a team name.',
+    },
+  },
+  {
+    id: 'litter',
+    text: {
+      zhCN: '周末公园捡垃圾，玛格丽特带夹子。自带手套，结束后一起喝茶。',
+      en: 'Weekend park litter pick. Margaret brings grabbers. Bring gloves; tea afterwards.',
+    },
+  },
+  {
+    id: 'cat',
+    text: {
+      zhCN: '走失的条纹猫叫饼干。若在小店附近看到，请告诉拉赫曼，别追它。',
+      en: 'Missing tabby called Biscuit. Tell Rahman if spotted near the shop; do not chase.',
+    },
+  },
+  {
+    id: 'choir',
+    text: {
+      zhCN: '合唱团在绿地练歌。海伦带歌词，跑调也能坐到前排。',
+      en: 'Choir practice on the green. Helen brings lyrics; imperfect voices welcome in front.',
+    },
+  },
+  {
+    id: 'swap',
+    text: {
+      zhCN: '交换集市收旧书和干净花盆，不收钱。普里娅替空纸箱找新主人。',
+      en: 'Swap clean pots and old books, no money changing hands. Priya is rehoming empty boxes.',
+    },
+  },
+  {
+    id: 'walk',
+    text: {
+      zhCN: '池塘慢走小队不计速度。加雷思收工后到长椅集合，狗也能同行。',
+      en: 'An unhurried pond walk. Meet Gareth at the bench after his round; dogs welcome.',
     },
   },
 ];

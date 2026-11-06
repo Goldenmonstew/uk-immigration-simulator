@@ -139,7 +139,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-partner-cv',
-    channel: 'morning',
+    channel: 'npc:ka-ning-partner',
     title: { zhCN: '餐桌上的简历', en: 'A CV on the table' },
     text: {
       zhCN: '伴侣把简历改到第七版，孩子给页脚画了一只猫。',
@@ -279,7 +279,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-summer-hk',
-    channel: 'morning',
+    channel: 'npc:ka-ning-child',
     title: { zhCN: '暑假的两张日历', en: 'Two summer calendars' },
     text: {
       zhCN: '孩子想回港陪外婆，嘉宁把学校假期和机票摊在一起。',
@@ -755,7 +755,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-shorter-hours',
-    channel: 'morning',
+    channel: 'npc:ka-ning-partner',
     title: { zhCN: '接送表的新空格', en: 'A gap in the school-run rota' },
     text: {
       zhCN: '课后班时间改了，嘉宁和伴侣拿铅笔重画了一遍接送表。',
@@ -831,7 +831,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-partner-restart',
-    channel: 'morning',
+    channel: 'npc:ka-ning-partner',
     title: { zhCN: '重新响起的闹钟', en: 'An alarm clock rings again' },
     text: {
       zhCN: '伴侣找到新工作，清晨的闹钟又恢复了二重奏。',
@@ -986,7 +986,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-quiet-career',
-    channel: 'morning',
+    channel: 'npc:ka-ning-child',
     title: { zhCN: '放慢一点的约定', en: 'An agreement to slow down' },
     text: {
       zhCN: '孩子问晚饭能不能早点吃，嘉宁把工作群调成了静音。',
@@ -1566,7 +1566,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-school-shoes',
-    channel: 'morning',
+    channel: 'npc:ka-ning-child',
     title: { zhCN: '突然变小的鞋', en: 'Shoes that suddenly shrank' },
     text: {
       zhCN: '孩子说鞋子变小了，嘉宁怀疑是脚长得太有计划。',
@@ -1593,7 +1593,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-canteen-menu',
-    channel: 'morning',
+    channel: 'npc:ka-ning-child',
     title: { zhCN: '菜单上的陌生词', en: 'An unfamiliar word on the menu' },
     text: {
       zhCN: '学校菜单写着一个嘉宁没见过的词，孩子说反正配土豆。',
@@ -1619,7 +1619,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-reading-aloud',
-    channel: 'morning',
+    channel: 'npc:ka-ning-child',
     title: { zhCN: '倒过来的绘本', en: 'An upside-down picture book' },
     text: {
       zhCN: '睡前读到第三页，嘉宁才发现孩子一直把书拿倒了。',
@@ -1645,7 +1645,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-sports-day',
-    channel: 'morning',
+    channel: 'npc:ka-ning-child',
     title: { zhCN: '草地上的豆袋', en: 'Beanbags on the grass' },
     text: {
       zhCN: '运动会家长组要夹豆袋，嘉宁的认真表情逗笑了孩子。',
@@ -1669,7 +1669,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-school-play',
-    channel: 'morning',
+    channel: 'npc:ka-ning-child',
     title: { zhCN: '纸板做的树', en: 'A cardboard tree' },
     text: {
       zhCN: '孩子在学校戏剧里演一棵树，坚持树也需要排练。',
@@ -2039,7 +2039,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-garden-herbs',
-    channel: 'morning',
+    channel: 'npc:ka-ning-child',
     title: { zhCN: '窗台上的葱', en: 'Spring onions on the sill' },
     text: {
       zhCN: '水杯里的葱根冒了芽，孩子宣布自己开了农场。',
@@ -2226,7 +2226,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-packed-lunch',
-    channel: 'morning',
+    channel: 'npc:ka-ning-child',
     title: { zhCN: '便当盒的新隔层', en: 'A new compartment in the lunchbox' },
     text: {
       zhCN: '孩子嫌便当总是同一种颜色，嘉宁开始研究彩椒。',
@@ -2278,7 +2278,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-birthday-cake',
-    channel: 'morning',
+    channel: 'npc:ka-ning-child',
     title: { zhCN: '歪了一点的蛋糕', en: 'A slightly lopsided cake' },
     text: {
       zhCN: '生日蛋糕向左倾，孩子坚持说这是更有个性的版本。',
@@ -2301,7 +2301,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-anniversary-table',
-    channel: 'morning',
+    channel: 'npc:ka-ning-partner',
     title: { zhCN: '餐桌上的旧车票', en: 'An old ticket on the dinner table' },
     text: {
       zhCN: '纪念日晚饭时，伴侣找出了两人第一次旅行的旧车票。',
@@ -2357,7 +2357,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-summer-light',
-    channel: 'morning',
+    channel: 'npc:ka-ning-child',
     title: { zhCN: '不肯天黑的晚上', en: 'An evening that will not darken' },
     text: {
       zhCN: '夏天的窗外一直亮着，孩子说太阳是不是忘了下班。',
@@ -2598,7 +2598,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'bno-five-year-note',
-    channel: 'morning',
+    channel: 'npc:ka-ning-child',
     title: { zhCN: '便签上的五年', en: 'Five years on a sticky note' },
     text: {
       zhCN: '嘉宁在日历旁贴了一张便签，孩子问为什么不用更大的纸。',

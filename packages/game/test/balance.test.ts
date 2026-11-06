@@ -24,6 +24,7 @@ import {
   tick,
   visaMonthsLeft,
   water,
+  townsfolk,
 } from '../src';
 import type { GameState, PlaceId, StatKey } from '../src';
 import { balance as b } from '../src/balance';
@@ -140,14 +141,24 @@ function play(character: string, seed: number, active: boolean) {
     }
     // A small everyday loop exercises gifts, crops and recipes alongside the
     // three/four main activities, rather than silently making legal decisions.
-    const npc = npcs[pick(npcs.length)];
-    state = talk(state, npc.id);
-    if (state.outcome?.text) {
-      listenedLines++;
-      chineseCharacters +=
-        state.outcome.text.zhCN.match(/\p{Script=Han}/gu)?.length ?? 0;
+    const offset = pick(townsfolk(state).length);
+    for (
+      let chat = 0;
+      chat < 5 && state.dayNumber === day && !isOver(state);
+      chat++
+    ) {
+      const people = townsfolk(state);
+      const person = people[(offset + chat) % people.length];
+      state = talk(state, person.id);
+      if (state.outcome?.kind === 'talk' && state.outcome.text) {
+        listenedLines++;
+        chineseCharacters +=
+          state.outcome.text.zhCN.match(/\p{Script=Han}/gu)?.length ?? 0;
+      }
+      drain();
     }
-    drain();
+    const people = townsfolk(state);
+    const npc = people[offset % people.length];
     if (state.dayNumber !== day || isOver(state)) {
       record();
       continue;
@@ -269,6 +280,20 @@ describe('v3 seeded strategies', () => {
             18000,
           );
           expect(median(fifth.map((s) => s.money))).toBeLessThanOrEqual(40000);
+          for (const key of ['mood', 'health', 'english', 'career'] as const) {
+            expect(
+              median(fifth.map((s) => s[key])),
+              `year 5 ${key}`,
+            ).toBeGreaterThanOrEqual(50);
+            expect(
+              median(fifth.map((s) => s[key])),
+              `year 5 ${key}`,
+            ).toBeLessThanOrEqual(85);
+            expect(
+              median(tenth.map((s) => s[key])),
+              `year 10 ${key}`,
+            ).toBeGreaterThanOrEqual(35);
+          }
           // Each attribute stays away from either boundary in at least three
           // quarters out of four across the seeded histories.
           const interior = (
@@ -283,6 +308,10 @@ describe('v3 seeded strategies', () => {
           );
           expect(interior).toHaveLength(4);
         }
+        if (active)
+          expect(
+            runs.reduce((sum, r) => sum + r.uniqueLines, 0) / runs.length,
+          ).toBeGreaterThanOrEqual(200);
         expect(runs.every((run) => run.state.ending !== undefined)).toBe(true);
         expect(runs.every((run) => run.state.day.minute <= 1440)).toBe(true);
         summary.push({

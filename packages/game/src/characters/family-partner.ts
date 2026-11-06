@@ -51,7 +51,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-hours-trial',
-    channel: 'morning',
+    channel: 'npc:jamie',
     title: t('试过之后', 'After the trial'),
     text: t(
       '连着几周全职，冰箱有了整排饭盒，杰米学会了找锅盖。',
@@ -124,7 +124,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-savings-jar',
-    channel: 'morning',
+    channel: 'npc:jamie',
     title: t('罐子上的标签', 'The label on the jar'),
     text: t(
       '杰米把饼干罐标成存钱罐，里面暂时只有两张超市小票。',
@@ -192,7 +192,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-car-or-savings',
-    channel: 'morning',
+    channel: 'npc:jamie',
     title: t('展厅玻璃上的雨', 'Rain on the showroom glass'),
     text: t(
       '旧车价签贴得歪歪扭扭，杰米说它至少有四个轮子和暖气。',
@@ -269,7 +269,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-jamie-rumour',
-    channel: 'morning',
+    channel: 'npc:jamie',
     title: t('会议后的沉默', 'Silence after the meeting'),
     text: t(
       '杰米下班后没开收音机，公司让大家等周五的消息。',
@@ -303,7 +303,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-jamie-lost-job',
-    channel: 'morning',
+    channel: 'npc:jamie',
     title: t('纸箱里的马克杯', 'A mug in a cardboard box'),
     text: t(
       '杰米把办公室的杯子带回家，纸箱比想象中轻。',
@@ -342,7 +342,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-jamie-interview',
-    channel: 'morning',
+    channel: 'npc:jamie',
     title: t('面试前的领带', 'A tie before the interview'),
     text: t(
       '杰米找到零工，也等到正式面试，久没戴的领带终于有了用场。',
@@ -420,7 +420,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-jamie-health',
-    channel: 'morning',
+    channel: 'npc:jamie',
     title: t('楼梯中间的停顿', 'A pause on the stairs'),
     text: t(
       '杰米的旧病反复，去楼上取件外套也要歇一会儿。',
@@ -454,7 +454,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-pip-form',
-    channel: 'morning',
+    channel: 'npc:jamie',
     title: t('表格与冷掉的茶', 'Forms and cold tea'),
     text: t(
       'PIP 表格摊满餐桌，杰米写完一页，茶就凉了一次。',
@@ -535,7 +535,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-pip-review',
-    channel: 'morning',
+    channel: 'npc:jamie',
     title: t('复核的日历格', 'A date for review'),
     text: t(
       'PIP 复核的提醒夹在日历里，杰米把复诊和买面包写在同一页。',
@@ -610,7 +610,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-b2-study',
-    channel: 'morning',
+    channel: 'npc:jamie',
     title: t('餐桌上的口试', 'A speaking test at the dinner table'),
     text: t(
       '杰米拿菜谱模拟口试，索菲娅讲了三分钟为什么不能再吃焗豆。',
@@ -706,7 +706,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-kol-quiz',
-    channel: 'morning',
+    channel: 'npc:jamie',
     title: t('杰米答错的题', 'The question Jamie gets wrong'),
     text: t(
       '索菲娅提问，杰米连错三题，终于不再说这本书应该很简单。',
@@ -857,7 +857,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-care-home',
-    channel: 'morning',
+    channel: 'npc:jamie',
     title: t('熟悉的杯子', 'The familiar cup'),
     text: t(
       '回家第一晚，杰米把索菲娅的杯子放在老位置，连茶渍都没变。',
@@ -897,7 +897,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-small-socks',
-    channel: 'morning',
+    channel: 'npc:jamie',
     title: t('小得离谱的袜子', 'Impossibly small socks'),
     text: t(
       '宝宝的袜子比杰米的手掌还小，两个人对着购物篮傻笑。',
@@ -936,7 +936,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-baby-arrival',
-    channel: 'morning',
+    channel: 'npc:jamie',
     title: t('多了一盏夜灯', 'One more night light'),
     text: t(
       '孩子出生了，夜灯亮着，杰米把所有轻声关门都练成了慢动作。',
@@ -976,7 +976,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-pram-hall',
-    channel: 'morning',
+    channel: 'npc:jamie',
     title: t('走廊的新家具', 'The hallway’s new furniture'),
     text: t(
       '婴儿车堵在门口，索菲娅和杰米研究出侧着身子进家的新步法。',
@@ -1018,7 +1018,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-neighbour-drill',
-    channel: 'morning',
+    channel: 'npc:jamie',
     title: t('周日的电钻', 'A Sunday drill'),
     text: t(
       '隔壁周日一早又开电钻，杰米的枕头盖住耳朵也没用。',
@@ -1102,7 +1102,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-renewal-calendar',
-    channel: 'morning',
+    channel: 'npc:jamie',
     title: t('日历上的星号', 'An asterisk on the calendar'),
     text: t(
       '索菲娅给续签提醒画了星号，杰米问是不是又一个纪念日。',
@@ -1205,7 +1205,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-uc-scenario',
-    channel: 'morning',
+    channel: 'npc:jamie',
     title: t('账本上的两种写法', 'Two versions of the ledger'),
     text: t(
       '索菲娅和杰米把这季的账单摊在桌上，茶凉了，计算器还没歇。',
@@ -1283,7 +1283,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-move-boxes',
-    channel: 'morning',
+    channel: 'npc:jamie',
     title: t('标着厨房的纸箱', 'A box marked kitchen'),
     text: t(
       '写着厨房的箱子里全是书，杰米坚持说这也算精神食粮。',
@@ -1363,7 +1363,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-anniversary-photo',
-    channel: 'morning',
+    channel: 'npc:jamie',
     title: t('没有对焦的照片', 'The out-of-focus photo'),
     text: t(
       '上次纪念日的照片洗出来了，菜糊了，人也糊了，笑容倒很清楚。',
@@ -1464,7 +1464,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-rain-bus',
-    channel: 'morning',
+    channel: 'npc:jamie',
     title: t('同一把伞', 'The same umbrella'),
     text: t(
       '公交还没来，杰米把伞往索菲娅那边倾，自己半边肩膀已经湿透。',
@@ -1491,7 +1491,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-yellow-stickers',
-    channel: 'morning',
+    channel: 'npc:jamie',
     title: t('黄标晚餐', 'A yellow-sticker dinner'),
     text: t(
       '超市黄标区剩下西兰花和一块蛋糕，杰米说营养已经很平衡。',
@@ -1549,7 +1549,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-recipe-note',
-    channel: 'morning',
+    channel: 'npc:jamie',
     title: t('面粉袋上的食谱', 'A recipe on the flour bag'),
     text: t(
       '两个人照袋子上的食谱烤面包，成品有点像可以撑门的砖。',
@@ -1578,7 +1578,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-weekend-rota',
-    channel: 'morning',
+    channel: 'npc:jamie',
     title: t('周末班表', 'The weekend rota'),
     text: t(
       '两个人难得同时休息，窗外却下起雨，连鸽子都躲在站牌下面。',
@@ -1801,7 +1801,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-winter-duvet',
-    channel: 'morning',
+    channel: 'npc:jamie',
     title: t('被子的边界', 'The duvet border'),
     text: t(
       '冬夜的被子总往杰米那边跑，索菲娅开始认真考虑两床被子的外交方案。',
@@ -1831,7 +1831,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-spring-bulbs',
-    channel: 'morning',
+    channel: 'npc:jamie',
     title: t('窗台上的绿尖', 'Green tips on the windowsill'),
     text: t(
       '秋天种的球根终于发芽，杰米每天都问是不是又长高了一点。',
@@ -1885,7 +1885,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-autumn-jam',
-    channel: 'morning',
+    channel: 'npc:jamie',
     title: t('多了一排果酱', 'An extra row of jam jars'),
     text: t(
       '杰米买错了苹果的数量，厨房现在像个规模很小的果酱工厂。',
@@ -1935,7 +1935,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-shoe-repair',
-    channel: 'morning',
+    channel: 'npc:jamie',
     title: t('鞋底的小洞', 'A little hole in the sole'),
     text: t(
       '杰米直到踩进水坑才发现鞋底破了，回家时一只脚发出了海浪声。',
@@ -2056,7 +2056,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-kettle',
-    channel: 'morning',
+    channel: 'npc:jamie',
     title: t('水壶最后的演出', 'The kettle’s final performance'),
     text: t(
       '水壶响了半天却没烧开，杰米说它只是想参与厨房的谈话。',
@@ -2200,7 +2200,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-laundry',
-    channel: 'morning',
+    channel: 'npc:jamie',
     title: t('袜子的平行宇宙', 'The parallel universe of socks'),
     text: t(
       '洗完衣服又少了一只袜子，杰米建议给失踪的袜子单独建个相册。',
@@ -2255,7 +2255,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-fridge-hum',
-    channel: 'morning',
+    channel: 'npc:jamie',
     title: t('冰箱的低音', 'The fridge’s bass note'),
     text: t(
       '冰箱整晚嗡嗡响，杰米说它正在练低音，索菲娅只想让乐队休息。',
@@ -2319,7 +2319,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-late-dinner',
-    channel: 'morning',
+    channel: 'npc:jamie',
     title: t('保温中的晚饭', 'Dinner kept warm'),
     text: t(
       '索菲娅到家时晚饭已经热过两次，杰米把锅盖揭得像宣布彩票开奖。',
@@ -2345,7 +2345,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-home-spice',
-    channel: 'morning',
+    channel: 'npc:jamie',
     title: t('厨房里熟悉的味道', 'A familiar smell in the kitchen'),
     text: t(
       '熟悉的香料终于买齐，杰米进门就问今天是不是有什么好消息。',
@@ -2371,7 +2371,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-camping',
-    channel: 'morning',
+    channel: 'npc:jamie',
     title: t('帐篷说明书', 'The tent instructions'),
     text: t(
       '营地就在英国海边，两个人研究帐篷说明书时，海鸥先看懂了零食袋。',
@@ -2402,7 +2402,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-heating',
-    channel: 'morning',
+    channel: 'npc:jamie',
     title: t('暖气旋钮', 'The heating dial'),
     text: t(
       '杰米把暖气调低一点，索菲娅把毛衣加厚一点，来串门的猫占了最暖的位置。',
@@ -2587,7 +2587,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'family-back-step',
-    channel: 'morning',
+    channel: 'npc:jamie',
     title: t('后门的小台阶', 'The step by the back door'),
     text: t(
       '难得没有急事的傍晚，两个人坐在后门台阶上，看蜗牛完成它的通勤。',
