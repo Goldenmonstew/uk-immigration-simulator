@@ -380,7 +380,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'sw-partner-call-after',
-    channel: 'morning',
+    channel: 'phone',
     title: {
       zhCN: '两把牙刷',
       en: 'Two toothbrushes',
@@ -867,7 +867,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'sw-partner-budget',
-    channel: 'morning',
+    channel: 'phone',
     title: {
       zhCN: '伴侣的坏消息',
       en: 'Bad news at home',
@@ -913,7 +913,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'sw-partner-budget-after',
-    channel: 'morning',
+    channel: 'letter',
     title: {
       zhCN: '重新排预算',
       en: 'A revised budget',
@@ -1749,7 +1749,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'sw-partner-work',
-    channel: 'morning',
+    channel: 'phone',
     title: {
       zhCN: '另一张工资单',
       en: 'Another payslip',
@@ -1812,7 +1812,7 @@ const events: GameEvent[] = [
   },
   {
     id: 'sw-partner-space',
-    channel: 'morning',
+    channel: 'phone',
     title: {
       zhCN: '各自的空间',
       en: 'Room apart',

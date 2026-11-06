@@ -1,5 +1,6 @@
 import type { GameEvent } from '../types';
 import { additionalCommonEvents } from './common-additions';
+import { townEvents } from './town';
 
 // Fictional amounts and durations describe individual stories, not policy thresholds.
 export const commonEvents: GameEvent[] = [
@@ -293,7 +294,7 @@ export const commonEvents: GameEvent[] = [
   },
   {
     id: 'common-garden',
-    channel: 'morning',
+    channel: 'npc:margaret',
     title: {
       zhCN: '窗台发芽',
       en: 'Windowsill shoots',
@@ -489,7 +490,7 @@ export const commonEvents: GameEvent[] = [
   },
   {
     id: 'common-book',
-    channel: 'morning',
+    channel: 'npc:helen',
     title: {
       zhCN: '借来的考题',
       en: 'Borrowed questions',
@@ -781,7 +782,7 @@ export const commonEvents: GameEvent[] = [
   },
   {
     id: 'common-conference',
-    channel: 'morning',
+    channel: 'npc:ade',
     title: {
       zhCN: '同事的邀请',
       en: 'A colleague’s invitation',
@@ -3091,6 +3092,7 @@ export const commonEvents: GameEvent[] = [
     season: 4,
   },
   ...additionalCommonEvents,
+  ...townEvents,
 ];
 
 export const systemEvents: GameEvent[] = [

@@ -8,6 +8,7 @@ import {
   characters,
   currentEvent,
   places,
+  npcs,
   narrative,
   newGame,
   progress,
@@ -121,7 +122,12 @@ describe('v3 content contract', () => {
       ...characters.flatMap((c) => c.events),
       ...systemEvents,
     ];
-    expect(commonEvents).toHaveLength(120);
+    expect(commonEvents.filter((e) => !e.id.startsWith('town-'))).toHaveLength(
+      120,
+    );
+    expect(commonEvents.filter((e) => e.id.startsWith('town-'))).toHaveLength(
+      14,
+    );
     expect(characters[0].events).toHaveLength(40);
     expect(characters.slice(1).map((c) => c.events.length)).toEqual([80, 80]);
     expect(new Set(all.map((e) => e.id)).size).toBe(all.length);
@@ -129,6 +135,8 @@ describe('v3 content contract', () => {
       'visa-renewed',
       'promoted',
       'debt-crisis',
+      'lina-can-stay',
+      'lina-will-leave',
       ...all.flatMap((e) => e.choices.flatMap((c) => c.sets ?? [])),
     ]);
     for (const e of all) {
@@ -151,9 +159,15 @@ describe('v3 content contract', () => {
         checkEffects(c.effects);
       }
     }
-    const consumed = new Set(
-      all.flatMap((e) => [...(e.requires ?? []), ...(e.forbids ?? [])]),
-    );
+    const consumed = new Set([
+      ...all.flatMap((e) => [...(e.requires ?? []), ...(e.forbids ?? [])]),
+      ...npcs.flatMap((npc) =>
+        npc.lines.flatMap((line) => [
+          ...(line.requires ?? []),
+          ...(line.forbids ?? []),
+        ]),
+      ),
+    ]);
     for (const e of all)
       for (const c of e.choices)
         for (const f of c.sets ?? [])
@@ -203,7 +217,7 @@ describe('v3 content contract', () => {
     }
     expect(places).toHaveLength(16);
     expect(characters[0].sprite).toBe('characters/3.png');
-    expect(achievements).toHaveLength(15);
+    expect(achievements).toHaveLength(23);
   });
   test('every authored choice runs against the engine without corrupting state', () => {
     for (const character of characters)

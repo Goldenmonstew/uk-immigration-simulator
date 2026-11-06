@@ -83,10 +83,24 @@ export const items: Item[] = [
     edible: { mood: b.food.cakeMood },
   },
   ...[
+    ['dumplings', '百家宴饺子', 'Potluck dumplings'],
+    ['may-bun', '五月节甜面包', 'May Day bun'],
+    ['summer-corn', '烤甜玉米', 'Grilled sweetcorn'],
+    ['gingerbread', '姜饼人', 'Gingerbread person'],
+  ].map(([id, zhCN, en]): Item => ({
+    id,
+    name: { zhCN, en },
+    kind: 'food',
+    price: b.prices.festival,
+    edible: { mood: b.food.mealMood, health: b.food.cropHealth },
+  })),
+  ...[
     ['baked-potato', '烤土豆', 'Baked potato'],
     ['salad', '田园沙拉', 'Garden salad'],
     ['fish-and-potatoes', '鱼配土豆', 'Fish and potatoes'],
     ['strawberry-jam', '草莓酱', 'Strawberry jam'],
+    ['turnip-soup', '芜菁汤', 'Turnip soup'],
+    ['corn-soup', '玉米浓汤', 'Sweetcorn soup'],
   ].map(([id, zhCN, en]): Item => ({
     id,
     name: { zhCN, en },
@@ -95,6 +109,34 @@ export const items: Item[] = [
   })),
 ];
 export const recipes: Recipe[] = [
+  {
+    id: 'dumplings',
+    label: { zhCN: '包蔬菜饺子', en: 'Make vegetable dumplings' },
+    needs: { turnip: 1, potato: 1 },
+    makes: 'dumplings',
+    minutes: b.recipeMinutes,
+  },
+  {
+    id: 'summer-corn',
+    label: { zhCN: '烤甜玉米', en: 'Grill sweetcorn' },
+    needs: { corn: 1 },
+    makes: 'summer-corn',
+    minutes: b.recipeMinutes,
+  },
+  {
+    id: 'turnip-soup',
+    label: { zhCN: '煮芜菁汤', en: 'Make turnip soup' },
+    needs: { turnip: 2 },
+    makes: 'turnip-soup',
+    minutes: b.recipeMinutes,
+  },
+  {
+    id: 'corn-soup',
+    label: { zhCN: '煮玉米浓汤', en: 'Make sweetcorn soup' },
+    needs: { corn: 1, potato: 1 },
+    makes: 'corn-soup',
+    minutes: b.recipeMinutes,
+  },
   {
     id: 'baked-potato',
     label: { zhCN: '烤土豆', en: 'Bake a potato' },

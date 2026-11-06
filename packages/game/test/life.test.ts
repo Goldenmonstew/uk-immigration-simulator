@@ -36,7 +36,7 @@ import type { Channel, GameEvent, GameState, Npc, PlaceId } from '../src';
 import { balance as b } from '../src/balance';
 import { commonEvents } from '../src/events/common';
 import { heartEvents } from '../src/npcs';
-import { clear, completeQuarter, perform } from './helpers';
+import { clear, completeQuarter, drain, perform } from './helpers';
 
 function delivery(state: GameState, channel: Channel, minute?: number) {
   const event = commonEvents.find((e) => e.id === 'common-boiler')!;
@@ -75,14 +75,14 @@ describe('three days, calendar and clock', () => {
     expect(weekend.day).toMatchObject({
       index: 1,
       kind: 'weekend',
-      date: '2025-02-15',
+      date: '2025-02-01',
       minute: 420,
     });
     const special = sleep(weekend);
     expect(special.day).toMatchObject({
       index: 2,
       kind: 'special',
-      date: '2025-02-01',
+      date: '2025-04-12',
       festival: 'lunar-new-year',
     });
     expect(special.dayNumber).toBe(2);
@@ -119,6 +119,29 @@ describe('three days, calendar and clock', () => {
       }
     }
     expect(winter).toEqual(new Set(['sunny', 'cloudy', 'rain', 'snow']));
+  });
+  test('every quarter keeps workday < weekend < festival inside its window', () => {
+    for (let month = 0; month < 24; month++) {
+      for (const day of [1, 15, 28]) {
+        const anchor = new Date(Date.UTC(2024, month, day));
+        let state = season(
+          (Math.floor(anchor.getUTCMonth() / 3) + 1) as GameState['quarter'],
+          anchor.toISOString().slice(0, 10),
+        );
+        state.day.index = 2;
+        state.timeline.episodes[0].validFrom = '2020-01-01';
+        state.timeline.episodes[0].validTo = '2040-01-01';
+        state = clear(sleep(state));
+        const work = state.day.date;
+        const weekend = sleep(state);
+        const special = sleep(weekend);
+        expect(work < weekend.day.date).toBe(true);
+        expect(weekend.day.date < special.day.date).toBe(true);
+        const end = new Date(state.date);
+        end.setUTCMonth(end.getUTCMonth() + 3);
+        expect(special.day.date < end.toISOString().slice(0, 10)).toBe(true);
+      }
+    }
   });
   test('hours, workdays, once-per-day and pending lock actual actions', () => {
     let state = at('visa', 479);
@@ -262,7 +285,15 @@ describe('delivery and resumable default routine', () => {
       after.log
         .filter((e) => e.kind === 'action')
         .every((e) =>
-          ['work', 'class', 'relax', 'rest', 'festival'].includes(e.id),
+          [
+            'work',
+            'class',
+            'relax',
+            'rest',
+            'nap',
+            'bench',
+            'festival',
+          ].includes(e.id),
         ),
     ).toBe(true);
     expect(after.timeline.episodes).toEqual(before.timeline.episodes);
@@ -302,6 +333,69 @@ describe('delivery and resumable default routine', () => {
 });
 
 describe('actual travel, interrupted travel and financial boundaries', () => {
+  test('abroad only morning and phone arrive; face-to-face cards and letters wait for the first day home', () => {
+    const channels: Channel[] = [
+      'morning',
+      'phone',
+      'place:home',
+      'npc:ade',
+      'letter',
+    ];
+    const fixtures: GameEvent[] = channels.map((channel, i) => ({
+      id: `trip-fixture-${i}`,
+      channel,
+      weight: 0,
+      once: true,
+      title: { zhCN: '旅途', en: 'Journey' },
+      text: { zhCN: '旅途消息。', en: 'News on a journey.' },
+      choices: [
+        { id: 'ok', label: { zhCN: '记下', en: 'Note it' }, effects: [] },
+      ],
+    }));
+    commonEvents.push(...fixtures);
+    try {
+      const before = clear();
+      before.day.deliveries = fixtures.map((e) => ({
+        eventId: e.id,
+        channel: e.channel!,
+        minute: 800,
+      }));
+      let state = perform(before, 'travel-3');
+      const delivered: string[] = [];
+      for (let i = 0; state.trip; i++) {
+        expect(i).toBeLessThan(30);
+        const event = currentEvent(state)!;
+        expect(event).toBeDefined();
+        expect(
+          event.id.startsWith('system-') ||
+            ['morning', 'phone'].includes(event.channel!),
+        ).toBe(true);
+        expect(mailbox(state)).toEqual([]);
+        delivered.push(event.id);
+        state = resolve(JSON.parse(JSON.stringify(state)), event.choices[0].id);
+      }
+      expect(delivered).toEqual(
+        expect.arrayContaining(['trip-fixture-0', 'trip-fixture-1']),
+      );
+      expect(state.day.index).toBe(0);
+      expect(mailbox(state)).toContain('trip-fixture-4');
+      expect(scheduled(state)).toEqual(
+        expect.arrayContaining(['trip-fixture-2', 'trip-fixture-3']),
+      );
+      expect(state.firedEvents).not.toContain('trip-fixture-4');
+      expect(state.pendingEvent).toBe('trip-fixture-2');
+      state = drain(resolve(state, 'ok'));
+      state = talk(state, 'ade');
+      expect(state.pendingEvent).toBe('trip-fixture-3');
+      state = drain(resolve(state, 'ok'));
+      expect(readMail(state).pendingEvent).toBe('trip-fixture-4');
+    } finally {
+      commonEvents.splice(
+        commonEvents.length - fixtures.length,
+        fixtures.length,
+      );
+    }
+  });
   test.each([
     [1, '2025-02-28', '2025-04-15', 1],
     [3, '2025-04-28', '2025-07-15', 2],
@@ -361,7 +455,7 @@ describe('actual travel, interrupted travel and financial boundaries', () => {
     expect(after.trip).toBeUndefined();
   });
   test('pending preserves serialized travel intention and absences stay elapsed after restore', () => {
-    const before = delivery(clear(), 'letter');
+    const before = delivery(clear(), 'phone', 800);
     const travelling = perform(before, 'travel-3');
     expect(travelling.pendingEvent).toBeDefined();
     expect(travelling.trip).toEqual({
@@ -387,11 +481,9 @@ describe('actual travel, interrupted travel and financial boundaries', () => {
 
 describe('townspeople, hearts, dialogue and gifts', () => {
   test('eight residents; complete characters have forty bilingual short lines, four heart scenes and valid schedules', () => {
-    expect(npcs).toHaveLength(8);
+    expect(npcs).toHaveLength(11);
     for (const npc of npcs) {
-      expect(npc.lines.length).toBeGreaterThanOrEqual(
-        ['margaret', 'ade', 'helen'].includes(npc.id) ? 40 : 5,
-      );
+      expect(npc.lines.length).toBeGreaterThanOrEqual(npc.characters ? 30 : 40);
       for (const line of npc.lines) {
         expect(line.text.zhCN.length, line.id).toBeLessThanOrEqual(40);
         expect(line.text.en.trim()).not.toBe('');
@@ -402,7 +494,7 @@ describe('townspeople, hearts, dialogue and gifts', () => {
           [...rule.stops.map((s) => s.from)].sort((a, b) => a - b),
         );
     }
-    expect(heartEvents).toHaveLength(12);
+    expect(heartEvents).toHaveLength(38);
     for (const event of heartEvents) {
       expect(event.choices.length).toBeGreaterThanOrEqual(2);
       expect(event.choices.length).toBeLessThanOrEqual(3);
