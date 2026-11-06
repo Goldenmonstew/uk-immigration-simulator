@@ -74,7 +74,15 @@ export class TownScene extends Phaser.Scene {
   private focusNpc?: string;
   private windows?: Phaser.GameObjects.Graphics;
   private celebration?: Phaser.GameObjects.Graphics;
-  private transients = new Set<Phaser.GameObjects.GameObject>();
+  private transients = new Map<
+    Phaser.GameObjects.Text | Phaser.GameObjects.Sprite,
+    {
+      duration: number;
+      rise: number;
+      bounds?: Phaser.Geom.Rectangle;
+      started: boolean;
+    }
+  >();
   private dayNumber: number;
   private worldObjects: Phaser.GameObjects.GameObject[] = [];
   constructor(
@@ -184,7 +192,10 @@ export class TownScene extends Phaser.Scene {
     this.windows = undefined;
     this.celebration = undefined;
     this.focusNpc = undefined;
-    for (const o of this.transients) o.destroy();
+    for (const o of this.transients.keys()) {
+      this.tweens.killTweensOf(o);
+      o.destroy();
+    }
     this.transients.clear();
     for (const o of this.worldObjects) o.destroy();
     this.worldObjects = [];
@@ -321,17 +332,24 @@ export class TownScene extends Phaser.Scene {
   }
   private resizeCamera() {
     if (!this.map) return;
-    this.cameras.main.setZoom(
+    const camera = this.cameras.main;
+    camera.setZoom(
       this.view.interior
         ? Math.min(
             3,
-            this.scale.width / (18 * size),
-            this.scale.height / (13 * size),
+            this.scale.width / this.map.widthInPixels,
+            this.scale.height / this.map.heightInPixels,
           )
         : this.scale.width < 600
           ? 2
           : 2.5,
     );
+    if (this.view.interior) {
+      // A fitted room stays centred even when the viewport exceeds its bounds.
+      camera.stopFollow();
+      camera.removeBounds();
+      camera.centerOn(this.map.widthInPixels / 2, this.map.heightInPixels / 2);
+    }
     this.paintLight();
   }
   sync(view: SceneView) {
@@ -389,7 +407,7 @@ export class TownScene extends Phaser.Scene {
     const focus = view.focusNpc
       ? this.residents.get(view.focusNpc)?.sprite
       : undefined;
-    if (this.focusNpc !== view.focusNpc) {
+    if (!view.interior && this.focusNpc !== view.focusNpc) {
       this.focusNpc = view.focusNpc;
       this.cameras.main.startFollow(
         focus?.visible ? focus : this.player!,
@@ -597,25 +615,56 @@ export class TownScene extends Phaser.Scene {
     rise: number,
   ) {
     if (this.transients.size >= 12) {
-      const oldest = this.transients.values().next().value!;
+      const oldest = this.transients.keys().next().value!;
       this.tweens.killTweensOf(oldest);
       oldest.destroy();
       this.transients.delete(oldest);
     }
-    this.transients.add(object);
     const reduced = window.matchMedia(
       '(prefers-reduced-motion: reduce)',
     ).matches;
-    this.tweens.add({
-      targets: object,
-      y: object.y - (reduced ? 0 : rise),
-      alpha: 0,
+    const travel = reduced ? 0 : rise;
+    const bounds =
+      object instanceof Phaser.GameObjects.Text
+        ? object.getBounds()
+        : undefined;
+    if (bounds) {
+      // Reserve the whole upward path, including every line of the text.
+      bounds.y -= travel;
+      bounds.height += travel;
+      object.setVisible(false);
+    }
+    this.transients.set(object, {
       duration,
-      onComplete: () => {
-        object.destroy();
-        this.transients.delete(object);
-      },
+      rise: travel,
+      bounds,
+      started: false,
     });
+    this.startFloats();
+  }
+  private startFloats() {
+    const earlier: Phaser.Geom.Rectangle[] = [];
+    for (const [object, feedback] of this.transients) {
+      const { bounds } = feedback;
+      const blocked =
+        bounds &&
+        earlier.some((area) => Phaser.Geom.Rectangle.Overlaps(area, bounds));
+      if (bounds) earlier.push(bounds);
+      if (feedback.started || blocked) continue;
+      feedback.started = true;
+      object.setVisible(true);
+      this.tweens.add({
+        targets: object,
+        y: object.y - feedback.rise,
+        alpha: 0,
+        duration: feedback.duration,
+        onComplete: () => {
+          object.destroy();
+          this.transients.delete(object);
+          this.startFloats();
+        },
+      });
+    }
   }
   halt() {
     this.path = [];

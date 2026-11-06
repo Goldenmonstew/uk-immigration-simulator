@@ -868,6 +868,26 @@ test('reading the board keeps the menu open with this season\u2019s notices', ()
   h.dispose();
 });
 
+test('outcome text renders each notice on a separate line in both locales', () => {
+  const outcome: core.Outcome = {
+    kind: 'activity',
+    text: {
+      zhCN: '本季公告\n周末捡垃圾\n夏日菜地评比',
+      en: 'Season notices\nWeekend litter pick\nSummer allotment show',
+    },
+  };
+  for (const locale of ['zh-CN', 'en'] as const) {
+    const { html } = renderView(
+      () => OutcomeText({ text: outcome.text }),
+      locale,
+    );
+    const lines = outcome.text![locale === 'en' ? 'en' : 'zhCN'].split('\n');
+    expect(html).toContain(lines.join('<br/>'));
+    expect(html.match(/<br\/>/g)).toHaveLength(2);
+    expect(html).toContain('role="status"');
+  }
+});
+
 test('heart dialogue focuses the NPC and shows the actual heart change', () => {
   const start = at(600);
   start.friendship.margaret = 190;
