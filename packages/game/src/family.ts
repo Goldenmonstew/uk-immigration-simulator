@@ -620,8 +620,8 @@ const additionalLines: Record<string, Npc['lines']> = {
     {
       id: 'jamie-daily-33',
       text: {
-        zhCN: '下班路上想好炖菜，到了门口忘了配料。',
-        en: 'Planned a stew on the way from work. Forgot the ingredients at the door.',
+        zhCN: '下班路上想好烤土豆，到了门口忘了配料。',
+        en: 'I planned baked potatoes on the way home, then forgot the toppings at the door.',
       },
       dayKinds: ['workday'],
       when: [
@@ -724,8 +724,8 @@ const additionalLines: Record<string, Npc['lines']> = {
     {
       id: 'jamie-daily-41',
       text: {
-        zhCN: '春天把窗开一点，炖菜香能走得远些。',
-        en: 'A window ajar in spring lets the stew smell travel.',
+        zhCN: '春天把窗开一点，窗帘总想溜到外面。',
+        en: 'Leave the window ajar in spring and the curtain tries to escape.',
       },
       season: 2,
     },
@@ -771,7 +771,7 @@ const additionalLines: Record<string, Npc['lines']> = {
       id: 'jamie-daily-46',
       text: {
         zhCN: '上次歇脚后，我把常用的锅移到低处。',
-        en: 'I’ve moved the everyday pans lower so I can reach them without climbing.',
+        en: "Since my last rest, I've moved the everyday pans lower.",
       },
       requires: ['family-pip-advice'],
     },
@@ -817,8 +817,8 @@ const additionalLines: Record<string, Npc['lines']> = {
     {
       id: 'ka-ning-partner-daily-31',
       text: {
-        zhCN: '下班先擦干双手，纸巾里竟带着一截线头。',
-        en: 'Home from work. Drying my hands, I find a loose thread in the tissue.',
+        zhCN: '回家先擦干双手，纸巾里竟带着一截线头。',
+        en: 'Home at last. Drying my hands, I find a loose thread in the tissue.',
       },
       dayKinds: ['workday'],
       when: [
@@ -831,8 +831,8 @@ const additionalLines: Record<string, Npc['lines']> = {
     {
       id: 'ka-ning-partner-daily-32',
       text: {
-        zhCN: '刚收工，今晚不想再对着表格吃饭。',
-        en: 'Just finished work. No spreadsheets beside dinner tonight.',
+        zhCN: '刚到家，今晚不想再对着表格吃饭。',
+        en: 'Just got in. No spreadsheets beside dinner tonight.',
       },
       dayKinds: ['workday'],
       when: [
@@ -845,8 +845,8 @@ const additionalLines: Record<string, Npc['lines']> = {
     {
       id: 'ka-ning-partner-daily-33',
       text: {
-        zhCN: '下班带回一根胡萝卜，饭盒终于有新颜色。',
-        en: 'A carrot on the way from work. A new colour for the lunch box.',
+        zhCN: '回来路上买了根胡萝卜，饭盒终于有新颜色。',
+        en: 'Picked up a carrot on the way home. A new colour for the lunch box.',
       },
       dayKinds: ['workday'],
       when: [
@@ -859,8 +859,8 @@ const additionalLines: Record<string, Npc['lines']> = {
     {
       id: 'ka-ning-partner-daily-34',
       text: {
-        zhCN: '工作结束了，我把手机提醒调成了静音。',
-        en: 'Work’s over. I’ve silenced the reminders on my phone.',
+        zhCN: '今天的事办完了，我把手机提醒调成了静音。',
+        en: 'Today’s errands are done. I’ve silenced the reminders on my phone.',
       },
       dayKinds: ['workday'],
       when: [
@@ -873,8 +873,8 @@ const additionalLines: Record<string, Npc['lines']> = {
     {
       id: 'ka-ning-partner-daily-35',
       text: {
-        zhCN: '从班上回来，最想先换掉这双硬鞋。',
-        en: 'Back from my shift. These stiff shoes can come off first.',
+        zhCN: '在外面跑了一天，最想先换掉这双硬鞋。',
+        en: 'Out all day. These stiff shoes can come off first.',
       },
       dayKinds: ['workday'],
       when: [
@@ -887,8 +887,8 @@ const additionalLines: Record<string, Npc['lines']> = {
     {
       id: 'ka-ning-partner-daily-36',
       text: {
-        zhCN: '收工以后这一小段，我不想边吃边算账。',
-        en: 'For this bit after work, I’d rather eat without doing sums.',
+        zhCN: '到家后这一小段，我不想边吃边算账。',
+        en: 'For this bit after getting home, I’d rather eat without doing sums.',
       },
       dayKinds: ['workday'],
       when: [
@@ -910,8 +910,8 @@ const additionalLines: Record<string, Npc['lines']> = {
     {
       id: 'ka-ning-partner-daily-38',
       text: {
-        zhCN: '还在等下一份工作，先把午饭认真做好。',
-        en: 'Still between jobs. Today’s lunch deserves some care anyway.',
+        zhCN: '还在等下一份工作，先把这顿饭认真做好。',
+        en: 'Still between jobs. This meal deserves some care anyway.',
       },
       requires: ['bno-partner-between-jobs'],
       forbids: ['bno-partner-restarted'],
@@ -1014,6 +1014,8 @@ const additionalLines: Record<string, Npc['lines']> = {
         en: 'I’d like to save that empty album page for our next outing.',
       },
       heartsMin: 6,
+      requires: ['family-album-started'],
+      forbids: ['family-album-page'],
     },
     {
       id: 'ka-ning-partner-daily-50',
@@ -1042,7 +1044,7 @@ const additionalLines: Record<string, Npc['lines']> = {
       id: 'ka-ning-child-daily-32',
       text: {
         zhCN: '今天下课我没忘水壶，差点忘了自己。',
-        en: 'I remembered my bottle after class. Nearly forgot myself.',
+        en: 'I remembered my bottle after class. Nearly left myself behind instead.',
       },
       dayKinds: ['workday'],
       when: [
@@ -1196,8 +1198,8 @@ const additionalLines: Record<string, Npc['lines']> = {
     {
       id: 'ka-ning-child-daily-47',
       text: {
-        zhCN: '那张量身高的照片，我想发给外婆看。',
-        en: 'I want to send Granny the photo of my height mark.',
+        zhCN: '外婆回信了，说门框上那条线她也看见了。',
+        en: 'Granny wrote back. She saw the line on the doorframe too.',
       },
       heartsMin: 2,
       requires: ['heart-child-photo'],
@@ -1205,8 +1207,8 @@ const additionalLines: Record<string, Npc['lines']> = {
     {
       id: 'ka-ning-child-daily-48',
       text: {
-        zhCN: '我给这幅画留了空，你也能画进去。',
-        en: 'I left a space in this picture so you can draw yourself in.',
+        zhCN: '我把蜡笔按长短排好了，最短那支还画得动。',
+        en: 'I lined the crayons up by length. The shortest one still works.',
       },
       heartsMin: 6,
     },
@@ -1300,8 +1302,8 @@ familyNpcs.push({
     {
       id: 'yao-flatmate-daily-1',
       text: {
-        zhCN: '我是周沅，装裱店上班。厨房左边那格归你。',
-        en: 'I’m Yuan, from the framing shop. The left kitchen shelf is yours.',
+        zhCN: '冰箱左边那格还空着，归你。',
+        en: "The left fridge shelf is still free. It's yours.",
       },
       heartsMax: 1,
     },
@@ -1336,8 +1338,8 @@ familyNpcs.push({
     {
       id: 'yao-flatmate-daily-6',
       text: {
-        zhCN: '租约放在文件袋里，我没拿它垫桌脚。',
-        en: 'The tenancy papers are in their wallet, not under a table leg.',
+        zhCN: '租约放在文件袋里，没混进装裱的废纸。',
+        en: 'The tenancy papers are in their wallet, clear of the framing offcuts.',
       },
     },
     {
@@ -1396,7 +1398,7 @@ familyNpcs.push({
       id: 'yao-flatmate-daily-14',
       text: {
         zhCN: '冬天裁纸先搓手，手指不能跟着打盹。',
-        en: 'I warm my fingers before cutting paper in winter.',
+        en: "I rub my hands before cutting paper in winter. Can't have my fingers nodding off.",
       },
       season: 1,
     },
@@ -1530,7 +1532,7 @@ familyNpcs.push({
       },
       when: [
         {
-          minuteMin: 1260,
+          minuteMin: 1380,
         },
       ],
     },
@@ -1573,6 +1575,7 @@ familyNpcs.push({
         en: 'When your partner came to the UK, the calendar got a lot of use.',
       },
       requires: ['partner-arrived'],
+      forbids: ['partner-separated'],
     },
     {
       id: 'yao-flatmate-daily-32',
@@ -1581,6 +1584,7 @@ familyNpcs.push({
         en: 'Your partner told me about first arriving in the UK. That suitcase sounded heavy.',
       },
       requires: ['partner-arrived'],
+      forbids: ['partner-separated'],
     },
     {
       id: 'yao-flatmate-daily-33',
@@ -1601,8 +1605,8 @@ familyNpcs.push({
     {
       id: 'yao-flatmate-daily-35',
       text: {
-        zhCN: '那份检查清单夹好了，房东来前不用乱找。',
-        en: 'The inspection checklist’s filed. No scramble before the landlord visits.',
+        zhCN: '那份检查清单夹好了，下回房东来也不用乱找。',
+        en: 'The inspection checklist’s filed. No scramble next time the landlord visits.',
       },
       requires: ['flatmate-checklist'],
     },
@@ -1789,8 +1793,8 @@ const moments: {
       en: 'The open recipe book',
     },
     text: {
-      zhCN: '杰米用杯子压住食谱，纸页卷回来，锅里的洋葱已经开始催人。\n你扶住锅柄，他终于腾出手翻页。「原来下一行才说要关小火。」\n他把火调低，又把挤在一起的两把椅子拉开，给你留出伸腿的位置。\n「这次先别管像不像照片。」他递来试味的勺子，自己先笑了一下。',
-      en: 'Jamie pins the recipe open with a mug. The page curls back while the onions demand attention.\nYou steady the pan so he can turn the page. “The next line says turn the heat down.”\nHe lowers the flame and separates the two crowded chairs, leaving you room to stretch your legs.\n“Never mind whether it looks like the picture.” He offers you a tasting spoon and starts to smile.',
+      zhCN: '杰米用杯子压住食谱，纸页卷回来，锅里的洋葱已经开始催人。\n你扶住锅柄，他终于腾出手翻页。「原来下一行才说要关小火。」\n他把火调低，又把案板挪到旁边，给你的手留出位置，勺子已经搁在干净碟里。\n「这次先别管像不像照片。」他指指勺子，锅里的香味和卷起的书页都等着你。',
+      en: 'Jamie pins the recipe open with a mug. The page curls back while the onions demand attention.\nYou steady the pan so he can turn the page. “The next line says turn the heat down.”\nHe lowers the flame and shifts the chopping board, leaving room for your hand. A tasting spoon waits on a clean plate.\n“Never mind whether it looks like the picture.” He points at the spoon; both the pan and the curled recipe page await your attention.',
     },
     labels: [
       {
@@ -1811,8 +1815,8 @@ const moments: {
       en: 'One screw short',
     },
     text: {
-      zhCN: '杰米把厨房椅子倒过来，指着松开的椅脚，掌心只剩下一颗螺丝。\n「另一颗大概退休了。」他摸遍裤袋，找出一张皱巴巴的购物纸。\n你替他扶稳椅背，他在纸上描下螺丝的形状，这回不凭印象去买。\n椅子暂时靠墙放好。他站起来试着推了推旁边那把，再请你坐下。',
-      en: 'Jamie turns a kitchen chair over. The leg is loose and there is only one screw in his palm.\n“The other one must have retired.” His pockets produce a crumpled shopping list.\nYou hold the chair while he traces the screw on the paper. No shopping from memory this time.\nThe chair rests against the wall. He checks the one beside it before inviting you to sit.',
+      zhCN: '杰米把厨房椅子倒过来，指着松开的椅脚，掌心只剩下一颗螺丝。\n「另一颗大概退休了。」他摸遍裤袋，找出一张洗得发软的旧信封。\n他把螺丝放在纸上，拿起铅笔比了比，说这回得带着图去买，免得又跑错。\n椅背歪向你这边。他腾出手找尺子，请你扶着描线，或先把松椅子移开。',
+      en: 'Jamie turns a kitchen chair over. The leg is loose and there is only one screw in his palm.\n“The other one must have retired.” His pockets produce an old envelope softened in the wash.\nHe places the screw on it and tries a pencil beside it. A drawing should save another wasted trip to the shop.\nThe chair back tilts towards you. Reaching for a ruler, he asks you to hold it for tracing or move the loose chair aside.',
     },
     labels: [
       {
@@ -1828,22 +1832,19 @@ const moments: {
   {
     npc: 'jamie',
     hearts: 6,
-    title: {
-      zhCN: '两把旧椅子',
-      en: 'Two old chairs',
-    },
+    title: { zhCN: '调不准的广播', en: 'The wandering radio signal' },
     text: {
-      zhCN: '后门旁的两把旧椅子积了灰。杰米拧干抹布，先仔细擦过椅背。\n他把吱呀声较轻的那把推给你，自己往另一把上坐，响声立刻接话。\n「它比我还想聊天。」他没急着起身，只用鞋跟轻轻试了试椅脚。\n你在他身旁坐定，院子里有一片叶子翻过来，两个人都看了好一会儿。',
-      en: 'The old chairs by the back door are dusty. Jamie wrings out a cloth and wipes their backs.\nHe slides the quieter one towards you. His own chair answers as soon as he sits.\n“More talkative than me.” He stays seated, gently testing the leg with his heel.\nYou settle beside him. A leaf turns over in the yard, and you both watch it for a while.',
+      zhCN: '后门旁的收音机只收到杂音。杰米把天线拉长，里面忽然传出半句天气预报。\n「连下雨都只肯说一半。」他转动旋钮，手一松，那句话又退回沙沙声里。\n你们把它挪到花盆旁，院子里一片叶子翻过来，天线也跟着轻轻摇。\n他笑着让开旋钮的位置，问你要不要试试；或者就留着杂音，先听一会儿花园。',
+      en: 'The radio by the back door only hisses. Jamie extends the aerial and catches half a weather forecast.\n“Won’t even finish telling us about the rain.” He turns the dial; as he lets go, the words sink into static.\nYou move it beside a flowerpot. A leaf turns over in the garden, and the aerial sways with it.\nLaughing, he leaves the dial to you. Would you like a try, or shall the static stay while you both listen to the garden?',
     },
     labels: [
       {
-        zhCN: '把两把椅子并排摆好',
-        en: 'Line the two chairs up together',
+        zhCN: '转动旋钮找清楚的声音',
+        en: 'Turn the dial to find a clear voice',
       },
       {
-        zhCN: '接过抹布擦椅脚',
-        en: 'Take the cloth and wipe the chair legs',
+        zhCN: '陪他听一会儿花园的响动',
+        en: 'Stay and listen to the garden with him',
       },
     ],
   },
@@ -1855,8 +1856,8 @@ const moments: {
       en: 'A pad beneath the chair',
     },
     text: {
-      zhCN: '杰米把旧椅子搬到门边，摊开几片软木，拿来一支短得握不住的笔。\n「这回轮到它站稳了。」他蹲了一会便坐下来，请你替他比着椅脚描线。\n你把剪好的垫子递过去，他慢慢贴牢，又将椅子转向你试坐的方向。\n那声熟悉的吱呀终于轻了。他抬头看你，手还扶在椅背上没有松开。',
-      en: 'Jamie carries the old chair to the door and lays out cork offcuts and an awkwardly short pencil.\n“Its turn to stand steady.” He crouches, then sits and asks you to trace around the leg.\nYou pass him the cut pads. He fits them carefully, then turns the chair for you to try.\nThe familiar creak softens. He looks up at you, his hand still resting on the chair back.',
+      zhCN: '杰米把旧椅子搬到门边，摊开几片软木，拿来一支短得握不住的笔。\n「这回轮到它站稳了。」他蹲了一会便坐下来，请你替他比着椅脚描线。\n桌边剪好的那片太窄，他翻过软木重新量，铅笔头又从指缝滑到了你面前。\n椅脚还轻轻摇着。他摊开手让你挑，是先剪合适的垫子，还是坐上去找摇晃的方向。',
+      en: 'Jamie carries the old chair to the door and lays out cork offcuts and an awkwardly short pencil.\n“Its turn to stand steady.” He crouches, then sits and asks you to trace around the leg.\nThe first pad is too narrow. He measures fresh cork, and the pencil stub slips through his fingers towards you.\nThe chair still rocks. He opens his hand: cut a better pad first, or sit down to find which way it leans?',
     },
     labels: [
       {
@@ -1875,11 +1876,11 @@ const moments: {
     hearts: 10,
     title: { zhCN: '椅背上的木牌', en: 'Labels on the chairs' },
     text: {
-      zhCN: '杰米把薄木牌翻过来，露出原先椅背上那道深划痕，指腹沿着它慢慢走。\n「不用遮了，认得出是哪把。」他放下钉子，把新剪的软木垫递给你。\n你们把木牌系在椅背下方，一面画锅，一面画勺，转过来便知道谁坐哪边。\n他端来两杯水，先把自己的椅子挪近一点。木牌碰在一起，声音很轻。',
-      en: 'Jamie turns the wooden label over, exposing the deep scratch on the chair back, and runs a finger along it.\n“Leave it. We know this chair.” He puts down the nails and hands you the new cork pads.\nYou tie the labels beneath the backs: a pan on one, a spoon on the other, marking your places.\nHe brings two glasses of water and moves his chair closer. The labels touch with a small click.',
+      zhCN: '杰米剪了两块薄木牌，一块画锅，一块画勺，用细绳系在椅背下方。\n「转过来就认得出。」他拨了拨锅牌，那把贴过软木的椅子只发出一点轻响。\n他给勺子添上一滴汤，又拿起彩笔问你，锅里还该有什么，桌上留着空白纸。\n两杯水已经放好，两把椅子仍隔着一点距离。他请你添完那道菜，再挪过来试坐。',
+      en: 'Jamie cuts two thin wooden labels, draws a pan on one and a spoon on the other, and ties them beneath the chair backs.\n“Turn them round and you’ll know.” He flicks the pan label. The chair with cork pads makes only a small sound.\nHe adds a drop of soup to the spoon, then asks what belongs in the pan. There is spare paper on the table.\nTwo glasses of water are ready, the chairs still a little apart. He invites you to finish the dish and pull your chair over.',
     },
     labels: [
-      { zhCN: '替木牌画上锅和勺', en: 'Draw a pan and a spoon on the labels' },
+      { zhCN: '在锅牌下添一颗番茄', en: 'Add a tomato below the pan' },
       { zhCN: '把两把椅子挪近一点', en: 'Move the chairs closer together' },
     ],
     requires: ['family-chairs-mended'],
@@ -1916,8 +1917,8 @@ const moments: {
       en: 'An empty album page',
     },
     text: {
-      zhCN: '文舒把相册摊在膝上，旧车票从夹层滑出来，一角磨得露出白边。\n「来时装得太急。」她指着几张还没排好的照片，请你一起认顺序。\n你们把同一天的放在一起，没有照片的那页暂时空着，谁也没催着填满。\n她用铅笔在空页旁写上「以后」，又把笔递过来，让你加上自己的字。',
-      en: 'Man Shu opens the album on her knees. Old tickets slip out, their corners worn white.\n“Packed in such a rush.” She asks you to help put the loose photographs in order.\nYou group the ones from the same day. A page without photographs stays empty, with no rush to fill it.\nShe pencils “Later” beside the blank page and passes you the pencil to add something.',
+      zhCN: '文舒把相册摊在膝上，旧车票从夹层滑出来，一角磨得露出白边。\n「来时装得太急。」她指着几张还没排好的照片，请你一起认顺序。\n你们把同一天的放在一起，没有照片的那页暂时空着，刚好隔开两趟出门。\n她用铅笔在空页旁写上「以后」，又把笔递过来，让你加上自己的字。',
+      en: 'Man Shu opens the album on her knees. Old tickets slip out, their corners worn white.\n“Packed in such a rush.” She asks you to help put the loose photographs in order.\nYou group the ones from the same day. A page without photographs stays empty, separating the two outings.\nShe pencils “Later” beside the blank page and passes you the pencil to add something.',
     },
     labels: [
       {
@@ -1939,8 +1940,8 @@ const moments: {
       en: 'Two cups by the window',
     },
     text: {
-      zhCN: '孩子睡下了，文舒合上计算器，连同那叠没算完的纸一起收进抽屉。\n她端来两杯茶，把窗边的位置留给你，自己靠着椅背慢慢松开肩膀。\n「先不说账单，讲件没有用的事吧。」她想了想，说起路边一扇蓝门。\n你们轮流添上一点细节，茶渐渐不烫了。抽屉里的计算器始终没有再响。',
-      en: 'The child is asleep. Man Shu closes the calculator and puts it away with the unfinished sums.\nShe brings two cups, saves you the window seat and slowly lets her shoulders relax.\n“Something useless, before the bills.” After thinking, she describes a blue door she passed.\nYou take turns adding details as the tea cools. The calculator stays quiet in its drawer.',
+      zhCN: '孩子回房看书了，文舒合上计算器，连同那叠没算完的纸一起收进抽屉。\n她端来两杯茶，把窗边的位置留给你，自己靠着椅背慢慢松开肩膀。\n「先不说账单，讲件没有用的事吧。」她想了想，说起路边一扇蓝门。\n你们轮流添上一点细节，茶渐渐不烫了。抽屉里的计算器始终没有再响。',
+      en: 'The child has gone off to read. Man Shu closes the calculator and puts it away with the unfinished sums.\nShe brings two cups, saves you the window seat and slowly lets her shoulders relax.\n“Something useless, before the bills.” After thinking, she describes a blue door she passed.\nYou take turns adding details as the tea cools. The calculator stays quiet in its drawer.',
     },
     labels: [
       {
@@ -1966,13 +1967,13 @@ const moments: {
       en: 'The imperfect photograph',
     },
     text: {
-      zhCN: '文舒把几张新照片摆在相册旁，你们都眯着眼的一张被她留在手边。\n「别急着删，它有风。」她指着被吹翻的衣领，再看一眼整整齐齐的合照。\n你替她扶住相册，她把那张歪照片贴进去，旁边只写了当天走过的路。\n那页终于不空了，边上仍留出一条窄窄的地方，够两个人轮流写字。',
-      en: 'Man Shu spreads new photographs beside the album, keeping the one where you are both squinting.\n“Don’t delete it. It has the wind.” She points at the turned-up collar, then at the tidier portrait.\nYou hold the album while she fixes in the crooked photograph and names the route you walked.\nThe page is no longer empty. A narrow margin remains for you both to take turns writing.',
+      zhCN: '文舒把几张新照片摆在相册旁，你们都眯着眼的一张被她留在手边。\n「别急着扔，它有风。」她指着被吹翻的衣领，再看一眼整整齐齐的合照。\n她把歪照片比在空页上，胶角还没揭开，旁边留出够两个人轮流写字的地方。\n纸上那条路走到一半就被裁掉。她拿来铅笔和胶角，请你挑一样，陪她把这页补好。',
+      en: 'Man Shu spreads new photographs beside the album, keeping the one where you are both squinting.\n“Don’t throw it out. It has the wind.” She points at the turned-up collar, then at the tidier portrait.\nShe tries the crooked photograph against the blank page. The mounting corners are still sealed, with room left for you both to write.\nThe road runs out at the edge of the picture. She brings a pencil and mounting corners, asking you to choose one and help finish the page.',
     },
     labels: [
       {
-        zhCN: '替照片写上那条路',
-        en: 'Write the route beside the photograph',
+        zhCN: '写下那条路，再贴好照片',
+        en: 'Write the route and fix in the photograph',
       },
       {
         zhCN: '扶住相册让她贴牢',
@@ -1987,8 +1988,8 @@ const moments: {
     hearts: 10,
     title: { zhCN: '相册旁的抽屉', en: 'The drawer by the album' },
     text: {
-      zhCN: '文舒把相册放到矮柜上，空白页旁夹着那张被风吹歪的合照，胶角快松了。\n她拉开底下的抽屉，旧车票挤在一起，有张购物纸也混在里面。\n「这张也留吧，那次买齐了菜却忘了米。」你们翻找照片，她先笑出了声。\n胶角重新按好，购物纸夹到那顿饭旁。以后相册不够放，抽屉还能接着装。',
-      en: 'Man Shu places the album on the low cabinet. The windy photograph has a loose mounting corner.\nTickets crowd the drawer below. A shopping list has slipped among them.\n“Keep this too. All those vegetables and no rice.” She starts laughing while you find the photograph.\nYou fix the corner and tuck the list beside that meal. When the album fills, the drawer can hold more.',
+      zhCN: '文舒把相册放到矮柜上，翻到那张被风吹歪的合照，胶角已经快松了。\n她拉开底下的抽屉，旧车票挤在一起，有张购物纸也混在里面。\n「那次买齐了扣子，倒把外套忘在店里。」她看着纸上的圈圈，先笑出了声。\n合照旁还留着窄空隙，抽屉也装得下新东西。她把购物纸和新胶角递过来，请你选。',
+      en: 'Man Shu places the album on the low cabinet and opens it at the windy photograph, its mounting corner coming loose.\nTickets crowd the drawer below. A shopping list has slipped among them.\n“All the buttons bought, and my coat left in the shop.” The circles on the list make her laugh.\nA narrow gap remains beside the photograph, and the drawer has room for more. She offers you the list and a fresh mounting corner to choose from.',
     },
     labels: [
       {
@@ -1996,8 +1997,8 @@ const moments: {
         en: 'Replace the photograph’s loose corner',
       },
       {
-        zhCN: '把购物纸夹到饭桌照片旁',
-        en: 'Put the list beside the dinner photograph',
+        zhCN: '把购物纸夹到那张合照旁',
+        en: 'Put the list beside that photograph',
       },
     ],
     requires: ['family-album-page'],
@@ -2033,8 +2034,8 @@ const moments: {
       en: 'A space in the picture',
     },
     text: {
-      zhCN: '乐言把蜡笔铺成半圈，画纸上有一扇门，门前的人却只画了一半。\n「这边留给你，别画得太高。」孩子用手掌挡住一小块，认真量了量。\n你握住最短的那支笔，乐言把自己的头发补得乱一点，说这样才像刚起床。\n门边又多了一个人。孩子没有急着收笔，问你要不要给两个人加上影子。',
-      en: 'Lok Yin arranges crayons in a semicircle. The person outside a drawn doorway is only half finished.\n“Your space here. Not too tall.” A small palm shields part of the paper while measuring it.\nYou take the shortest crayon. Lok Yin adds messy hair to look like someone just out of bed.\nAnother person stands by the door. Before packing away, the child asks about giving both of you shadows.',
+      zhCN: '乐言把蜡笔铺成半圈，画纸上有一扇门，门前的人却只画了一半。\n「这边留给你，别画得太高。」孩子用手掌挡住一小块，认真量了量。\n乐言把自己的头发补得乱一点，说这样才像刚起床，又指指门边空着的位置。\n最短的蜡笔滚到你手边，孩子问先画哪个：门边的你，还是以后两个人站着的影子？',
+      en: 'Lok Yin arranges crayons in a semicircle. The person outside a drawn doorway is only half finished.\n“Your space here. Not too tall.” A small palm shields part of the paper while measuring it.\nLok Yin adds messy hair to look like someone just out of bed and points at the space beside the door.\nThe shortest crayon rolls towards you. Which comes first: you beside the door, or the shadows where you will both stand?',
     },
     labels: [
       {
@@ -2056,8 +2057,8 @@ const moments: {
       en: 'A new mark on the frame',
     },
     text: {
-      zhCN: '乐言贴着门框站好，先压平翘起的头发，又悄悄把脚跟落回地板上。\n「这次不踮脚。」孩子说完便屏住气，眼睛一路追着你手里的铅笔。\n你在旧线旁添上日期，再把手移开。乐言转过身，用指尖比了两道记号。\n拍照时孩子坚持把旧线也留下。照片不只装着今天，还装着没长高的时候。',
-      en: 'Lok Yin stands against the doorframe, smooths down unruly hair and quietly lowers both heels.\n“No tiptoes this time.” The child holds a breath, eyes following the pencil in your hand.\nYou date the mark beside the old one. Lok Yin turns and measures the gap with a fingertip.\nFor the photograph, the old mark has to stay in view. There is room for the smaller days too.',
+      zhCN: '乐言贴着门框站好，头发还翘着一撮，脚跟已经悄悄落回地板上。\n「这次不踮脚。」孩子说完便屏住气，眼睛一路追着你手里的铅笔。\n新线旁还空着，乐言用指尖比比旧线，说拍照也得把低一点的那条留下。\n手机放在桌边，日期还等着写。孩子重新站直，请你看好，头发这回可没替自己加高。',
+      en: 'Lok Yin stands against the doorframe, one tuft of hair still sticking up, and quietly lowers both heels.\n“No tiptoes this time.” The child holds a breath, eyes following the pencil in your hand.\nThere is space beside the new mark. Lok Yin measures from the old one and asks for both lines to appear in the photograph.\nThe phone waits on the table, the date still unwritten. Standing straight again, the child asks you to check: the hair adds no height this time.',
     },
     labels: [
       {
@@ -2079,7 +2080,7 @@ const moments: {
     },
     text: {
       zhCN: '乐言把几张照片排在地毯上，一边挑，一边用两根手指遮住自己的缺牙。\n「这张笑得最大，可是门框也照进去了。」孩子歪着头，迟迟不肯拿走它。\n你说门框也能留着，乐言便找来纸，写一行歪字，解释自己已经长高多少。\n照片压在写好的纸旁，孩子又加了一句「外婆别忘了也照一张」，才递给你。',
-      en: 'Lok Yin lines photographs up on the rug, covering the missing teeth with two fingers while choosing.\n“Biggest smile, but the doorframe’s in it.” The child tilts their head without removing the picture.\nYou can keep the doorframe too. Lok Yin finds paper and explains the new height in a crooked line.\nBeside the picture, one more sentence appears: “Granny, remember a picture of you too.” Then it is handed over.',
+      en: 'Lok Yin lines photographs up on the rug, covering the missing teeth with two fingers while choosing.\n“Biggest smile, but the doorframe’s in it.” The child tilts their head without removing the picture.\nYou can keep the doorframe too. Lok Yin finds paper and explains the new height in a crooked line.\nBeside the picture goes one more line: “Granny, don’t forget to send one of you too.” Then it’s handed to you.',
     },
     labels: [
       {
@@ -2087,8 +2088,8 @@ const moments: {
         en: 'Send Granny the picture with its message',
       },
       {
-        zhCN: '帮孩子描清写歪的那一行',
-        en: 'Help make the crooked line legible',
+        zhCN: '帮孩子描清字再发给外婆',
+        en: 'Make the writing clear and send it to Granny',
       },
     ],
     sets: ['heart-child-photo'],
@@ -2098,8 +2099,8 @@ const moments: {
     hearts: 10,
     title: { zhCN: '带得走的身高', en: 'Height to take along' },
     text: {
-      zhCN: '乐言拿来一卷长纸，把纸端对准门框底下，另一头递给你，让你举稳。\n「要是搬家，门框不能装进箱子。」孩子认真把一条条旧线的位置抄过去。\n你添上日期，乐言在最上方画了一个小箭头，说这里先留给以后长高的自己。\n孩子又跑去找那本鸭子故事，把长纸和书并排放好，说这两样都不能落下。',
-      en: 'Lok Yin brings a long roll of paper, lines it up with the doorframe and asks you to hold it steady.\n“The frame won’t fit in a moving box.” Each old height mark is copied carefully onto the paper.\nYou add dates. A small arrow at the top saves room for a taller future self.\nThe child fetches the duck story and lays it beside the roll. Neither of these can be left behind.',
+      zhCN: '乐言拿来一卷长纸，把纸端对准门框底下，另一头递给你，让你举稳。\n「要是搬家，门框不能装进箱子。」孩子认真指给你看，一条条旧线都得带走。\n纸边先画了个小箭头，留给以后长高的自己。乐言把那本鸭子故事抱来，压住卷起的纸。\n铅笔和手机都放在旁边。孩子问你先抄线还是先补日期，书和长纸以后要放在一起。',
+      en: 'Lok Yin brings a long roll of paper, lines it up with the doorframe and asks you to hold it steady.\n“The frame won’t fit in a moving box.” A careful finger points out every old line that must come along.\nA small arrow saves room for a taller future self. The duck story holds down the curling paper.\nPencil and phone wait nearby. The child asks whether to copy marks or add dates first; the storybook and height roll will stay together.',
     },
     labels: [
       {
@@ -2119,8 +2120,8 @@ const moments: {
       en: 'The left fridge shelf',
     },
     text: {
-      zhCN: '周沅蹲在冰箱前，拿出几片装裱剩下的纸角，量了量左边那格的宽度。\n「用铅笔写，搬动东西也好改。」她递给你一张空签，自己先写上名字。\n你们把各自的盒子挪好，最底下留出一小块共用的地方，暂时没有放东西。\n关门前她又轻推了一下边沿，响声小了。「半夜饿了也不用怕把我吵醒。」',
-      en: 'Yuan crouches by the fridge, sizing the left shelf with paper corners left over from framing.\n“Pencil. Easier to change when things move.” She offers a blank label and writes her own name.\nYour boxes find separate places. A small shared patch stays empty at the bottom.\nShe eases the door closed. “A midnight snack needn’t wake me.” The clatter is softer now.',
+      zhCN: '周沅蹲在冰箱前，拿出几片装裱剩下的纸角，量了量左边那格的宽度。\n「用铅笔写，搬动东西也好改。」她递给你一张空签，自己先写上名字。\n你们把各自的盒子挪好，最底下留出一小块共用的地方，纸签还摊在手边。\n她轻推冰箱门，响声明显小了，又撑开门请你挑位置，左边那格正好贴得下空签。',
+      en: 'Yuan crouches by the fridge, sizing the left shelf with paper corners left over from framing.\n“Pencil. Easier to change when things move.” She offers a blank label and writes her own name.\nYour boxes find separate places. A small shared patch stays clear at the bottom; the labels are still beside you.\nShe eases the door shut, making it quieter, then opens it for you to choose a position. The blank label fits on the left shelf.',
     },
     labels: [
       {
@@ -2142,8 +2143,8 @@ const moments: {
       en: 'Before the inspection',
     },
     text: {
-      zhCN: '房东约了下周来检查。周沅拿着便签站在玄关，把「有问题」三个字划掉了。\n「写清楚，比写严重管用。」她示意你听龙头的滴答，又去试松动的门把手。\n你们逐项记下要问的事，没有把满屋晾衣架算成故障，纸也终于没被挤皱。\n她把清单夹到门背。「他来的时候，我们都能看见，不用临时互相找人。」',
-      en: 'The landlord has arranged an inspection next week. In the hall, Yuan crosses out “Something wrong” on a note.\n“Clearer beats louder.” She points out the dripping tap, then tests the loose door handle.\nYou list the questions together. The drying racks do not count as faults, and the page stays uncrumpled.\nShe clips it behind the door. “When he comes, either of us can find it without chasing the other.”',
+      zhCN: '房东约了下周来检查。周沅拿着便签站在玄关，把「有问题」三个字划掉了。\n「写清楚，比写严重管用。」她示意你听龙头的滴答，又指指松动的门把手。\n她只记好要问的事，没有把满屋晾衣架算成故障，纸也终于没被挤皱。\n门背的夹子还空着。她递来铅笔，请你补清哪个龙头，或先扶住门陪她试把手。',
+      en: 'The landlord has arranged an inspection next week. In the hall, Yuan crosses out “Something wrong” on a note.\n“Clearer beats louder.” She points out the dripping tap and the loose door handle.\nShe lists the questions. The drying racks do not count as faults, and the page stays uncrumpled.\nThe clip behind the door is empty. She offers you a pencil: describe which tap, or hold the door while she checks the handle?',
     },
     labels: [
       {
@@ -2166,8 +2167,8 @@ const moments: {
       en: 'A question left alone',
     },
     text: {
-      zhCN: '你回到合租屋时，周沅正把一锅汤分进碗里，听见门响便多拿了一只。\n「想讲就讲，不想讲先喝。」她把长柄勺斜放着，没有急着问你今天过得怎样。\n你坐下来，桌上只有两张擦过又没舍得扔的纸巾。她把自己那碗往旁边挪。\n汤的热气慢慢散开，你们先说起盐够不够。原来有些话也可以晚一点再问。',
-      en: 'Back at the shared flat, you find Yuan serving soup. The door opens and she reaches for another bowl.\n“Talk if you want. Or just eat.” She rests the long ladle diagonally, in no rush to ask about your day.\nYou sit down beside two reused paper napkins. She shifts her bowl to make more space.\nAs the steam clears, salt is enough to talk about. Some questions can wait.',
+      zhCN: '你回到合租屋时，周沅正把一锅汤分进碗里，听见门响便多拿了一只。\n「想讲就讲，不想讲先喝。」她把长柄勺斜放着，一滴汤落在碗边。\n桌上只摆着两张擦过又没舍得扔的纸巾。她挪好自己的碗，给你的那只让出位置。\n汤的热气慢慢散开，她尝过后拿不准盐够不够，举起勺子，请你坐下来一起试。',
+      en: 'Back at the shared flat, you find Yuan serving soup. The door opens and she reaches for another bowl.\n“Talk if you want. Or just eat.” She rests the long ladle diagonally, leaving a drop on the rim.\nTwo reused paper napkins wait on the table. She shifts her bowl to make room for yours.\nAs the steam clears, she cannot decide about the salt. Holding up the ladle, she asks you to sit and try it together.',
     },
     labels: [
       {
@@ -2195,8 +2196,8 @@ const moments: {
       en: 'The empty square',
     },
     text: {
-      zhCN: '周沅把一块旧装裱背板靠在门边，上面画着几格，最中间那格还空着。\n「这格不写缴费，也不写检查。」她擦掉边角的胶痕，让你挑一支颜色。\n你们写下想一起做的小事，一次散步也算。纸角可以取下来，改主意不留痕。\n她把板挂稳，退后一步看了看。「谁先想起一件，就添上，不用等开会。」',
-      en: 'Yuan leans an old backing board beside the door. It has squares, with the middle one empty.\n“No bills or inspections in this bit.” She rubs away old glue and asks you to choose a colour.\nYou note small things to do together. A walk counts. Removable paper corners leave room to change your minds.\nShe hangs it straight and steps back. “Whoever thinks of something can add it. No meeting needed.”',
+      zhCN: '周沅把一块旧装裱背板靠在门边，上面画着几格，最中间那格还空着。\n「这格不写缴费，也不写检查。」她擦掉边角的胶痕，让你挑一支颜色。\n她拿纸角比好位置，画了条散步路线，拐弯却拐到格子外头，两个人都笑了。\n挂钩已经装好，背板还靠着门。她请你重画那条路，或帮忙把板挂上去，铅笔就留在旁边。',
+      en: 'Yuan leans an old backing board beside the door. It has squares, with the middle one empty.\n“No bills or inspections in this bit.” She rubs away old glue and asks you to choose a colour.\nTrying paper corners in place, she draws a walking route, but the turn escapes the square and makes you both laugh.\nThe hook is ready; the board still leans against the door. She asks you to redraw the route or help hang the board, with a pencil left beside it.',
     },
     labels: [
       {
@@ -2216,8 +2217,8 @@ const moments: {
     hearts: 10,
     title: { zhCN: '屋里的小地图', en: 'A map of the flat' },
     text: {
-      zhCN: '周沅把门背的板放到桌上，拿橡皮擦掉检查清单旁那条走错方向的箭头。\n「这条路在门外就画反了。」她画出厨房和门口，把笔交给你补路。\n你在拐角添上一把椅子，她又加上留汤的锅，地图看着比屋子还挤。\n背板重新挂好，铅笔用绳系在旁边。谁先想出去走走，就在门口画个圈。',
-      en: 'Yuan takes the board from behind the door and erases the arrow beside the inspection list.\n“This road turns the wrong way outside the flat.” She sketches the kitchen and entrance for you to join up.\nYou add a chair at the corner. She adds the soup pan. The map looks more crowded than the flat.\nThe board goes back with a pencil tied beside it. Whoever wants a walk can circle the doorway.',
+      zhCN: '周沅把门背的板放到桌上，擦掉空格里那条拐到格子外头的散步路线。\n「这回从屋里画起。」她画出厨房和门口的小方格，把笔交给你补路。\n她又添上留汤的锅和玄关鞋架，地图看着比屋子还挤，门口到厨房仍断着一截。\n板边留好挂铅笔的绳，墙上还是原来的钩子。她请你接好路线，或把笔系牢再挂回去。',
+      en: 'Yuan puts the board on the table and rubs out the walking route that wandered outside its square.\n“Start inside the flat this time.” She draws small squares for the kitchen and entrance, offering you the pencil to join them.\nShe adds the soup pan and hall shoe rack. The map looks more crowded than the flat, with a gap still leading to the kitchen.\nString for the pencil waits beside the board; the same wall hook is ready. She asks you to finish the route or tie on the pencil before it goes back.',
     },
     labels: [
       { zhCN: '把铅笔系到背板旁', en: 'Tie the pencil beside the board' },

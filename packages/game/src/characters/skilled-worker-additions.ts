@@ -38,12 +38,12 @@ const flatmateScenes: [
     'bracket',
     '门背的纸夹',
     'The clip behind the door',
-    '检查清单的纸夹松了，周沅从门背捡起一张张纸。林遥扶着门，发现最下面还夹着旧购物单。',
-    'The inspection-list clip loosens. Yao holds the door as Yuan gathers the sheets, including an old shopping list.',
+    '检查清单的纸夹松了，周沅从门背捡起一张张纸。林遥扶着门，发现最下面还夹着装裱色样纸。',
+    'The inspection-list clip loosens. Yao holds the door as Yuan gathers the sheets, including a framing colour swatch.',
     '陪她把清单重新夹好',
     'Clip the list back together',
-    '把旧购物单另放一边',
-    'Separate the old shopping list',
+    '把色样纸另放一边',
+    'Set the colour swatch aside',
   ],
   [
     'radio',
@@ -70,13 +70,13 @@ const flatmateScenes: [
   [
     'board-eraser',
     '背板上的擦痕',
-    'An eraser on the board',
+    'Rubbing out on the board',
     '门背空格里的散步路线画错了，周沅擦到一半停住。林遥认出那个拐角，两人决定先把旧线留淡一点。',
     'Yuan pauses while erasing a wrong turn on the walking board. Yao recognises the corner; they leave the old line faintly visible.',
     '帮她补上正确的拐角',
     'Add the right turn',
     '把橡皮屑轻轻扫掉',
-    'Brush away the eraser crumbs',
+    'Brush away the rubber crumbs',
   ],
   [
     'apron-pocket',
@@ -138,8 +138,8 @@ const partnerScenes: [
     'call-book',
     '电话里的翻页声',
     'Pages over the call',
-    '伴侣在电话里念刚买的书，林遥听见翻页声先笑了。两个人都不急着解释那一页为什么留着折角。',
-    'Yao’s partner reads a new book over the phone. The page-turn makes Yao smile; neither rushes to explain the folded corner.',
+    '伴侣在电话里念刚买的书，林遥听见翻页声先笑了。翻到折角那页，对方先念出自己写在边上的一句话。',
+    'Yao’s partner reads a new book over the phone. The page-turn makes Yao smile; at the folded corner, her partner reads out a note they wrote in the margin.',
     '请对方接着念一段',
     'Ask for another passage',
     '讲讲自己手边那本书',
@@ -296,10 +296,10 @@ const townScenes: [
     'station-bench',
     '站厅里的空座',
     'A seat in the station',
-    '林遥只进站厅躲一会儿热闹，有人拿着地图问附近哪里能坐。她指向门外长椅，对方却先看向地图背面。',
-    'Yao visits the station without travelling. Asked for a nearby seat, she points outside while the visitor turns the map over.',
-    '陪对方认清长椅的位置',
-    'Locate the bench on the map',
+    '林遥只是路过站厅，有人抱着折叠琴架找地方坐。她指向门外长椅，对方先问琴架能不能靠在旁边。',
+    'Yao is just passing through the station when someone carrying a folding music stand asks for a seat. She points outside; they ask where the stand can rest.',
+    '陪对方看看长椅旁的空地',
+    'Check the space beside the bench',
     '走到门口指给对方看',
     'Point it out from the doorway',
   ],
@@ -354,14 +354,14 @@ const townScenes: [
   [
     'shop',
     'pocket-list',
-    '口袋里的半张清单',
-    'Half a shopping list',
-    '林遥掏出购物清单，纸只剩一半，另一半粘在口袋里。店员给她一张干纸，等她把还能认的字拼起来。',
-    'Yao finds half her shopping list stuck in a pocket. The shop worker offers dry paper while she pieces the words together.',
-    '慢慢抄清还能认的东西',
-    'Copy the readable items',
-    '先买清单上没丢的那部分',
-    'Buy the surviving part of the list',
+    '半张茶名签',
+    'Half a tea label',
+    '林遥带着半张茶叶包装来小店，名字正好缺在撕口。店员摆出几盒，背面都有相似的泡法小图。',
+    'Yao brings half a tea wrapper to the shop, torn through the name. Several of the boxes offered have similar brewing diagrams.',
+    '对着小图认出原来的茶',
+    'Match the diagram to the tea',
+    '请店员念念几盒茶的名字',
+    'Ask the worker to read the tea names',
   ],
   [
     'council',
@@ -378,14 +378,14 @@ const townScenes: [
   [
     'station',
     'timetable-pencil',
-    '时刻表旁的铅笔',
-    'The pencil by the timetable',
-    '林遥停在车站门口，替人捡起一支滚落的铅笔。对方正画本镇的步行图，问她那条有小店的街该怎么标。',
-    'Outside the station, Yao retrieves a pencil for someone drawing a town walking map. They ask how to mark the shop street.',
-    '替对方把小店标到图上',
-    'Mark the shop on the map',
-    '沿着街口指一遍方向',
-    'Point out the route from the entrance',
+    '时刻表的折角',
+    'The timetable’s folded corner',
+    '车站时刻表的一角折住了站名，林遥替旁边的人扶平。手一松纸又卷回去，对方从包里找出一枚回形针。',
+    'A folded timetable corner hides a station name. Yao holds it flat for someone; it curls back, so they find a paper clip.',
+    '按住纸角让对方夹好',
+    'Hold the corner for the clip',
+    '把藏住的站名念给对方',
+    'Read out the hidden station name',
   ],
 ];
 
@@ -448,9 +448,12 @@ export const skilledWorkerAdditions: GameEvent[] = [
       text: { zhCN, en },
       weight: 2,
       once: true,
+      ...((id === 'call-book' || id === 'call-tap') && {
+        when: [{ minuteMax: 900 }],
+      }),
       ...(i < 4
         ? { forbids: ['partner-arrived'] }
-        : { requires: ['partner-arrived'] }),
+        : { requires: ['partner-arrived'], forbids: ['partner-separated'] }),
       choices: [
         {
           id: 'share',
@@ -492,7 +495,7 @@ export const skilledWorkerAdditions: GameEvent[] = [
         {
           id: 'stay',
           label: { zhCN: second, en: secondEn },
-          effects: [{ type: 'stat', key: 'mood', delta: b.heartMood }],
+          effects: [{ type: 'stat', key: 'career', delta: b.heartHelp }],
         },
       ],
     }),
@@ -516,7 +519,9 @@ export const skilledWorkerAdditions: GameEvent[] = [
       text: { zhCN, en },
       weight: 2,
       once: true,
-      ...(id === 'plant-shadow' && { when: [{ weather: 'sunny' as const }] }),
+      ...(id === 'plant-shadow' && {
+        when: [{ weather: 'sunny' as const }, { minuteMax: 1080 }],
+      }),
       choices: [
         {
           id: 'help',
@@ -526,7 +531,20 @@ export const skilledWorkerAdditions: GameEvent[] = [
         {
           id: 'stay',
           label: { zhCN: second, en: secondEn },
-          effects: [{ type: 'stat', key: 'health', delta: b.heartHelp }],
+          effects: [
+            {
+              type: 'stat',
+              key:
+                place === 'library' || place === 'cafe'
+                  ? 'english'
+                  : place === 'council'
+                    ? 'career'
+                    : place === 'shop' || place === 'station'
+                      ? 'mood'
+                      : 'health',
+              delta: b.heartHelp,
+            },
+          ],
         },
       ],
     }),

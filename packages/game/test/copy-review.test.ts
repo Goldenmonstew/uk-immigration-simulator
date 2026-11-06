@@ -215,16 +215,16 @@ describe('reviewed dialogue gates', () => {
 
 const heartGates: Record<string, { when?: Condition[]; requires?: string[] }> =
   {
-    'heart-ade-2': { when: [{ dayKind: 'workday' }] },
+    'heart-ade-2': {
+      when: [{ dayKind: 'workday' }, { minuteMin: 540, minuteMax: 1019 }],
+    },
     'heart-ade-4': {
-      when: [{ dayKind: 'workday' }, { minuteMin: 720, minuteMax: 840 }],
+      when: [{ dayKind: 'workday' }, { minuteMin: 540, minuteMax: 1019 }],
     },
     'heart-priya-4': { when: [{ minuteMin: 1020 }] },
-    'heart-dave-2': {
-      when: [{ dayKind: 'weekend' }, { minuteMin: b.quizStart }],
-    },
-    'heart-dave-6': { when: [{ minuteMin: 1380 }] },
-    'heart-rahman-8': { when: [{ minuteMin: 1200 }] },
+    'heart-dave-2': { when: [{ minuteMin: 720 }] },
+    'heart-dave-6': { when: [{ minuteMin: 1320 }] },
+    'heart-rahman-8': { when: [{ minuteMin: 600 }, { minuteMax: 1079 }] },
     'heart-gareth-4': { when: [{ minuteMin: 1080 }] },
     'heart-helen-8': { when: [{ minuteMin: 720, minuteMax: 1080 }] },
     'heart-ka-ning-partner-2': { requires: ['bno-partner-cv-seen'] },
@@ -281,7 +281,9 @@ test('rain-bound old cards are drawn and delivered only on rainy days', () => {
     state.quarter = event.season ?? state.quarter;
     state.year = 5;
     state.day.minute = 600;
-    state.day.place = 'green';
+    state.day.place = event.channel?.startsWith('place:')
+      ? (event.channel.slice(6) as import('../src').PlaceId)
+      : 'green';
     state.day.deliveries = [
       { eventId: id, channel: event.channel ?? 'morning' },
     ];
