@@ -45,6 +45,9 @@ export const en: Record<keyof typeof zhCN, string> = {
   'game.town': 'Town map',
   'game.controls':
     'Arrow keys / WASD to walk · Tap to walk · E / Space to interact',
+  'game.touchControls': 'Tap the map to walk · Tap the prompt to interact',
+  'game.nextHeart': 'Next heart: {count} / 100',
+  'game.fullHearts': 'All hearts full',
   'game.destinations': 'Where to?',
   'game.endQuarter': 'End this quarter',
   'game.close': 'Back to town',
@@ -53,6 +56,8 @@ export const en: Record<keyof typeof zhCN, string> = {
   'game.noActions': 'No actions are available right now.',
   'game.effects': 'Expected changes',
   'game.timelineEffect': 'Updates the timeline',
+  'game.endingConfirm':
+    'This will end this game. Ready to bring this story to a close?',
   'game.endingEffect': 'Ends this story',
   'game.timelineChanged':
     'The timeline and both assessments have been updated.',
@@ -85,6 +90,9 @@ export const en: Record<keyof typeof zhCN, string> = {
   'game.visaReminderTitle': 'A new quarter: check your visa dates',
   'game.visaReminder':
     'Your current permission has {count} months left, with no adjoining renewal recorded. Visit the visa centre to see available actions and fees.',
+  'game.fastVisaWarning':
+    'Your current permission expires before this season ends, with no adjoining renewal. Fast-forward goes through the rest of the season. Visit the visa centre first.',
+  'game.missingRules': 'Still needed: {rules}',
   'game.visaVisit': 'Visit the visa centre',
   'game.musicOn': 'Music: on',
   'game.musicOff': 'Music: off',
@@ -548,6 +556,11 @@ export const en: Record<keyof typeof zhCN, string> = {
   'game.itemFallback': 'Item',
   'game.hours': 'Opening hours',
   'game.closed': 'Closed now',
+  'game.closedLabel': 'Closed',
+  'game.noVisaActions':
+    'There is no paperwork to do just now. The renewal option will appear here when it is time to extend.',
+  'game.tooLate':
+    'There is not enough time to finish before closing at {time}.',
   'game.openAllDay': 'Open all day',
   'game.minutes': '{count} minutes',
   'game.peopleHere': 'People here',
@@ -559,7 +572,7 @@ export const en: Record<keyof typeof zhCN, string> = {
   'game.water': 'Water',
   'game.watered': 'Watered today',
   'game.harvest': 'Harvest',
-  'game.growth': 'Growth {count} / 4',
+  'game.growth': 'Growth {count} / {days}',
   'game.noSeeds': 'No seeds for this season. Visit the corner shop.',
   'game.rentFirst': 'Rent a plot at the allotment shed first.',
   'game.fish': 'Fish',

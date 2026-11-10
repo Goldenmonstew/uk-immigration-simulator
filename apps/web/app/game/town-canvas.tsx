@@ -66,16 +66,6 @@ export default function TownCanvas(props: TownCanvasProps) {
 
   useEffect(() => {
     const element = host.current!;
-    const fitHeight = () => {
-      element.style.setProperty(
-        '--game-map-top',
-        `${element.getBoundingClientRect().top + window.scrollY}px`,
-      );
-    };
-    fitHeight();
-    const layout = new ResizeObserver(fitHeight);
-    layout.observe(element.parentElement!.previousElementSibling!);
-    window.addEventListener('resize', fitHeight);
     const stop = observeTownSize(element, (type) => {
       const town = new TownScene(
         latest.current,
@@ -101,8 +91,6 @@ export default function TownCanvas(props: TownCanvasProps) {
       });
     });
     return () => {
-      layout.disconnect();
-      window.removeEventListener('resize', fitHeight);
       stop();
       scene.current = undefined;
     };
@@ -128,8 +116,10 @@ export default function TownCanvas(props: TownCanvasProps) {
   }, [props.interactRequest]);
 
   useEffect(() => {
-    if (props.destination)
+    if (props.destination) {
+      host.current?.focus({ preventScroll: true });
       scene.current?.walkToLocation(props.destination.location);
+    }
   }, [props.destination]);
 
   return (
