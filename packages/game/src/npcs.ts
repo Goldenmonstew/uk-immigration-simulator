@@ -2548,3 +2548,44 @@ for (const event of heartEvents) {
   )
     for (const choice of event.choices) choice.sets!.push(flag);
 }
+
+const introductions: Record<string, Text> = {
+  margaret: text(
+    '我是玛格丽特，退休后常在菜地。口袋这副手套总有泥。',
+    'I’m Margaret. Retired, mostly at the allotment now. These gloves in my pocket always have soil on them.',
+  ),
+  ade: text(
+    '我是阿德，和你在同家公司。工牌夹子老夹住领子。',
+    'I’m Ade, from your company. This badge clip keeps catching my collar.',
+  ),
+  helen: text(
+    '我是海伦，在语言学校教英语。包里总有漏出来的讲义。',
+    'I’m Helen. I teach English at the college. There are always handouts escaping from my bag.',
+  ),
+  priya: text(
+    '我是普里娅，在诊所接待。那支漏墨的笔总跟着我。',
+    'I’m Priya, the surgery receptionist. That leaky pen follows me everywhere.',
+  ),
+  dave: text(
+    '我是戴夫，管酒吧也出问答题。粉笔头快比指甲短了。',
+    'I’m Dave. I run the pub and write the quiz. My chalk is nearly shorter than my fingernail.',
+  ),
+  rahman: text(
+    '我是拉赫曼，开街角小店。钥匙太多，门铃都等急了。',
+    'I’m Rahman. I run the corner shop. So many keys, even the doorbell gets impatient.',
+  ),
+  lina: text(
+    '我是莉娜，喜欢画街景。速写本这块圆印是咖啡杯留下的。',
+    'I’m Lina. I like sketching the streets. This ring on my sketchbook came from a coffee cup.',
+  ),
+  gareth: text(
+    '我是加雷思，给镇上送信。邮包这枚扣子比我还准时。',
+    'I’m Gareth. I deliver the town’s post. This buckle on my bag is more punctual than I am.',
+  ),
+};
+for (const npc of npcs.filter((person) => !person.characters))
+  npc.lines.push({
+    id: `${npc.id}-intro`,
+    text: introductions[npc.id],
+    once: true,
+  });

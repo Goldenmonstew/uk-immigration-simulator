@@ -1300,12 +1300,22 @@ familyNpcs.push({
   },
   lines: [
     {
+      id: 'yao-flatmate-intro',
+      text: t(
+        '我是周沅，做装裱的。刚合租，纸屑跑到你门口就叫我。',
+        'I’m Yuan, a picture framer. Now we’re sharing, give me a shout if paper scraps reach your door.',
+      ),
+      once: true,
+      when: [{ yearMax: 1 }],
+    },
+    {
       id: 'yao-flatmate-daily-1',
       text: {
         zhCN: '冰箱左边那格还空着，归你。',
         en: "The left fridge shelf is still free. It's yours.",
       },
       heartsMax: 1,
+      when: [{ yearMax: 1 }],
     },
     {
       id: 'yao-flatmate-daily-2',
@@ -1633,6 +1643,7 @@ familyNpcs.push({
         en: 'When I was new, I chose the wrong bin too. Labels helped.',
       },
       heartsMax: 3,
+      when: [{ yearMax: 1 }],
     },
     {
       id: 'yao-flatmate-daily-39',

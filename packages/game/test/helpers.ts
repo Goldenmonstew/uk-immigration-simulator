@@ -12,6 +12,11 @@ import {
 import { locationActions, places } from '../src/locations';
 import type { GameState, PlaceId } from '../src';
 
+/** Consume the guaranteed opening before isolating ordinary event delivery. */
+export function afterOpening(state: GameState): GameState {
+  return resolve(state, 'begin');
+}
+
 export function clear(state = newGame('skilled-worker', 1)): GameState {
   const next = structuredClone(state);
   delete next.pendingEvent;

@@ -1,4 +1,10 @@
-import { perform, availableActivities, quarter, firstPending } from './helpers';
+import {
+  perform,
+  availableActivities,
+  quarter,
+  firstPending,
+  afterOpening,
+} from './helpers';
 import { evaluate } from '@uk-immigration/engine';
 import { currentLaw2026_11 } from '@uk-immigration/policy-data';
 import { describe, expect, test } from 'vitest';
@@ -212,7 +218,7 @@ describe('additional character timelines and decisions', () => {
   test('new characters start in their calendar season and each still gets forty quarters', () => {
     for (const id of ['hong-kong-bno', 'family-partner']) {
       let state = clear(newGame(id, 1));
-      expect(state.quarter).toBe(2);
+      expect(state.quarter).toBe(3);
       // Isolate the clock from story-driven endings and provide already-granted coverage.
       state.timeline.episodes[0].validTo = '2040-01-01';
       for (let q = 0; q < 40; q++) {
@@ -276,7 +282,7 @@ describe('authored exclusive chains', () => {
         .filter((e) => [first, follow].includes(e.id))
         .map((e) => ({ ...e, when: e.when?.filter((c) => !('weather' in c)) }));
       try {
-        const before = firstPending(newGame(id, 7));
+        const before = firstPending(afterOpening(newGame(id, 7)));
         expect(currentEvent(before)?.id).toBe(first);
         expect(before.eventQueue).not.toContain(follow);
         const opted = resolve(before, choose);
@@ -285,7 +291,7 @@ describe('authored exclusive chains', () => {
         const completed = resolve(after, finish);
         expect(
           completed.log.filter((e) => e.kind === 'event').map((e) => e.id),
-        ).toEqual([first, follow]);
+        ).toEqual([`opening-${id}`, first, follow]);
       } finally {
         character.events = original;
         commonEvents.push(...common);
