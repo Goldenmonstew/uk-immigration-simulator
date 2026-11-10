@@ -54,12 +54,16 @@ describe('9.3 people and stories', () => {
       (n) => !['margaret', 'ade', 'helen'].includes(n.id),
     )) {
       let state = clear(newGame(npc.characters?.[0] ?? 'skilled-worker', 1));
-      const timeline = structuredClone(state.timeline);
       const scenes = heartEvents
         .filter((e) => e.heart?.npc === npc.id)
         .sort((a, b) => a.heart!.hearts - b.heart!.hearts);
       expect(scenes.map((e) => e.heart!.hearts)).toEqual([2, 4, 6, 8, 10]);
       for (const event of scenes) {
+        if (state.day.done.includes('heart-scene')) {
+          state = clear(sleep(state));
+          if (state.day.festival) state = clear(sleep(state));
+        }
+        const timeline = structuredClone(state.timeline);
         state.friendship[npc.id] = event.heart!.hearts * 100 - b.talkFriendship;
         state.day.minute = Math.max(
           600,
@@ -78,9 +82,9 @@ describe('9.3 people and stories', () => {
         state = talk(state, npc.id);
         expect(currentEvent(state)?.id).toBe(event.id);
         state = resolve(state, event.choices[0].id);
+        expect(state.timeline).toEqual(timeline);
         expect(talk(state, npc.id).pendingEvent).toBeUndefined();
       }
-      expect(state.timeline).toEqual(timeline);
       for (const liking of ['loved', 'liked', 'disliked'] as const) {
         const item = npc.gifts[liking][0];
         const before = clear(
@@ -335,7 +339,7 @@ describe('9.3 earned achievements and ending memories', () => {
     missed.day.place = 'pond';
     const miss = fish(missed, false);
     expect(
-      narrative(miss).some((t) => t.zhCN.includes('抛竿 1 次，钓到鱼 0 次')),
+      narrative(miss).some((t) => t.zhCN.includes('池塘抛竿 1 次。')),
     ).toBe(true);
     const close = clear();
     close.friendship.ade = 800 - b.talkFriendship;
@@ -393,7 +397,7 @@ describe('9.3 earned achievements and ending memories', () => {
     expect(text).not.toContain('戴夫');
     for (const festival of festivals)
       expect(text).toContain(festival.name.zhCN);
-    expect(text).toContain('收成 0 次');
-    expect(text).toContain('钓到鱼 0 次');
+    expect(text).not.toContain('收成 0 次');
+    expect(text).not.toContain('钓到鱼 0 次');
   });
 });

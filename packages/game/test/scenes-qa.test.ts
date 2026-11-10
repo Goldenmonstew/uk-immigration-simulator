@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { currentEvent, newGame, npcs, resolve, talk } from '../src';
+import { currentEvent, newGame, npcs, resolve, sleep, talk } from '../src';
 import type { GameEvent, GameState } from '../src';
 import { heartEvents } from '../src/npcs';
 import { clear } from './helpers';
@@ -69,12 +69,13 @@ describe('10.4b scene contexts', () => {
     expect(state.flags).not.toContain('quarter-board-pub-quiz');
     const introduction = talk(state, 'dave');
     expect(currentEvent(introduction)?.id).toBe('heart-dave-2');
-    const friends = resolve(introduction, 'stay');
+    const friends = clear(sleep(resolve(introduction, 'stay')));
     expect(friends.flags).toContain('friend-dave');
     friends.day.minute = 1320;
     const record = talk(friends, 'dave');
     expect(currentEvent(record)?.id).toBe('heart-dave-6');
-    const afterRecord = resolve(record, 'stay');
+    let afterRecord = clear(sleep(resolve(record, 'stay')));
+    if (afterRecord.day.festival) afterRecord = clear(sleep(afterRecord));
     const ending = talk(afterRecord, 'dave');
     expect(currentEvent(ending)?.id).toBe('heart-dave-10');
   });

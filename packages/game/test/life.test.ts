@@ -36,7 +36,13 @@ import type { Channel, GameEvent, GameState, Npc, PlaceId } from '../src';
 import { balance as b } from '../src/balance';
 import { commonEvents } from '../src/events/common';
 import { heartEvents } from '../src/npcs';
-import { clear, completeQuarter, drain, perform } from './helpers';
+import {
+  afterOpening,
+  clear,
+  completeQuarter,
+  drain,
+  perform,
+} from './helpers';
 
 function delivery(state: GameState, channel: Channel, minute?: number) {
   const event = commonEvents.find((e) => e.id === 'common-boiler')!;
@@ -62,7 +68,7 @@ const scheduled = (state: GameState) =>
   ].filter(Boolean) as string[];
 
 describe('three days, calendar and clock', () => {
-  test('wake at home; strict next Tuesday/Saturday and first February Saturday', () => {
+  test('wake at home; Tuesday, Saturday and the following festival Saturday', () => {
     const state = clear(newGame('skilled-worker', 7));
     expect(state.day).toMatchObject({
       index: 0,
@@ -82,7 +88,7 @@ describe('three days, calendar and clock', () => {
     expect(special.day).toMatchObject({
       index: 2,
       kind: 'special',
-      date: '2025-04-12',
+      date: '2025-02-08',
       festival: 'lunar-new-year',
     });
     expect(special.dayNumber).toBe(2);
@@ -261,7 +267,7 @@ describe('delivery and resumable default routine', () => {
   });
   test('drawn cards are processed or returned before quarter boundary; scheduled count remains one or two', () => {
     for (let seed = 1; seed <= 20; seed++) {
-      const state = newGame('skilled-worker', seed);
+      const state = afterOpening(newGame('skilled-worker', seed));
       const ids = scheduled(state);
       expect(ids.length).toBeGreaterThanOrEqual(1);
       expect(ids.length).toBeLessThanOrEqual(2);
@@ -622,6 +628,10 @@ describe('townspeople, hearts, dialogue and gifts', () => {
     for (const npc of ['margaret', 'ade', 'helen']) {
       state = clear();
       for (const threshold of [2, 4, 6, 8, 10]) {
+        if (state.day.done.includes('heart-scene')) {
+          state = clear(sleep(state));
+          if (state.day.festival) state = clear(sleep(state));
+        }
         const event = heartEvents.find(
           (e) => e.id === `heart-${npc}-${threshold}`,
         )!;
