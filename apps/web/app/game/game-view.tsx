@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useRef, type ReactNode } from 'react';
+import { Children, useEffect, useRef, useState, type ReactNode } from 'react';
 import type { RuleSetId } from '@uk-immigration/engine';
 import { AssessmentColumns } from '../../components/result-view';
 import { useTranslation } from '../../i18n/locale';
@@ -13,6 +13,8 @@ import {
   festivals,
   places,
   peopleAt,
+  townsfolk,
+  npcAt,
   npcs,
   items,
   achievements,
@@ -24,6 +26,8 @@ import {
   progress,
   resolve,
   type Effect,
+  type Activity,
+  type GameEvent,
   type GameState,
   type PlaceId,
   type StatKey,
@@ -35,6 +39,9 @@ import {
   statKeys,
   spritePath,
   visaMonths,
+  visaStatus,
+  isPlaceOpen,
+  needsVisaReminder,
 } from './session';
 import { groupedMemories, type DayMemory } from './diary';
 import site from '../site.module.css';
@@ -130,6 +137,23 @@ export function CharacterSelect({
   );
 }
 
+export function ControlHint() {
+  const { t } = useTranslation();
+  const [touch, setTouch] = useState(false);
+  useEffect(() => {
+    const media = window.matchMedia('(pointer: coarse)');
+    const update = () => setTouch(media.matches);
+    update();
+    media.addEventListener('change', update);
+    return () => media.removeEventListener('change', update);
+  }, []);
+  return (
+    <p className={styles.controls}>
+      {t(touch ? 'game.touchControls' : 'game.controls')}
+    </p>
+  );
+}
+
 export function StatusBar({
   state,
   children,
@@ -139,7 +163,8 @@ export function StatusBar({
 }) {
   const { t, locale } = useTranslation();
   const name = characters.find((item) => item.id === state.characterId)!.name;
-  const months = visaMonths(state);
+  const { months, renewed } = visaStatus(state);
+  const urgent = months <= 6 && !renewed;
   return (
     <header className={styles.hud}>
       <div className={styles.hudTop}>
@@ -160,9 +185,9 @@ export function StatusBar({
         </span>
         <span
           className={
-            months <= 6 ? `${styles.urgent} ${styles.visaFlash}` : styles.visa
+            urgent ? `${styles.urgent} ${styles.visaFlash}` : styles.visa
           }
-          title={months <= 6 ? t('game.visaUrgent') : undefined}
+          title={urgent ? t('game.visaUrgent') : undefined}
         >
           {t('game.visa').replace('{count}', String(months))}
         </span>
@@ -209,24 +234,40 @@ export function ProgressBars({
         >
           <span>
             {t(index === 0 ? 'game.currentLaw' : 'game.reform')}
-            <strong>{Math.round(bars[id].percent)}%</strong>
+            <strong>
+              {bars[id].earliestDate ? `${Math.round(bars[id].percent)}%` : '—'}
+            </strong>
           </span>
-          <span
-            className={styles.track}
-            role="progressbar"
-            aria-label={t(index === 0 ? 'game.currentLaw' : 'game.reform')}
-            aria-valuemin={0}
-            aria-valuemax={100}
-            aria-valuenow={Math.round(bars[id].percent)}
-          >
+          {bars[id].earliestDate && (
             <span
-              style={{
-                width: `${Math.round(bars[id].percent)}%`,
-                backgroundColor: outcomeColor(bars[id].outcome),
-              }}
-            />
-          </span>
+              className={styles.track}
+              role="progressbar"
+              aria-label={t(index === 0 ? 'game.currentLaw' : 'game.reform')}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={Math.round(bars[id].percent)}
+            >
+              <span
+                style={{
+                  width: `${Math.round(bars[id].percent)}%`,
+                  backgroundColor: outcomeColor(bars[id].outcome),
+                }}
+              />
+            </span>
+          )}
           <small>{t(`outcome.${bars[id].outcome}`)}</small>
+          {bars[id].outcome === 'INSUFFICIENT_INFORMATION' && (
+            <small className={styles.missingRules}>
+              {t('game.missingRules').replace(
+                '{rules}',
+                state.result.byRuleSet[id]!.rules.filter(
+                  (rule) => rule.status === 'UNKNOWN',
+                )
+                  .map((rule) => rule.title)
+                  .join(' · '),
+              )}
+            </small>
+          )}
         </button>
       ))}
     </div>
@@ -269,7 +310,7 @@ export function ProgressDetail({
   );
 }
 
-function EffectHints({ effects }: { effects: Effect[] }) {
+export function EffectHints({ effects }: { effects: Effect[] }) {
   const { t, locale } = useTranslation();
   return (
     <span className={styles.hints}>
@@ -310,15 +351,55 @@ export function LocationMenu({
   children?: ReactNode;
 }) {
   const { t, locale } = useTranslation();
+  const [endingAction, setEndingAction] = useState<Activity>();
   const place = places.find((p) => p.id === location)!;
-  const open =
-    !place.hours ||
-    (state.day.minute >= place.hours.opens &&
-      state.day.minute < place.hours.closes &&
-      (!place.hours.dayKinds || place.hours.dayKinds.includes(state.day.kind)));
+  const open = isPlaceOpen(state, place);
+  const people = [
+    ...new Set([
+      ...peopleAt(state, location),
+      ...(location === 'green' && state.day.festival
+        ? townsfolk(state)
+            .filter((npc) => npcAt(state, npc.id) === 'green-stall')
+            .map((npc) => npc.id)
+        : []),
+    ]),
+  ];
   const available = activities(state, location).sort(
     (a, b) => Number(b.id === 'extend') - Number(a.id === 'extend'),
   );
+  const tooLate =
+    place.hours &&
+    activities(
+      {
+        ...state,
+        day: { ...state.day, minute: place.hours.opens },
+      },
+      location,
+    ).some((action) => state.day.minute + action.minutes > place.hours!.closes);
+  if (endingAction)
+    return (
+      <>
+        <h3>{localText(endingAction.label, locale)}</h3>
+        <p>{t('game.endingConfirm')}</p>
+        <div className={styles.buttons}>
+          <button
+            className={site.button}
+            onClick={() => {
+              setEndingAction(undefined);
+              onChange(doActivity(state, endingAction.id));
+            }}
+          >
+            {t('game.confirm')}
+          </button>
+          <button
+            className={site.secondary}
+            onClick={() => setEndingAction(undefined)}
+          >
+            {t('game.cancel')}
+          </button>
+        </div>
+      </>
+    );
   return (
     <>
       <p>
@@ -351,12 +432,28 @@ export function LocationMenu({
                       <p>{localText(f.text, locale)}</p>
                     </section>
                   ))}
+              {!available.length && Children.toArray(children).length === 0 && (
+                <p role="status">
+                  {location === 'visa'
+                    ? t('game.noVisaActions')
+                    : tooLate
+                      ? t('game.tooLate').replace(
+                          '{time}',
+                          clockTime(place.hours!.closes),
+                        )
+                      : t('game.noActions')}
+                </p>
+              )}
               <div className={styles.choices}>
                 {available.map((action) => (
                   <button
                     key={action.id}
                     className={styles.choice}
-                    onClick={() => onChange(doActivity(state, action.id))}
+                    onClick={() =>
+                      action.effects.some((effect) => effect.type === 'ending')
+                        ? setEndingAction(action)
+                        : onChange(doActivity(state, action.id))
+                    }
                   >
                     <strong>{localText(action.label, locale)}</strong>
                     <small>
@@ -372,10 +469,10 @@ export function LocationMenu({
               {children}
             </>
           )}
-          {!!peopleAt(state, location).length && (
+          {!!people.length && (
             <section className={styles.people}>
               <h3>{t('game.peopleHere')}</h3>
-              {peopleAt(state, location).map((id) => (
+              {people.map((id) => (
                 <button
                   key={id}
                   className={site.secondary}
@@ -390,6 +487,43 @@ export function LocationMenu({
         </>
       )}
     </>
+  );
+}
+
+export function EventNotes({ choices }: { choices: GameEvent['choices'] }) {
+  const { locale } = useTranslation();
+  const notes = [
+    ...new Set(
+      choices.flatMap((choice) =>
+        choice.note ? [localText(choice.note, locale)] : [],
+      ),
+    ),
+  ];
+  return notes.length ? (
+    <p className={styles.eventNotes}>
+      <small>{notes.join(' ')}</small>
+    </p>
+  ) : null;
+}
+
+export function VisaReminder({
+  state,
+  onVisit,
+}: {
+  state: GameState;
+  onVisit?: () => void;
+}) {
+  const { t } = useTranslation();
+  return (
+    <section>
+      <h3>{t('game.visaReminderTitle')}</h3>
+      <p>
+        {t('game.visaReminder').replace('{count}', String(visaMonths(state)))}
+      </p>
+      <button className={site.secondary} onClick={onVisit}>
+        {t('game.visaVisit')}
+      </button>
+    </section>
   );
 }
 
@@ -420,10 +554,10 @@ export function EventCard({
           >
             <strong>{localText(choice.label, locale)}</strong>
             <EffectHints effects={choice.effects} />
-            {choice.note && <small>{localText(choice.note, locale)}</small>}
           </button>
         ))}
       </div>
+      <EventNotes choices={event.choices} />
     </>
   );
 }
@@ -484,9 +618,14 @@ export function QuarterSummary({
   after,
   onContinue,
   onVisit,
+  onVisa,
   diary = [],
   startStats,
-}: StateChange & { onContinue: () => void; onVisit: () => void }) {
+}: StateChange & {
+  onContinue: () => void;
+  onVisit: () => void;
+  onVisa?: () => void;
+}) {
   const { t, locale } = useTranslation();
   const settled = after.log
     .slice(before.log.length)
@@ -523,6 +662,9 @@ export function QuarterSummary({
       <p className={visaMonths(after) <= 6 ? styles.urgent : undefined}>
         {t('game.visa').replace('{count}', String(visaMonths(after)))}
       </p>
+      {needsVisaReminder(after) && (
+        <VisaReminder state={after} onVisit={onVisa} />
+      )}
       <h3>{t('game.daysReview')}</h3>
       {quarters.map((quarter) => (
         <section key={`${quarter.year}:${quarter.quarter}`}>

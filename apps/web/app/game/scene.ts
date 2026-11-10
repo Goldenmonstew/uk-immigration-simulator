@@ -426,6 +426,7 @@ export class TownScene extends Phaser.Scene {
   }
   private syncResidents() {
     const residents = visibleResidents(this.view.state, this.view.interior);
+    const occupied = new Set<string>();
     for (const [id, n] of this.residents) {
       if (!residents.some((npc) => npc.id === id)) {
         if (
@@ -451,7 +452,9 @@ export class TownScene extends Phaser.Scene {
       const at = npcAt(this.view.state, person.id);
       const target = this.view.interior
         ? homeSpot(index)
-        : this.anchors.get(at)!;
+        : places.some((p) => p.id === at && p.kind === 'building')
+          ? this.anchors.get(at)!
+          : this.residentSpot(this.anchors.get(at)!, occupied);
       const hide =
         !this.view.interior &&
         this.view.focusNpc !== person.id &&
@@ -472,7 +475,11 @@ export class TownScene extends Phaser.Scene {
           at,
           hide,
         });
-      } else if (npc.at !== at || npc.hide !== hide) {
+      } else if (
+        npc.at !== at ||
+        npc.hide !== hide ||
+        distance(npc.path.at(-1) ?? npc.target ?? npc.cell, target) > 0
+      ) {
         npc.at = at;
         npc.hide = hide;
         npc.sprite.setVisible(true);
@@ -481,6 +488,28 @@ export class TownScene extends Phaser.Scene {
           npc.sprite.setVisible(false);
       }
     });
+  }
+  private residentSpot(anchor: Cell, occupied: Set<string>): Cell {
+    const queue = [anchor];
+    const visited = new Set<string>();
+    for (let index = 0; index < queue.length; index++) {
+      const cell = queue[index];
+      const key = `${cell.x}:${cell.y}`;
+      if (visited.has(key) || !this.passable(cell)) continue;
+      visited.add(key);
+      if (!occupied.has(key)) {
+        occupied.add(key);
+        return cell;
+      }
+      for (const [dx, dy] of [
+        [0, 1],
+        [1, 0],
+        [0, -1],
+        [-1, 0],
+      ])
+        queue.push({ x: cell.x + dx, y: cell.y + dy });
+    }
+    return anchor;
   }
   private decorateFestival() {
     const festival = this.view.state.day.festival;
@@ -767,6 +796,7 @@ export class TownScene extends Phaser.Scene {
     const spot = this.spots.find(
       (s) => s.interaction.kind === 'place' && s.interaction.id === id,
     )!;
+    this.queued = spot.interaction;
     this.walkTo(spot);
   }
   walkToNpc(id: string) {
@@ -896,7 +926,7 @@ export class TownScene extends Phaser.Scene {
               places.find((p) => p.id === s.interaction.id)?.kind ===
                 'building')),
       );
-      if (door) {
+      if (door && !this.path.length) {
         const id = JSON.stringify(door.interaction);
         if (this.entered !== id) {
           this.entered = id;

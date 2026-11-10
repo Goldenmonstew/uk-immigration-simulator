@@ -149,3 +149,82 @@ test('a household resident disappears immediately when becoming away', () => {
   expect(jamie.sprite.destroy).toHaveBeenCalledOnce();
   expect(residents.has('jamie')).toBe(false);
 });
+
+test('festival residents occupy distinct walkable cells around their shared outdoor anchor', () => {
+  const { scene, view, residents, anchors } = setup();
+  view.state.day.festival = 'lunar-new-year';
+  view.state.day.kind = 'special';
+  view.state.day.minute = 600;
+  scene.sync(view);
+  for (let frame = 0; frame < 300; frame++) scene.update(frame * 400, 400);
+  const festival = [...residents].filter(
+    ([id]) => npcAt(view.state, id) === 'green-stall',
+  );
+  expect(festival).toHaveLength(9);
+  const cells = festival.map(([, npc]) => npc.cell);
+  expect(new Set(cells.map((c) => `${c.x}:${c.y}`)).size).toBe(9);
+  const collision = townMap.layers.find((l) => l.name === 'collision')!.data!;
+  for (const cell of cells) {
+    expect(collision[cell.y * townMap.width + cell.x]).toBe(0);
+    const anchor = anchors.get('green-stall')!;
+    expect(
+      Math.abs(cell.x - anchor.x) + Math.abs(cell.y - anchor.y),
+    ).toBeLessThanOrEqual(2);
+  }
+  scene.sync(view);
+  for (const [, npc] of festival) expect(npc.path).toEqual([]);
+});
+
+function routing() {
+  const result = setup();
+  const spots = townMap.layers
+    .find((l) => l.name === 'places')!
+    .objects!.map((o) => ({
+      x: o.x / 16,
+      y: o.y / 16,
+      interaction: { kind: 'place', id: o.name },
+    }));
+  Object.assign(result.scene, {
+    spots,
+    keys: Object.fromEntries(
+      ['LEFT', 'RIGHT', 'UP', 'DOWN', 'W', 'A', 'S', 'D'].map((key) => [
+        key,
+        { isDown: false, reset: vi.fn() },
+      ]),
+    ),
+  });
+  const stand = (id: string) => {
+    const spot = spots.find((s) => s.interaction.id === id)!;
+    Object.assign(result.scene, {
+      cell: { x: spot.x, y: spot.y },
+      player: new Sprite(spot.x * 16 + 8, spot.y * 16 + 10),
+    });
+  };
+  return { ...result, stand };
+}
+
+test('walking from the board to the shop passes the café without entering', () => {
+  const { scene, onInteract, anchors, stand } = routing();
+  stand('board');
+  scene.walkToLocation('shop');
+  const path = Reflect.get(scene, 'path') as Cell[];
+  expect(path).toContainEqual(anchors.get('cafe'));
+  for (let frame = 0; frame < 1000 && !onInteract.mock.calls.length; frame++)
+    scene.update(frame * 60, 60);
+  expect(onInteract).toHaveBeenCalledExactlyOnceWith({
+    kind: 'place',
+    id: 'shop',
+  });
+});
+
+test('choosing the same destination while standing at its door immediately opens it again', () => {
+  const { scene, onInteract, stand } = routing();
+  stand('shop');
+  scene.walkToLocation('shop');
+  expect(onInteract).toHaveBeenCalledExactlyOnceWith({
+    kind: 'place',
+    id: 'shop',
+  });
+  scene.walkToLocation('shop');
+  expect(onInteract).toHaveBeenCalledTimes(2);
+});
