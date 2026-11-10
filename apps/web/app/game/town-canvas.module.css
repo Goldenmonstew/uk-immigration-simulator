@@ -1,10 +1,7 @@
 .canvas {
   width: 100%;
   max-width: 960px;
-  height: max(
-    160px,
-    min(640px, calc(100dvh - var(--game-map-top, 280px) - 12px))
-  );
+  height: max(160px, min(480px, calc(100dvh - 220px)));
   margin: 0 auto;
   overflow: hidden;
   background: #a8c580;

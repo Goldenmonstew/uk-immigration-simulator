@@ -14,7 +14,7 @@ import type { Channel, Condition, GameEvent, GameState } from '../src';
 import { commonEvents } from '../src/events/common';
 import { balance as b } from '../src/balance';
 import { heartEvents } from '../src/npcs';
-import { clear } from './helpers';
+import { afterOpening, clear } from './helpers';
 
 function card(channel: Channel, when: Condition[] = []): GameEvent {
   return {
@@ -52,7 +52,7 @@ describe('day-aware event delivery', () => {
     let count = 0;
     only(event, () => {
       for (let seed = 1; seed <= 20; seed++) {
-        let state = newGame('skilled-worker', seed);
+        let state = afterOpening(newGame('skilled-worker', seed));
         expect(state.eventQueue).toContain(event.id);
         expect(state.pendingEvent).toBeUndefined();
         state = sleep(state);
@@ -69,7 +69,7 @@ describe('day-aware event delivery', () => {
       const event = card(`place:${place}`);
       only(event, () => {
         for (let seed = 1; seed <= 20; seed++) {
-          const before = newGame('skilled-worker', seed);
+          const before = afterOpening(newGame('skilled-worker', seed));
           expect(before.day.deliveries.map((d) => d.eventId)).toContain(
             event.id,
           );
@@ -173,7 +173,7 @@ describe('day-aware event delivery', () => {
   test('phone samples within the window and interrupts a clock jump at that minute', () => {
     const event = card('phone', [{ minuteMin: 800, minuteMax: 810 }]);
     only(event, () => {
-      let state = newGame('skilled-worker', 3);
+      let state = afterOpening(newGame('skilled-worker', 3));
       while (!state.day.deliveries.length) state = sleep(state);
       const minute = state.day.deliveries[0].minute!;
       expect(minute).toBeGreaterThanOrEqual(800);
@@ -189,7 +189,7 @@ describe('day-aware event delivery', () => {
       for (const minute of [420, 600]) {
         const event = card(channel, [{ minuteMin: minute, minuteMax: minute }]);
         only(event, () => {
-          let state = newGame('skilled-worker', 1);
+          let state = afterOpening(newGame('skilled-worker', 1));
           for (let day = 0; day < 3; day++) {
             if (minute === 600) {
               expect(state.pendingEvent).toBeUndefined();
@@ -216,7 +216,7 @@ describe('day-aware event delivery', () => {
       only(event, () => {
         let delivered = 0;
         for (let seed = 1; seed <= 20; seed++) {
-          let state = newGame('skilled-worker', seed);
+          let state = afterOpening(newGame('skilled-worker', seed));
           for (let day = 0; day < 3; day++) {
             if (state.pendingEvent) {
               if ('weather' in when[0]) expect(state.day.weather).toBe('rain');

@@ -26,8 +26,16 @@ import {
   type PlaceId,
   type Text,
 } from '@uk-immigration/game';
-import { dayDate, localText, money, weatherIcon } from './game-view';
-import { itemIcon, spritePath } from './session';
+import {
+  dayDate,
+  localText,
+  money,
+  weatherIcon,
+  EffectHints,
+  EventNotes,
+  VisaReminder,
+} from './game-view';
+import { itemIcon, spritePath, needsVisaReminder } from './session';
 import { playSound } from './sound';
 import styles from './game.module.css';
 import site from '../site.module.css';
@@ -91,9 +99,11 @@ export function TravelCard({
 export function MorningCard({
   state,
   onContinue,
+  onVisit,
 }: {
   state: GameState;
   onContinue: () => void;
+  onVisit?: () => void;
 }) {
   const { t, locale } = useTranslation();
   const festival = festivals.find((f) => f.id === state.day.festival);
@@ -116,6 +126,9 @@ export function MorningCard({
         {festival ? localText(festival.name, locale) : t('game.noFestival')}
       </p>
       {festival && <p>{localText(festival.text, locale)}</p>}
+      {state.day.index === 0 && needsVisaReminder(state) && (
+        <VisaReminder state={state} onVisit={onVisit} />
+      )}
       <button className={site.button} onClick={onContinue}>
         {t('game.beginDay')}
       </button>
@@ -144,6 +157,23 @@ export function ItemName({ id }: { id: string }) {
   const item = items.find((i) => i.id === id);
   return <>{item ? localText(item.name, locale) : t('game.itemFallback')}</>;
 }
+function HeartProgress({ state, npc }: { state: GameState; npc: string }) {
+  const { t } = useTranslation();
+  return (
+    <>
+      <span aria-label={`${hearts(state, npc)} / 10`}>
+        {'♥'.repeat(hearts(state, npc))}
+        {'♡'.repeat(10 - hearts(state, npc))}
+      </span>
+      <small>
+        {t(
+          hearts(state, npc) === 10 ? 'game.fullHearts' : 'game.nextHeart',
+        ).replace('{count}', String((state.friendship[npc] ?? 0) % 100))}
+      </small>
+    </>
+  );
+}
+
 export function Dialogue({
   state,
   npc,
@@ -207,11 +237,8 @@ export function Dialogue({
         />
         <div>
           <strong>{localText(person.name, locale)}</strong>
-          <small>
-            {' '}
-            {localText(person.role, locale)} · {'♥'.repeat(hearts(state, npc))}
-            {'♡'.repeat(10 - hearts(state, npc))}
-          </small>
+          <small> {localText(person.role, locale)}</small>
+          <HeartProgress state={state} npc={npc} />
           <p aria-live="polite" aria-label={line}>
             {line.slice(0, letters)}
             <span aria-hidden="true">{letters < line.length ? '▍' : ''}</span>
@@ -248,7 +275,7 @@ export function Dialogue({
                 onClick={() => onChange(resolve(state, c.id))}
               >
                 {localText(c.label, locale)}
-                {c.note && <small>{localText(c.note, locale)}</small>}
+                <EffectHints effects={c.effects} />
               </button>
             ))}
           </div>
@@ -292,6 +319,7 @@ export function Dialogue({
           </button>
         </>
       )}
+      {event && <EventNotes choices={event.choices} />}
     </>
   );
 }
@@ -336,9 +364,8 @@ export function Inventory({
                 {localText(n.name, locale)}
                 <small>{localText(n.role, locale)}</small>
               </span>
-              <span aria-label={`${hearts(state, n.id)} / 10`}>
-                {'♥'.repeat(hearts(state, n.id))}
-                {'♡'.repeat(10 - hearts(state, n.id))}
+              <span>
+                <HeartProgress state={state} npc={n.id} />
               </span>
             </li>
           ))}
@@ -400,7 +427,9 @@ export function Kitchen({ state, onChange }: Change) {
               </span>
             ))}
           </span>
-          <small>{r.minutes} min</small>
+          <small>
+            {t('game.minutes').replace('{count}', String(r.minutes))}
+          </small>
         </button>
       ))}
     </div>
@@ -466,7 +495,9 @@ export function PlotMenu({ state, plot, onChange }: Change & { plot: number }) {
       {action.message}
       <p>
         <ItemName id={seed?.grows?.crop ?? p.seed} /> ·{' '}
-        {t('game.growth').replace('{count}', String(p.growth))}
+        {t('game.growth')
+          .replace('{count}', String(p.growth))
+          .replace('{days}', String(seed!.grows!.days))}
       </p>
       <div className={styles.buttons}>
         <button
@@ -478,7 +509,7 @@ export function PlotMenu({ state, plot, onChange }: Change & { plot: number }) {
         </button>
         <button
           className={site.button}
-          disabled={p.growth < (seed?.grows?.days ?? 4)}
+          disabled={p.growth < seed!.grows!.days}
           onClick={() => action.run(() => harvest(state, plot))}
         >
           {t('game.harvest')}

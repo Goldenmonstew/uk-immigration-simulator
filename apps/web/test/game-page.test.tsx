@@ -9,6 +9,7 @@ import GameClient from '../app/game/game-client';
 import TownCanvas from '../app/game/town-canvas';
 import {
   CharacterSelect,
+  ControlHint,
   Ending,
   EventCard,
   LocationMenu,
@@ -16,6 +17,7 @@ import {
   ProgressBars,
   QuarterSummary,
   StatusBar,
+  VisaReminder,
 } from '../app/game/game-view';
 import {
   Dialogue,
@@ -1334,5 +1336,488 @@ test.each(core.characters)(
     expect(
       renderView(() => MorningCard({ state, onContinue: vi.fn() }), 'en').html,
     ).not.toMatch(cjk);
+  },
+);
+
+// Phase 10.5 A: expiry, adjoining renewals and compact assessments.
+test.each(['zh-CN', 'en'] as const)(
+  'season morning and fast-forward warn about unrenewed permission in %s',
+  (locale) => {
+    const state = at(420, 'home', locale);
+    state.timeline.episodes = [
+      {
+        ...state.timeline.episodes[0],
+        validFrom: '2024-01-01',
+        validTo: '2024-07-15',
+      },
+    ];
+    state.date = '2024-01-15';
+    const visit = vi.fn();
+    let view = renderView(
+      () => MorningCard({ state, onContinue: vi.fn(), onVisit: visit }),
+      locale,
+    );
+    expect(view.html).toContain(t('game.visaReminderTitle', locale));
+    view.props(VisaReminder).onVisit!();
+    expect(visit).toHaveBeenCalledOnce();
+    state.date = '2023-12-15';
+    state.timeline.episodes[0].validFrom = '2023-01-01';
+    expect(
+      renderView(() => MorningCard({ state, onContinue: vi.fn() }), locale)
+        .html,
+    ).not.toContain(t('game.visaReminderTitle', locale));
+    state.date = '2024-04-15';
+    state.timeline.episodes[0].validTo = '2024-07-14';
+    state.day.minute = 600;
+    const h = client(state);
+    h.render().click(t('game.fastForward'));
+    expect(h.render().html).toContain(t('game.fastVisaWarning'));
+    h.dispose();
+    vi.restoreAllMocks();
+    state.timeline.episodes.push({
+      ...state.timeline.episodes[0],
+      validFrom: '2024-07-15',
+      validTo: '2027-07-14',
+    });
+    state.day.minute = 420;
+    view = renderView(
+      () => MorningCard({ state, onContinue: vi.fn() }),
+      locale,
+    );
+    expect(view.html).not.toContain(t('game.visaReminderTitle', locale));
+    state.day.minute = 600;
+    const renewed = client(state);
+    renewed.render().click(t('game.fastForward'));
+    expect(renewed.render().html).not.toContain(t('game.fastVisaWarning'));
+    renewed.dispose();
+  },
+);
+
+test('visa HUD follows all adjoining permissions, but not a renewal after a gap', () => {
+  const state = at(600);
+  state.date = '2024-04-15';
+  state.timeline.episodes = [
+    {
+      ...state.timeline.episodes[0],
+      validFrom: '2024-01-01',
+      validTo: '2024-07-14',
+    },
+  ];
+  const hud = () => renderView(() => StatusBar({ state })).html;
+  expect(hud()).toContain('签证剩余 2 个月');
+  expect(hud()).toContain('visaFlash');
+  state.timeline.episodes.push({
+    ...state.timeline.episodes[0],
+    validFrom: '2024-07-15',
+    validTo: '2025-07-14',
+  });
+  state.timeline.episodes.push({
+    ...state.timeline.episodes[0],
+    validFrom: '2025-07-15',
+    validTo: '2027-07-14',
+  });
+  expect(hud()).toContain('签证剩余 38 个月');
+  expect(hud()).not.toContain('visaFlash');
+  state.timeline.episodes[1].validFrom = '2024-07-16';
+  expect(hud()).toContain('签证剩余 2 个月');
+  expect(hud()).toContain('visaFlash');
+  state.day.index = 1;
+  expect(
+    renderView(() => MorningCard({ state, onContinue: vi.fn() })).html,
+  ).not.toContain(t('game.visaReminderTitle'));
+});
+
+test.each(['zh-CN', 'en'] as const)(
+  'compact assessments omit unknown percentages and name the missing rules in %s',
+  (locale) => {
+    const state = active(locale);
+    for (const result of Object.values(state.result.byRuleSet)) {
+      delete result.earliestDate;
+      result.outcome = 'INSUFFICIENT_INFORMATION';
+      result.rules = [
+        {
+          ...result.rules[0],
+          status: 'UNKNOWN',
+          title:
+            locale === 'en'
+              ? 'Pass the Life in the UK test'
+              : '通过 Life in the UK 考试',
+        },
+      ];
+    }
+    const view = renderView(
+      () => ProgressBars({ state, onOpen: vi.fn() }),
+      locale,
+    );
+    expect(view.html).not.toContain('0%');
+    expect(view.html).not.toContain('role="progressbar"');
+    expect(view.html.match(/<strong>—<\/strong>/g)).toHaveLength(2);
+    expect(view.html).toContain(
+      locale === 'en'
+        ? 'Still needed: Pass the Life in the UK test'
+        : '还差：通过 Life in the UK 考试',
+    );
+  },
+);
+
+// Phase 10.5 B: place menus, schedules and conversation return.
+test.each(['zh-CN', 'en'] as const)(
+  'festival green menu lists and talks to the people at the stalls in %s',
+  (locale) => {
+    const state = at(600, 'green', locale);
+    state.day.festival = 'lunar-new-year';
+    state.day.kind = 'special';
+    const onTalk = vi.fn();
+    const menu = renderView(
+      () =>
+        LocationMenu({ state, location: 'green', onChange: vi.fn(), onTalk }),
+      locale,
+    );
+    const people = core
+      .townsfolk(state)
+      .filter((npc) => core.npcAt(state, npc.id) === 'green-stall');
+    expect(people).toHaveLength(9);
+    for (const npc of people) {
+      menu.click(npc.name[locale === 'en' ? 'en' : 'zhCN']);
+      expect(onTalk).toHaveBeenLastCalledWith(npc.id);
+    }
+  },
+);
+
+test.each(['home', 'work'] as const)(
+  'chatting from the %s menu returns there, including a heart event',
+  (place) => {
+    const state = at(place === 'home' ? 480 : 600, place);
+    state.day.deliveries = [];
+    const npc = place === 'home' ? 'yao-flatmate' : 'ade';
+    const h = client(state);
+    h.render()
+      .props(TownCanvas)
+      .onInteract(
+        place === 'home'
+          ? { kind: 'home', id: 'desk' }
+          : { kind: 'place', id: place },
+      );
+    h.render().props(LocationMenu).onTalk!(npc);
+    if (place === 'home') {
+      expect(h.render().props(TownCanvas).approachNpc?.id).toBe(npc);
+      h.render().props(TownCanvas).onInteract({ kind: 'npc', id: npc });
+    }
+    h.render().props(Dialogue).onClose();
+    expect(h.render().props(LocationMenu).location).toBe(place);
+    h.render().props(Modal).onClose!();
+    h.render().props(TownCanvas).onInteract({ kind: 'npc', id: 'margaret' });
+    h.render().props(Dialogue).onClose();
+    expect(h.render().html).not.toContain('<dialog');
+    h.dispose();
+  },
+);
+
+test('conversation returns to its menu after resolving a heart scene', () => {
+  const state = at(600, 'cafe');
+  state.day.deliveries = [];
+  state.friendship.margaret = 190;
+  const h = client(state);
+  h.render().props(TownCanvas).onInteract({ kind: 'place', id: 'cafe' });
+  h.render().props(LocationMenu).onTalk!('margaret');
+  const dialogue = h.render().props(Dialogue);
+  expect(core.currentEvent(dialogue.state)?.heart).toBeDefined();
+  dialogue.onChange(
+    core.resolve(
+      dialogue.state,
+      core.currentEvent(dialogue.state)!.choices[0].id,
+    ),
+  );
+  h.render().props(Dialogue).onClose();
+  expect(h.render().props(LocationMenu).location).toBe('cafe');
+  h.dispose();
+});
+
+test.each(['zh-CN', 'en'] as const)(
+  'menus explain closing-time, no-action and no-paperwork cases in %s',
+  (locale) => {
+    const state = at(900, 'work', locale);
+    const menu = (location: core.PlaceId) =>
+      renderView(
+        () => LocationMenu({ state, location, onChange: vi.fn() }),
+        locale,
+      ).html;
+    expect(menu('work')).toContain(
+      t('game.tooLate', locale).replace('{time}', '20:00'),
+    );
+    state.day.done = ['work'];
+    expect(menu('work')).toContain(t('game.noActions', locale));
+    expect(menu('visa')).toContain(t('game.noVisaActions', locale));
+    state.day.minute = 1200;
+    expect(menu('work')).toContain(t('game.closed', locale));
+    expect(menu('work')).not.toContain(
+      t('game.tooLate', locale).replace('{time}', '20:00'),
+    );
+  },
+);
+
+test('closed destination buttons stay clickable and still open the hours menu', () => {
+  const h = client(at(430));
+  const view = h.render();
+  const button = view.buttons.find((b) => b.label === '公司 · 关门')!;
+  expect(button.disabled).toBe(false);
+  expect(view.html).toContain('closedPlace');
+  button.click();
+  expect(h.render().props(TownCanvas).destination?.location).toBe('work');
+  h.render().props(TownCanvas).onInteract({ kind: 'place', id: 'work' });
+  expect(h.render().html).toContain('09:00–20:00');
+  expect(h.render().html).toContain(t('game.closed'));
+  h.dispose();
+});
+
+// Phase 10.5 C: small presentation fixes and deliberate ending actions.
+test('a non-festival green has no empty shop or quantity input, while festival goods appear', () => {
+  const state = at(600, 'green');
+  const h = client(state);
+  h.render().props(TownCanvas).onInteract({ kind: 'place', id: 'green' });
+  expect(h.render().html).not.toContain(t('game.quantity'));
+  h.dispose();
+  vi.restoreAllMocks();
+  state.day.festival = 'lunar-new-year';
+  const festival = client(state);
+  festival
+    .render()
+    .props(TownCanvas)
+    .onInteract({ kind: 'place', id: 'green' });
+  expect(festival.render().html).toContain(t('game.quantity'));
+  expect(festival.render().html).not.toContain(t('game.noActions'));
+  festival.dispose();
+});
+
+test.each(['zh-CN', 'en'] as const)(
+  'crop growth uses each seed’s days and kitchen durations are localized in %s',
+  (locale) => {
+    const state = at(600, 'home', locale);
+    for (const seed of core.items.filter((item) => item.grows)) {
+      state.plots = [{ seed: seed.id, growth: 1 }];
+      const html = renderView(
+        () => PlotMenu({ state, plot: 0, onChange: vi.fn() }),
+        locale,
+      ).html;
+      expect(html).toContain(
+        t('game.growth', locale)
+          .replace('{count}', '1')
+          .replace('{days}', String(seed.grows!.days)),
+      );
+    }
+    const kitchen = renderView(
+      () => Kitchen({ state, onChange: vi.fn() }),
+      locale,
+    ).html;
+    expect(kitchen).not.toMatch(/\d+ min<\/small>/);
+    for (const recipe of core.recipes)
+      expect(kitchen).toContain(
+        t('game.minutes', locale).replace('{count}', String(recipe.minutes)),
+      );
+  },
+);
+
+test.each(['leave', 'settle'])(
+  'ending action %s waits for confirmation and cancellation has no effect',
+  (id) => {
+    const location = id === 'leave' ? 'station' : 'visa';
+    const state = at(600, location);
+    state.day.deliveries = [];
+    state.stats.money = 100000;
+    for (const result of Object.values(state.result.byRuleSet))
+      result.outcome = 'LIKELY_ELIGIBLE';
+    const onChange = vi.fn();
+    const action = core.activities(state, location).find((a) => a.id === id)!;
+    const h = harness(() => LocationMenu({ state, location, onChange }));
+    h.render().click(action.label.zhCN);
+    expect(onChange).not.toHaveBeenCalled();
+    expect(state.ending).toBeUndefined();
+    expect(h.render().html).toContain(t('game.endingConfirm'));
+    h.render().click(t('game.cancel'));
+    expect(onChange).not.toHaveBeenCalled();
+    expect(h.render().html).not.toContain(t('game.endingConfirm'));
+    h.render().click(action.label.zhCN);
+    h.render().click(t('game.confirm'));
+    expect(onChange).toHaveBeenCalledOnce();
+    expect(onChange.mock.calls[0][0].ending).toBe(
+      id === 'leave' ? 'left' : 'settled',
+    );
+    h.dispose();
+  },
+);
+
+test.each(['zh-CN', 'en'] as const)(
+  'event notes are outside choice buttons and deduplicated in ordinary and speaker cards in %s',
+  (locale) => {
+    const fixture = fixtures[1];
+    const choices = fixture.choices;
+    const note = { zhCN: '会记入日记。', en: 'Recorded in the diary.' };
+    fixture.choices = [
+      { ...choices[0], note },
+      { ...choices[0], id: 'another', note },
+    ];
+    try {
+      const state = at(600, 'home', locale);
+      state.pendingEvent = fixture.id;
+      for (const make of [
+        () => EventCard({ state, onChange: vi.fn() }),
+        () =>
+          Dialogue({
+            state,
+            npc: 'margaret',
+            onChange: vi.fn(),
+            onClose: vi.fn(),
+          }),
+      ]) {
+        const view = renderView(make, locale);
+        const text = note[locale === 'en' ? 'en' : 'zhCN'];
+        expect(view.html.split(text)).toHaveLength(2);
+        for (const button of view.html.matchAll(
+          /<button\b[^>]*>([\s\S]*?)<\/button>/g,
+        ))
+          expect(button[1]).not.toContain(text);
+        expect(view.html).toContain('hints');
+      }
+    } finally {
+      fixture.choices = choices;
+    }
+  },
+);
+
+test('fast-forward shows the interrupting event and summary directly, with a visa reminder instead of a stale morning', () => {
+  vi.useFakeTimers();
+  const state = at(600);
+  state.day.deliveries = [];
+  state.eventQueue = ['phone'];
+  state.timeline.episodes = [
+    {
+      ...state.timeline.episodes[0],
+      validFrom: '2024-01-01',
+      validTo: '2024-07-14',
+    },
+  ];
+  state.date = '2024-01-15';
+  fixtures[2].when = [{ dayKind: 'weekend' }];
+  try {
+    const h = client(state);
+    h.render().click(t('game.fastForward'));
+    h.render().click(t('game.confirm'));
+    h.render();
+    h.flush();
+    vi.advanceTimersByTime(280);
+    h.render();
+    h.flush();
+    let view = h.render();
+    const stopped = view.props(TownCanvas).state;
+    expect(stopped.day.index).toBe(1);
+    expect(stopped.day.minute).toBeGreaterThan(420);
+    expect(view.html).not.toContain(`>${t('game.morning')}</h2>`);
+    view.props(EventCard).onChange(core.resolve(stopped, 'yes'));
+    h.render();
+    h.flush();
+    view = h.render();
+    expect(view.props(QuarterSummary).after.day.index).toBe(0);
+    expect(view.html).toContain(t('game.visaReminderTitle'));
+    expect(view.html).not.toContain(`>${t('game.morning')}</h2>`);
+    view.props(QuarterSummary).onContinue();
+    expect(h.render().html).not.toContain(`>${t('game.morning')}</h2>`);
+    h.dispose();
+  } finally {
+    delete fixtures[2].when;
+  }
+});
+
+// Phase 10.5 D: feedback and input hints.
+test.each(['zh-CN', 'en'] as const)(
+  'dialogue and town list show partial hearts and a full-heart state in %s',
+  (locale) => {
+    const state = at(600, 'home', locale);
+    state.friendship.margaret = 186;
+    const nextHeart = t('game.nextHeart', locale).replace('{count}', '86');
+    expect(
+      renderView(
+        () =>
+          Dialogue({
+            state,
+            npc: 'margaret',
+            onChange: vi.fn(),
+            onClose: vi.fn(),
+          }),
+        locale,
+      ).html,
+    ).toContain(nextHeart);
+    const h = harness(
+      () => Inventory({ state, onChange: vi.fn(), onKitchen: vi.fn() }),
+      locale,
+    );
+    h.render().click(t('game.friends', locale));
+    expect(h.render().html).toContain(nextHeart);
+    state.friendship.margaret = 1000;
+    expect(h.render().html).toContain(t('game.fullHearts', locale));
+    expect(
+      renderView(
+        () =>
+          Dialogue({
+            state,
+            npc: 'margaret',
+            onChange: vi.fn(),
+            onClose: vi.fn(),
+          }),
+        locale,
+      ).html,
+    ).toContain(t('game.fullHearts', locale));
+    h.dispose();
+  },
+);
+
+test('tea, biscuits, flowers, cake, fish and meals use distinct real PNG assets', () => {
+  const ids = [
+    'tea',
+    'biscuits',
+    'flowers',
+    'cake',
+    core.items.find((i) => i.kind === 'fish')!.id,
+    'baked-potato',
+  ];
+  expect(new Set(ids.map(itemIcon)).size).toBe(6);
+  for (const id of ids) {
+    expect(itemIcon(id)).not.toContain('/indoor/item.png');
+    const png = readFileSync(
+      new URL(`../public${itemIcon(id)}`, import.meta.url),
+    );
+    expect(png.subarray(0, 8)).toEqual(
+      Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]),
+    );
+  }
+  for (const item of core.items.filter((i) =>
+    ['fish', 'food'].includes(i.kind),
+  ))
+    expect(itemIcon(item.id)).not.toContain('/indoor/item.png');
+});
+
+test.each(['zh-CN', 'en'] as const)(
+  'coarse-pointer controls use touch wording and update when input changes in %s',
+  (locale) => {
+    const media = {
+      matches: true,
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+    };
+    const matchMedia = vi.fn(() => media);
+    vi.stubGlobal('window', { matchMedia });
+    const h = harness(() => ControlHint(), locale);
+    h.render();
+    h.flush();
+    expect(matchMedia).toHaveBeenCalledWith('(pointer: coarse)');
+    expect(h.render().html).toContain(t('game.touchControls', locale));
+    expect(h.render().html).not.toContain('WASD');
+    media.matches = false;
+    media.addEventListener.mock.calls[0][1]();
+    expect(h.render().html).toContain(t('game.controls', locale));
+    h.dispose();
+    expect(media.removeEventListener).toHaveBeenCalledWith(
+      'change',
+      media.addEventListener.mock.calls[0][1],
+    );
   },
 );

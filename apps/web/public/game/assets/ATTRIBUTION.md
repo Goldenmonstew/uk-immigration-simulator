@@ -83,3 +83,16 @@ floor (24,2)；rug (24,5)；wall (24,14)；bedT (14,6)；bedB (14,7)；kitchen (
 节日摊位、彩旗、灯笼、彩灯、篝火、烟花、窗灯与路灯光晕由 Phaser 几何图形绘制，未引入外部图像。现有可核验 CC0 素材未找到合适的鸭、猫或鸽子，因此本轮未加入小动物。
 
 重新导出 `town.json` / `home.json` 时，**每个图层**必须保留 Tiled 的 `x: 0`、`y: 0`、`opacity: 1` 与 `visible` 字段；`collision` 的 `visible` 为 `false`。缺失坐标会使 Phaser 算出 NaN 而不渲染图块。组件测试覆盖这项地图格式约束。
+
+## 10.5b 物品图标（2026-11-10）
+
+以下均为 CC0。鱼、菜品、花优先复用上面已列来源的包；茶杯、饼干、蛋糕补充两位作者的素材。仅裁切并保留透明度，没有调色或绘制新内容。像素坐标均从左上角 `(0, 0)` 起，裁切范围写作 `x, y, width, height`；网页按 32×32 显示。
+
+| 本地文件 | 作者、来源与许可证据 | 下载与原图坐标 |
+| --- | --- | --- |
+| `items/tea.png` | Fleurman，[Infusions Icons](https://opengameart.org/node/77729)，作者发布页标明 CC0 | [Infusions Icons.png](https://opengameart.org/sites/default/files/Infusions%20Icons.png)，`(96, 24, 24, 24)`，第 4 列、第 1 行的茶杯 |
+| `items/biscuits.png` | Fleurman，[Almost Weapons Icons](https://opengameart.org/node/77730)，作者发布页标明 CC0 | [Almost Weapons Icons.png](https://opengameart.org/sites/default/files/Almost%20Weapons%20Icons.png)，`(96, 72, 24, 24)`，第 4 列、第 3 行的饼干 |
+| `items/flowers.png` | josehzz，[Farming crops 16x16](https://opengameart.org/content/farming-crops-16x16)，包内 `README.txt` 标明 CC0 | [FarmingCrops16x16.zip](https://opengameart.org/sites/default/files/FarmingCrops16x16.zip) 内 `Crop_Spritesheet.png`，`(96, 0, 16, 16)`，第 6 列、第 0 行的玫瑰物品图 |
+| `items/cake.png` | maruki，[Foodies](https://opengameart.org/content/foodies)，作者发布页标明 CC0 / public domain | [Foodies.zip](https://opengameart.org/sites/default/files/Foodies.zip) 内 `foodies_sheet_borderless.png`，`(80, 0, 16, 16)`，第 5 列、第 0 行的草莓蛋糕 |
+| `items/fish.png` | Pixel-boy / Sparklin Labs，[ninja-adventure](https://github.com/sparklinlabs/superpowers-asset-packs/tree/master/ninja-adventure)，使用上面已列 CC0 许可 | [items/food/fish.png](https://raw.githubusercontent.com/sparklinlabs/superpowers-asset-packs/master/ninja-adventure/items/food/fish.png)，完整原图 `(0, 0, 16, 16)`，所有鱼类共用 |
+| `items/meal.png` | Pixel-boy / Sparklin Labs，[ninja-adventure](https://github.com/sparklinlabs/superpowers-asset-packs/tree/master/ninja-adventure)，使用上面已列 CC0 许可 | [items/food/noodle.png](https://raw.githubusercontent.com/sparklinlabs/superpowers-asset-packs/master/ninja-adventure/items/food/noodle.png)，完整原图 `(0, 0, 16, 16)`，菜品共用碗装食物图 |

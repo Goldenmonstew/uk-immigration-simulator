@@ -231,6 +231,17 @@ export const locationActions: Activity[] = [
     effects: [{ type: 'none' }],
   },
   {
+    id: 'life-in-the-uk',
+    place: 'college',
+    label: {
+      zhCN: '参加 Life in the UK 考试',
+      en: 'Take the Life in the UK test',
+    },
+    minutes: b.minutes.exam,
+    oncePerDay: true,
+    effects: [{ type: 'lifeInTheUk' }],
+  },
+  {
     id: 'gp',
     place: 'gp',
     label: { zhCN: '看病', en: 'See the GP' },

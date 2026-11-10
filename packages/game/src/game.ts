@@ -41,6 +41,188 @@ import type {
 } from './types';
 
 export const characters = [skilledWorker, hongKongBno, familyPartner];
+
+const openingEvents: Record<string, GameEvent> = {
+  'skilled-worker': {
+    id: 'opening-skilled-worker',
+    title: { zhCN: '门边的纸箱', en: 'Boxes by the door' },
+    text: {
+      zhCN: '林遥在镇上的公寓和周沅刚合租，门边还堆着没拆的纸箱。\n许可要保持有效，续签去签证中心；市政厅能看定居还差什么。\n英语和 Life in the UK 考试都在语言学校，课本先放进包里。\n窗外通向菜地和池塘，街角有咖啡馆。今天先从哪儿走起？',
+      en: 'Yao has just started sharing a town flat with Yuan. Unopened boxes still stand by the door.\nKeeping permission valid is part of life here: renew at the visa centre, and check what settlement still needs at the town hall.\nEnglish and Life in the UK tests are at the language school. The textbook goes in the bag.\nOutside lie the allotment and pond, with a café on the corner. Where to start today?',
+    },
+    weight: 1,
+    once: true,
+    channel: 'morning',
+    choices: [
+      {
+        id: 'begin',
+        label: {
+          zhCN: '把钥匙放进口袋，出门看看',
+          en: 'Pocket the keys and look around',
+        },
+        effects: [{ type: 'none' }],
+      },
+    ],
+  },
+  'hong-kong-bno': {
+    id: 'opening-hong-kong-bno',
+    title: { zhCN: '餐桌旁的书包', en: 'The school bag by the table' },
+    text: {
+      zhCN: '陈嘉宁和文舒、乐言住在镇上的租屋，餐桌旁靠着孩子的书包。\n许可要保持有效，续签去签证中心；市政厅能看定居还差什么。\n英语和 Life in the UK 考试都在语言学校，课本放在书包旁。\n镇上能种菜、钓鱼，也能去酒吧坐坐。厨房窗外已经有人经过。',
+      en: 'Ka Ning shares a rented home in town with Man Shu and Lok Yin. The child’s school bag rests by the table.\nKeeping permission valid is part of life here: renew at the visa centre, and check what settlement still needs at the town hall.\nEnglish and Life in the UK tests are at the language school. A textbook lies beside the school bag.\nThere are vegetables to grow, fish to catch and a pub to sit in. Someone is already passing the kitchen window.',
+    },
+    weight: 1,
+    once: true,
+    channel: 'morning',
+    choices: [
+      {
+        id: 'begin',
+        label: {
+          zhCN: '收好餐桌，去镇上走走',
+          en: 'Clear the table and walk into town',
+        },
+        effects: [{ type: 'none' }],
+      },
+    ],
+  },
+  'family-partner': {
+    id: 'opening-family-partner',
+    title: { zhCN: '厨房里的早晨', en: 'A morning in the kitchen' },
+    text: {
+      zhCN: '索菲娅和杰米住在镇上的租屋，厨房的锅盖还没找到合适的位置。\n许可要保持有效，续签去签证中心；市政厅能看定居还差什么。\n英语和 Life in the UK 考试都在语言学校，课本挨着食谱。\n街角能买菜喝咖啡，池塘边有长椅，社区菜地也能租下一块。',
+      en: 'Sofia shares a rented home in town with Jamie. The saucepan lid still has no proper place in the kitchen.\nKeeping permission valid is part of life here: renew at the visa centre, and check what settlement still needs at the town hall.\nEnglish and Life in the UK tests are at the language school. The textbook sits beside the recipes.\nThere is shopping and coffee on the corner, a bench by the pond, and an allotment plot to rent.',
+    },
+    weight: 1,
+    once: true,
+    channel: 'morning',
+    choices: [
+      {
+        id: 'begin',
+        label: {
+          zhCN: '把锅盖放稳，带上外套',
+          en: 'Set the lid down and take a coat',
+        },
+        effects: [{ type: 'none' }],
+      },
+    ],
+  },
+};
+
+const settlementScenes: Record<string, Text> = {
+  'skilled-worker': {
+    zhCN: '林遥把递交后的回执放在桌上，边角压着那串早已磨亮的钥匙。\n周沅把茶杯推过来，顺手将桌边翘起的纸角压平，没再问还缺什么。\n文件夹合上时，里面的车票轻轻滑了一下。林遥伸手接住，放回原处。\n她把杯子移出文件夹留下的方印，坐下来，听厨房里的水壶慢慢安静。',
+    en: 'Yao puts the submission receipt on the table, its corner beneath her well-worn keys.\nYuan slides a cup of tea across and flattens a curling paper edge, without asking what is still missing.\nA train ticket slips as the folder closes. Yao catches it and puts it back.\nShe moves her cup out of the square left by the folder and sits, listening as the kitchen kettle falls quiet.',
+  },
+  'hong-kong-bno': {
+    zhCN: '陈嘉宁把递交后的回执夹好，餐桌上的文件终于能挪回抽屉里。\n文舒端来热茶，先挪开桌角的饭盒，才发现杯垫还压在文件夹下面。\n乐言把画纸铺到空出来的地方，笔帽滚向嘉宁，被她伸手轻轻拦住。\n她将笔帽放回画纸旁，靠着椅背看孩子添上窗户，茶杯就在手边。',
+    en: 'Ka Ning files the submission receipt. The papers on the dining table can finally go back in the drawer.\nMan Shu brings tea and shifts a lunch box, then finds the coasters underneath the folder.\nLok Yin spreads drawing paper over the cleared space. A pen lid rolls towards Ka Ning, who catches it.\nShe puts it beside the drawing and leans back to watch the child add a window, her tea within reach.',
+  },
+  'family-partner': {
+    zhCN: '索菲娅把递交后的回执放进抽屉，手指在文件夹的折角上停了一下。\n桌上还摊着写过又改的便条，她把有用的夹好，余下的翻过来当草稿。\n杯沿留下的茶印已经干了，她拿湿布慢慢擦掉，露出原来的木纹。\n她把空出来的地方留给晚饭，坐下脱掉鞋子，窗外传来熟悉的关门声。',
+    en: 'Sofia puts the submission receipt in the drawer, pausing over a bent corner of the folder.\nRewritten notes still cover the table. She files the useful ones and turns the others over for scrap paper.\nThe tea ring has dried. She wipes it slowly away, revealing the grain of the wood.\nShe leaves the cleared space for dinner and sits down to take off her shoes. A familiar door closes outside.',
+  },
+};
+const festivalResults: Record<FestivalId, Text[]> = {
+  'lunar-new-year': [
+    {
+      zhCN: '你把饺子托盘传到桌尾，盘沿的面粉在袖口留了道白印。',
+      en: 'You pass the dumpling tray down the table. Flour from the edge leaves a white mark on your sleeve.',
+    },
+    {
+      zhCN: '你替邻座扶稳饺子盘，歪歪的封口换来一桌笑声。',
+      en: 'You steady a neighbour’s dumpling plate. The crooked folds make the whole table laugh.',
+    },
+    {
+      zhCN: '桌上的饺子终于排齐，你把空托盘摞好，指尖还粘着面粉。',
+      en: 'The dumplings are finally lined up. You stack the empty trays, flour still clinging to your fingers.',
+    },
+  ],
+  'may-day': [
+    {
+      zhCN: '你沿着摊位走了一圈，替摊主捡回掉下的纸袋，袋口还粘着面包屑。',
+      en: 'You stroll past the stalls and retrieve a fallen paper bag for a stallholder, crumbs still caught in its opening.',
+    },
+    {
+      zhCN: '你帮忙摆正甜面包的价签，旁边的小狗始终盯着桌沿，没看价钱。',
+      en: 'You straighten the bun stall’s price sign. A nearby dog watches the table edge without checking the price.',
+    },
+    {
+      zhCN: '你把挡路的空篮挪回摊边，摊主让开身，露出摆得歪歪的花束。',
+      en: 'You move an empty basket out of the way. The stallholder steps aside, revealing some crooked bunches of flowers.',
+    },
+  ],
+  'summer-fair': [
+    {
+      zhCN: '你替摊主按住卷起的价签，离开时衣袖还带着烤玉米的香气。',
+      en: 'You hold down a curling price label for a stallholder. Grilled corn still scents your sleeve as you leave.',
+    },
+    {
+      zhCN: '你把滚到桌边的番茄推回篮子，摊主给它垫了块折好的布。',
+      en: 'You nudge a rolling tomato back into its basket. The stallholder tucks a folded cloth beneath it.',
+    },
+    {
+      zhCN: '评比桌旁挤满了人，你腾出地方让篮子通过，听完一段种菜的笑话。',
+      en: 'You make room for a basket in the crowd by the judging table and hear a gardening joke to the end.',
+    },
+  ],
+  'bonfire-night': [
+    {
+      zhCN: '烟花在杯口上方开了，你慢半拍抬头，热茶倒是一口没洒。',
+      en: 'Fireworks open above your cup. You look up a moment late, without spilling a drop of tea.',
+    },
+    {
+      zhCN: '你捧着杯子看完烟花，旁边的人替你捡回被风掀走的杯盖。',
+      en: 'You watch the fireworks with your cup. Someone beside you retrieves the lid the wind carried off.',
+    },
+    {
+      zhCN: '最后一朵烟花散开，你让热杯在掌心转了转，指尖终于暖了。',
+      en: 'As the final firework fades, you turn the warm cup in your palms. Your fingertips have finally thawed.',
+    },
+  ],
+  'christmas-market': [
+    {
+      zhCN: '你把吹起的包装纸递回摊上，姜饼人安稳地躺进了纸盒。',
+      en: 'You hand windblown wrapping back to the stall. A gingerbread person settles safely into its box.',
+    },
+    {
+      zhCN: '你扶住歪掉的小树，摊主替它转正底座，铃铛一路响到你松手。',
+      en: 'You steady a leaning little tree while the stallholder turns its base. Its bells ring until you let go.',
+    },
+    {
+      zhCN: '你替摊主压平礼品袋，折歪的纸星星留在桌边，照样被人挑走了。',
+      en: 'You flatten gift bags for a stallholder. Someone still chooses the crooked paper star left on the table.',
+    },
+  ],
+};
+const ribbonResults: Text[] = [
+  {
+    zhCN: '你绕过彩带结，和迎面的人笑着换位，袖口多了道折痕。',
+    en: 'You circle a ribbon knot and swap places with someone, laughing. A new crease marks your cuff.',
+  },
+  {
+    zhCN: '彩带在肩旁绕过，你找回舞步，带尾在手心弯成小圈。',
+    en: 'A ribbon passes your shoulder. You find the step again, its loose end curling in your palm.',
+  },
+  {
+    zhCN: '你把缠住的彩带理开，旁边的人趁空转了个圈，差点踩到鞋尖。',
+    en: 'You untangle a ribbon. Someone beside you takes a turn and nearly steps on your toes.',
+  },
+];
+const lanternResults: Text[] = [
+  {
+    zhCN: '你提着小灯听完合唱，最后那个音拖长时，灯柄也在手里轻轻晃。',
+    en: 'You hold your lantern through the choir’s song. As the last note stretches, its handle sways in your hand.',
+  },
+  {
+    zhCN: '你把小灯放低，给旁边的人留出视线，合唱停时才一起松开围巾。',
+    en: 'You lower your lantern so a neighbour can see. When the choir stops, you both loosen your scarves.',
+  },
+  {
+    zhCN: '合唱翻到下一页，你替歌手照亮谱角，小灯在纸上留了团暖光。',
+    en: 'As the choir turns the page, you light a corner of the music. Your lantern leaves a warm pool on the paper.',
+  },
+];
+
 const dayMs = 86_400_000;
 const addDays = (date: IsoDate, days: number): IsoDate =>
   new Date(Date.parse(date) + days * dayMs).toISOString().slice(0, 10);
@@ -52,6 +234,11 @@ function addMonths(date: IsoDate, months: number): IsoDate {
   ).getUTCDate();
   target.setUTCDate(Math.min(day, last));
   return target.toISOString().slice(0, 10);
+}
+function quarterAt(date: IsoDate): GameState['quarter'] {
+  const end = addMonths(date, b.monthsPerQuarter);
+  const midpoint = new Date((Date.parse(date) + Date.parse(end)) / 2);
+  return Math.ceil((midpoint.getUTCMonth() + 1) / 3) as GameState['quarter'];
 }
 function taxYearOf(date: IsoDate) {
   const year = Number(date.slice(0, 4)) - (date.slice(5) < '04-06' ? 1 : 0);
@@ -72,6 +259,7 @@ function pool(state: GameState) {
     ...commonEvents,
     ...characterOf(state.characterId).events,
     ...systemEvents,
+    ...Object.values(openingEvents),
     ...heartEvents,
     ...townHeartLetters,
   ];
@@ -140,6 +328,16 @@ function timeWindow(event: GameEvent, start: number, end: number) {
 }
 function available(state: GameState, event: GameEvent, drawing = false) {
   return (
+    !(
+      state.timeline.lifeInTheUk &&
+      'passed' in state.timeline.lifeInTheUk &&
+      [
+        'sw-kol',
+        'common-book',
+        'common-book-after',
+        'common-kol-retake',
+      ].includes(event.id)
+    ) &&
     (!event.season || event.season === state.quarter) &&
     (!event.once || !state.firedEvents.includes(event.id)) &&
     (event.requires ?? []).every((f) => state.flags.includes(f)) &&
@@ -287,25 +485,22 @@ function finish(state: GameState, ending: EndingId) {
   delete state.pendingEvent;
   state.eventQueue = [];
   const texts: Record<EndingId, Text> = {
-    settled: {
-      zhCN: '材料递出后，游戏里的定居篇章落了款。',
-      en: 'With the papers submitted, your settlement chapter closes in this simulation.',
-    },
+    settled: settlementScenes[state.characterId],
     left: {
-      zhCN: '行李箱合上，小镇留在了车窗后面。',
-      en: 'The suitcase closes, and the town slips behind the train window.',
+      zhCN: '行李箱合上，小镇留在了车窗后面。你选择离开英国，这局生活到这里收好。',
+      en: 'The suitcase closes, and the town slips behind the train window. You chose to leave the UK, ending this game.',
     },
     overstayed: {
-      zhCN: '许可过期，原本的日常按下了暂停键。',
-      en: 'Permission expires, putting everyday life on pause.',
+      zhCN: '许可到期前没有续签上，这段小镇生活在这里结束。\n下一局可以留意顶栏的剩余月数，去签证中心办续签。',
+      en: 'Your permission expired before you renewed it, ending this game.\nNext time, watch the months remaining in the top bar and visit the visa centre to renew.',
     },
     criminal: {
-      zhCN: '定罪记录让材料转交审查，故事在这里停笔。',
-      en: 'A conviction sends the papers for review, and this story stops here.',
+      zhCN: '定罪记录让材料转交审查，故事在这里停笔。犯罪记录触发了这局游戏的结束。',
+      en: 'A conviction sends the papers for review. The criminal record ends this game here.',
     },
     timeout: {
-      zhCN: '十年过去，抽屉里的定居材料仍没递出去。',
-      en: 'Ten years pass, and the settlement folder is still in the drawer.',
+      zhCN: '抽屉里的定居材料仍没递出去。这局走到了时间尽头，小镇日记在这里合上。',
+      en: 'The settlement folder is still in the drawer. This game has reached its time limit, and the town diary closes here.',
     },
   };
   state.log.push({
@@ -533,9 +728,7 @@ export function newGame(
     seed,
     locale,
     year: 1,
-    quarter: Math.ceil(
-      Number(character.startDate.slice(5, 7)) / 3,
-    ) as GameState['quarter'],
+    quarter: quarterAt(character.startDate),
     date: character.startDate,
     timeline,
     stats: { ...character.stats },
@@ -582,6 +775,12 @@ export function activities(state: GameState, place: PlaceId): Activity[] {
       )
         return false;
       if (a.oncePerDay && state.day.done.includes(a.id)) return false;
+      if (
+        a.id === 'life-in-the-uk' &&
+        state.timeline.lifeInTheUk &&
+        'passed' in state.timeline.lifeInTheUk
+      )
+        return false;
       if (
         a.id.startsWith('summer-show-') &&
         (state.day.done.includes('summer-show') ||
@@ -732,6 +931,11 @@ export function doActivity(state: GameState, actionId: string): GameState {
     text: action.label,
     statDeltas: deltas(state, next),
   };
+  if (action.id === 'life-in-the-uk')
+    next.outcome.text = {
+      zhCN: 'Life in the UK 考试通过了，证明收进文件夹。',
+      en: 'You pass the Life in the UK test and file the evidence away.',
+    };
   if (action.id === 'board') {
     const posted = notices.filter((n) =>
       next.flags.includes(`quarter-board-${n.id}`),
@@ -759,7 +963,7 @@ export function doActivity(state: GameState, actionId: string): GameState {
     };
   }
   if (action.id === 'festival' && next.day.festival)
-    next.outcome.text = festivals.find((f) => f.id === next.day.festival)!.text;
+    next.outcome.text = festivalResults[next.day.festival][(next.year - 1) % 3];
   const celebration = Object.entries(festivalActivities).find(
     ([, a]) => a.id === action.id,
   );
@@ -767,7 +971,13 @@ export function doActivity(state: GameState, actionId: string): GameState {
     const food = festivalFoods[celebration[0] as FestivalId];
     applyEffects(next, [{ type: 'item', item: food, delta: 1 }]);
     next.outcome.items = { [food]: 1 };
-    next.outcome.text = festivals.find((f) => f.id === celebration[0])!.text;
+    next.outcome.text = (
+      action.id === 'christmas-lanterns'
+        ? lanternResults
+        : action.id === 'may-ribbons'
+          ? ribbonResults
+          : festivalResults[celebration[0] as FestivalId]
+    )[(next.year - 1) % 3];
   }
   if (action.id.startsWith('summer-show-')) {
     const crop = action.id.slice(12);
@@ -1022,7 +1232,7 @@ export function endQuarter(state: GameState): GameState {
   if (!isOver(next)) {
     next.flags = next.flags.filter((f) => !f.startsWith('quarter-'));
     if (promoted) setFlags(next, ['quarter-promoted']);
-    next.quarter = ((state.quarter % 4) + 1) as GameState['quarter'];
+    next.quarter = quarterAt(next.date);
     next.year =
       state.year + (completedQuarters % b.quartersPerYear === 0 ? 1 : 0);
 
@@ -1102,10 +1312,27 @@ export function narrative(state: GameState): Text[] {
   const catches = state.log.filter(
     (e) => e.kind === 'action' && e.id === 'catch-fish',
   ).length;
-  sentences.push({
-    zhCN: `菜地收成 ${harvests} 次，池塘抛竿 ${casts} 次，钓到鱼 ${catches} 次；篮子和鱼竿都留下了使用的痕迹。`,
-    en: `There were ${harvests} harvests, ${casts} casts and ${catches} successful fish catches; basket and rod show their use.`,
-  });
+  const pursuits: Text[] = [];
+  if (harvests)
+    pursuits.push({
+      zhCN: `菜地收成 ${harvests} 次`,
+      en: `${harvests} harvests from the allotment`,
+    });
+  if (casts)
+    pursuits.push({
+      zhCN: `池塘抛竿 ${casts} 次`,
+      en: `${casts} casts at the pond`,
+    });
+  if (catches)
+    pursuits.push({
+      zhCN: `钓到鱼 ${catches} 次`,
+      en: `${catches} successful fish catches`,
+    });
+  if (pursuits.length)
+    sentences.push({
+      zhCN: `${pursuits.map((p) => p.zhCN).join('，')}。`,
+      en: `The diary records ${pursuits.map((p) => p.en).join(', ')}.`,
+    });
   const visited = festivals.filter((f) =>
     state.flags.includes(`visited-festival:${f.id}`),
   );
@@ -1252,9 +1479,11 @@ function specialDay(state: GameState): { date: IsoDate; festival: FestivalId } {
     year++
   ) {
     const festival = pick(year);
-    const date = festivalDate(festival, year);
+    let date = festivalDate(festival, year);
+    if (date < state.date) continue;
     const weekend = firstWeekday(firstWeekday(addDays(state.date, 7), 2), 6);
-    if (date > weekend && date < end) return { date, festival };
+    while (date <= weekend) date = addDays(date, 7);
+    if (date < end) return { date, festival };
   }
   let date = addDays(end, -1);
   while (new Date(date).getUTCDay() !== 6) date = addDays(date, -1);
@@ -1363,6 +1592,10 @@ function beginDay(state: GameState, index: DayState['index']) {
           Math.floor(random(state) * (window.end - window.start + 1)),
       }),
     });
+  }
+  if (state.dayNumber === 0) {
+    const opening = openingEvents[state.characterId];
+    state.day.deliveries.unshift({ eventId: opening.id, channel: 'morning' });
   }
   nextEvent(state);
 }
@@ -1649,7 +1882,11 @@ export function talk(state: GameState, npc: string): GameState {
       (!line.once || !next.heard.includes(line.id)) &&
       matches(next, line.when),
   );
-  const fresh = eligible.filter((line) => !next.heard.includes(line.id));
+  const introduction = !state.flags.includes(`talked-${npc}`)
+    ? eligible.find((line) => line.id === `${npc}-intro`)
+    : undefined;
+  const ordinary = eligible.filter((line) => line.id !== `${npc}-intro`);
+  const fresh = ordinary.filter((line) => !next.heard.includes(line.id));
   const festivalLines = fresh.filter(
     (line) =>
       line.festival === next.day.festival && line.festival !== undefined,
@@ -1658,8 +1895,9 @@ export function talk(state: GameState, npc: string): GameState {
     ? festivalLines
     : fresh.length
       ? fresh
-      : eligible;
-  const line = options[Math.floor(random(next) * options.length)];
+      : ordinary;
+  const line =
+    introduction ?? options[Math.floor(random(next) * options.length)];
   if (line && !next.heard.includes(line.id)) next.heard.push(line.id);
   next.outcome = {
     kind: 'talk',
@@ -1668,14 +1906,18 @@ export function talk(state: GameState, npc: string): GameState {
     statDeltas: deltas(state, next),
   };
   deliver(next, `npc:${npc}`);
-  if (!next.pendingEvent && !next.day.festival) {
+  if (
+    !next.pendingEvent &&
+    !next.day.festival &&
+    !next.day.done.includes('heart-scene')
+  ) {
     const heart = heartEvents.find(
       (event) =>
         event.heart!.npc === npc &&
         hearts(next, npc) >= event.heart!.hearts &&
         available(next, event),
     );
-    if (heart) makePending(next, heart.id);
+    if (heart && makePending(next, heart.id)) next.day.done.push('heart-scene');
   }
   award(next, true);
   return advanceClock(next, b.minutes.talk);

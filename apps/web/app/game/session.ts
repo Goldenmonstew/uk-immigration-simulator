@@ -2,11 +2,13 @@ import { evaluate, type Locale } from '@uk-immigration/engine';
 import {
   characters,
   currentEvent,
+  items,
   isOver,
   npcAt,
   townsfolk,
   visaMonthsLeft,
   type GameState,
+  type Place,
   type StatKey,
 } from '@uk-immigration/game';
 import { createDraft, type Draft } from '../../lib/questionnaire';
@@ -25,6 +27,15 @@ export const homeSpot = (index: number) =>
     { x: 11, y: 4 },
     { x: 5, y: 8 },
   ][index % 3];
+
+export function isPlaceOpen(state: GameState, place: Place): boolean {
+  return (
+    !place.hours ||
+    (state.day.minute >= place.hours.opens &&
+      state.day.minute < place.hours.closes &&
+      (!place.hours.dayKinds || place.hours.dayKinds.includes(state.day.kind)))
+  );
+}
 
 export function withGameLocale(state: GameState, locale: Locale): GameState {
   if (state.locale === locale) return state;
@@ -77,30 +88,60 @@ export const cropIds = [
 ];
 export const itemIcon = (id: string) => {
   const crop = id.replace(/^seed-/, '');
-  return cropIds.includes(crop)
-    ? `/game/assets/crops/${crop}.png`
-    : '/game/assets/indoor/item.png';
+  if (cropIds.includes(crop)) return `/game/assets/crops/${crop}.png`;
+  if (['tea', 'biscuits', 'flowers', 'cake'].includes(id))
+    return `/game/assets/items/${id}.png`;
+  const item = items.find((item) => item.id === id);
+  if (item?.kind === 'fish') return '/game/assets/items/fish.png';
+  if (item?.kind === 'food') return '/game/assets/items/meal.png';
+  return '/game/assets/indoor/item.png';
 };
 export const visaMonths = (state: GameState) =>
   Math.floor(visaMonthsLeft(state));
 
-export function needsVisaReminder(state: GameState): boolean {
-  if (isOver(state) || visaMonths(state) > 3) return false;
+export function visaStatus(state: GameState) {
   const active = state.timeline.episodes
     .filter(
       (episode) =>
         episode.validFrom <= state.date && episode.validTo >= state.date,
     )
     .sort((a, b) => b.validFrom.localeCompare(a.validFrom))[0];
-  if (!active) return true;
-  const nextDay = new Date(Date.parse(active.validTo) + 86_400_000)
-    .toISOString()
-    .slice(0, 10);
-  return !state.timeline.episodes.some(
-    (episode) =>
-      episode.validFrom > state.date &&
-      episode.validFrom <= nextDay &&
-      episode.validTo > active.validTo,
+  if (!active) return { months: 0, renewed: false, validTo: undefined };
+  let validTo = active.validTo;
+  for (const episode of [...state.timeline.episodes].sort((a, b) =>
+    a.validFrom.localeCompare(b.validFrom),
+  )) {
+    if (
+      Date.parse(episode.validFrom) <= Date.parse(validTo) + 86_400_000 &&
+      episode.validTo > validTo
+    )
+      validTo = episode.validTo;
+  }
+  return {
+    validTo,
+    renewed: validTo > active.validTo,
+    months: visaMonthsLeft({
+      ...state,
+      timeline: { ...state.timeline, episodes: [{ ...active, validTo }] },
+    }),
+  };
+}
+
+export function needsVisaReminder(state: GameState): boolean {
+  const visa = visaStatus(state);
+  return !isOver(state) && !visa.renewed && visa.months <= 6;
+}
+
+export function visaExpiresThisSeason(state: GameState): boolean {
+  const visa = visaStatus(state);
+  const [year, month, day] = state.date.split('-').map(Number);
+  const nextSeason = new Date(Date.UTC(year, month + 2, 1));
+  const lastDay = new Date(Date.UTC(year, month + 3, 0)).getUTCDate();
+  nextSeason.setUTCDate(Math.min(day, lastDay));
+  return (
+    !isOver(state) &&
+    !visa.renewed &&
+    (!visa.validTo || visa.validTo < nextSeason.toISOString().slice(0, 10))
   );
 }
 

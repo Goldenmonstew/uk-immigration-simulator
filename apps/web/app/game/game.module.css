@@ -132,7 +132,7 @@
 }
 .destinations {
   display: grid;
-  grid-template-columns: repeat(8, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 6px;
 }
 .destinations button {
@@ -306,6 +306,7 @@
 .story {
   max-width: 45em;
   line-height: 1.85;
+  white-space: pre-line;
 }
 @media (max-width: 760px) {
   .destinations {
@@ -447,14 +448,7 @@
     padding: 4px;
   }
   .destinations {
-    display: flex;
-    overflow-x: auto;
-    max-width: 100%;
-    padding: 4px 0;
-  }
-  .destinations button {
-    flex: 0 0 auto;
-    padding: 8px 14px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .achievementColumns {
     grid-template-columns: minmax(0, 1fr);
@@ -625,9 +619,9 @@
   list-style: none;
 }
 .friendList li {
-  display: flex;
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr) 160px;
   align-items: center;
-  flex-wrap: wrap;
   gap: 12px;
   border-bottom: 1px solid #ccd7cc;
   padding: 12px 0;
@@ -742,4 +736,45 @@
 .modal button:disabled {
   opacity: 0.55;
   cursor: default;
+}
+
+.missingRules {
+  display: block;
+  margin-top: 4px;
+}
+
+.destinations .closedPlace {
+  background: #eceeed;
+  border-color: #b3bab6;
+  color: #606863;
+}
+
+.eventNotes {
+  margin: 16px 0 0;
+  color: #505a5f;
+  line-height: 1.5;
+}
+
+.townLayout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+}
+@media (min-width: 900px) {
+  .townLayout {
+    grid-template-columns: minmax(0, 1fr) 200px;
+    align-items: start;
+  }
+  .destinations {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding-top: 8px;
+  }
+}
+@media (max-width: 600px) {
+  .friendList li {
+    grid-template-columns: 32px minmax(0, 1fr);
+  }
+  .friendList li > span:last-child {
+    grid-column: 2;
+  }
 }

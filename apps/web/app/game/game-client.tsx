@@ -13,6 +13,7 @@ import {
   mailbox,
   places,
   sleep,
+  shop,
   talk,
   tick,
   type GameState,
@@ -21,6 +22,7 @@ import {
 } from '@uk-immigration/game';
 import {
   CharacterSelect,
+  ControlHint,
   Ending,
   EventCard,
   localText,
@@ -44,7 +46,12 @@ import {
   Shop,
   TravelCard,
 } from './life-overlays';
-import { gameStorage, withGameLocale } from './session';
+import {
+  gameStorage,
+  withGameLocale,
+  visaExpiresThisSeason,
+  isPlaceOpen,
+} from './session';
 import {
   hideSound,
   playSound,
@@ -76,6 +83,9 @@ export default function GameClient() {
     [sceneReady, setSceneReady] = useState(false),
     [available, setAvailable] = useState(true);
   const [overlay, setOverlay] = useState<Overlay>();
+  const conversation = useRef<
+    { npc: string; menu?: Extract<Overlay, { kind: 'place' }> } | undefined
+  >(undefined);
   const [outcomeText, setOutcomeText] = useState<Text>();
   const [feedback, setFeedback] = useState<SceneFeedback>();
   const [returned, setReturned] = useState<GameState['trip']>();
@@ -223,7 +233,9 @@ export default function GameClient() {
     if (next.dayNumber !== before.dayNumber) {
       setInterior(true);
       setOverlay(undefined);
-      setMorning(!isOver(next) && !next.trip);
+      setMorning(
+        source !== 'fast' && routine !== 'fast' && !isOver(next) && !next.trip,
+      );
       setDestination(undefined);
     }
     if (next.log.slice(before.log.length).some((e) => e.kind === 'quarter')) {
@@ -248,6 +260,8 @@ export default function GameClient() {
       setDestination(undefined);
     }
     if (next.pendingEvent || next.trip) openOverlay();
+    else if (source === 'resolve' && conversation.current)
+      openOverlay({ kind: 'dialogue', id: conversation.current.npc });
   }
   useEffect(() => {
     if (!current || paused || interior) return;
@@ -292,6 +306,7 @@ export default function GameClient() {
     quarterStart.current = saved?.quarterStart ?? (next && { ...next.stats });
     setState(next);
     openOverlay();
+    conversation.current = undefined;
     setFeedback(undefined);
     setReturned(undefined);
     setSummary(undefined);
@@ -302,6 +317,10 @@ export default function GameClient() {
     setInterior(next?.day.place === 'home');
   };
   const startTalk = (npc: string) => {
+    conversation.current = {
+      npc,
+      menu: overlay?.kind === 'place' ? overlay : conversation.current?.menu,
+    };
     try {
       const next = talk(latest.current!, npc);
       openOverlay();
@@ -380,7 +399,12 @@ export default function GameClient() {
               : 'game.talk',
     );
   };
-  const close = () => openOverlay();
+  const close = () => {
+    const menu =
+      overlay?.kind === 'dialogue' ? conversation.current?.menu : undefined;
+    conversation.current = undefined;
+    openOverlay(menu);
+  };
   return (
     <div
       className={styles.game}
@@ -423,63 +447,88 @@ export default function GameClient() {
                   {t('game.endDay')}
                 </button>
               </StatusBar>
-              <div className={`${styles.map} ${fading ? styles.fading : ''}`}>
-                {current.trip || returned ? (
-                  <TravelCard
-                    state={current}
-                    returned={returned}
-                    onContinue={() => {
-                      if (returned) setReturned(undefined);
-                      else apply(fastForward(current), 'fast');
-                    }}
-                  />
-                ) : (
-                  <TownCanvas
-                    key={`${current.characterId}:${current.seed}`}
-                    state={current}
-                    feedback={feedback}
-                    approachNpc={approachNpc}
-                    focusNpc={
-                      event?.heart?.npc ??
-                      (overlay?.kind === 'dialogue' ? overlay.id : undefined)
-                    }
-                    locale={locale}
-                    paused={paused}
-                    interior={interior}
-                    onReady={() => setSceneReady(true)}
-                    onInteract={interact}
-                    onNearby={setInteraction}
-                    destination={destination}
-                    interactRequest={interactRequest}
-                    onStep={() => playSound('step')}
-                  />
-                )}
-                {!sceneReady && !current.trip && !returned && (
-                  <p className={styles.loading} role="status">
-                    {t('game.loading')}
-                  </p>
-                )}
-                {!!interaction && !paused && (
-                  <button
-                    className={styles.interactButton}
-                    onClick={() => setInteractRequest((n) => n + 1)}
-                  >
-                    {t('game.interact')}
-                  </button>
-                )}
-                {!!mailbox(current).length && (
-                  <span
-                    className={styles.mailBadge}
-                    aria-label={t('game.mailCount').replace(
-                      '{count}',
-                      String(mailbox(current).length),
-                    )}
-                  >
-                    ✉ {mailbox(current).length}
-                  </span>
-                )}
+              <div className={styles.townLayout}>
+                <div className={`${styles.map} ${fading ? styles.fading : ''}`}>
+                  {current.trip || returned ? (
+                    <TravelCard
+                      state={current}
+                      returned={returned}
+                      onContinue={() => {
+                        if (returned) setReturned(undefined);
+                        else apply(fastForward(current), 'fast');
+                      }}
+                    />
+                  ) : (
+                    <TownCanvas
+                      key={`${current.characterId}:${current.seed}`}
+                      state={current}
+                      feedback={feedback}
+                      approachNpc={approachNpc}
+                      focusNpc={
+                        event?.heart?.npc ??
+                        (overlay?.kind === 'dialogue' ? overlay.id : undefined)
+                      }
+                      locale={locale}
+                      paused={paused}
+                      interior={interior}
+                      onReady={() => setSceneReady(true)}
+                      onInteract={interact}
+                      onNearby={setInteraction}
+                      destination={destination}
+                      interactRequest={interactRequest}
+                      onStep={() => playSound('step')}
+                    />
+                  )}
+                  {!sceneReady && !current.trip && !returned && (
+                    <p className={styles.loading} role="status">
+                      {t('game.loading')}
+                    </p>
+                  )}
+                  {!!interaction && !paused && (
+                    <button
+                      className={styles.interactButton}
+                      onClick={() => setInteractRequest((n) => n + 1)}
+                    >
+                      {t('game.interact')}
+                    </button>
+                  )}
+                  {!!mailbox(current).length && (
+                    <span
+                      className={styles.mailBadge}
+                      aria-label={t('game.mailCount').replace(
+                        '{count}',
+                        String(mailbox(current).length),
+                      )}
+                    >
+                      ✉ {mailbox(current).length}
+                    </span>
+                  )}
+                </div>
+                <nav
+                  className={styles.destinations}
+                  aria-label={t('game.destinations')}
+                  inert={paused}
+                >
+                  {places.map((p) => (
+                    <button
+                      key={p.id}
+                      disabled={paused}
+                      className={
+                        !isPlaceOpen(current, p)
+                          ? styles.closedPlace
+                          : undefined
+                      }
+                      onClick={() => walkTo(p.id)}
+                    >
+                      {localText(p.name, locale)}
+                      {!isPlaceOpen(current, p) && (
+                        <small> · {t('game.closedLabel')}</small>
+                      )}
+                    </button>
+                  ))}
+                </nav>
               </div>
-              <p className={styles.controls}>{t('game.controls')}</p>
+              <ControlHint />
               <div className={styles.toolbar}>
                 <button
                   className={site.secondary}
@@ -496,21 +545,6 @@ export default function GameClient() {
                   {t('game.changeCharacter')}
                 </button>
               </div>
-              <nav
-                className={styles.destinations}
-                aria-label={t('game.destinations')}
-                inert={paused}
-              >
-                {places.map((p) => (
-                  <button
-                    key={p.id}
-                    disabled={paused}
-                    onClick={() => walkTo(p.id)}
-                  >
-                    {localText(p.name, locale)}
-                  </button>
-                ))}
-              </nav>
               <ProgressBars
                 state={current}
                 onOpen={(id) => {
@@ -528,6 +562,11 @@ export default function GameClient() {
                   before={withGameLocale(summary.before, locale)}
                   after={withGameLocale(summary.after, locale)}
                   onContinue={() => setSummary(undefined)}
+                  onVisa={() => {
+                    setSummary(undefined);
+                    setMorning(false);
+                    walkTo('visa');
+                  }}
                   onVisit={() => {
                     setSummary(undefined);
                     setMorning(false);
@@ -543,6 +582,10 @@ export default function GameClient() {
                 <MorningCard
                   state={current}
                   onContinue={() => setMorning(false)}
+                  onVisit={() => {
+                    setMorning(false);
+                    walkTo('visa');
+                  }}
                 />
               </Modal>
             ) : event ? (
@@ -584,6 +627,11 @@ export default function GameClient() {
                       : 'game.fastConfirm',
                   )}
                 </p>
+                {confirmation === 'fast' && visaExpiresThisSeason(current) && (
+                  <p role="status" className={styles.urgent}>
+                    {t('game.fastVisaWarning')}
+                  </p>
+                )}
                 <div className={styles.buttons}>
                   <button className={site.button} onClick={beginRoutine}>
                     {t('game.confirm')}
@@ -620,6 +668,7 @@ export default function GameClient() {
                       if (!next.pendingEvent && !ownText) setOverlay(undefined);
                     }}
                     onTalk={(id) => {
+                      conversation.current = { npc: id, menu: overlay };
                       if (interior) {
                         openOverlay();
                         setApproachNpc((prev) => ({
@@ -629,13 +678,14 @@ export default function GameClient() {
                       } else startTalk(id);
                     }}
                   >
-                    {(overlay.id === 'shop' || overlay.id === 'green') && (
-                      <Shop
-                        state={current}
-                        place={overlay.id}
-                        onChange={apply}
-                      />
-                    )}
+                    {(overlay.id === 'shop' || overlay.id === 'green') &&
+                      shop(current, overlay.id).length > 0 && (
+                        <Shop
+                          state={current}
+                          place={overlay.id}
+                          onChange={apply}
+                        />
+                      )}
                     {overlay.id === 'pond' && (
                       <button
                         className={site.button}

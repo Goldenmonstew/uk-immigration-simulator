@@ -1,4 +1,10 @@
-import { perform, availableActivities, quarter, firstPending } from './helpers';
+import {
+  perform,
+  availableActivities,
+  quarter,
+  firstPending,
+  afterOpening,
+} from './helpers';
 import { describe, expect, test } from 'vitest';
 import {
   characters,
@@ -83,7 +89,7 @@ describe('8.1 review corrections', () => {
     characters[0].events = [move, renew];
     try {
       for (let seed = 1; seed <= 20; seed++) {
-        let s = newGame('skilled-worker', seed);
+        let s = afterOpening(newGame('skilled-worker', seed));
         expect(
           [
             s.pendingEvent,
