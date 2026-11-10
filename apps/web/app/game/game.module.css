@@ -306,6 +306,7 @@
 .story {
   max-width: 45em;
   line-height: 1.85;
+  white-space: pre-line;
 }
 @media (max-width: 760px) {
   .destinations {
