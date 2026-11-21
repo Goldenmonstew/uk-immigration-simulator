@@ -87,6 +87,10 @@
 | SRC-067 | GUIDANCE | Department of Home Affairs：Become an Australian citizen（by conferral）——永久居民 | https://immi.homeaffairs.gov.au/citizenship/become-a-citizen/permanent-resident | —（动态页面） | 2026-11-21 | `policy-sources/2026-11-21-au-citizenship-permanent-resident.html`（sha256 `312c97ec6555e1007a3557412cf96fde445f1e57915cfb7e73418e3e4cbb049d`） | archived |
 | SRC-068 | GUIDANCE | Department of Home Affairs Standard Operating Procedure：General residence requirement and permanent resident status（依 FOI 申请 FA 25/08/01434 公开，部分删节，23 页） | https://www.homeaffairs.gov.au/foi/files/2025/fa-250801434-document-released.PDF | PDF 2025-09-15 | 2026-11-21 | `policy-sources/2025-09-15-au-sop-general-residence-requirement-foi.pdf`（sha256 `4fce927e1b93f2b296f899ffd096b9ec44659b083906d60112f67ad6d22be8b0`） | archived |
 | SRC-069 | LAW | Migration Act 1958（Compilation No. 172，2026-10-08）Volume 1：签证何时终止（s82） | https://www.legislation.gov.au/C1958A00062/2026-10-08/2026-10-08/text/original/epub/OEBPS/document_1/document_1.html （登记版本：https://www.legislation.gov.au/C1958A00062/2026-10-08/2026-10-08/text ；现行版入口：https://www.legislation.gov.au/C1958A00062/latest/text ） | 2026-10-08 | 2026-11-21 | `policy-sources/2026-10-08-au-migration-act-1958-compilation-172-vol1.html`（sha256 `52a074ece7fdf107db0802e2079a71870d33f75aeabb91b2ecb842537330d29b`） | archived |
+| SRC-070 | LAW | Citizenship Act 1977（新西兰，Version as at 2026-06-06；s8 citizenship by grant） | https://www.legislation.govt.nz/act/public/1977/61/en/latest/ （登记版本 PDF：https://www.legislation.govt.nz/act/public/1977/61/en/2026-06-06.pdf ） | 2026-06-06 | 2026-11-21 | `policy-sources/2026-06-06-nz-citizenship-act-1977-s8.html`（sha256 `f9a43233fabbbbedf29b4b9e56d2c49d2d66f99fd1ae12a865e954132db3be2c`） | archived |
+| SRC-071 | LAW | Immigration Act 2009（新西兰，Version as at 2026-07-10；s73 永久居民签证、s74 居民签证与旅行条件） | https://www.legislation.govt.nz/act/public/2009/51/en/latest/ | 2026-07-10 | 2026-11-21 | `policy-sources/2026-07-10-nz-immigration-act-2009-ss73-74.html`（sha256 `850fa60bc0927ba64dcdf43f7cf9541a193b5760e7bc9f9eba2ba6fbffaec649`） | archived |
+| SRC-072 | LAW | Immigration New Zealand Operational Manual（Immigration Instructions）：RV2.5 永久居民签证（2024-06-23 生效）、RV2.10 有投资条件的居民签证转永居（2022-09-19）、RV1.15 证据（2012-11-26）、R5.66 居民签证的旅行条件（2026-08-12）、RV1.5 居民签证何时失效（2011-11-07） | https://www.immigration.govt.nz/opsmanual/30505.htm ；https://www.immigration.govt.nz/opsmanual/46181.htm ；https://www.immigration.govt.nz/opsmanual/45649.htm ；https://www.immigration.govt.nz/opsmanual/44894.htm ；https://www.immigration.govt.nz/opsmanual/42631.htm | 见标题 | 2026-11-21 | `policy-sources/2024-06-23-nz-immigration-instructions-rv2-5.html`（sha256 `ae9c55ff6541067f080a52716d7dad82d4658d8b450f510ca04d9e523dc15bed`）；`policy-sources/2022-09-19-nz-immigration-instructions-rv2-10.html`（sha256 `72afede60ccfa7ec2fd75848103442ec444f955878cebf6c3d0487427b483afb`）；`policy-sources/2012-11-26-nz-immigration-instructions-rv1-15.html`（sha256 `c622973856d8b9998ed1b98df1c66a5d8e7c781ec5061292607580f7ea67faa5`）；`policy-sources/2026-08-12-nz-immigration-instructions-r5-66.html`（sha256 `654a93b52da6eba0121832b884735104c17b889b75cb2fd3636d5cffcb096d1d`）；`policy-sources/2011-11-07-nz-immigration-instructions-rv1-5.html`（sha256 `4666d0fbedbf0c4661fc2b0a71e25d3fa8deedec53b9f1e3326d296ea022d3f4`） | archived |
+| SRC-073 | GUIDANCE | 新西兰官方说明：govt.nz（Department of Internal Affairs）Presence in NZ requirements；Immigration New Zealand Visa Pak 588（2024-07-18，永久居民签证的 12、24 个月按天计）；Religious Worker Resident Visa 页面（节选）；Department of Internal Affairs 依 OIA 21/22-0423 公开的在境计算器规格（2021-12-15） | https://www.govt.nz/browse/passports-citizenship-and-identity/nz-citizenship/requirements-for-nz-citizenship/presence-requirements/ ；https://www.immigration.govt.nz/assets/inz/documents/visa-paks/visa-pak-588.pdf ；https://www.immigration.govt.nz/visas/religious-worker-resident-visa/ ；https://www.dia.govt.nz/diawebsite.nsf/Files/OIA-releases/$file/OIA-2122-0423.pdf | 见标题（网页为动态页面） | 2026-11-21 | `policy-sources/2026-11-21-nz-citizenship-presence-requirements.html`（sha256 `92d4b3ef1b812709db0fff649e84d9d236d316757a080b37c6eb74afc475947c`）；`policy-sources/2024-07-18-nz-visa-pak-588-prv-periods.pdf`（sha256 `38319ee3e7429c5240024effc666c1b76d4f4be0ed8dea91cf45415590704f3d`）；`policy-sources/2026-11-21-nz-religious-worker-resident-visa.html`（sha256 `234df2062b623f618797781f4e65153ce45658cc45a24773acd4575ba4ad15aa`）；`policy-sources/2021-12-15-nz-dia-oia-2122-0423-presence-calculator.pdf`（sha256 `8ec44efdae4ab842f4267b7cf8891df4018390ab650a4e6c2464b7ae7797a2c6`） | archived |
 
 ## 登记备注（按 SRC）
 
@@ -621,3 +625,33 @@ UKCISA 是英国国际学生事务委员会。下列页面抓取于 2026-11-19�
 - `s82(2)`：另一份实质签证（特殊目的签证除外）生效时，原实质签证终止；`s82(2AA)` 另有船员签证的例外。`s82(3)`：其他签证（特殊目的签证、船员签证除外）生效时，bridging visa 终止。引擎据此让每份签证在下一份（实质签证，或对 bridging visa 而言任何签证）生效前一天结束，同日生效的按录入顺序；问卷不收特殊目的签证、船员签证和 ETA。`s68(4)` 下部分 bridging visa 可恢复生效，试点不建模。
 - `s82(5)`–`(6)`：带有效期旅行便利的签证，期满时不在澳，或期满后离境，即终止。引擎对旅行便利为 5 年的永久签证（100.511、186.511、189.511、190.511、191.511、801.511），按完整出入境记录判断：期满当天结束时不在澳（包括尚未入境）即在当天终止，否则在期满后第一次出境当天终止。
 
+## SRC-070 Citizenship Act 1977（新西兰）
+
+- `policy-sources/2026-06-06-nz-citizenship-act-1977-s8.html` → <https://www.legislation.govt.nz/act/public/1977/61/en/latest/>
+- legislation.govt.nz 对脚本请求返回 AWS WAF 质询（HTTP 202、空正文），快照是在浏览器中打开现行版（Version as at 6 June 2026）后只保存的 s8 节选（元素 `DLM443855`）。每周核对对这条会报 changed 或 fetch failed，需在浏览器里人工核对版本日。
+- `s8(1)(a)`：年满 16 岁。`s8(2)(a)`：申请时依 Immigration Act 2009 可无限期留在新西兰。`s8(2)(b)`：申请日前 5 年内在新西兰合计不少于 1,350 天（i），且其中每一年不少于 240 天（ii），只算可无限期留在新西兰的日子。`s8(3)`：居留附加条件未满足或未取消的，不算可无限期留下。`s8(5)`、`s8(7)`：Crown service 视同在境、特殊情况下 20 个月内 450 天，试点不建模。法条没有规定出入境当天怎么算，见 PD-086。
+
+## SRC-071 Immigration Act 2009（新西兰）
+
+- `policy-sources/2026-07-10-nz-immigration-act-2009-ss73-74.html` → <https://www.legislation.govt.nz/act/public/2009/51/en/latest/>
+- 同 SRC-070，快照是浏览器中现行版（Version as at 10 July 2026）的 s73–s74 节选（元素 `DLM1440688`、`DLM1440689`），每周核对需人工处理。
+- `s73`：永久居民签证持有人可随时前往新西兰、获准入境并无限期居留。`s74(1)`：居民签证持有人可前往新西兰并申请入境许可，获准入境后可按签证条件无限期居留；`s74(2)`：前往新西兰须符合签证的旅行条件。法条没有写旅行条件到期时人在境外，居民签证是否随之失效，见 PD-088。
+
+## SRC-072 Immigration Instructions（新西兰移民局操作手册）
+
+- 新西兰的 Immigration Instructions 相当于英国的 Immigration Rules，按段落号定位，如 `RV2.5.1`。各页底部的 `Effective` 日期即快照文件名中的日期。
+- `RV2.5`：(a) 申请时持居民签证且已连续持有满 24 个月（或申请前 90 天内曾持有、到期前已连续持有满 24 个月）；(b) 首次以居民身份在新西兰之日（R5.66.1）在申请前至少 24 个月；(c) 以 RV2.5.1–RV2.5.20 任一方式表明对新西兰的承诺；(d) 满足 s49(1)、s50 条件；(e) 品格。`RV2.5.1`：申请前 24 个月的两个 12 个月里，各以居民身份在新西兰合计不少于 184 天。`RV2.5.5`：两个 12 个月里各不少于 41 天，且申请前 24 个月具有税务居民身份（RV1.15.10）。`RV2.5.10`–`RV2.5.20`（投资、经营、在新西兰安家）试点不建模。
+- `RV2.10`：Migrant Investment、Parent Retirement、Active Investor Plus 类别的居民签证转永居，看是否已满足投资条件，不看在境天数。
+- `RV1.15.5` 注：以居民身份在新西兰的期间，入境日与出境日都计入。
+- `RV1.5`：居民签证持有人离开新西兰时签证已没有有效的旅行条件，或旅行条件在其身处境外时到期，居民签证即失效（法条依据为 Immigration Act s63(2)，试点未存档该条）。失效后可在 90 天内以前持有人身份申请永久居民签证（RV2.5(a)(ii)），或按 RV4 另行申请居民签证。`RV3.1` 另规定只有签证仍有效时才能变更旅行条件（试点未存档该页）。
+- `R5.66.1`：境外获批的，首次入境须在获批后 1 年内（萨摩亚配额、太平洋准入类别为 3 个月，试点不建模）。`R5.66.5`：多次入境的旅行条件自首次以居民身份在新西兰之日起 2 年；父母类 10 年、宗教工作者 5 年、Active Investor Plus 的 Growth 类 4 年、Balanced 类 6 年。首次以居民身份在新西兰之日，是在新西兰境内获批的获批日，或境外获批后首次凭该签证获准入境之日。超出旅行条件再前往新西兰、又不符合永久居民签证的，可申请变更旅行条件（RV3）。旅行条件的最后一天按哪天算，见 PD-087。
+
+## SRC-073 新西兰官方说明
+
+- `policy-sources/2026-11-21-nz-religious-worker-resident-visa.html` → <https://www.immigration.govt.nz/visas/religious-worker-resident-visa/>
+- `policy-sources/2024-07-18-nz-visa-pak-588-prv-periods.pdf` → <https://www.immigration.govt.nz/assets/inz/documents/visa-paks/visa-pak-588.pdf>
+- `policy-sources/2021-12-15-nz-dia-oia-2122-0423-presence-calculator.pdf` → <https://www.dia.govt.nz/diawebsite.nsf/Files/OIA-releases/$file/OIA-2122-0423.pdf>
+- govt.nz `What are the presence requirements?` 第 2 条：5 年从申请当天往回数；每个 12 个月不少于 240 天、5 年合计 1,350 天；任一 12 个月出境超过 4 个月、或 5 年内出境合计超过 15 个月，就可能不满足。第 1 条（"至少过去 5 年以新西兰居民身份生活"）是对 s8(2) 的概括，引擎按法条的天数计算；同条写明父母类居民签证的条件可能为 5 年或 10 年，须满足或取消后才能申请入籍。页面附有官方 Presence calculator（https://dia.services.govt.nz/presence-calculator/ ），它调取移民局出入境记录计算；页面本身没写计法，2021 年的计算器规格已依 OIA 公开（见下）。
+- Visa Pak 588（PDF 2 页）：永久居民签证的 12 个月按 365 天、24 个月按 730 天计；两个 12 个月从递交日往回各数 365 天，不含递交当天（例：2024-05-19 递交，两段为 2023-05-20 至 2024-05-18、2022-05-20 至 2023-05-19）。同页示例：没有有效旅行条件时离境，居民签证于离境次日失效（法条写的是离境时；模拟日期没有时刻，引擎按示例取次日）。
+- OIA 21/22-0423（PDF 12 页，内政部依信息公开申请发布的在境计算器规格）：p9–p10 示例中离境日与返回日都不计入在境外的天数（2015-05-01 离境、2015-06-20 返回记 49 天），5 年窗口取申请日之前、不含申请日（1,826 天），每一年按申请日往回划分；Step 4c 每一年须在境不少于 240 天。p8–p9 的五年合计示例有一处算术出入（1,826 − 124 应为 1,702，文中写 1,703），不影响计法。PD-086 据此确定。
+- Religious Worker Resident Visa 页面（immigration.govt.nz 拒绝脚本请求，快照为浏览器中保存的节选）：`Staying longer → Getting a Permanent Resident Visa` 自成为居民起满 5 年可申请永久居民签证，并须先满足、取消 s49 条件；`While you are in New Zealand → Travel` 旅行条件 5 年，到期时人在境外签证随之失效。每周核对对该页会报 fetch failed。

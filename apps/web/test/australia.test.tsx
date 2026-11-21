@@ -2,7 +2,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { expect, test } from 'vitest';
 import { evaluateAustralia } from '@uk-immigration/engine';
 import AustraliaPage from '../app/australia/page';
-import { AustraliaResult } from '../app/australia/australia-content';
+import { PilotResult } from '../app/pilot/pilot-result';
 import Home from '../app/page';
 import { t } from '../i18n';
 import { LocaleContext } from '../i18n/locale';
@@ -106,11 +106,11 @@ test('the request leaves out blank end dates and an unticked partner', () => {
 
 test.each(['zh-CN', 'en'] as const)('results render in %s', (locale) => {
   const result = evaluateAustralia(auRequest(filled, locale));
-  const html = render(<AustraliaResult result={result} />, locale);
-  expect(html).toContain(t('au.resultTitle', locale));
+  const html = render(<PilotResult result={result} />, locale);
+  expect(html).toContain(t('pilot.resultTitle', locale));
   expect(html.match(/data-pathway=/g)).toHaveLength(5);
   expect(html).toContain('data-pathway="AU-CITIZENSHIP" data-status="MET"');
-  expect(html).toContain(t('au.status.MET', locale));
+  expect(html).toContain(t('pilot.status.MET', locale));
   expect(html).toContain(`href="${sourceUrls['SRC-061']}"`);
   expect(html).toContain('PD-084');
 });

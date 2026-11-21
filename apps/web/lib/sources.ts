@@ -75,10 +75,12 @@ export const sourceUrls: Record<string, string> = {
   'SRC-039':
     'https://questions-statements.parliament.uk/written-questions/detail/2026-11-10/41453',
   'SRC-040': 'https://committees.parliament.uk/oralevidence/18236/html',
-  'SRC-041': 'https://committees.parliament.uk/publications/55734/standard/pdf/',
+  'SRC-041':
+    'https://committees.parliament.uk/publications/55734/standard/pdf/',
   'SRC-042': 'https://www.gov.uk/evisa/travel-with-evisa',
   'SRC-043': 'https://www.gov.uk/eta',
-  'SRC-044': 'https://www.gov.uk/healthcare-immigration-application/how-much-pay',
+  'SRC-044':
+    'https://www.gov.uk/healthcare-immigration-application/how-much-pay',
   'SRC-045': 'https://www.gov.uk/life-in-the-uk-test',
   'SRC-046':
     'https://www.gov.uk/government/publications/income-tax-treatment-of-immigration-skills-charge-and-certificate-of-sponsorship-fees/income-tax-immigration-skills-charge-and-certificate-of-sponsorship-fees',
@@ -127,4 +129,9 @@ export const sourceUrls: Record<string, string> = {
     'https://www.homeaffairs.gov.au/foi/files/2025/fa-250801434-document-released.PDF',
   'SRC-069':
     'https://www.legislation.gov.au/C1958A00062/2026-10-08/2026-10-08/text',
+  'SRC-070': 'https://www.legislation.govt.nz/act/public/1977/61/en/latest/',
+  'SRC-071': 'https://www.legislation.govt.nz/act/public/2009/51/en/latest/',
+  'SRC-072': 'https://www.immigration.govt.nz/opsmanual/30505.htm',
+  'SRC-073':
+    'https://www.govt.nz/browse/passports-citizenship-and-identity/nz-citizenship/requirements-for-nz-citizenship/presence-requirements/',
 };

@@ -1,13 +1,13 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import type { FormEvent, ReactNode, Ref } from 'react';
+import type { FormEvent } from 'react';
 import {
   AU_PERMANENT_SUBCLASSES,
   AU_TEMPORARY_SUBCLASSES,
   evaluateAustralia,
 } from '@uk-immigration/engine';
-import type { AuResult, AuSubclass } from '@uk-immigration/engine';
+import type { AuSubclass } from '@uk-immigration/engine';
 import type { TranslationKey } from '../../i18n';
 import { useTranslation } from '../../i18n/locale';
 import { punct } from '../../i18n/punctuation';
@@ -20,11 +20,10 @@ import {
 } from '../../lib/australia';
 import type { AuErrors, AuForm } from '../../lib/australia';
 import { today } from '../../lib/questionnaire';
-import { sourceUrls } from '../../lib/sources';
 import { Field } from '../simulate/field';
 import form from '../simulate/form.module.css';
+import { PilotResult } from '../pilot/pilot-result';
 import site from '../site.module.css';
-import styles from './australia.module.css';
 
 const TRT = new Set<AuSubclass>(['457', '482']);
 const FIELD_LABELS: Record<string, TranslationKey> = {
@@ -323,99 +322,8 @@ export default function AustraliaContent() {
             </button>
           </div>
         </form>
-        {result && (
-          <AustraliaResult result={result} headingRef={resultHeading} />
-        )}
+        {result && <PilotResult result={result} headingRef={resultHeading} />}
       </div>
     </main>
-  );
-}
-
-export function AustraliaResult({
-  result,
-  headingRef,
-}: {
-  result: AuResult;
-  headingRef?: Ref<HTMLHeadingElement>;
-}) {
-  const { t, locale } = useTranslation();
-  const p = punct(locale);
-  const list = (title: string, items: ReactNode[]) =>
-    items.length > 0 && (
-      <details className={styles.more}>
-        <summary>{title}</summary>
-        <ul>
-          {items.map((item, i) => (
-            <li key={i}>{item}</li>
-          ))}
-        </ul>
-      </details>
-    );
-  return (
-    <section className={site.section} aria-labelledby="au-result">
-      <h2 id="au-result" ref={headingRef} tabIndex={-1}>
-        {t('au.resultTitle')}
-      </h2>
-      <p className={site.muted}>
-        {t('au.policyAsOf').replace('{date}', result.policyAsOf)}
-      </p>
-      {result.pathways.map((pathway) => (
-        <article
-          key={pathway.id}
-          className={styles.pathway}
-          data-pathway={pathway.id}
-          data-status={pathway.status}
-        >
-          <h3>{pathway.title}</h3>
-          <p className={styles.status}>
-            {t(`au.status.${pathway.status}`).replace(
-              '{date}',
-              pathway.earliestDate ?? '',
-            )}
-          </p>
-          <p>{pathway.summary}</p>
-          {pathway.checks.length > 0 && (
-            <>
-              <h4>{t('au.checks')}</h4>
-              <ul className={styles.checks}>
-                {pathway.checks.map((c, i) => (
-                  <li key={i} data-met={c.met ?? 'unknown'}>
-                    <span aria-hidden="true">
-                      {c.met === undefined ? '?' : c.met ? '✓' : '✗'}{' '}
-                    </span>
-                    <span className={styles.label}>
-                      {c.met === undefined
-                        ? t('au.unknownCheck')
-                        : c.met
-                          ? t('au.met')
-                          : t('au.notMet')}
-                      {p.colon}
-                    </span>
-                    {c.text}{' '}
-                    <span className={styles.sources}>
-                      {c.sources.map((s, n) => (
-                        <a key={n} href={sourceUrls[s.srcId]}>
-                          {s.srcId} {s.locator}
-                        </a>
-                      ))}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </>
-          )}
-          {list(t('au.notChecked'), pathway.notChecked)}
-          {list(t('au.assumptions'), pathway.assumptions)}
-          {pathway.pendingDetails && (
-            <p className={site.muted}>
-              {t('au.pending')}
-              {p.colon}
-              {pathway.pendingDetails.join(p.list)}
-            </p>
-          )}
-        </article>
-      ))}
-      <p className={site.muted}>{t('au.disclaimer')}</p>
-    </section>
   );
 }

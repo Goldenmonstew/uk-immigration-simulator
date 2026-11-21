@@ -54,7 +54,13 @@ test('the service worker keeps the site pages available offline', async ({
     .poll(() => page.evaluate(() => !!navigator.serviceWorker.controller))
     .toBe(true);
   await context.setOffline(true);
-  for (const path of ['/result', '/whatif', '/policy', '/australia']) {
+  for (const path of [
+    '/result',
+    '/whatif',
+    '/policy',
+    '/australia',
+    '/new-zealand',
+  ]) {
     expect((await page.goto(path))?.ok()).toBe(true);
   }
   await expect(page.getByRole('heading', { level: 1 })).toBeVisible();

@@ -1,6 +1,12 @@
 import { australia2026_11 as au } from '@uk-immigration/policy-data';
-import type { SourceRef } from '@uk-immigration/policy-data';
 import { addDays, addMonths, addYears, daysBetween } from './dates';
+import { Days, HORIZON_YEARS, afterYears } from './pilot';
+import type {
+  PilotCheck,
+  PilotPathway,
+  PilotResult,
+  PilotStatus,
+} from './pilot';
 import { textFor } from './rule';
 import type { IsoDate, Locale } from './types';
 
@@ -73,52 +79,17 @@ export interface AuRequest {
 export type AuPathwayId =
   'AU-191' | 'AU-186-TRT' | 'AU-PARTNER' | 'AU-RRV' | 'AU-CITIZENSHIP';
 
-export type AuStatus =
-  'MET' | 'FUTURE' | 'NOT_MET' | 'UNKNOWN' | 'NOT_APPLICABLE';
-
-/** One requirement checked on the simulation date. */
-export interface AuCheck {
-  text: string;
-  /** Absent = cannot tell from the answers. */
-  met?: boolean;
-  sources: SourceRef[];
-}
-
-export interface AuPathway {
-  id: AuPathwayId;
-  title: string;
-  status: AuStatus;
-  /** MET: the simulation date; FUTURE: the first later date all checks pass. */
-  earliestDate?: IsoDate;
-  summary: string;
-  checks: AuCheck[];
-  /** Requirements this pilot does not check. */
-  notChecked: string[];
-  assumptions: string[];
-  pendingDetails?: string[];
-}
-
-export interface AuResult {
-  policyAsOf: IsoDate;
-  pathways: AuPathway[];
-}
+export type AuStatus = PilotStatus;
+export type AuCheck = PilotCheck;
+export type AuPathway = PilotPathway<AuPathwayId>;
+export type AuResult = PilotResult<AuPathwayId>;
 
 const v = au.values;
-// Engine search limit for projected dates, not a policy number.
-const HORIZON_YEARS = 10;
 const PERMANENT = new Set<AuSubclass>(AU_PERMANENT_SUBCLASSES);
 const TRT_VISAS = new Set<AuSubclass>(['457', '482']);
 const BRIDGING = new Set<AuSubclass>(['bridging-trt', 'bridging']);
 /** Most days `n` calendar years can span (leap days included). */
 const longestYears = (n: number) => n * 365 + Math.ceil(n / 4);
-/**
- * The `n`th anniversary of `d`; from 29 February, 1 March in a year
- * without one.
- */
-const afterYears = (d: IsoDate, n: number) => {
-  const date = addYears(d, n);
-  return date.slice(5) === d.slice(5) ? date : addDays(date, 1);
-};
 // Permanent visas whose travel facility is 5 years from grant (x.511).
 const FIVE_YEAR_FACILITY = new Set<AuSubclass>([
   '189',
@@ -128,41 +99,6 @@ const FIVE_YEAR_FACILITY = new Set<AuSubclass>([
   '801',
   '100',
 ]);
-
-/** Daily flags from `start` with prefix sums, for window counts. */
-class Days {
-  readonly count: number;
-  constructor(
-    readonly start: IsoDate,
-    end: IsoDate,
-  ) {
-    this.count = daysBetween(start, end) + 1;
-  }
-  index(d: IsoDate): number {
-    return daysBetween(this.start, d);
-  }
-  date(i: number): IsoDate {
-    return addDays(this.start, i);
-  }
-  /** Prefix sums of `flag` over every day. */
-  sums(flag: (i: number) => boolean): number[] {
-    const sums = [0];
-    for (let i = 0; i < this.count; i++) sums.push(sums[i] + (flag(i) ? 1 : 0));
-    return sums;
-  }
-  /** Days flagged in [from, to], both inclusive. */
-  total(sums: number[], from: IsoDate, to: IsoDate): number {
-    const a = Math.max(0, this.index(from));
-    const b = Math.min(this.count - 1, this.index(to));
-    return a > b ? 0 : sums[b + 1] - sums[a];
-  }
-  /** Flag each day of [from, to] (to absent = to the end). */
-  mark(flags: boolean[], from: IsoDate, to?: IsoDate): void {
-    const a = Math.max(0, this.index(from));
-    const b = Math.min(this.count - 1, to ? this.index(to) : this.count - 1);
-    for (let i = a; i <= b; i++) flags[i] = true;
-  }
-}
 
 export function evaluateAustralia(req: AuRequest): AuResult {
   const L = textFor(req);
